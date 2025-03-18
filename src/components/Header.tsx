@@ -129,7 +129,7 @@ const Header = ({ weather }: HeaderProps) => {
                 </Button>
               </div>
 
-              <nav className="flex flex-col items-center justify-center flex-1 space-y-8">
+              <nav className="flex flex-col items-center mt-8 pt-4 space-y-6">
                 {navItems.map((item) => (
                   <Link
                     key={item.path}
@@ -148,7 +148,7 @@ const Header = ({ weather }: HeaderProps) => {
 
               {/* Weather Info - Mobile */}
               {weather && (
-                <div className="flex items-center justify-center space-x-2 py-6">
+                <div className="flex items-center justify-center space-x-2 py-6 mt-auto">
                   {getWeatherIcon()}
                   <span className="text-sm font-medium">{weather.temperature}° {weather.condition}</span>
                 </div>
