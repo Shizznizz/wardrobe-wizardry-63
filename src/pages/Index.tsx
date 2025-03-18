@@ -95,9 +95,6 @@ const Index = () => {
             variants={itemVariants}
           >
             <div className="lg:max-w-xl space-y-6">
-              <div className="inline-block rounded-full bg-primary/10 px-3 py-1 text-sm text-primary font-medium mb-2">
-                Your Personal Wardrobe Assistant
-              </div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold leading-tight">
                 Organize your wardrobe, <span className="text-primary">effortlessly</span>
               </h1>
