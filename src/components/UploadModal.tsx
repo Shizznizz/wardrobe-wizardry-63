@@ -1,4 +1,3 @@
-
 import { useState, useRef } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -9,6 +8,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import { Camera, Upload, X } from 'lucide-react';
 import { ClothingType, ClothingColor, ClothingMaterial, ClothingSeason } from '@/lib/types';
+import { cn } from '@/lib/utils';
 
 interface UploadModalProps {
   onUpload: (item: any) => void;

@@ -1,8 +1,7 @@
-
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Shirt, PantsIcon, CloudSun, Bell, ThumbsUp } from 'lucide-react';
+import { Shirt, Pants, CloudSun, Bell, ThumbsUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
 import WeatherWidget from '@/components/WeatherWidget';
@@ -141,7 +140,7 @@ const Index = () => {
               
               <div className="flex flex-col items-center text-center p-6 rounded-xl border hover:border-primary/40 bg-white shadow-soft transition-all hover:shadow-hover">
                 <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                  <PantsIcon className="w-7 h-7 text-primary" />
+                  <Pants className="w-7 h-7 text-primary" />
                 </div>
                 <h3 className="text-xl font-semibold mb-2">Create Outfits</h3>
                 <p className="text-muted-foreground">
