@@ -5,6 +5,12 @@ import { Menu, X, Sun, CloudSun, Cloud, CloudRain, Umbrella } from 'lucide-react
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
+import {
+  NavigationMenu,
+  NavigationMenuList,
+  NavigationMenuItem,
+  NavigationMenuLink
+} from "@/components/ui/navigation-menu";
 
 interface HeaderProps {
   weather?: {
@@ -60,45 +66,51 @@ const Header = ({ weather }: HeaderProps) => {
       )}
     >
       <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
+        {/* Logo - Left aligned */}
         <Link to="/" className="flex items-center space-x-2">
           <span className="font-display font-bold text-lg sm:text-xl">Wardrobe</span>
         </Link>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-6">
-          {navItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={cn(
-                "text-sm font-medium transition-colors hover:text-primary",
-                location.pathname === item.path
-                  ? "text-primary"
-                  : "text-muted-foreground"
-              )}
-            >
-              {item.name}
-            </Link>
-          ))}
-        </nav>
+        {/* Desktop Navigation - Center aligned */}
+        <NavigationMenu className="hidden md:flex">
+          <NavigationMenuList className="gap-2">
+            {navItems.map((item) => (
+              <NavigationMenuItem key={item.path}>
+                <NavigationMenuLink
+                  asChild
+                  className={cn(
+                    "inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors",
+                    location.pathname === item.path
+                      ? "text-primary"
+                      : "text-muted-foreground hover:text-primary hover:bg-accent"
+                  )}
+                >
+                  <Link to={item.path}>{item.name}</Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+            ))}
+          </NavigationMenuList>
+        </NavigationMenu>
 
-        {/* Weather Info - Desktop */}
-        {weather && !isMobile && (
-          <div className="hidden md:flex items-center space-x-2 bg-white/90 backdrop-blur-sm rounded-full px-4 py-1.5 border border-gray-100 transition-all hover:bg-white">
-            {getWeatherIcon()}
-            <span className="text-sm font-medium">{weather.temperature}°</span>
-          </div>
-        )}
+        {/* Weather Info - Right aligned */}
+        <div className="flex items-center">
+          {weather && (
+            <div className="hidden md:flex items-center space-x-2 bg-white/90 backdrop-blur-sm rounded-full px-4 py-1.5 border border-gray-100 transition-all hover:bg-white">
+              {getWeatherIcon()}
+              <span className="text-sm font-medium">{weather.temperature}°</span>
+            </div>
+          )}
 
-        {/* Mobile Menu Button */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="md:hidden"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-        >
-          {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </Button>
+          {/* Mobile Menu Button - Only show on mobile */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden ml-2"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </Button>
+        </div>
 
         {/* Mobile Navigation Overlay */}
         {isMenuOpen && (
