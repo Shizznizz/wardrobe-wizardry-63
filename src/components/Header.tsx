@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Sun, CloudSun, Cloud, CloudRain, Umbrella, Info } from 'lucide-react';
+import { Menu, X, Sun, CloudSun, Cloud, CloudRain, Umbrella } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -11,12 +11,6 @@ import {
   NavigationMenuItem,
   NavigationMenuLink
 } from "@/components/ui/navigation-menu";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 
 interface HeaderProps {
   weather?: {
