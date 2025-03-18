@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { ClothingItem, ClothingType, ClothingColor, ClothingSeason } from '@/lib/types';
 import { cn } from '@/lib/utils';
-import { Heart, Filter, Shirt, Pants, Umbrella, Dress, Boot, Tag } from 'lucide-react';
+import { Heart, Filter, Shirt, Umbrella, Tag, CircleUser, ShoppingBag, Footprints } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -22,13 +22,13 @@ const getClothingIcon = (type: ClothingType) => {
     case 'top':
       return <Shirt className="h-4 w-4" />;
     case 'bottom':
-      return <Pants className="h-4 w-4" />;
+      return <ShoppingBag className="h-4 w-4" />;
     case 'outerwear':
       return <Umbrella className="h-4 w-4" />;
     case 'dress':
-      return <Dress className="h-4 w-4" />;
+      return <CircleUser className="h-4 w-4" />;
     case 'footwear':
-      return <Boot className="h-4 w-4" />;
+      return <Footprints className="h-4 w-4" />;
     case 'accessory':
       return <Tag className="h-4 w-4" />;
     default:
