@@ -58,6 +58,13 @@ const Header = ({ weather }: HeaderProps) => {
     { name: 'Settings', path: '/settings' },
   ];
 
+  // Get current page name based on location
+  const getCurrentPageName = () => {
+    if (location.pathname === '/') return 'Home';
+    const currentNav = navItems.find(item => item.path === location.pathname);
+    return currentNav ? currentNav.name : 'Wardrobe';
+  };
+
   return (
     <header 
       className={cn(
@@ -66,9 +73,9 @@ const Header = ({ weather }: HeaderProps) => {
       )}
     >
       <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
-        {/* Logo - Left aligned */}
+        {/* Logo - Left aligned with dynamic page name */}
         <Link to="/" className="flex items-center space-x-2">
-          <span className="font-display font-bold text-lg sm:text-xl">Wardrobe</span>
+          <span className="font-display font-bold text-lg sm:text-xl">{getCurrentPageName()}</span>
         </Link>
 
         {/* Desktop Navigation - Center aligned */}
@@ -118,7 +125,7 @@ const Header = ({ weather }: HeaderProps) => {
             <div className="container h-full flex flex-col p-4">
               <div className="flex justify-between items-center py-4">
                 <Link to="/" className="flex items-center space-x-2">
-                  <span className="font-display font-bold text-xl">Wardrobe</span>
+                  <span className="font-display font-bold text-xl">{getCurrentPageName()}</span>
                 </Link>
                 <Button
                   variant="ghost"
@@ -129,7 +136,7 @@ const Header = ({ weather }: HeaderProps) => {
                 </Button>
               </div>
 
-              <nav className="flex flex-col items-center mt-8 pt-4 space-y-6">
+              <nav className="flex flex-col items-center mt-4 pt-2 space-y-6">
                 {navItems.map((item) => (
                   <Link
                     key={item.path}
