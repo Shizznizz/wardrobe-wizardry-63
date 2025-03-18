@@ -2,17 +2,39 @@
 import { useState } from 'react';
 import { ClothingItem, ClothingType, ClothingColor, ClothingSeason } from '@/lib/types';
 import { cn } from '@/lib/utils';
-import { Heart, Filter } from 'lucide-react';
+import { Heart, Filter, Shirt, Pants, Umbrella, Dress, Boot, Tag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface WardrobeGridProps {
   items: ClothingItem[];
   onToggleFavorite: (id: string) => void;
 }
+
+// Helper function to get the appropriate icon for each clothing type
+const getClothingIcon = (type: ClothingType) => {
+  switch (type) {
+    case 'top':
+      return <Shirt className="h-4 w-4" />;
+    case 'bottom':
+      return <Pants className="h-4 w-4" />;
+    case 'outerwear':
+      return <Umbrella className="h-4 w-4" />;
+    case 'dress':
+      return <Dress className="h-4 w-4" />;
+    case 'footwear':
+      return <Boot className="h-4 w-4" />;
+    case 'accessory':
+      return <Tag className="h-4 w-4" />;
+    default:
+      return <Tag className="h-4 w-4" />;
+  }
+};
 
 const WardrobeGrid = ({ items, onToggleFavorite }: WardrobeGridProps) => {
   const [typeFilter, setTypeFilter] = useState<ClothingType | 'all'>('all');
@@ -170,16 +192,40 @@ const WardrobeGrid = ({ items, onToggleFavorite }: WardrobeGridProps) => {
                 />
               </div>
               <div className="p-4">
-                <h3 className="font-medium truncate">{item.name}</h3>
-                <div className="flex justify-between items-center mt-1">
-                  <span className="text-sm text-muted-foreground capitalize">{item.type}</span>
-                  <div className="flex space-x-2">
-                    <span className="text-xs py-0.5 px-2 bg-secondary rounded-full capitalize">
-                      {item.color}
-                    </span>
-                  </div>
+                <div className="flex justify-between items-start">
+                  <h3 className="font-medium truncate">{item.name}</h3>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="flex items-center ml-1 text-muted-foreground">
+                          {getClothingIcon(item.type)}
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="capitalize">{item.type}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+                
+                <div className="mt-2 flex flex-wrap gap-1">
+                  <Badge variant="secondary" className="capitalize text-xs">
+                    {item.color}
+                  </Badge>
+                  <Badge variant="outline" className="capitalize text-xs">
+                    {item.material}
+                  </Badge>
+                </div>
+                
+                <div className="mt-2 flex flex-wrap gap-1">
+                  {item.seasons.map((season) => (
+                    <Badge key={season} variant="secondary" className="bg-primary/10 text-primary text-xs">
+                      {season}
+                    </Badge>
+                  ))}
                 </div>
               </div>
+              
               <button
                 onClick={() => onToggleFavorite(item.id)}
                 className={cn(
