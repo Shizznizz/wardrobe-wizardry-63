@@ -91,8 +91,8 @@ const Header = ({ weather }: HeaderProps) => {
                   className={cn(
                     "inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors",
                     location.pathname === item.path
-                      ? "text-primary"
-                      : "text-muted-foreground hover:text-primary hover:bg-accent"
+                      ? "text-accent bg-accent/10"
+                      : "text-muted-foreground hover:text-accent hover:bg-accent/10"
                   )}
                 >
                   <Link to={item.path}>{item.name}</Link>
@@ -144,8 +144,8 @@ const Header = ({ weather }: HeaderProps) => {
                     className={cn(
                       "text-xl font-medium transition-colors",
                       location.pathname === item.path
-                        ? "text-primary"
-                        : "text-muted-foreground hover:text-primary"
+                        ? "text-accent"
+                        : "text-muted-foreground hover:text-accent"
                     )}
                   >
                     {item.name}

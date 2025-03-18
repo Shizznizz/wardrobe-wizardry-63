@@ -108,4 +108,17 @@
   .text-balance {
     text-wrap: balance;
   }
+  
+  /* Navigation styling */
+  .nav-link {
+    @apply transition-colors duration-200;
+  }
+  
+  .nav-link-active {
+    @apply text-accent;
+  }
+  
+  .nav-link-inactive {
+    @apply text-muted-foreground hover:text-accent;
+  }
 }
