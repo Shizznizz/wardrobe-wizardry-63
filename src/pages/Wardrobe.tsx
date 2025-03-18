@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -33,7 +32,6 @@ const Wardrobe = () => {
     }
   };
   
-  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {

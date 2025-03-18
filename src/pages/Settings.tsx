@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -40,7 +39,6 @@ const Settings = () => {
       return;
     }
     
-    // In a real app, this would trigger an email with the exported data
     toast.success('Export request received', {
       description: `We'll send your wardrobe data to ${dataExportEmail} shortly.`
     });
@@ -48,7 +46,6 @@ const Settings = () => {
     setDataExportEmail('');
   };
   
-  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {

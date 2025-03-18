@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -34,8 +33,6 @@ const Outfits = () => {
   };
   
   const handleRegenerateOutfit = () => {
-    // In a real app, this would use an algorithm to generate a new outfit
-    // For now, we'll just select a different outfit from the sample data
     const currentIndex = outfits.findIndex(o => o.id === suggestedOutfit.id);
     const nextIndex = (currentIndex + 1) % outfits.length;
     setSuggestedOutfit(outfits[nextIndex]);
@@ -47,13 +44,11 @@ const Outfits = () => {
   
   const handleLikeOutfit = () => {
     toast.success('We\'ll suggest more outfits like this!');
-    // In a real app, this would update user preferences
   };
   
   const handleDislikeOutfit = () => {
     toast.success('We\'ll suggest fewer outfits like this.');
     handleRegenerateOutfit();
-    // In a real app, this would update user preferences
   };
   
   const handleToggleFavorite = (outfitId: string) => {
@@ -72,7 +67,6 @@ const Outfits = () => {
     }
   };
   
-  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
