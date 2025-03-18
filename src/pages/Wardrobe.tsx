@@ -7,9 +7,11 @@ import WardrobeGrid from '@/components/WardrobeGrid';
 import { ClothingItem } from '@/lib/types';
 import { sampleClothingItems } from '@/lib/wardrobeData';
 import { toast } from 'sonner';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Wardrobe = () => {
   const [items, setItems] = useState<ClothingItem[]>(sampleClothingItems);
+  const isMobile = useIsMobile();
   
   const handleUpload = (newItem: ClothingItem) => {
     setItems(prev => [newItem, ...prev]);
@@ -57,7 +59,7 @@ const Wardrobe = () => {
     <div className="min-h-screen bg-white">
       <Header />
       
-      <main className="container mx-auto px-4 pt-24 pb-16">
+      <main className={`container mx-auto px-4 ${isMobile ? 'pt-16' : 'pt-24'} pb-16`}>
         <motion.div 
           className="space-y-8"
           initial="hidden"
