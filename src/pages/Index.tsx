@@ -2,13 +2,19 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Shirt, ShoppingBag, CloudSun, Bell, ThumbsUp } from 'lucide-react';
+import { Shirt, ShoppingBag, CloudSun, Bell, ThumbsUp, Layers, Tag, Check, Info, HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
 import WeatherWidget from '@/components/WeatherWidget';
 import OutfitSuggestion from '@/components/OutfitSuggestion';
 import { WeatherInfo } from '@/lib/types';
 import { sampleClothingItems, sampleOutfits } from '@/lib/wardrobeData';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const Index = () => {
   const [weather, setWeather] = useState<WeatherInfo | null>(null);
@@ -99,13 +105,23 @@ const Index = () => {
                 Manage your clothes, discover outfits, and get personalized suggestions based on your style and the weather.
               </p>
               <div className="flex flex-wrap gap-3 pt-2">
-                <Button asChild size="lg" className="group">
-                  <Link to="/wardrobe">
-                    Get Started
-                    <span className="ml-2 transition-transform duration-200 group-hover:translate-x-1">→</span>
-                  </Link>
-                </Button>
-                <Button asChild variant="outline" size="lg">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button asChild size="lg" className="group h-12 px-6 text-base">
+                        <Link to="/wardrobe">
+                          Get Started
+                          <span className="ml-2 transition-transform duration-200 group-hover:translate-x-1">→</span>
+                        </Link>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Start adding your clothes to your digital wardrobe</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                
+                <Button asChild variant="outline" size="lg" className="h-12 px-6 text-base">
                   <Link to="/outfits">Explore Outfits</Link>
                 </Button>
               </div>
@@ -129,19 +145,28 @@ const Index = () => {
             <h2 className="text-3xl font-bold text-center mb-12">Smart Features for Your Wardrobe</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              <div className="flex flex-col items-center text-center p-6 rounded-xl border hover:border-primary/40 bg-white shadow-soft transition-all hover:shadow-hover">
-                <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                  <Shirt className="w-7 h-7 text-primary" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2">Organize Clothes</h3>
-                <p className="text-muted-foreground">
-                  Categorize your garments by type, color, season, and more.
-                </p>
-              </div>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="flex flex-col items-center text-center p-6 rounded-xl border hover:border-primary/40 bg-white shadow-soft transition-all hover:shadow-hover">
+                      <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                        <Shirt className="w-7 h-7 text-primary" />
+                      </div>
+                      <h3 className="text-xl font-semibold mb-2">Organize Clothes</h3>
+                      <p className="text-muted-foreground">
+                        Categorize your garments by type, color, season, and more.
+                      </p>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Easily catalog and organize all your clothing items</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
               
               <div className="flex flex-col items-center text-center p-6 rounded-xl border hover:border-primary/40 bg-white shadow-soft transition-all hover:shadow-hover">
                 <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                  <ShoppingBag className="w-7 h-7 text-primary" />
+                  <Layers className="w-7 h-7 text-primary" />
                 </div>
                 <h3 className="text-xl font-semibold mb-2">Create Outfits</h3>
                 <p className="text-muted-foreground">
@@ -161,7 +186,7 @@ const Index = () => {
               
               <div className="flex flex-col items-center text-center p-6 rounded-xl border hover:border-primary/40 bg-white shadow-soft transition-all hover:shadow-hover">
                 <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                  <Bell className="w-7 h-7 text-primary" />
+                  <Tag className="w-7 h-7 text-primary" />
                 </div>
                 <h3 className="text-xl font-semibold mb-2">Daily Reminders</h3>
                 <p className="text-muted-foreground">
@@ -206,7 +231,7 @@ const Index = () => {
               <p className="text-lg text-muted-foreground">
                 Start adding your clothes and create amazing outfits today.
               </p>
-              <Button asChild size="lg" className="mt-6">
+              <Button asChild size="lg" className="mt-6 h-12 px-6 text-base">
                 <Link to="/wardrobe">Get Started</Link>
               </Button>
             </div>

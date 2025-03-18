@@ -2,8 +2,14 @@
 import { ClothingItem, Outfit, WeatherInfo } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { RefreshCw, Check, ThumbsUp, ThumbsDown, Sun, Cloud, CloudRain } from 'lucide-react';
+import { RefreshCw, Check, ThumbsUp, ThumbsDown, Sun, Cloud, CloudRain, HelpCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface OutfitSuggestionProps {
   outfit: Outfit;
@@ -77,20 +83,29 @@ const OutfitSuggestion = ({
 
           <div className="flex flex-wrap justify-between items-center pt-2">
             <div className="flex space-x-2">
-              <Button 
-                size="sm" 
-                variant="outline"
-                className="flex items-center space-x-1"
-                onClick={onRefresh}
-              >
-                <RefreshCw className="h-3.5 w-3.5" />
-                <span>Refresh</span>
-              </Button>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      className="flex items-center space-x-1 h-10"
+                      onClick={onRefresh}
+                    >
+                      <RefreshCw className="h-3.5 w-3.5" />
+                      <span>Refresh</span>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Get a new outfit suggestion</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
               
               <Button 
                 size="sm" 
                 variant="outline"
-                className="h-8 w-8 p-0"
+                className="h-10 w-10 p-0"
                 onClick={onLike}
               >
                 <ThumbsUp className="h-3.5 w-3.5" />
@@ -99,21 +114,30 @@ const OutfitSuggestion = ({
               <Button 
                 size="sm" 
                 variant="outline"
-                className="h-8 w-8 p-0"
+                className="h-10 w-10 p-0"
                 onClick={onDislike}
               >
                 <ThumbsDown className="h-3.5 w-3.5" />
               </Button>
             </div>
             
-            <Button 
-              size="sm"
-              className="flex items-center space-x-1 group"
-              onClick={handleWear}
-            >
-              <span>Wear Today</span>
-              <Check className="h-3.5 w-3.5 transition-transform group-hover:scale-110" />
-            </Button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    size="sm"
+                    className="flex items-center space-x-1 group h-10 px-4 text-sm"
+                    onClick={handleWear}
+                  >
+                    <span>Wear Today</span>
+                    <Check className="h-3.5 w-3.5 transition-transform group-hover:scale-110" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Log this outfit as worn today</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         </div>
       </div>

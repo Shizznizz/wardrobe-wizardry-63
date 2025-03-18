@@ -1,7 +1,6 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Sun, CloudSun, Cloud, CloudRain, Umbrella } from 'lucide-react';
+import { Menu, X, Sun, CloudSun, Cloud, CloudRain, Umbrella, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -11,6 +10,12 @@ import {
   NavigationMenuItem,
   NavigationMenuLink
 } from "@/components/ui/navigation-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface HeaderProps {
   weather?: {
@@ -58,11 +63,10 @@ const Header = ({ weather }: HeaderProps) => {
     { name: 'Settings', path: '/settings' },
   ];
 
-  // Get current page name based on location
   const getCurrentPageName = () => {
     if (location.pathname === '/') return 'Home';
     const currentNav = navItems.find(item => item.path === location.pathname);
-    return currentNav ? currentNav.name : 'Wardrobe';
+    return currentNav ? currentNav.name : '';
   };
 
   return (
@@ -73,12 +77,10 @@ const Header = ({ weather }: HeaderProps) => {
       )}
     >
       <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
-        {/* Logo - Left aligned with dynamic page name */}
         <Link to="/" className="flex items-center space-x-2">
           <span className="font-display font-bold text-lg sm:text-xl">{getCurrentPageName()}</span>
         </Link>
 
-        {/* Desktop Navigation - Center aligned */}
         <NavigationMenu className="hidden md:flex">
           <NavigationMenuList className="gap-2">
             {navItems.map((item) => (
@@ -99,7 +101,6 @@ const Header = ({ weather }: HeaderProps) => {
           </NavigationMenuList>
         </NavigationMenu>
 
-        {/* Weather Info - Right aligned */}
         <div className="flex items-center">
           {weather && (
             <div className="hidden md:flex items-center space-x-2 bg-white/90 backdrop-blur-sm rounded-full px-4 py-1.5 border border-gray-100 transition-all hover:bg-white">
@@ -108,7 +109,6 @@ const Header = ({ weather }: HeaderProps) => {
             </div>
           )}
 
-          {/* Mobile Menu Button - Only show on mobile */}
           <Button
             variant="ghost"
             size="icon"
@@ -119,7 +119,6 @@ const Header = ({ weather }: HeaderProps) => {
           </Button>
         </div>
 
-        {/* Mobile Navigation Overlay */}
         {isMenuOpen && (
           <div className="fixed inset-0 bg-white z-50 animate-fade-in">
             <div className="container h-full flex flex-col p-4">
@@ -153,7 +152,6 @@ const Header = ({ weather }: HeaderProps) => {
                 ))}
               </nav>
 
-              {/* Weather Info - Mobile */}
               {weather && (
                 <div className="flex items-center justify-center space-x-2 py-6 mt-auto">
                   {getWeatherIcon()}
