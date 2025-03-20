@@ -171,79 +171,65 @@ const Header = ({ weather }: HeaderProps) => {
         </div>
 
         {isMenuOpen && (
-          <div 
-            className="fixed inset-0 z-50 animate-fade-in" 
-            style={{ 
-              backgroundColor: theme === 'dark' ? '#111' : '#fff',
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              zIndex: 9999
-            }}
-          >
-            <div 
-              className="h-full flex flex-col p-4" 
-              style={{ 
-                backgroundColor: theme === 'dark' ? '#111' : '#fff'
-              }}
-            >
-              <div className="flex justify-between items-center py-4">
-                <Link to="/" className="flex items-center space-x-2">
-                  <span className="font-display font-bold text-xl">{getCurrentPageName()}</span>
-                </Link>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <X className="h-5 w-5" />
-                </Button>
-              </div>
-
-              <nav className="flex flex-col items-center mt-4 pt-2 space-y-6">
-                {navItems.map((item) => (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    className={cn(
-                      "text-xl font-medium transition-colors",
-                      location.pathname === item.path
-                        ? "text-accent bg-accent/10"
-                        : "text-muted-foreground hover:text-accent hover:bg-accent/10"
-                    )}
-                  >
-                    {item.name}
+          <div className="fixed inset-0 z-highest mobile-menu-overlay">
+            <div className="fixed inset-0 bg-white dark:bg-gray-900 mobile-menu">
+              <div className="h-full flex flex-col p-4">
+                <div className="flex justify-between items-center py-4">
+                  <Link to="/" className="flex items-center space-x-2">
+                    <span className="font-display font-bold text-xl">{getCurrentPageName()}</span>
                   </Link>
-                ))}
-                
-                {!user && (
-                  <Link
-                    to="/auth"
-                    className="text-xl font-medium text-primary hover:text-primary/80"
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setIsMenuOpen(false)}
                   >
-                    Sign In
-                  </Link>
-                )}
-              </nav>
-
-              {weather && (
-                <div className="flex items-center justify-center space-x-2 py-6 mt-auto mb-6">
-                  {getWeatherIcon()}
-                  <span className="text-sm font-medium">{weather.temperature}° {weather.condition}</span>
+                    <X className="h-5 w-5" />
+                  </Button>
                 </div>
-              )}
-              
-              {user && (
-                <button
-                  onClick={handleSignOut}
-                  className="text-xl font-medium text-red-500 hover:text-red-600 flex items-center justify-center gap-2 mt-auto mb-8"
-                >
-                  <LogOut className="h-5 w-5" />
-                  Sign out
-                </button>
-              )}
+
+                <nav className="flex flex-col items-center mt-4 pt-2 space-y-6">
+                  {navItems.map((item) => (
+                    <Link
+                      key={item.path}
+                      to={item.path}
+                      className={cn(
+                        "text-xl font-medium transition-colors",
+                        location.pathname === item.path
+                          ? "text-accent bg-accent/10"
+                          : "text-muted-foreground hover:text-accent hover:bg-accent/10"
+                      )}
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
+                  
+                  {!user && (
+                    <Link
+                      to="/auth"
+                      className="text-xl font-medium text-primary hover:text-primary/80"
+                    >
+                      Sign In
+                    </Link>
+                  )}
+                </nav>
+
+                {weather && (
+                  <div className="flex items-center justify-center space-x-2 py-6 mt-auto mb-6">
+                    {getWeatherIcon()}
+                    <span className="text-sm font-medium">{weather.temperature}° {weather.condition}</span>
+                  </div>
+                )}
+                
+                {user && (
+                  <button
+                    onClick={handleSignOut}
+                    className="text-xl font-medium text-red-500 hover:text-red-600 flex items-center justify-center gap-2 mt-auto mb-8"
+                  >
+                    <LogOut className="h-5 w-5" />
+                    Sign out
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         )}

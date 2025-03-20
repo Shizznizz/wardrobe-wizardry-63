@@ -118,6 +118,26 @@
   .z-highest {
     z-index: 9999 !important;
   }
+  
+  /* Mobile menu styles */
+  .mobile-menu {
+    background-color: white !important;
+  }
+  
+  .dark .mobile-menu {
+    background-color: #111 !important;
+  }
+  
+  .mobile-menu-overlay {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    overflow: hidden !important;
+  }
 }
 
 @layer components {
@@ -155,14 +175,5 @@
   
   .nav-link-inactive {
     @apply text-muted-foreground hover:text-accent;
-  }
-
-  /* Mobile menu background fix */
-  .mobile-menu {
-    background-color: white !important;
-  }
-
-  .dark .mobile-menu {
-    background-color: #111 !important;
   }
 }
