@@ -1,14 +1,16 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import WeatherWidget from '@/components/WeatherWidget';
 import OutfitSuggestion from '@/components/OutfitSuggestion';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { WeatherInfo, Outfit } from '@/lib/types';
 import { sampleClothingItems, sampleOutfits } from '@/lib/wardrobeData';
 import { toast } from 'sonner';
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw, Camera } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const Outfits = () => {
@@ -16,6 +18,7 @@ const Outfits = () => {
   const [weather, setWeather] = useState<WeatherInfo | null>(null);
   const [suggestedOutfit, setSuggestedOutfit] = useState<Outfit>(sampleOutfits[0]);
   const [isWeatherLoading, setIsWeatherLoading] = useState(true);
+  const [location, setLocation] = useState<string>('');
 
   useEffect(() => {
     // Set initial loading state
@@ -76,6 +79,45 @@ const Outfits = () => {
       toast.success(`"${outfit.name}" outfit ${action} favorites`);
     }
   };
+
+  const handleLocationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLocation(e.target.value);
+  };
+
+  const handleLocationSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (location.trim()) {
+      toast.success(`Weather location updated to ${location}`, {
+        description: 'Your outfit recommendations will be based on this location'
+      });
+      // In a real app, we would fetch weather for this location
+      setIsWeatherLoading(true);
+      // Simulate weather data fetch delay
+      setTimeout(() => {
+        setIsWeatherLoading(false);
+      }, 1000);
+    }
+  };
+  
+  const getWeatherRecommendation = () => {
+    if (!weather) return "";
+    
+    const temp = weather.temperature;
+    const condition = weather.condition.toLowerCase();
+    
+    if (temp < 10) return "It's quite cold today, so layer up with warm clothing.";
+    if (temp < 15 && temp >= 10) return "It's cool today, consider a light jacket or sweater.";
+    if (temp < 25 && temp >= 15) {
+      if (condition.includes('rain')) return "Mild temperatures with rain expected, don't forget a waterproof layer.";
+      return "Pleasant temperatures today, perfect for a light outfit.";
+    }
+    if (temp >= 25) {
+      if (condition.includes('rain')) return "Warm but rainy - light clothes but keep an umbrella handy.";
+      return "It's warm today, opt for light, breathable fabrics.";
+    }
+    
+    return "Choose an outfit appropriate for the current weather conditions.";
+  };
   
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -110,54 +152,98 @@ const Outfits = () => {
           variants={containerVariants}
         >
           <motion.section variants={itemVariants} className="space-y-6">
-            <div className="flex justify-between items-center flex-wrap gap-4">
-              <h2 className="text-3xl font-bold">Today's Suggestion</h2>
-              <WeatherWidget
-                className="w-full max-w-[220px]" 
-                onWeatherChange={handleWeatherChange}
-              />
+            <div className="text-center">
+              <h1 className="text-3xl md:text-4xl font-bold mb-3">Let us help you start the day as good as possible</h1>
+              <p className="text-lg text-muted-foreground mb-6">
+                And that is by choosing the right outfit for today's weather!
+              </p>
             </div>
             
-            {isWeatherLoading ? (
-              <div className="border rounded-lg p-6 bg-white shadow-soft">
-                <div className="flex items-center gap-4 mb-4">
-                  <Skeleton className="h-12 w-12 rounded-full" />
-                  <div>
-                    <Skeleton className="h-6 w-32 mb-2" />
-                    <Skeleton className="h-4 w-24" />
+            <div className="grid md:grid-cols-2 gap-6 items-start mb-8">
+              <div className="space-y-4">
+                <h2 className="text-2xl font-bold">Today's Weather</h2>
+                
+                <form onSubmit={handleLocationSubmit} className="flex gap-2 mb-4">
+                  <Input
+                    type="text"
+                    placeholder="Enter your location"
+                    value={location}
+                    onChange={handleLocationChange}
+                    className="max-w-[260px]"
+                  />
+                  <Button type="submit" variant="outline" size="sm">
+                    Update
+                  </Button>
+                </form>
+                
+                <WeatherWidget
+                  className="w-full" 
+                  onWeatherChange={handleWeatherChange}
+                />
+                
+                {!isWeatherLoading && weather && (
+                  <div className="bg-accent/20 p-4 rounded-lg border">
+                    <p className="font-medium">{getWeatherRecommendation()}</p>
                   </div>
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
-                  <Skeleton className="aspect-square rounded-md" />
-                  <Skeleton className="aspect-square rounded-md" />
-                  <Skeleton className="aspect-square rounded-md hidden sm:block" />
-                </div>
-                <div className="flex justify-end">
-                  <Skeleton className="h-10 w-28" />
+                )}
+              </div>
+              
+              <div className="space-y-4">
+                <h2 className="text-2xl font-bold">Today's Suggestion</h2>
+                {isWeatherLoading ? (
+                  <div className="border rounded-lg p-6 bg-white shadow-soft">
+                    <div className="flex items-center gap-4 mb-4">
+                      <Skeleton className="h-12 w-12 rounded-full" />
+                      <div>
+                        <Skeleton className="h-6 w-32 mb-2" />
+                        <Skeleton className="h-4 w-24" />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
+                      <Skeleton className="aspect-square rounded-md" />
+                      <Skeleton className="aspect-square rounded-md" />
+                      <Skeleton className="aspect-square rounded-md hidden sm:block" />
+                    </div>
+                    <div className="flex justify-end">
+                      <Skeleton className="h-10 w-28" />
+                    </div>
+                  </div>
+                ) : (
+                  <OutfitSuggestion
+                    outfit={suggestedOutfit}
+                    items={sampleClothingItems}
+                    weather={weather || undefined}
+                    onWear={handleWearOutfit}
+                    onRefresh={handleRegenerateOutfit}
+                    onLike={handleLikeOutfit}
+                    onDislike={handleDislikeOutfit}
+                  />
+                )}
+                
+                <div className="flex gap-4 justify-between mt-4">
+                  <Button 
+                    variant="outline" 
+                    onClick={handleRegenerateOutfit}
+                    className="flex items-center space-x-2"
+                    disabled={isWeatherLoading}
+                  >
+                    <RefreshCw className="h-4 w-4" />
+                    <span>Generate Another</span>
+                  </Button>
+                  
+                  <Button
+                    variant="default"
+                    className="flex items-center space-x-2"
+                    disabled={isWeatherLoading}
+                    asChild
+                  >
+                    <Link to="/try-on">
+                      <Camera className="h-4 w-4" />
+                      <span>Try It On</span>
+                    </Link>
+                  </Button>
                 </div>
               </div>
-            ) : (
-              <OutfitSuggestion
-                outfit={suggestedOutfit}
-                items={sampleClothingItems}
-                weather={weather || undefined}
-                onWear={handleWearOutfit}
-                onRefresh={handleRegenerateOutfit}
-                onLike={handleLikeOutfit}
-                onDislike={handleDislikeOutfit}
-              />
-            )}
-            
-            <div className="flex justify-center">
-              <Button 
-                variant="outline" 
-                onClick={handleRegenerateOutfit}
-                className="flex items-center space-x-2"
-                disabled={isWeatherLoading}
-              >
-                <RefreshCw className="h-4 w-4" />
-                <span>Generate Another Suggestion</span>
-              </Button>
             </div>
           </motion.section>
           
