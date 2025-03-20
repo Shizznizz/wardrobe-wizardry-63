@@ -10,15 +10,129 @@ import { Input } from '@/components/ui/input';
 import { WeatherInfo, Outfit } from '@/lib/types';
 import { sampleClothingItems, sampleOutfits } from '@/lib/wardrobeData';
 import { toast } from 'sonner';
-import { RefreshCw, Camera } from 'lucide-react';
+import { RefreshCw, Camera, MapPin } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "@/components/ui/form";
+import { useForm } from "react-hook-form";
+
+// List of countries (abbreviated for brevity)
+const countries = [
+  { code: "US", name: "United States" },
+  { code: "GB", name: "United Kingdom" },
+  { code: "DE", name: "Germany" },
+  { code: "FR", name: "France" },
+  { code: "IT", name: "Italy" },
+  { code: "ES", name: "Spain" },
+  { code: "CA", name: "Canada" },
+  { code: "AU", name: "Australia" },
+  { code: "JP", name: "Japan" },
+  { code: "CN", name: "China" },
+  { code: "IN", name: "India" },
+  { code: "BR", name: "Brazil" },
+  { code: "NL", name: "Netherlands" },
+  // Add more countries as needed
+];
+
+// City data structure - will be filtered based on country selection
+const citiesByCountry = {
+  US: [
+    "New York", "Los Angeles", "Chicago", "Houston", "Phoenix",
+    "Philadelphia", "San Antonio", "San Diego", "Dallas", "San Jose"
+  ],
+  GB: [
+    "London", "Birmingham", "Manchester", "Glasgow", "Liverpool",
+    "Bristol", "Sheffield", "Leeds", "Edinburgh", "Leicester"
+  ],
+  DE: [
+    "Berlin", "Hamburg", "Munich", "Cologne", "Frankfurt",
+    "Stuttgart", "Düsseldorf", "Leipzig", "Dortmund", "Essen"
+  ],
+  FR: [
+    "Paris", "Marseille", "Lyon", "Toulouse", "Nice",
+    "Nantes", "Strasbourg", "Montpellier", "Bordeaux", "Lille"
+  ],
+  IT: [
+    "Rome", "Milan", "Naples", "Turin", "Palermo",
+    "Genoa", "Bologna", "Florence", "Bari", "Catania"
+  ],
+  ES: [
+    "Madrid", "Barcelona", "Valencia", "Seville", "Zaragoza",
+    "Málaga", "Murcia", "Palma", "Las Palmas", "Bilbao"
+  ],
+  CA: [
+    "Toronto", "Montreal", "Vancouver", "Calgary", "Edmonton",
+    "Ottawa", "Winnipeg", "Quebec City", "Hamilton", "Kitchener"
+  ],
+  AU: [
+    "Sydney", "Melbourne", "Brisbane", "Perth", "Adelaide",
+    "Gold Coast", "Canberra", "Newcastle", "Wollongong", "Hobart"
+  ],
+  JP: [
+    "Tokyo", "Yokohama", "Osaka", "Nagoya", "Sapporo",
+    "Fukuoka", "Kawasaki", "Kobe", "Kyoto", "Saitama"
+  ],
+  CN: [
+    "Shanghai", "Beijing", "Guangzhou", "Shenzhen", "Chongqing",
+    "Tianjin", "Wuhan", "Chengdu", "Nanjing", "Xi'an"
+  ],
+  IN: [
+    "Mumbai", "Delhi", "Bangalore", "Hyderabad", "Chennai",
+    "Kolkata", "Ahmedabad", "Pune", "Surat", "Jaipur"
+  ],
+  BR: [
+    "São Paulo", "Rio de Janeiro", "Brasília", "Salvador", "Fortaleza",
+    "Belo Horizonte", "Manaus", "Curitiba", "Recife", "Porto Alegre"
+  ],
+  NL: [
+    "Amsterdam", "Rotterdam", "The Hague", "Utrecht", "Eindhoven",
+    "Tilburg", "Groningen", "Almere", "Breda", "Nijmegen"
+  ],
+  // Add more cities for each country
+};
+
+type FormValues = {
+  country: string;
+  city: string;
+};
 
 const Outfits = () => {
   const [outfits, setOutfits] = useState<Outfit[]>(sampleOutfits);
   const [weather, setWeather] = useState<WeatherInfo | null>(null);
   const [suggestedOutfit, setSuggestedOutfit] = useState<Outfit>(sampleOutfits[0]);
   const [isWeatherLoading, setIsWeatherLoading] = useState(true);
-  const [location, setLocation] = useState<string>('');
+  const [availableCities, setAvailableCities] = useState<string[]>([]);
+  
+  const form = useForm<FormValues>({
+    defaultValues: {
+      country: "",
+      city: ""
+    }
+  });
+
+  const selectedCountry = form.watch("country");
+  
+  // Update available cities when country changes
+  useEffect(() => {
+    if (selectedCountry) {
+      setAvailableCities(citiesByCountry[selectedCountry as keyof typeof citiesByCountry] || []);
+      form.setValue("city", ""); // Reset city when country changes
+    } else {
+      setAvailableCities([]);
+    }
+  }, [selectedCountry, form]);
 
   useEffect(() => {
     // Set initial loading state
@@ -80,13 +194,9 @@ const Outfits = () => {
     }
   };
 
-  const handleLocationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLocation(e.target.value);
-  };
-
-  const handleLocationSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (location.trim()) {
+  const onSubmit = (data: FormValues) => {
+    if (data.country && data.city) {
+      const location = `${data.city}, ${countries.find(c => c.code === data.country)?.name || data.country}`;
       toast.success(`Weather location updated to ${location}`, {
         description: 'Your outfit recommendations will be based on this location'
       });
@@ -163,18 +273,77 @@ const Outfits = () => {
               <div className="space-y-4">
                 <h2 className="text-2xl font-bold">Today's Weather</h2>
                 
-                <form onSubmit={handleLocationSubmit} className="flex gap-2 mb-4">
-                  <Input
-                    type="text"
-                    placeholder="Enter your location"
-                    value={location}
-                    onChange={handleLocationChange}
-                    className="max-w-[260px]"
-                  />
-                  <Button type="submit" variant="outline" size="sm">
-                    Update
-                  </Button>
-                </form>
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="country"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Country</FormLabel>
+                            <Select 
+                              onValueChange={field.onChange} 
+                              value={field.value}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select country" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {countries.map((country) => (
+                                  <SelectItem key={country.code} value={country.code}>
+                                    {country.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form.control}
+                        name="city"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>City</FormLabel>
+                            <Select 
+                              onValueChange={field.onChange} 
+                              value={field.value}
+                              disabled={!selectedCountry}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder={selectedCountry ? "Select city" : "Select country first"} />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {availableCities.map((city) => (
+                                  <SelectItem key={city} value={city}>
+                                    {city}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    
+                    <Button 
+                      type="submit" 
+                      variant="outline" 
+                      size="sm"
+                      className="flex items-center gap-2"
+                      disabled={!selectedCountry || !form.watch("city")}
+                    >
+                      <MapPin className="h-4 w-4" />
+                      Update Location
+                    </Button>
+                  </form>
+                </Form>
                 
                 <WeatherWidget
                   className="w-full" 
