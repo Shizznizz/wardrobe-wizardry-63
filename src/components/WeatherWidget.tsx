@@ -32,7 +32,9 @@ const WeatherWidget = ({ className, onWeatherChange, city, country }: WeatherWid
       setError(null);
       
       try {
-        const url = `https://api.openweathermap.org/data/2.5/weather?q=${city},${country}&appid=72b9c69df76684e113804b44895d2599&units=metric&lang=nl`;
+        // Updated API key
+        const apiKey = '1c9b6d1fa305474aac8191102231208';
+        const url = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city},${country}&aqi=no`;
         const response = await fetch(url);
         
         if (!response.ok) {
@@ -42,14 +44,14 @@ const WeatherWidget = ({ className, onWeatherChange, city, country }: WeatherWid
         const data = await response.json();
         
         const weatherData: WeatherInfo = {
-          temperature: Math.round(data.main.temp),
-          condition: data.weather[0].description,
-          icon: getIconName(data.weather[0].main),
-          city: data.name,
-          country: country,
-          windSpeed: data.wind.speed,
-          humidity: data.main.humidity,
-          feelsLike: Math.round(data.main.feels_like)
+          temperature: Math.round(data.current.temp_c),
+          condition: data.current.condition.text,
+          icon: getIconName(data.current.condition.text),
+          city: data.location.name,
+          country: data.location.country,
+          windSpeed: data.current.wind_kph / 3.6, // Convert km/h to m/s
+          humidity: data.current.humidity,
+          feelsLike: Math.round(data.current.feelslike_c)
         };
         
         setWeather(weatherData);
@@ -60,6 +62,8 @@ const WeatherWidget = ({ className, onWeatherChange, city, country }: WeatherWid
       } catch (err) {
         console.error('Error fetching weather:', err);
         setError(err instanceof Error ? err.message : 'Could not load weather data');
+        // Generate random weather if there's an error
+        generateRandomWeather();
       } finally {
         setIsLoading(false);
       }
@@ -77,7 +81,9 @@ const WeatherWidget = ({ className, onWeatherChange, city, country }: WeatherWid
       const weatherData: WeatherInfo = {
         temperature: randomTemp,
         condition: randomCondition,
-        icon: getIconName(randomCondition)
+        icon: getIconName(randomCondition),
+        city: city,
+        country: country
       };
       
       setWeather(weatherData);
@@ -135,6 +141,11 @@ const WeatherWidget = ({ className, onWeatherChange, city, country }: WeatherWid
           <div className="flex flex-col items-center justify-center space-y-2 min-h-[100px]">
             <AlertTriangle className="h-12 w-12 text-destructive" />
             <p className="text-sm text-destructive">{error}</p>
+            {weather && (
+              <div className="mt-4 text-sm">
+                <p>Using estimated weather data instead</p>
+              </div>
+            )}
           </div>
         ) : weather ? (
           <div className="space-y-3">
