@@ -171,8 +171,24 @@ const Header = ({ weather }: HeaderProps) => {
         </div>
 
         {isMenuOpen && (
-          <div className="fixed inset-0 bg-white dark:bg-gray-900 z-50 animate-fade-in !important">
-            <div className="container h-full flex flex-col p-4 bg-white dark:bg-gray-900">
+          <div 
+            className="fixed inset-0 z-50 animate-fade-in" 
+            style={{ 
+              backgroundColor: theme === 'dark' ? '#111' : '#fff',
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              zIndex: 9999
+            }}
+          >
+            <div 
+              className="h-full flex flex-col p-4" 
+              style={{ 
+                backgroundColor: theme === 'dark' ? '#111' : '#fff'
+              }}
+            >
               <div className="flex justify-between items-center py-4">
                 <Link to="/" className="flex items-center space-x-2">
                   <span className="font-display font-bold text-xl">{getCurrentPageName()}</span>

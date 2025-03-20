@@ -113,6 +113,11 @@
   .glass-dark {
     @apply bg-black/10 backdrop-blur-lg border border-white/10;
   }
+
+  /* Prevent z-index stacking issues */
+  .z-highest {
+    z-index: 9999 !important;
+  }
 }
 
 @layer components {
@@ -150,5 +155,14 @@
   
   .nav-link-inactive {
     @apply text-muted-foreground hover:text-accent;
+  }
+
+  /* Mobile menu background fix */
+  .mobile-menu {
+    background-color: white !important;
+  }
+
+  .dark .mobile-menu {
+    background-color: #111 !important;
   }
 }
