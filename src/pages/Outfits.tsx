@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import WeatherWidget from '@/components/WeatherWidget';
@@ -9,14 +9,23 @@ import { WeatherInfo, Outfit } from '@/lib/types';
 import { sampleClothingItems, sampleOutfits } from '@/lib/wardrobeData';
 import { toast } from 'sonner';
 import { RefreshCw } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const Outfits = () => {
   const [outfits, setOutfits] = useState<Outfit[]>(sampleOutfits);
   const [weather, setWeather] = useState<WeatherInfo | null>(null);
   const [suggestedOutfit, setSuggestedOutfit] = useState<Outfit>(sampleOutfits[0]);
+  const [isWeatherLoading, setIsWeatherLoading] = useState(true);
+
+  useEffect(() => {
+    // Set initial loading state
+    setIsWeatherLoading(true);
+  }, []);
   
   const handleWeatherChange = (weatherData: WeatherInfo) => {
     setWeather(weatherData);
+    setIsWeatherLoading(false);
+    console.log("Weather data received:", weatherData);
   };
   
   const handleWearOutfit = (outfitId: string) => {
@@ -109,21 +118,42 @@ const Outfits = () => {
               />
             </div>
             
-            <OutfitSuggestion
-              outfit={suggestedOutfit}
-              items={sampleClothingItems}
-              weather={weather || undefined}
-              onWear={handleWearOutfit}
-              onRefresh={handleRegenerateOutfit}
-              onLike={handleLikeOutfit}
-              onDislike={handleDislikeOutfit}
-            />
+            {isWeatherLoading ? (
+              <div className="border rounded-lg p-6 bg-white shadow-soft">
+                <div className="flex items-center gap-4 mb-4">
+                  <Skeleton className="h-12 w-12 rounded-full" />
+                  <div>
+                    <Skeleton className="h-6 w-32 mb-2" />
+                    <Skeleton className="h-4 w-24" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
+                  <Skeleton className="aspect-square rounded-md" />
+                  <Skeleton className="aspect-square rounded-md" />
+                  <Skeleton className="aspect-square rounded-md hidden sm:block" />
+                </div>
+                <div className="flex justify-end">
+                  <Skeleton className="h-10 w-28" />
+                </div>
+              </div>
+            ) : (
+              <OutfitSuggestion
+                outfit={suggestedOutfit}
+                items={sampleClothingItems}
+                weather={weather || undefined}
+                onWear={handleWearOutfit}
+                onRefresh={handleRegenerateOutfit}
+                onLike={handleLikeOutfit}
+                onDislike={handleDislikeOutfit}
+              />
+            )}
             
             <div className="flex justify-center">
               <Button 
                 variant="outline" 
                 onClick={handleRegenerateOutfit}
                 className="flex items-center space-x-2"
+                disabled={isWeatherLoading}
               >
                 <RefreshCw className="h-4 w-4" />
                 <span>Generate Another Suggestion</span>
