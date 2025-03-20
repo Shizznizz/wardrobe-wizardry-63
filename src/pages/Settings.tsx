@@ -9,7 +9,6 @@ import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
 import { AlertTriangle, Download, Mail, Trash2, RotateCcw } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { AuroraBackground } from '@/components/ui/aurora-background';
 
 const Settings = () => {
   const [darkMode, setDarkMode] = useState(false);
@@ -67,10 +66,10 @@ const Settings = () => {
   };
 
   return (
-    <AuroraBackground className="px-4 overflow-auto">
+    <div className="min-h-screen bg-white">
       <Header />
       
-      <main className="container mx-auto px-4 pt-36 pb-16 z-10">
+      <main className="container mx-auto px-4 pt-24 pb-16">
         <motion.div 
           className="space-y-10 max-w-2xl mx-auto"
           initial="hidden"
@@ -78,10 +77,10 @@ const Settings = () => {
           variants={containerVariants}
         >
           <motion.div variants={itemVariants}>
-            <h1 className="text-3xl font-bold mb-12">Settings</h1>
+            <h1 className="text-3xl font-bold mb-8">Settings</h1>
             
-            <div className="space-y-8">
-              <div className="grid gap-8">
+            <div className="space-y-6">
+              <div className="grid gap-6">
                 <div className="border rounded-lg p-4 space-y-4">
                   <h2 className="text-xl font-medium">Appearance</h2>
                   
@@ -170,7 +169,7 @@ const Settings = () => {
           </motion.div>
         </motion.div>
       </main>
-    </AuroraBackground>
+    </div>
   );
 };
 

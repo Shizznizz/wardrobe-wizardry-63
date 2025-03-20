@@ -9,7 +9,6 @@ import { WeatherInfo, Outfit } from '@/lib/types';
 import { sampleClothingItems, sampleOutfits } from '@/lib/wardrobeData';
 import { toast } from 'sonner';
 import { RefreshCw } from 'lucide-react';
-import { AuroraBackground } from '@/components/ui/aurora-background';
 
 const Outfits = () => {
   const [outfits, setOutfits] = useState<Outfit[]>(sampleOutfits);
@@ -91,10 +90,10 @@ const Outfits = () => {
   };
 
   return (
-    <AuroraBackground className="px-4 overflow-auto">
+    <div className="min-h-screen bg-white">
       <Header weather={weather || undefined} />
       
-      <main className="container mx-auto px-4 pt-24 pb-16 z-10">
+      <main className="container mx-auto px-4 pt-24 pb-16">
         <motion.div 
           className="space-y-12"
           initial="hidden"
@@ -192,7 +191,7 @@ const Outfits = () => {
           </motion.section>
         </motion.div>
       </main>
-    </AuroraBackground>
+    </div>
   );
 };
 

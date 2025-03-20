@@ -8,7 +8,6 @@ import { ClothingItem } from '@/lib/types';
 import { sampleClothingItems } from '@/lib/wardrobeData';
 import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { AuroraBackground } from '@/components/ui/aurora-background';
 
 const Wardrobe = () => {
   const [items, setItems] = useState<ClothingItem[]>(sampleClothingItems);
@@ -56,10 +55,10 @@ const Wardrobe = () => {
   };
 
   return (
-    <AuroraBackground className="px-4 overflow-auto">
+    <div className="min-h-screen bg-white">
       <Header />
       
-      <main className="container mx-auto px-4 pt-24 pb-16 z-10">
+      <main className="container mx-auto px-4 pt-24 pb-16">
         <motion.div 
           className="space-y-8"
           initial="hidden"
@@ -79,7 +78,7 @@ const Wardrobe = () => {
           </motion.div>
         </motion.div>
       </main>
-    </AuroraBackground>
+    </div>
   );
 };
 
