@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Sun, Cloud, CloudRain, CloudSnow, Wind, CloudFog, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { WeatherInfo } from '@/lib/types';
+import { toast } from 'sonner';
 
 interface WeatherWidgetProps {
   className?: string;
@@ -32,9 +33,10 @@ const WeatherWidget = ({ className, onWeatherChange, city, country }: WeatherWid
       setError(null);
       
       try {
-        // Updated API key
-        const apiKey = '1c9b6d1fa305474aac8191102231208';
-        const url = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city},${country}&aqi=no`;
+        // Use OpenWeatherMap API
+        const apiKey = '72b9c69df76684e113804b44895d2599';
+        const url = `https://api.openweathermap.org/data/2.5/weather?q=${city},${country}&appid=${apiKey}&units=metric`;
+        
         const response = await fetch(url);
         
         if (!response.ok) {
@@ -44,14 +46,14 @@ const WeatherWidget = ({ className, onWeatherChange, city, country }: WeatherWid
         const data = await response.json();
         
         const weatherData: WeatherInfo = {
-          temperature: Math.round(data.current.temp_c),
-          condition: data.current.condition.text,
-          icon: getIconName(data.current.condition.text),
-          city: data.location.name,
-          country: data.location.country,
-          windSpeed: data.current.wind_kph / 3.6, // Convert km/h to m/s
-          humidity: data.current.humidity,
-          feelsLike: Math.round(data.current.feelslike_c)
+          temperature: Math.round(data.main.temp),
+          condition: data.weather[0].description,
+          icon: getIconName(data.weather[0].main),
+          city: data.name,
+          country: data.sys.country,
+          windSpeed: data.wind.speed,
+          humidity: data.main.humidity,
+          feelsLike: Math.round(data.main.feels_like)
         };
         
         setWeather(weatherData);
@@ -59,11 +61,14 @@ const WeatherWidget = ({ className, onWeatherChange, city, country }: WeatherWid
         if (onWeatherChange) {
           onWeatherChange(weatherData);
         }
+
+        toast.success(`Weather updated for ${data.name}`);
       } catch (err) {
         console.error('Error fetching weather:', err);
         setError(err instanceof Error ? err.message : 'Could not load weather data');
         // Generate random weather if there's an error
         generateRandomWeather();
+        toast.error("Couldn't fetch real weather data, using estimates instead");
       } finally {
         setIsLoading(false);
       }
@@ -71,8 +76,8 @@ const WeatherWidget = ({ className, onWeatherChange, city, country }: WeatherWid
     
     const generateRandomWeather = () => {
       const conditions = [
-        'Sunny', 'Partly Cloudy', 'Cloudy', 'Light Rain', 
-        'Heavy Rain', 'Thunderstorm', 'Snow', 'Foggy'
+        'Clear sky', 'Partly cloudy', 'Cloudy', 'Light rain', 
+        'Moderate rain', 'Heavy rain', 'Thunderstorm', 'Snow', 'Fog'
       ];
       
       const randomCondition = conditions[Math.floor(Math.random() * conditions.length)];
