@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Sun, Cloud, CloudRain, CloudSnow, Wind, CloudFog, AlertTriangle } from 'lucide-react';
@@ -33,7 +34,7 @@ const WeatherWidget = ({ className, onWeatherChange, city, country }: WeatherWid
       
       try {
         // Use the new API key provided by the user
-        const apiKey = '92b8f4bb8b5137aff0920ad1e0a964bf';
+        const apiKey = '72b9c69df76684e113804b44895d2599';
         const url = `https://api.openweathermap.org/data/2.5/weather?q=${city},${country}&appid=${apiKey}&units=metric`;
         
         const response = await fetch(url);
