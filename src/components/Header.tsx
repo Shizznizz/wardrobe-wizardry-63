@@ -1,10 +1,11 @@
 
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Sun, CloudSun, Cloud, CloudRain, Umbrella } from 'lucide-react';
+import { Menu, X, Sun, CloudSun, Cloud, CloudRain, Umbrella, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useUser, useAuth, SignInButton, SignUpButton, UserButton } from '@clerk/clerk-react';
 import {
   NavigationMenu,
   NavigationMenuList,
@@ -24,7 +25,9 @@ const Header = ({ weather }: HeaderProps) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
   const isMobile = useIsMobile();
-
+  const { isSignedIn, user } = useUser();
+  const { signOut } = useAuth();
+  
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
@@ -53,9 +56,11 @@ const Header = ({ weather }: HeaderProps) => {
 
   const navItems = [
     { name: 'Home', path: '/' },
-    { name: 'Wardrobe', path: '/wardrobe' },
-    { name: 'Outfits', path: '/outfits' },
-    { name: 'Settings', path: '/settings' },
+    ...(isSignedIn ? [
+      { name: 'Wardrobe', path: '/wardrobe' },
+      { name: 'Outfits', path: '/outfits' },
+      { name: 'Settings', path: '/settings' },
+    ] : []),
   ];
 
   const getCurrentPageName = () => {
@@ -96,11 +101,35 @@ const Header = ({ weather }: HeaderProps) => {
           </NavigationMenuList>
         </NavigationMenu>
 
-        <div className="flex items-center">
+        <div className="flex items-center space-x-2">
           {weather && (
             <div className="hidden md:flex items-center space-x-2 bg-white/90 backdrop-blur-sm rounded-full px-4 py-1.5 border border-gray-100 transition-all hover:bg-white">
               {getWeatherIcon()}
               <span className="text-sm font-medium">{weather.temperature}°</span>
+            </div>
+          )}
+
+          {isSignedIn ? (
+            <div className="flex items-center space-x-2">
+              <UserButton afterSignOutUrl="/" />
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => signOut()}
+                className="hidden md:flex"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Sign Out
+              </Button>
+            </div>
+          ) : (
+            <div className="flex items-center space-x-2">
+              <SignInButton mode="modal">
+                <Button variant="ghost" size="sm">Sign In</Button>
+              </SignInButton>
+              <SignUpButton mode="modal">
+                <Button size="sm">Sign Up</Button>
+              </SignUpButton>
             </div>
           )}
 
@@ -145,6 +174,26 @@ const Header = ({ weather }: HeaderProps) => {
                     {item.name}
                   </Link>
                 ))}
+
+                {isSignedIn ? (
+                  <Button 
+                    variant="outline" 
+                    onClick={() => signOut()}
+                    className="mt-4"
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sign Out
+                  </Button>
+                ) : (
+                  <div className="flex flex-col items-center space-y-4 mt-4">
+                    <SignInButton mode="modal">
+                      <Button variant="ghost" className="w-full">Sign In</Button>
+                    </SignInButton>
+                    <SignUpButton mode="modal">
+                      <Button className="w-full">Sign Up</Button>
+                    </SignUpButton>
+                  </div>
+                )}
               </nav>
 
               {weather && (

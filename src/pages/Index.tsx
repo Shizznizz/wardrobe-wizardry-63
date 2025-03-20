@@ -7,15 +7,18 @@ import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
 import PreferencesModal from '@/components/PreferencesModal';
 import { UserPreferences } from '@/lib/types';
+import { useUser } from '@clerk/clerk-react';
 
 const Index = () => {
+  const { isSignedIn } = useUser();
+  
   const [preferences, setPreferences] = useState<UserPreferences>({
     favoriteColors: ['black', 'blue', 'white'],
     favoriteStyles: ['casual', 'minimalist'],
     seasonalPreferences: {
       spring: { enabled: true, temperatureRange: [10, 22] },
       summer: { enabled: true, temperatureRange: [20, 35] },
-      fall: { enabled: true, temperatureRange: [8, 20] },
+      autumn: { enabled: true, temperatureRange: [8, 20] },
       winter: { enabled: true, temperatureRange: [-5, 10] },
       all: { enabled: true, temperatureRange: [-10, 40] }
     },
@@ -69,17 +72,28 @@ const Index = () => {
             </p>
             
             <div className="flex flex-wrap gap-4 justify-center">
-              <Link to="/wardrobe">
-                <Button size="lg" className="space-x-2">
-                  <span>Get Started</span>
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
+              {isSignedIn ? (
+                <Link to="/wardrobe">
+                  <Button size="lg" className="space-x-2">
+                    <span>My Wardrobe</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </Link>
+              ) : (
+                <Link to="/sign-up">
+                  <Button size="lg" className="space-x-2">
+                    <span>Get Started</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </Link>
+              )}
               
-              <PreferencesModal 
-                preferences={preferences} 
-                onSave={handleUpdatePreferences} 
-              />
+              {isSignedIn && (
+                <PreferencesModal 
+                  preferences={preferences} 
+                  onSave={handleUpdatePreferences} 
+                />
+              )}
             </div>
           </motion.section>
           
