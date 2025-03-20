@@ -33,10 +33,11 @@ const WeatherWidget = ({ className, onWeatherChange, city, country }: WeatherWid
       setError(null);
       
       try {
-        // Use the new API key provided by the user
+        // Use the provided API key
         const apiKey = '72b9c69df76684e113804b44895d2599';
-        const url = `https://api.openweathermap.org/data/2.5/weather?q=${city},${country}&appid=${apiKey}&units=metric`;
+        const url = `https://api.openweathermap.org/data/2.5/weather?q=${city},${country}&appid=${apiKey}&units=metric&lang=nl`;
         
+        console.log("Fetching weather data from:", url);
         const response = await fetch(url);
         const data = await response.json();
         
@@ -47,6 +48,8 @@ const WeatherWidget = ({ className, onWeatherChange, city, country }: WeatherWid
         if (!response.ok) {
           throw new Error(`Weather data not available for ${city}, ${country}`);
         }
+        
+        console.log("Weather data received:", data);
         
         const weatherData: WeatherInfo = {
           temperature: Math.round(data.main.temp),
@@ -70,7 +73,7 @@ const WeatherWidget = ({ className, onWeatherChange, city, country }: WeatherWid
         console.error('Error fetching weather:', err);
         
         // Check if the error is due to API key
-        const errorMsg = err instanceof Error ? err.message : 'Could not load weather data';
+        const errorMsg = err instanceof Error ? err.message : 'Unable to fetch weather data. Please try again.';
         setError(errorMsg);
         
         if (!weather) {

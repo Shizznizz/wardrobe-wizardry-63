@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -10,8 +9,9 @@ import { Input } from '@/components/ui/input';
 import { WeatherInfo, Outfit } from '@/lib/types';
 import { sampleClothingItems, sampleOutfits } from '@/lib/wardrobeData';
 import { toast } from 'sonner';
-import { RefreshCw, Camera, MapPin } from 'lucide-react';
+import { RefreshCw, Camera, MapPin, AlertTriangle } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Select,
   SelectContent,
@@ -297,6 +297,7 @@ const Outfits = () => {
   const [isWeatherLoading, setIsWeatherLoading] = useState(true);
   const [availableCities, setAvailableCities] = useState<string[]>([]);
   const [selectedLocation, setSelectedLocation] = useState<{ city?: string; country?: string }>({});
+  const [showLocationAlert, setShowLocationAlert] = useState(false);
   
   const form = useForm<FormValues>({
     defaultValues: {
@@ -325,7 +326,7 @@ const Outfits = () => {
   const handleWeatherChange = (weatherData: WeatherInfo) => {
     setWeather(weatherData);
     setIsWeatherLoading(false);
-    console.log("Weather data received:", weatherData);
+    console.log("Weather data processed:", weatherData);
   };
   
   const handleWearOutfit = (outfitId: string) => {
@@ -388,10 +389,14 @@ const Outfits = () => {
       });
       
       setIsWeatherLoading(true);
+      setShowLocationAlert(false);
       
       toast.success(`Weather location updated to ${location}`, {
         description: 'Fetching current weather data for this location'
       });
+    } else {
+      setShowLocationAlert(true);
+      toast.error("Please select both a country and a city");
     }
   };
   
@@ -458,6 +463,16 @@ const Outfits = () => {
             <div className="grid md:grid-cols-2 gap-6 items-start mb-8">
               <div className="space-y-4">
                 <h2 className="text-2xl font-bold">Today's Weather</h2>
+                
+                {showLocationAlert && (
+                  <Alert variant="destructive" className="mb-4">
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertTitle>Missing Location Information</AlertTitle>
+                    <AlertDescription>
+                      Please select both a country and a city to get weather data.
+                    </AlertDescription>
+                  </Alert>
+                )}
                 
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
