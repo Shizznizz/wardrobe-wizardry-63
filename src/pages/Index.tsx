@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -6,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
 import PreferencesModal from '@/components/PreferencesModal';
 import { UserPreferences } from '@/lib/types';
+import { AuroraBackground } from '@/components/ui/aurora-background';
 
 const Index = () => {
   const [preferences, setPreferences] = useState<UserPreferences>({
@@ -48,10 +50,10 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <AuroraBackground className="px-4 overflow-auto">
       <Header />
       
-      <main className="container mx-auto px-4 pt-24 pb-16">
+      <main className="container mx-auto px-4 pt-24 pb-16 z-10">
         <motion.div 
           className="space-y-12"
           initial="hidden"
@@ -117,7 +119,7 @@ const Index = () => {
           </motion.section>
         </motion.div>
       </main>
-    </div>
+    </AuroraBackground>
   );
 };
 
