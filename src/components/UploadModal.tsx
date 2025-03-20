@@ -66,8 +66,6 @@ const UploadModal = ({ onUpload }: UploadModalProps) => {
     setIsSubmitting(true);
     
     try {
-      // In a real app, this would upload the image to a server
-      // For now, we'll just simulate an upload delay
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       const newItem = {
@@ -86,7 +84,6 @@ const UploadModal = ({ onUpload }: UploadModalProps) => {
       onUpload(newItem);
       toast.success('Item added to your wardrobe');
       
-      // Reset form
       setName('');
       setType('');
       setColor('');
@@ -186,12 +183,20 @@ const UploadModal = ({ onUpload }: UploadModalProps) => {
                     <SelectValue placeholder="Select type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="top">Top</SelectItem>
-                    <SelectItem value="bottom">Bottom</SelectItem>
-                    <SelectItem value="outerwear">Outerwear</SelectItem>
+                    <SelectItem value="shirt">Shirt</SelectItem>
+                    <SelectItem value="jeans">Jeans</SelectItem>
+                    <SelectItem value="pants">Pants</SelectItem>
+                    <SelectItem value="shorts">Shorts</SelectItem>
+                    <SelectItem value="sweater">Sweater</SelectItem>
+                    <SelectItem value="hoodie">Hoodie</SelectItem>
+                    <SelectItem value="jacket">Jacket</SelectItem>
                     <SelectItem value="dress">Dress</SelectItem>
-                    <SelectItem value="footwear">Footwear</SelectItem>
-                    <SelectItem value="accessory">Accessory</SelectItem>
+                    <SelectItem value="skirt">Skirt</SelectItem>
+                    <SelectItem value="shoes">Shoes</SelectItem>
+                    <SelectItem value="sneakers">Sneakers</SelectItem>
+                    <SelectItem value="boots">Boots</SelectItem>
+                    <SelectItem value="accessories">Accessories</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

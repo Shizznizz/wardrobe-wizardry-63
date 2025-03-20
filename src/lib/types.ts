@@ -1,11 +1,19 @@
 
 export type ClothingType = 
-  | 'top' 
-  | 'bottom' 
-  | 'outerwear' 
-  | 'dress' 
-  | 'footwear' 
-  | 'accessory';
+  | 'shirt'
+  | 'jeans'
+  | 'pants'
+  | 'shorts'
+  | 'sweater'
+  | 'hoodie'
+  | 'jacket'
+  | 'dress'
+  | 'skirt'
+  | 'shoes'
+  | 'sneakers'
+  | 'boots'
+  | 'accessories'
+  | 'other';
 
 export type ClothingSeason = 
   | 'spring' 
