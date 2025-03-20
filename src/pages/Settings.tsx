@@ -70,7 +70,7 @@ const Settings = () => {
     <AuroraBackground className="px-4 overflow-auto">
       <Header />
       
-      <main className="container mx-auto px-4 pt-24 pb-16 z-10">
+      <main className="container mx-auto px-4 pt-36 pb-16 z-10">
         <motion.div 
           className="space-y-10 max-w-2xl mx-auto"
           initial="hidden"
@@ -78,10 +78,10 @@ const Settings = () => {
           variants={containerVariants}
         >
           <motion.div variants={itemVariants}>
-            <h1 className="text-3xl font-bold mb-8">Settings</h1>
+            <h1 className="text-3xl font-bold mb-12">Settings</h1>
             
-            <div className="space-y-6">
-              <div className="grid gap-6">
+            <div className="space-y-8">
+              <div className="grid gap-8">
                 <div className="border rounded-lg p-4 space-y-4">
                   <h2 className="text-xl font-medium">Appearance</h2>
                   
