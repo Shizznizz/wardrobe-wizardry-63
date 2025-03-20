@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { ClothingItem, ClothingType, ClothingColor, ClothingSeason } from '@/lib/types';
 import { cn } from '@/lib/utils';
@@ -19,17 +18,24 @@ interface WardrobeGridProps {
 // Helper function to get the appropriate icon for each clothing type
 const getClothingIcon = (type: ClothingType) => {
   switch (type) {
-    case 'top':
+    case 'shirt':
       return <Shirt className="h-4 w-4" />;
-    case 'bottom':
+    case 'jeans':
+    case 'pants':
+    case 'shorts':
       return <ShoppingBag className="h-4 w-4" />;
-    case 'outerwear':
+    case 'jacket':
+    case 'hoodie':
+    case 'sweater':
       return <Umbrella className="h-4 w-4" />;
     case 'dress':
+    case 'skirt':
       return <CircleUser className="h-4 w-4" />;
-    case 'footwear':
+    case 'shoes':
+    case 'sneakers':
+    case 'boots':
       return <Footprints className="h-4 w-4" />;
-    case 'accessory':
+    case 'accessories':
       return <Tag className="h-4 w-4" />;
     default:
       return <Tag className="h-4 w-4" />;
@@ -85,12 +91,20 @@ const WardrobeGrid = ({ items, onToggleFavorite }: WardrobeGridProps) => {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All types</SelectItem>
-                      <SelectItem value="top">Tops</SelectItem>
-                      <SelectItem value="bottom">Bottoms</SelectItem>
-                      <SelectItem value="outerwear">Outerwear</SelectItem>
+                      <SelectItem value="shirt">Shirts</SelectItem>
+                      <SelectItem value="jeans">Jeans</SelectItem>
+                      <SelectItem value="pants">Pants</SelectItem>
+                      <SelectItem value="shorts">Shorts</SelectItem>
+                      <SelectItem value="sweater">Sweaters</SelectItem>
+                      <SelectItem value="hoodie">Hoodies</SelectItem>
+                      <SelectItem value="jacket">Jackets</SelectItem>
                       <SelectItem value="dress">Dresses</SelectItem>
-                      <SelectItem value="footwear">Footwear</SelectItem>
-                      <SelectItem value="accessory">Accessories</SelectItem>
+                      <SelectItem value="skirt">Skirts</SelectItem>
+                      <SelectItem value="shoes">Shoes</SelectItem>
+                      <SelectItem value="sneakers">Sneakers</SelectItem>
+                      <SelectItem value="boots">Boots</SelectItem>
+                      <SelectItem value="accessories">Accessories</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

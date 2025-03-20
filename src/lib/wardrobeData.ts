@@ -5,7 +5,7 @@ export const sampleClothingItems: ClothingItem[] = [
   {
     id: '1',
     name: 'White T-Shirt',
-    type: 'top',
+    type: 'shirt',
     color: 'white',
     material: 'cotton',
     seasons: ['spring', 'summer', 'autumn'],
@@ -18,7 +18,7 @@ export const sampleClothingItems: ClothingItem[] = [
   {
     id: '2',
     name: 'Blue Jeans',
-    type: 'bottom',
+    type: 'jeans',
     color: 'blue',
     material: 'denim',
     seasons: ['spring', 'autumn', 'winter'],
@@ -31,7 +31,7 @@ export const sampleClothingItems: ClothingItem[] = [
   {
     id: '3',
     name: 'Black Leather Jacket',
-    type: 'outerwear',
+    type: 'jacket',
     color: 'black',
     material: 'leather',
     seasons: ['autumn', 'winter'],
@@ -44,7 +44,7 @@ export const sampleClothingItems: ClothingItem[] = [
   {
     id: '4',
     name: 'Beige Chinos',
-    type: 'bottom',
+    type: 'pants',
     color: 'brown',
     material: 'cotton',
     seasons: ['spring', 'autumn'],
@@ -57,7 +57,7 @@ export const sampleClothingItems: ClothingItem[] = [
   {
     id: '5',
     name: 'Navy Blue Sweater',
-    type: 'top',
+    type: 'sweater',
     color: 'blue',
     material: 'wool',
     seasons: ['autumn', 'winter'],
@@ -70,7 +70,7 @@ export const sampleClothingItems: ClothingItem[] = [
   {
     id: '6',
     name: 'White Sneakers',
-    type: 'footwear',
+    type: 'sneakers',
     color: 'white',
     material: 'other',
     seasons: ['spring', 'summer', 'autumn'],
@@ -83,7 +83,7 @@ export const sampleClothingItems: ClothingItem[] = [
   {
     id: '7',
     name: 'Gray Hoodie',
-    type: 'top',
+    type: 'hoodie',
     color: 'gray',
     material: 'cotton',
     seasons: ['autumn', 'winter'],
