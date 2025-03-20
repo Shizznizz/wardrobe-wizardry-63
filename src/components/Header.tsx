@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, Sun, CloudSun, Cloud, CloudRain, Umbrella, LogOut, User } from 'lucide-react';
+import { Menu, X, Sun, CloudSun, Cloud, CloudRain, Umbrella, LogOut, User, Camera } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -84,6 +84,7 @@ const Header = ({ weather }: HeaderProps) => {
       ...navItems,
       { name: 'Wardrobe', path: '/wardrobe' },
       { name: 'Outfits', path: '/outfits' },
+      { name: 'Try it on', path: '/try-on' },
       { name: 'Settings', path: '/settings' },
     ];
   }
