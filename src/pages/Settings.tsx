@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import { Button } from '@/components/ui/button';
@@ -9,17 +9,19 @@ import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
 import { AlertTriangle, Download, Mail, Trash2, RotateCcw } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useTheme } from '@/components/ThemeProvider';
 
 const Settings = () => {
-  const [darkMode, setDarkMode] = useState(false);
+  const { theme, setTheme } = useTheme();
   const [notifications, setNotifications] = useState(true);
   const [dataExportEmail, setDataExportEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const isMobile = useIsMobile();
   
   const handleToggleDarkMode = () => {
-    setDarkMode(!darkMode);
-    toast.success(`${!darkMode ? 'Dark' : 'Light'} mode enabled`);
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+    toast.success(`${newTheme === 'dark' ? 'Dark' : 'Light'} mode enabled`);
   };
   
   const handleToggleNotifications = () => {
@@ -66,7 +68,7 @@ const Settings = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       <Header />
       
       <main className="container mx-auto px-4 pt-24 pb-16">
@@ -81,7 +83,7 @@ const Settings = () => {
             
             <div className="space-y-6">
               <div className="grid gap-6">
-                <div className="border rounded-lg p-4 space-y-4">
+                <div className="border rounded-lg p-4 space-y-4 border-border bg-card text-card-foreground">
                   <h2 className="text-xl font-medium">Appearance</h2>
                   
                   <div className="flex items-center justify-between">
@@ -93,13 +95,13 @@ const Settings = () => {
                     </div>
                     <Switch 
                       id="dark-mode" 
-                      checked={darkMode} 
+                      checked={theme === 'dark'} 
                       onCheckedChange={handleToggleDarkMode} 
                     />
                   </div>
                 </div>
                 
-                <div className="border rounded-lg p-4 space-y-4">
+                <div className="border rounded-lg p-4 space-y-4 border-border bg-card text-card-foreground">
                   <h2 className="text-xl font-medium">Notifications</h2>
                   
                   <div className="flex items-center justify-between">
@@ -117,7 +119,7 @@ const Settings = () => {
                   </div>
                 </div>
                 
-                <div className="border rounded-lg p-4 space-y-4">
+                <div className="border rounded-lg p-4 space-y-4 border-border bg-card text-card-foreground">
                   <h2 className="text-xl font-medium">Data Management</h2>
                   
                   <form onSubmit={handleExportData} className="grid gap-4">
