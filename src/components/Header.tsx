@@ -1,16 +1,25 @@
-
 import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Sun, CloudSun, Cloud, CloudRain, Umbrella } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Menu, X, Sun, CloudSun, Cloud, CloudRain, Umbrella, LogOut, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useAuth } from '@/hooks/useAuth';
+import { toast } from 'sonner';
 import {
   NavigationMenu,
   NavigationMenuList,
   NavigationMenuItem,
   NavigationMenuLink
 } from "@/components/ui/navigation-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface HeaderProps {
   weather?: {
@@ -24,6 +33,8 @@ const Header = ({ weather }: HeaderProps) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
+  const { user, signOut } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -51,15 +62,32 @@ const Header = ({ weather }: HeaderProps) => {
     return <Sun className="w-5 h-5" />;
   };
 
-  const navItems = [
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      toast.success("Signed out successfully");
+      navigate("/");
+    } catch (error) {
+      toast.error("Failed to sign out");
+    }
+  };
+
+  let navItems = [
     { name: 'Home', path: '/' },
-    { name: 'Wardrobe', path: '/wardrobe' },
-    { name: 'Outfits', path: '/outfits' },
-    { name: 'Settings', path: '/settings' },
   ];
+  
+  if (user) {
+    navItems = [
+      ...navItems,
+      { name: 'Wardrobe', path: '/wardrobe' },
+      { name: 'Outfits', path: '/outfits' },
+      { name: 'Settings', path: '/settings' },
+    ];
+  }
 
   const getCurrentPageName = () => {
     if (location.pathname === '/') return 'Home';
+    if (location.pathname === '/auth') return user ? 'Profile' : 'Sign In';
     const currentNav = navItems.find(item => item.path === location.pathname);
     return currentNav ? currentNav.name : '';
   };
@@ -104,6 +132,31 @@ const Header = ({ weather }: HeaderProps) => {
             </div>
           )}
 
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="ml-2 rounded-full">
+                  <User className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link to="/settings">Settings</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleSignOut} className="text-red-500">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Sign out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Button variant="outline" size="sm" asChild className="ml-2">
+              <Link to="/auth">Sign In</Link>
+            </Button>
+          )}
+
           <Button
             variant="ghost"
             size="icon"
@@ -145,6 +198,25 @@ const Header = ({ weather }: HeaderProps) => {
                     {item.name}
                   </Link>
                 ))}
+                
+                {!user && (
+                  <Link
+                    to="/auth"
+                    className="text-xl font-medium text-primary hover:text-primary/80"
+                  >
+                    Sign In
+                  </Link>
+                )}
+                
+                {user && (
+                  <button
+                    onClick={handleSignOut}
+                    className="text-xl font-medium text-red-500 hover:text-red-600 flex items-center gap-2"
+                  >
+                    <LogOut className="h-5 w-5" />
+                    Sign out
+                  </button>
+                )}
               </nav>
 
               {weather && (
