@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -15,7 +14,7 @@ const Index = () => {
     seasonalPreferences: {
       spring: { enabled: true, temperatureRange: [10, 22] },
       summer: { enabled: true, temperatureRange: [20, 35] },
-      fall: { enabled: true, temperatureRange: [8, 20] },
+      autumn: { enabled: true, temperatureRange: [8, 20] },
       winter: { enabled: true, temperatureRange: [-5, 10] },
       all: { enabled: true, temperatureRange: [-10, 40] }
     },
