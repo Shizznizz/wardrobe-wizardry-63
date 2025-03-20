@@ -1,41 +1,55 @@
 
 import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Sun, Cloud, CloudRain, CloudSnow, Wind, CloudFog } from 'lucide-react';
+import { Sun, Cloud, CloudRain, CloudSnow, Wind, CloudFog, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { WeatherInfo } from '@/lib/types';
 
 interface WeatherWidgetProps {
   className?: string;
   onWeatherChange?: (weather: WeatherInfo) => void;
+  city?: string;
+  country?: string;
 }
 
-const WeatherWidget = ({ className, onWeatherChange }: WeatherWidgetProps) => {
+const WeatherWidget = ({ className, onWeatherChange, city, country }: WeatherWidgetProps) => {
   const [weather, setWeather] = useState<WeatherInfo | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchWeather = async () => {
+      // Only fetch if both city and country are provided
+      if (!city || !country) {
+        if (!weather) {
+          // If no weather data and no location, use random data for initial state
+          generateRandomWeather();
+        }
+        return;
+      }
+
       setIsLoading(true);
+      setError(null);
       
       try {
-        // In a real app, we would fetch data from a weather API
-        // For demo purposes, we'll simulate a weather fetch with random data
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        const url = `https://api.openweathermap.org/data/2.5/weather?q=${city},${country}&appid=72b9c69df76684e113804b44895d2599&units=metric&lang=nl`;
+        const response = await fetch(url);
         
-        const conditions = [
-          'Sunny', 'Partly Cloudy', 'Cloudy', 'Light Rain', 
-          'Heavy Rain', 'Thunderstorm', 'Snow', 'Foggy'
-        ];
+        if (!response.ok) {
+          throw new Error(`Weather data not available for ${city}, ${country}`);
+        }
         
-        const randomCondition = conditions[Math.floor(Math.random() * conditions.length)];
-        const randomTemp = Math.floor(Math.random() * 25) + 5; // Random temp between 5-30°C
+        const data = await response.json();
         
         const weatherData: WeatherInfo = {
-          temperature: randomTemp,
-          condition: randomCondition,
-          icon: getIconName(randomCondition)
+          temperature: Math.round(data.main.temp),
+          condition: data.weather[0].description,
+          icon: getIconName(data.weather[0].main),
+          city: data.name,
+          country: country,
+          windSpeed: data.wind.speed,
+          humidity: data.main.humidity,
+          feelsLike: Math.round(data.main.feels_like)
         };
         
         setWeather(weatherData);
@@ -45,19 +59,38 @@ const WeatherWidget = ({ className, onWeatherChange }: WeatherWidgetProps) => {
         }
       } catch (err) {
         console.error('Error fetching weather:', err);
-        setError('Could not load weather data');
+        setError(err instanceof Error ? err.message : 'Could not load weather data');
       } finally {
         setIsLoading(false);
       }
     };
     
+    const generateRandomWeather = () => {
+      const conditions = [
+        'Sunny', 'Partly Cloudy', 'Cloudy', 'Light Rain', 
+        'Heavy Rain', 'Thunderstorm', 'Snow', 'Foggy'
+      ];
+      
+      const randomCondition = conditions[Math.floor(Math.random() * conditions.length)];
+      const randomTemp = Math.floor(Math.random() * 25) + 5; // Random temp between 5-30°C
+      
+      const weatherData: WeatherInfo = {
+        temperature: randomTemp,
+        condition: randomCondition,
+        icon: getIconName(randomCondition)
+      };
+      
+      setWeather(weatherData);
+      
+      if (onWeatherChange) {
+        onWeatherChange(weatherData);
+      }
+      
+      setIsLoading(false);
+    };
+    
     fetchWeather();
-    
-    // In a real app, you might refresh weather periodically
-    const interval = setInterval(fetchWeather, 30 * 60 * 1000); // Every 30 mins
-    
-    return () => clearInterval(interval);
-  }, [onWeatherChange]);
+  }, [city, country, onWeatherChange]);
   
   const getIconName = (condition: string): string => {
     const lowerCondition = condition.toLowerCase();
@@ -66,7 +99,7 @@ const WeatherWidget = ({ className, onWeatherChange }: WeatherWidgetProps) => {
     if (lowerCondition.includes('cloud') && !lowerCondition.includes('rain')) return 'cloud';
     if (lowerCondition.includes('rain') || lowerCondition.includes('thunder')) return 'rain';
     if (lowerCondition.includes('snow')) return 'snow';
-    if (lowerCondition.includes('fog')) return 'fog';
+    if (lowerCondition.includes('fog') || lowerCondition.includes('mist')) return 'fog';
     
     return 'sun'; // Default
   };
@@ -100,18 +133,39 @@ const WeatherWidget = ({ className, onWeatherChange }: WeatherWidgetProps) => {
           </div>
         ) : error ? (
           <div className="flex flex-col items-center justify-center space-y-2 min-h-[100px]">
-            <Wind className="h-12 w-12 text-muted-foreground" />
-            <p className="text-sm text-muted-foreground">{error}</p>
+            <AlertTriangle className="h-12 w-12 text-destructive" />
+            <p className="text-sm text-destructive">{error}</p>
           </div>
         ) : weather ? (
-          <div className="flex items-center space-x-4">
-            <div className="text-primary">
-              {getWeatherIcon()}
+          <div className="space-y-3">
+            {weather.city && (
+              <div className="text-lg font-medium">{weather.city}</div>
+            )}
+            <div className="flex items-center space-x-4">
+              <div className="text-primary">
+                {getWeatherIcon()}
+              </div>
+              <div>
+                <div className="text-2xl font-medium">{weather.temperature}°C</div>
+                <div className="text-sm text-muted-foreground capitalize">{weather.condition}</div>
+              </div>
             </div>
-            <div>
-              <div className="text-2xl font-medium">{weather.temperature}°C</div>
-              <div className="text-sm text-muted-foreground">{weather.condition}</div>
-            </div>
+            {weather.windSpeed !== undefined && (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Wind className="h-4 w-4" />
+                <span>Wind: {weather.windSpeed} m/s</span>
+              </div>
+            )}
+            {weather.feelsLike !== undefined && (
+              <div className="text-sm text-muted-foreground">
+                Feels like: {weather.feelsLike}°C
+              </div>
+            )}
+            {weather.humidity !== undefined && (
+              <div className="text-sm text-muted-foreground">
+                Humidity: {weather.humidity}%
+              </div>
+            )}
           </div>
         ) : null}
       </CardContent>

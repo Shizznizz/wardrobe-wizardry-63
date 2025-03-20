@@ -76,6 +76,11 @@ export interface WeatherInfo {
   temperature: number;
   condition: string;
   icon: string;
+  city?: string;
+  country?: string;
+  windSpeed?: number;
+  humidity?: number;
+  feelsLike?: number;
 }
 
 export interface UserPreferences {

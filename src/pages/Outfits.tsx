@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -295,6 +296,7 @@ const Outfits = () => {
   const [suggestedOutfit, setSuggestedOutfit] = useState<Outfit>(sampleOutfits[0]);
   const [isWeatherLoading, setIsWeatherLoading] = useState(true);
   const [availableCities, setAvailableCities] = useState<string[]>([]);
+  const [selectedLocation, setSelectedLocation] = useState<{ city?: string; country?: string }>({});
   
   const form = useForm<FormValues>({
     defaultValues: {
@@ -377,16 +379,19 @@ const Outfits = () => {
 
   const onSubmit = (data: FormValues) => {
     if (data.country && data.city) {
-      const location = `${data.city}, ${countries.find(c => c.code === data.country)?.name || data.country}`;
-      toast.success(`Weather location updated to ${location}`, {
-        description: 'Your outfit recommendations will be based on this location'
+      const countryName = countries.find(c => c.code === data.country)?.name || data.country;
+      const location = `${data.city}, ${countryName}`;
+      
+      setSelectedLocation({
+        city: data.city,
+        country: data.country
       });
-      // In a real app, we would fetch weather for this location
+      
       setIsWeatherLoading(true);
-      // Simulate weather data fetch delay
-      setTimeout(() => {
-        setIsWeatherLoading(false);
-      }, 1000);
+      
+      toast.success(`Weather location updated to ${location}`, {
+        description: 'Fetching current weather data for this location'
+      });
     }
   };
   
@@ -529,6 +534,8 @@ const Outfits = () => {
                 <WeatherWidget
                   className="w-full" 
                   onWeatherChange={handleWeatherChange}
+                  city={selectedLocation.city}
+                  country={selectedLocation.country}
                 />
                 
                 {!isWeatherLoading && weather && (
@@ -662,4 +669,3 @@ const Outfits = () => {
 };
 
 export default Outfits;
-
