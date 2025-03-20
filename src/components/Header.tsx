@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useAuth } from '@/hooks/useAuth';
+import { useTheme } from '@/components/ThemeProvider';
 import { toast } from 'sonner';
 import {
   NavigationMenu,
@@ -36,6 +37,7 @@ const Header = ({ weather }: HeaderProps) => {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
+  const { theme } = useTheme();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -97,7 +99,7 @@ const Header = ({ weather }: HeaderProps) => {
     <header 
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300 py-4",
-        isScrolled ? "bg-white/80 backdrop-blur-lg border-b border-gray-100" : "bg-transparent"
+        isScrolled ? "bg-white/80 dark:bg-black/80 backdrop-blur-lg border-b border-gray-100 dark:border-gray-800" : "bg-transparent"
       )}
     >
       <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
@@ -127,7 +129,7 @@ const Header = ({ weather }: HeaderProps) => {
 
         <div className="flex items-center">
           {weather && (
-            <div className="hidden md:flex items-center space-x-2 bg-white/90 backdrop-blur-sm rounded-full px-4 py-1.5 border border-gray-100 transition-all hover:bg-white">
+            <div className="hidden md:flex items-center space-x-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full px-4 py-1.5 border border-gray-100 dark:border-gray-700 transition-all hover:bg-white dark:hover:bg-gray-700">
               {getWeatherIcon()}
               <span className="text-sm font-medium">{weather.temperature}°</span>
             </div>
@@ -169,7 +171,7 @@ const Header = ({ weather }: HeaderProps) => {
         </div>
 
         {isMenuOpen && (
-          <div className="fixed inset-0 bg-white z-50 animate-fade-in">
+          <div className="fixed inset-0 bg-white dark:bg-gray-900 z-50 animate-fade-in">
             <div className="container h-full flex flex-col p-4">
               <div className="flex justify-between items-center py-4">
                 <Link to="/" className="flex items-center space-x-2">
