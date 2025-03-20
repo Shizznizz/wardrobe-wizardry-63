@@ -28,7 +28,6 @@ const OutfitSelector = ({ outfits, clothingItems, onSelect, selectedOutfitId }: 
     <div className="w-full">
       <Carousel
         className="w-full"
-        onSelect={(index) => setActiveIndex(index)}
       >
         <CarouselContent>
           {outfits.map((outfit, index) => {
