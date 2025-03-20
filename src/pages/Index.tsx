@@ -84,35 +84,41 @@ const Index = () => {
           
           <motion.section variants={itemVariants}>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="bg-white p-6 rounded-lg border shadow-soft">
-                <div className="h-12 w-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                  <Shirt className="h-6 w-6 text-primary" />
+              <Link to="/wardrobe" className="block">
+                <div className="bg-white p-6 rounded-lg border shadow-soft hover:shadow-hover transition-all cursor-pointer">
+                  <div className="h-12 w-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                    <Shirt className="h-6 w-6 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-medium mb-2">Track Your Wardrobe</h3>
+                  <p className="text-muted-foreground">
+                    Easily upload and categorize your clothing items to keep track of everything you own.
+                  </p>
                 </div>
-                <h3 className="text-xl font-medium mb-2">Track Your Wardrobe</h3>
-                <p className="text-muted-foreground">
-                  Easily upload and categorize your clothing items to keep track of everything you own.
-                </p>
-              </div>
+              </Link>
               
-              <div className="bg-white p-6 rounded-lg border shadow-soft">
-                <div className="h-12 w-12 bg-accent/10 rounded-lg flex items-center justify-center mb-4">
-                  <Palette className="h-6 w-6 text-accent" />
+              <Link to="/outfits" className="block">
+                <div className="bg-white p-6 rounded-lg border shadow-soft hover:shadow-hover transition-all cursor-pointer">
+                  <div className="h-12 w-12 bg-accent/10 rounded-lg flex items-center justify-center mb-4">
+                    <Palette className="h-6 w-6 text-accent" />
+                  </div>
+                  <h3 className="text-xl font-medium mb-2">Create Stylish Outfits</h3>
+                  <p className="text-muted-foreground">
+                    Mix and match items to create outfits for any occasion and save them for later use.
+                  </p>
                 </div>
-                <h3 className="text-xl font-medium mb-2">Create Stylish Outfits</h3>
-                <p className="text-muted-foreground">
-                  Mix and match items to create outfits for any occasion and save them for later use.
-                </p>
-              </div>
+              </Link>
               
-              <div className="bg-white p-6 rounded-lg border shadow-soft">
-                <div className="h-12 w-12 bg-blue-500/10 rounded-lg flex items-center justify-center mb-4">
-                  <Cloud className="h-6 w-6 text-blue-500" />
+              <Link to="/outfits" className="block">
+                <div className="bg-white p-6 rounded-lg border shadow-soft hover:shadow-hover transition-all cursor-pointer">
+                  <div className="h-12 w-12 bg-blue-500/10 rounded-lg flex items-center justify-center mb-4">
+                    <Cloud className="h-6 w-6 text-blue-500" />
+                  </div>
+                  <h3 className="text-xl font-medium mb-2">Weather Recommendations</h3>
+                  <p className="text-muted-foreground">
+                    Get outfit suggestions based on the local weather forecast and your preferences.
+                  </p>
                 </div>
-                <h3 className="text-xl font-medium mb-2">Weather Recommendations</h3>
-                <p className="text-muted-foreground">
-                  Get outfit suggestions based on the local weather forecast and your preferences.
-                </p>
-              </div>
+              </Link>
             </div>
           </motion.section>
         </motion.div>
