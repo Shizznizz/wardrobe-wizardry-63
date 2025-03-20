@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, Sun, CloudSun, Cloud, CloudRain, Umbrella, LogOut, User } from 'lucide-react';
@@ -207,23 +208,23 @@ const Header = ({ weather }: HeaderProps) => {
                     Sign In
                   </Link>
                 )}
-                
-                {user && (
-                  <button
-                    onClick={handleSignOut}
-                    className="text-xl font-medium text-red-500 hover:text-red-600 flex items-center gap-2"
-                  >
-                    <LogOut className="h-5 w-5" />
-                    Sign out
-                  </button>
-                )}
               </nav>
 
               {weather && (
-                <div className="flex items-center justify-center space-x-2 py-6 mt-auto">
+                <div className="flex items-center justify-center space-x-2 py-6 mt-auto mb-6">
                   {getWeatherIcon()}
                   <span className="text-sm font-medium">{weather.temperature}° {weather.condition}</span>
                 </div>
+              )}
+              
+              {user && (
+                <button
+                  onClick={handleSignOut}
+                  className="text-xl font-medium text-red-500 hover:text-red-600 flex items-center justify-center gap-2 mt-auto mb-8"
+                >
+                  <LogOut className="h-5 w-5" />
+                  Sign out
+                </button>
               )}
             </div>
           </div>
