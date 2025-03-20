@@ -1,5 +1,6 @@
+
 import { useState, useRef } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -109,16 +110,19 @@ const UploadModal = ({ onUpload }: UploadModalProps) => {
           <Camera className="h-4 w-4 transition-transform group-hover:scale-110" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-center">Add Clothing Item</DialogTitle>
+          <DialogDescription className="sr-only">
+            Add a new item to your wardrobe
+          </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-6 py-4">
+        <form onSubmit={handleSubmit} className="space-y-4 py-2">
           <div className="flex flex-col items-center justify-center">
             <div 
               onClick={triggerFileInput}
               className={cn(
-                "relative w-64 h-64 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center cursor-pointer overflow-hidden transition-all duration-200",
+                "relative w-full max-w-[200px] h-[200px] rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center cursor-pointer overflow-hidden transition-all duration-200",
                 !imagePreview && "hover:border-primary hover:bg-primary/5"
               )}
             >
@@ -144,10 +148,10 @@ const UploadModal = ({ onUpload }: UploadModalProps) => {
                 <div className="flex flex-col items-center space-y-2 p-4 text-center">
                   <Upload className="h-10 w-10 text-gray-400" />
                   <p className="text-sm font-medium text-gray-600">
-                    Click to upload or drag and drop
+                    Click to upload
                   </p>
                   <p className="text-xs text-gray-500">
-                    JPG, PNG or GIF (max. 5MB)
+                    JPG, PNG or GIF
                   </p>
                 </div>
               )}
@@ -161,7 +165,7 @@ const UploadModal = ({ onUpload }: UploadModalProps) => {
             />
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3">
             <div className="space-y-2">
               <Label htmlFor="name">Name</Label>
               <Input
@@ -172,7 +176,7 @@ const UploadModal = ({ onUpload }: UploadModalProps) => {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
                 <Label htmlFor="type">Type</Label>
                 <Select
@@ -252,7 +256,7 @@ const UploadModal = ({ onUpload }: UploadModalProps) => {
 
             <div className="space-y-2">
               <Label>Seasons</Label>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+              <div className="grid grid-cols-2 gap-2">
                 {(['spring', 'summer', 'autumn', 'winter'] as ClothingSeason[]).map((season) => (
                   <div key={season} className="flex items-center space-x-2">
                     <Checkbox
@@ -262,7 +266,7 @@ const UploadModal = ({ onUpload }: UploadModalProps) => {
                     />
                     <Label
                       htmlFor={`season-${season}`}
-                      className="capitalize cursor-pointer"
+                      className="capitalize cursor-pointer text-sm"
                     >
                       {season}
                     </Label>
@@ -283,7 +287,7 @@ const UploadModal = ({ onUpload }: UploadModalProps) => {
             </div>
           </div>
 
-          <DialogFooter className="mt-6">
+          <DialogFooter className="mt-4">
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               Cancel
             </Button>
