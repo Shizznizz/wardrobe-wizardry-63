@@ -171,8 +171,8 @@ const Header = ({ weather }: HeaderProps) => {
         </div>
 
         {isMenuOpen && (
-          <div className="fixed inset-0 bg-white dark:bg-gray-900 z-50 animate-fade-in">
-            <div className="container h-full flex flex-col p-4">
+          <div className="fixed inset-0 bg-white dark:bg-gray-900 z-50 animate-fade-in !important">
+            <div className="container h-full flex flex-col p-4 bg-white dark:bg-gray-900">
               <div className="flex justify-between items-center py-4">
                 <Link to="/" className="flex items-center space-x-2">
                   <span className="font-display font-bold text-xl">{getCurrentPageName()}</span>
@@ -194,8 +194,8 @@ const Header = ({ weather }: HeaderProps) => {
                     className={cn(
                       "text-xl font-medium transition-colors",
                       location.pathname === item.path
-                        ? "text-accent"
-                        : "text-muted-foreground hover:text-accent"
+                        ? "text-accent bg-accent/10"
+                        : "text-muted-foreground hover:text-accent hover:bg-accent/10"
                     )}
                   >
                     {item.name}
