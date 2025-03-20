@@ -1,11 +1,11 @@
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { ChevronLeft } from "lucide-react";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -71,72 +71,89 @@ const Auth = () => {
   };
 
   return (
-    <div className="container max-w-md mx-auto px-4 pt-20 pb-10">
-      <div className="space-y-6">
-        <div className="space-y-2 text-center">
-          <h1 className="text-3xl font-bold">
-            {authMode === "signin" ? "Sign In" : "Create an Account"}
-          </h1>
-          <p className="text-muted-foreground">
-            {authMode === "signin"
-              ? "Enter your credentials to sign in to your account"
-              : "Enter your information to create a new account"}
-          </p>
+    <div className="min-h-screen bg-white flex flex-col">
+      <div className="p-4">
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="flex items-center" 
+          onClick={() => navigate("/")}
+          asChild
+        >
+          <Link to="/">
+            <ChevronLeft className="mr-2 h-4 w-4" />
+            Back to Home
+          </Link>
+        </Button>
+      </div>
+      
+      <div className="container max-w-md mx-auto px-4 pt-10 pb-10 flex-grow flex flex-col justify-center">
+        <div className="space-y-6">
+          <div className="space-y-2 text-center">
+            <h1 className="text-3xl font-bold">
+              {authMode === "signin" ? "Sign In" : "Create an Account"}
+            </h1>
+            <p className="text-muted-foreground">
+              {authMode === "signin"
+                ? "Enter your credentials to sign in to your account"
+                : "Enter your information to create a new account"}
+            </p>
+          </div>
+
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Your email" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input type="password" placeholder="Your password" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading
+                  ? authMode === "signin"
+                    ? "Signing in..."
+                    : "Creating account..."
+                  : authMode === "signin"
+                  ? "Sign In"
+                  : "Create Account"}
+              </Button>
+
+              <div className="text-center">
+                <button
+                  type="button"
+                  className="text-sm text-blue-600 hover:text-blue-800 underline"
+                  onClick={toggleAuthMode}
+                >
+                  {authMode === "signin"
+                    ? "Don't have an account? Sign up"
+                    : "Already have an account? Sign in"}
+                </button>
+              </div>
+            </form>
+          </Form>
         </div>
-
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Your email" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input type="password" placeholder="Your password" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading
-                ? authMode === "signin"
-                  ? "Signing in..."
-                  : "Creating account..."
-                : authMode === "signin"
-                ? "Sign In"
-                : "Create Account"}
-            </Button>
-
-            <div className="text-center">
-              <button
-                type="button"
-                className="text-sm text-blue-600 hover:text-blue-800 underline"
-                onClick={toggleAuthMode}
-              >
-                {authMode === "signin"
-                  ? "Don't have an account? Sign up"
-                  : "Already have an account? Sign in"}
-              </button>
-            </div>
-          </form>
-        </Form>
       </div>
     </div>
   );
