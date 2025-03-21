@@ -499,7 +499,7 @@ const Outfits = () => {
             
             <div className={`grid ${isMobile ? '' : 'md:grid-cols-2'} gap-6 items-start mb-8`}>
               <div className={`space-y-4 ${isMobile ? 'w-full px-2' : ''}`}>
-                <h2 className="text-2xl font-bold">Today's Weather</h2>
+                <h2 className={`text-2xl font-bold ${isMobile ? 'text-center' : ''}`}>Today's Weather</h2>
                 
                 {showLocationAlert && (
                   <Alert variant="destructive" className="mb-4">
@@ -574,7 +574,7 @@ const Outfits = () => {
                       type="submit" 
                       variant="outline" 
                       size="sm"
-                      className="flex items-center gap-2"
+                      className={`flex items-center gap-2 ${isMobile ? 'mx-auto' : ''}`}
                       disabled={!selectedCountry || !form.watch("city")}
                     >
                       <MapPin className="h-4 w-4" />
@@ -592,7 +592,7 @@ const Outfits = () => {
                 />
                 
                 {!isWeatherLoading && weather && (
-                  <div className="bg-accent/20 p-4 rounded-lg border">
+                  <div className={`bg-accent/20 p-4 rounded-lg border ${isMobile ? 'text-center' : ''}`}>
                     <p className="font-medium">{getWeatherRecommendation()}</p>
                   </div>
                 )}
@@ -730,4 +730,3 @@ const Outfits = () => {
 };
 
 export default Outfits;
-
