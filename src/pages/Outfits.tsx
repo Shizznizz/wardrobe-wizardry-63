@@ -325,8 +325,13 @@ const Outfits = () => {
           
           if (data && data.preferred_country && data.preferred_city) {
             form.setValue('country', data.preferred_country);
-            setAvailableCities(citiesByCountry[data.preferred_country as keyof typeof citiesByCountry] || []);
-            form.setValue('city', data.preferred_city);
+            
+            const countryCities = citiesByCountry[data.preferred_country as keyof typeof citiesByCountry] || [];
+            setAvailableCities(countryCities);
+            
+            setTimeout(() => {
+              form.setValue('city', data.preferred_city);
+            }, 0);
             
             setSelectedLocation({
               city: data.preferred_city,
@@ -349,17 +354,18 @@ const Outfits = () => {
   
   useEffect(() => {
     if (selectedCountry) {
-      setAvailableCities(citiesByCountry[selectedCountry as keyof typeof citiesByCountry] || []);
-      form.setValue("city", ""); // Reset city when country changes
+      const cities = citiesByCountry[selectedCountry as keyof typeof citiesByCountry] || [];
+      setAvailableCities(cities);
+      
+      const currentCity = form.getValues("city");
+      if (currentCity && !cities.includes(currentCity)) {
+        form.setValue("city", "");
+      }
     } else {
       setAvailableCities([]);
     }
   }, [selectedCountry, form]);
 
-  useEffect(() => {
-    setIsWeatherLoading(true);
-  }, []);
-  
   const handleWeatherChange = (weatherData: WeatherInfo) => {
     setWeather(weatherData);
     setIsWeatherLoading(false);
@@ -523,6 +529,7 @@ const Outfits = () => {
                             <Select 
                               onValueChange={field.onChange} 
                               value={field.value}
+                              defaultValue={field.value}
                             >
                               <FormControl>
                                 <SelectTrigger>
@@ -550,6 +557,7 @@ const Outfits = () => {
                             <Select 
                               onValueChange={field.onChange} 
                               value={field.value}
+                              defaultValue={field.value}
                               disabled={!selectedCountry}
                             >
                               <FormControl>
