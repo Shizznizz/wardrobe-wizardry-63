@@ -11,6 +11,7 @@ import { ClothingItem, Outfit } from '@/lib/types';
 import { sampleOutfits, sampleClothingItems } from '@/lib/wardrobeData';
 import OutfitSelector from '@/components/OutfitSelector';
 import VirtualFittingRoom from '@/components/VirtualFittingRoom';
+import { Card, CardContent } from '@/components/ui/card';
 
 const VirtualTryOn = () => {
   const [userPhoto, setUserPhoto] = useState<string | null>(null);
@@ -127,71 +128,82 @@ const VirtualTryOn = () => {
           animate="visible"
           variants={containerVariants}
         >
-          <motion.div variants={itemVariants}>
-            <h1 className="text-3xl font-bold mb-2">Virtual Try-On</h1>
-            <p className="text-muted-foreground">
-              Upload your photo and try on outfits from your wardrobe
+          <motion.div variants={itemVariants} className="text-center max-w-3xl mx-auto mb-12">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-500 bg-clip-text text-transparent">
+              See How You Shine in Our Styles
+            </h1>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Upload your photo and experience our revolutionary virtual fitting room. 
+              Try on any outfit from your wardrobe instantly — no changing room needed!
             </p>
           </motion.div>
           
           <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div className="space-y-4">
-              <h2 className="text-xl font-semibold">Your Photo</h2>
-              
-              {isModelLoading ? (
-                <div className="flex flex-col items-center space-y-4 border rounded-lg p-8">
-                  <Skeleton className="h-32 w-32 rounded-full" />
-                  <Skeleton className="h-4 w-48" />
-                  <p className="text-muted-foreground">Loading AI model...</p>
-                </div>
-              ) : (
-                <>
-                  <div 
-                    className="border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center p-8 cursor-pointer hover:border-primary hover:bg-primary/5 transition-colors"
-                    onClick={handleUploadClick}
-                  >
-                    {userPhoto ? (
-                      <div className="relative w-full max-w-md">
-                        <img 
-                          src={userPhoto} 
-                          alt="User upload" 
-                          className="w-full h-auto rounded-lg" 
-                        />
-                        <Button 
-                          variant="secondary" 
-                          className="absolute bottom-4 right-4"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleUploadClick();
-                          }}
-                        >
-                          Change Photo
-                        </Button>
+              <Card className="overflow-hidden border-0 shadow-soft">
+                <CardContent className="p-0">
+                  {isModelLoading ? (
+                    <div className="flex flex-col items-center space-y-4 border rounded-lg p-8">
+                      <Skeleton className="h-32 w-32 rounded-full" />
+                      <Skeleton className="h-4 w-48" />
+                      <p className="text-muted-foreground">Loading AI model...</p>
+                    </div>
+                  ) : (
+                    <>
+                      <div 
+                        className="relative overflow-hidden group cursor-pointer hover:shadow-lg transition-all duration-300 rounded-lg"
+                        onClick={handleUploadClick}
+                      >
+                        {userPhoto ? (
+                          <div className="relative w-full">
+                            <img 
+                              src={userPhoto} 
+                              alt="Your uploaded photo" 
+                              className="w-full h-auto rounded-lg transition-transform duration-300 group-hover:scale-102" 
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-70 group-hover:opacity-80 transition-opacity"></div>
+                            <Button 
+                              variant="secondary" 
+                              className="absolute bottom-4 right-4 shadow-md"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleUploadClick();
+                              }}
+                            >
+                              Change Photo
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="bg-gradient-to-br from-purple-50 to-blue-50 dark:from-slate-900 dark:to-slate-800 p-10 rounded-lg text-center">
+                            <div className="mb-6 mx-auto w-24 h-24 rounded-full bg-gradient-to-r from-violet-400 to-blue-500 flex items-center justify-center">
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                              </svg>
+                            </div>
+                            <h3 className="text-2xl font-bold mb-3 bg-gradient-to-r from-violet-600 to-blue-500 bg-clip-text text-transparent">Upload Your Photo</h3>
+                            <p className="text-muted-foreground text-center max-w-xs mx-auto mb-6">
+                              Take a full-body photo or upload one to see how our styles look on you in seconds
+                            </p>
+                            <Button 
+                              className="bg-gradient-to-r from-violet-600 to-blue-500 hover:from-violet-700 hover:to-blue-600 shadow-md"
+                            >
+                              Select an Image
+                            </Button>
+                          </div>
+                        )}
                       </div>
-                    ) : (
-                      <>
-                        <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                          </svg>
-                        </div>
-                        <h3 className="text-lg font-medium mb-2">Upload Your Photo</h3>
-                        <p className="text-muted-foreground text-center max-w-xs">
-                          Take a full-body photo or upload an existing one to try on outfits
-                        </p>
-                      </>
-                    )}
-                  </div>
-                  
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileChange}
-                    className="hidden"
-                  />
-                </>
-              )}
+                      
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        className="hidden"
+                      />
+                    </>
+                  )}
+                </CardContent>
+              </Card>
               
               {userPhoto && (
                 <div className="space-y-4">
@@ -206,7 +218,7 @@ const VirtualTryOn = () => {
                   <Button 
                     onClick={handleTryOn} 
                     disabled={!selectedOutfit || isProcessing}
-                    className="w-full mt-4"
+                    className="w-full mt-4 bg-gradient-to-r from-violet-600 to-blue-500 hover:from-violet-700 hover:to-blue-600 h-12 text-lg font-medium shadow-md"
                   >
                     {isProcessing ? 'Processing...' : 'Try On This Outfit'}
                   </Button>
