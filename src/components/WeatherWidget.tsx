@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { WeatherInfo } from '@/lib/types';
@@ -20,10 +20,18 @@ const WeatherWidget = ({ className, onWeatherChange, city, country }: WeatherWid
   const [weather, setWeather] = useState<WeatherInfo | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const locationRef = useRef<{ city?: string; country?: string }>({ city, country });
+  const fetchedRef = useRef<boolean>(false);
 
   useEffect(() => {
+    // Reset the fetched flag when location changes
+    if (city !== locationRef.current.city || country !== locationRef.current.country) {
+      locationRef.current = { city, country };
+      fetchedRef.current = false;
+    }
+
     const fetchWeather = async () => {
-      // Only fetch if both city and country are provided
+      // Only fetch if both city and country are provided and not fetched already
       if (!city || !country) {
         if (!weather) {
           // If no weather data and no location, use random data for initial state
@@ -38,6 +46,11 @@ const WeatherWidget = ({ className, onWeatherChange, city, country }: WeatherWid
         return;
       }
 
+      // If already fetched for this location, don't fetch again
+      if (fetchedRef.current) {
+        return;
+      }
+      
       setIsLoading(true);
       setError(null);
       
@@ -51,6 +64,9 @@ const WeatherWidget = ({ className, onWeatherChange, city, country }: WeatherWid
         }
 
         toast.success(`Weather updated for ${weatherData.city}`);
+        
+        // Mark as fetched for this location
+        fetchedRef.current = true;
       } catch (err) {
         console.error('Error fetching weather:', err);
         
@@ -75,8 +91,7 @@ const WeatherWidget = ({ className, onWeatherChange, city, country }: WeatherWid
     };
     
     fetchWeather();
-    // Remove 'weather' from the dependency array to prevent continuous updates
-  }, [city, country, onWeatherChange]);
+  }, [city, country, onWeatherChange]); // Remove 'weather' from dependencies
 
   return (
     <Card className={cn("overflow-hidden bg-white shadow-soft backdrop-blur-sm", className)}>
