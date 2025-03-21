@@ -5,7 +5,6 @@ import Header from '@/components/Header';
 import WeatherWidget from '@/components/WeatherWidget';
 import OutfitSuggestion from '@/components/OutfitSuggestion';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { WeatherInfo, Outfit } from '@/lib/types';
 import { sampleClothingItems, sampleOutfits } from '@/lib/wardrobeData';
 import { toast } from 'sonner';
@@ -27,6 +26,8 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 
 const countries = [
   { code: "US", name: "United States" },
@@ -291,6 +292,8 @@ const Outfits = () => {
   const [availableCities, setAvailableCities] = useState<string[]>([]);
   const [selectedLocation, setSelectedLocation] = useState<{ city?: string; country?: string }>({});
   const [showLocationAlert, setShowLocationAlert] = useState(false);
+  const [preferencesLoaded, setPreferencesLoaded] = useState(false);
+  const { user } = useAuth();
   
   const form = useForm<FormValues>({
     defaultValues: {
@@ -300,6 +303,45 @@ const Outfits = () => {
   });
 
   const selectedCountry = form.watch("country");
+  
+  useEffect(() => {
+    const loadUserPreferences = async () => {
+      if (user && !preferencesLoaded) {
+        try {
+          const { data, error } = await supabase
+            .from('user_preferences')
+            .select('preferred_country, preferred_city')
+            .eq('user_id', user.id)
+            .maybeSingle();
+          
+          if (error) {
+            console.error('Error loading preferences:', error);
+            return;
+          }
+          
+          if (data && data.preferred_country && data.preferred_city) {
+            form.setValue('country', data.preferred_country);
+            setAvailableCities(citiesByCountry[data.preferred_country as keyof typeof citiesByCountry] || []);
+            form.setValue('city', data.preferred_city);
+            
+            setSelectedLocation({
+              city: data.preferred_city,
+              country: data.preferred_country
+            });
+            
+            console.log('Loaded user preferences:', data);
+            toast.success('Loaded your saved location preferences');
+          }
+          
+          setPreferencesLoaded(true);
+        } catch (err) {
+          console.error('Failed to load user preferences:', err);
+        }
+      }
+    };
+    
+    loadUserPreferences();
+  }, [user, form, preferencesLoaded]);
   
   useEffect(() => {
     if (selectedCountry) {
@@ -542,6 +584,7 @@ const Outfits = () => {
                   onWeatherChange={handleWeatherChange}
                   city={selectedLocation.city}
                   country={selectedLocation.country}
+                  savePreferences={!!user}
                 />
                 
                 {!isWeatherLoading && weather && (

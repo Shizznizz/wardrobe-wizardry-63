@@ -8,20 +8,61 @@ import { fetchWeatherData, generateRandomWeather } from '@/services/WeatherServi
 import WeatherDisplay from './weather/WeatherDisplay';
 import WeatherLoading from './weather/WeatherLoading';
 import WeatherError from './weather/WeatherError';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 
 interface WeatherWidgetProps {
   className?: string;
   onWeatherChange?: (weather: WeatherInfo) => void;
   city?: string;
   country?: string;
+  savePreferences?: boolean;
 }
 
-const WeatherWidget = ({ className, onWeatherChange, city, country }: WeatherWidgetProps) => {
+const WeatherWidget = ({ 
+  className, 
+  onWeatherChange, 
+  city, 
+  country, 
+  savePreferences = false 
+}: WeatherWidgetProps) => {
   const [weather, setWeather] = useState<WeatherInfo | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const locationRef = useRef<{ city?: string; country?: string }>({ city, country });
   const fetchedRef = useRef<boolean>(false);
+  const { user } = useAuth();
+
+  // Save user preferences when location changes and user is logged in
+  useEffect(() => {
+    const saveUserPreferences = async () => {
+      if (savePreferences && user && city && country) {
+        try {
+          const { error } = await supabase
+            .from('user_preferences')
+            .upsert({
+              user_id: user.id,
+              preferred_country: country,
+              preferred_city: city
+            }, {
+              onConflict: 'user_id'
+            });
+            
+          if (error) {
+            console.error('Error saving preferences:', error);
+          } else {
+            console.log('User preferences saved successfully');
+          }
+        } catch (err) {
+          console.error('Failed to save user preferences:', err);
+        }
+      }
+    };
+
+    if (city !== locationRef.current.city || country !== locationRef.current.country) {
+      saveUserPreferences();
+    }
+  }, [city, country, user, savePreferences]);
 
   useEffect(() => {
     // Reset the fetched flag when location changes
