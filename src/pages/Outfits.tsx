@@ -599,7 +599,7 @@ const Outfits = () => {
               </div>
               
               <div className="space-y-4">
-                <h2 className="text-2xl font-bold">Today's Suggestion</h2>
+                <h2 className={`text-2xl font-bold ${isMobile ? 'text-center' : ''}`}>Today's Suggestion</h2>
                 {isWeatherLoading ? (
                   <div className="border rounded-lg p-6 bg-white shadow-soft">
                     <div className="flex items-center gap-4 mb-4">
