@@ -94,7 +94,7 @@ const VirtualFittingRoom = ({
             {outfit && (
               <div className="absolute bottom-4 left-4 right-4 bg-black/50 backdrop-blur-sm p-4 rounded-lg">
                 <h3 className="text-white font-medium mb-2">{outfit.name}</h3>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                   {outfit.seasons.map(season => (
                     <span 
                       key={season} 
