@@ -5,6 +5,7 @@ import Header from '@/components/Header';
 import WeatherWidget from '@/components/WeatherWidget';
 import OutfitSuggestion from '@/components/OutfitSuggestion';
 import { Button } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
 import { WeatherInfo, Outfit } from '@/lib/types';
 import { sampleClothingItems, sampleOutfits } from '@/lib/wardrobeData';
 import { toast } from 'sonner';
@@ -274,7 +275,7 @@ const citiesByCountry = {
     "Bogotá", "Medellín", "Cali", "Barranquilla", "Cartagena", "Cúcuta", 
     "Bucaramanga", "Pereira", "Santa Marta", "Ibagué", "Pasto", "Manizales", 
     "Neiva", "Soledad", "Villavicencio", "Armenia", "Soacha", "Valledupar", 
-    "Montería", "Sincelejo", "Popayán", "Floridablanca", "Palmira", "Buenaventura", 
+    "Montería", "Sincelejo", "Popay��n", "Floridablanca", "Palmira", "Buenaventura", 
     "Barrancabermeja", "Tuluá", "Dosquebradas", "Envigado", "Tunja", "Cartago"
   ]
 };
@@ -626,28 +627,36 @@ const Outfits = () => {
                   />
                 )}
                 
-                <div className="flex gap-4 justify-between mt-4">
+                <div className="flex flex-col gap-4 mt-6">
                   <Button 
-                    variant="outline" 
+                    variant="secondary" 
                     onClick={handleRegenerateOutfit}
-                    className="flex items-center space-x-2"
+                    className="flex items-center justify-center w-full gap-2 h-12 text-base"
                     disabled={isWeatherLoading}
                   >
-                    <RefreshCw className="h-4 w-4" />
-                    <span>Generate Another</span>
+                    <RefreshCw className="h-5 w-5" />
+                    <span>Generate Another Outfit</span>
                   </Button>
                   
-                  <Button
-                    variant="default"
-                    className="flex items-center space-x-2"
-                    disabled={isWeatherLoading}
-                    asChild
-                  >
-                    <Link to="/try-on">
-                      <Camera className="h-4 w-4" />
-                      <span>Try It On</span>
+                  <div className="relative">
+                    <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full animate-pulse">
+                      Premium
+                    </div>
+                    <Link
+                      to="/try-on"
+                      className={cn(
+                        buttonVariants({ variant: "default" }),
+                        "w-full h-14 text-base font-semibold gap-2 relative group overflow-hidden bg-gradient-to-r from-primary to-primary-foreground hover:from-primary-foreground hover:to-primary transition-all duration-300"
+                      )}
+                    >
+                      <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      <Camera className="h-5 w-5 transition-transform group-hover:scale-110" />
+                      <span>Try These Clothes On Your Photo!</span>
                     </Link>
-                  </Button>
+                    <p className="text-xs text-center mt-2 text-muted-foreground">
+                      See how these clothes look on you with our virtual try-on feature
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -718,3 +727,4 @@ const Outfits = () => {
 };
 
 export default Outfits;
+

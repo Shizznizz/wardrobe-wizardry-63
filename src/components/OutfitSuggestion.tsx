@@ -2,7 +2,7 @@
 import { ClothingItem, Outfit, WeatherInfo } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { RefreshCw, Check, ThumbsUp, ThumbsDown, Sun, Cloud, CloudRain, HelpCircle } from 'lucide-react';
+import { Check, ThumbsUp, ThumbsDown, Sun, Cloud, CloudRain, Camera } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   Tooltip,
@@ -83,25 +83,6 @@ const OutfitSuggestion = ({
 
           <div className="flex flex-wrap justify-between items-center pt-2">
             <div className="flex space-x-2">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button 
-                      size="sm" 
-                      variant="outline"
-                      className="flex items-center space-x-1 h-10"
-                      onClick={onRefresh}
-                    >
-                      <RefreshCw className="h-3.5 w-3.5" />
-                      <span>Refresh</span>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Get a new outfit suggestion</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              
               <Button 
                 size="sm" 
                 variant="outline"
