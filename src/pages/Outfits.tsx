@@ -574,7 +574,7 @@ const Outfits = () => {
                       type="submit" 
                       variant="outline" 
                       size="sm"
-                      className={`flex items-center gap-2 ${isMobile ? 'mx-auto block' : ''}`}
+                      className="flex items-center gap-2"
                       disabled={!selectedCountry || !form.watch("city")}
                     >
                       <MapPin className="h-4 w-4" />
@@ -730,3 +730,4 @@ const Outfits = () => {
 };
 
 export default Outfits;
+
