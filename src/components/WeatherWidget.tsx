@@ -116,7 +116,8 @@ const WeatherWidget = ({ className, onWeatherChange, city, country }: WeatherWid
     };
     
     fetchWeather();
-  }, [city, country, onWeatherChange, weather]);
+    // Remove 'weather' from the dependency array to prevent continuous updates
+  }, [city, country, onWeatherChange]);
   
   const getIconName = (condition: string): string => {
     const lowerCondition = condition.toLowerCase();
