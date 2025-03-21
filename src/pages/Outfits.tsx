@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -31,6 +30,7 @@ import {
 import { useForm } from "react-hook-form";
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const countries = [
   { code: "US", name: "United States" },
@@ -297,6 +297,7 @@ const Outfits = () => {
   const [showLocationAlert, setShowLocationAlert] = useState(false);
   const [preferencesLoaded, setPreferencesLoaded] = useState(false);
   const { user } = useAuth();
+  const isMobile = useIsMobile();
   
   const form = useForm<FormValues>({
     defaultValues: {
@@ -496,8 +497,8 @@ const Outfits = () => {
               </p>
             </div>
             
-            <div className="grid md:grid-cols-2 gap-6 items-start mb-8">
-              <div className="space-y-4">
+            <div className={`grid ${isMobile ? '' : 'md:grid-cols-2'} gap-6 items-start mb-8`}>
+              <div className={`space-y-4 ${isMobile ? 'w-full px-2' : ''}`}>
                 <h2 className="text-2xl font-bold">Today's Weather</h2>
                 
                 {showLocationAlert && (
@@ -583,7 +584,7 @@ const Outfits = () => {
                 </Form>
                 
                 <WeatherWidget
-                  className="w-full" 
+                  className={`${isMobile ? 'max-w-[280px] mx-auto' : 'w-full'}`}
                   onWeatherChange={handleWeatherChange}
                   city={selectedLocation.city}
                   country={selectedLocation.country}

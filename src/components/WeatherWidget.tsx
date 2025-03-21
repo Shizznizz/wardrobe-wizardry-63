@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
@@ -33,7 +32,6 @@ const WeatherWidget = ({
   const fetchedRef = useRef<boolean>(false);
   const { user } = useAuth();
 
-  // Save user preferences when location changes and user is logged in
   useEffect(() => {
     const saveUserPreferences = async () => {
       if (savePreferences && user && city && country) {
@@ -65,17 +63,14 @@ const WeatherWidget = ({
   }, [city, country, user, savePreferences]);
 
   useEffect(() => {
-    // Reset the fetched flag when location changes
     if (city !== locationRef.current.city || country !== locationRef.current.country) {
       locationRef.current = { city, country };
       fetchedRef.current = false;
     }
 
     const fetchWeather = async () => {
-      // Only fetch if both city and country are provided and not fetched already
       if (!city || !country) {
         if (!weather) {
-          // If no weather data and no location, use random data for initial state
           const randomWeather = generateRandomWeather();
           setWeather(randomWeather);
           
@@ -87,7 +82,6 @@ const WeatherWidget = ({
         return;
       }
 
-      // If already fetched for this location, don't fetch again
       if (fetchedRef.current) {
         return;
       }
@@ -106,17 +100,14 @@ const WeatherWidget = ({
 
         toast.success(`Weather updated for ${weatherData.city}`);
         
-        // Mark as fetched for this location
         fetchedRef.current = true;
       } catch (err) {
         console.error('Error fetching weather:', err);
         
-        // Check if the error is due to API key
         const errorMsg = err instanceof Error ? err.message : 'Unable to fetch weather data. Please try again.';
         setError(errorMsg);
         
         if (!weather) {
-          // Generate random weather if there's no existing data
           const randomWeather = generateRandomWeather(city, country);
           setWeather(randomWeather);
           
@@ -132,10 +123,10 @@ const WeatherWidget = ({
     };
     
     fetchWeather();
-  }, [city, country, onWeatherChange]); // Remove 'weather' from dependencies
+  }, [city, country, onWeatherChange]);
 
   return (
-    <Card className={cn("overflow-hidden bg-white shadow-soft backdrop-blur-sm", className)}>
+    <Card className={cn("overflow-hidden bg-white shadow-soft backdrop-blur-sm mx-auto", className)}>
       <CardContent className="p-4">
         {isLoading ? (
           <WeatherLoading />
