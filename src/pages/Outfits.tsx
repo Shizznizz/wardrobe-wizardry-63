@@ -649,24 +649,26 @@ const Outfits = () => {
                     <span>Generate Another Outfit</span>
                   </Button>
                   
-                  <div className="relative">
-                    <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full animate-pulse">
-                      Premium
+                  <div className="flex flex-col space-y-2 mt-2">
+                    <div className="relative">
+                      <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full animate-pulse z-10">
+                        Premium
+                      </div>
+                      <Link
+                        to="/try-on"
+                        className={cn(
+                          buttonVariants({ variant: "default" }),
+                          "w-full h-14 text-base font-semibold gap-2 relative group overflow-hidden bg-gradient-to-r from-primary to-primary-foreground hover:from-primary-foreground hover:to-primary transition-all duration-300"
+                        )}
+                      >
+                        <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        <Camera className="h-5 w-5 transition-transform group-hover:scale-110" />
+                        <span>Try These Clothes On Your Photo!</span>
+                      </Link>
+                      <p className="text-xs text-center mt-2 text-muted-foreground">
+                        See how these clothes look on you with our virtual try-on feature
+                      </p>
                     </div>
-                    <Link
-                      to="/try-on"
-                      className={cn(
-                        buttonVariants({ variant: "default" }),
-                        "w-full h-14 text-base font-semibold gap-2 relative group overflow-hidden bg-gradient-to-r from-primary to-primary-foreground hover:from-primary-foreground hover:to-primary transition-all duration-300"
-                      )}
-                    >
-                      <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                      <Camera className="h-5 w-5 transition-transform group-hover:scale-110" />
-                      <span>Try These Clothes On Your Photo!</span>
-                    </Link>
-                    <p className="text-xs text-center mt-2 text-muted-foreground">
-                      See how these clothes look on you with our virtual try-on feature
-                    </p>
                   </div>
                 </div>
               </div>
