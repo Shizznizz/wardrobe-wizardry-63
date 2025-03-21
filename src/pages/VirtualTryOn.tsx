@@ -13,6 +13,9 @@ import OutfitSelector from '@/components/OutfitSelector';
 import VirtualFittingRoom from '@/components/VirtualFittingRoom';
 import { Card, CardContent } from '@/components/ui/card';
 
+// Local storage key for saving the user photo
+const USER_PHOTO_STORAGE_KEY = 'userVirtualTryOnPhoto';
+
 const VirtualTryOn = () => {
   const [userPhoto, setUserPhoto] = useState<string | null>(null);
   const [selectedOutfit, setSelectedOutfit] = useState<Outfit | null>(null);
@@ -47,6 +50,14 @@ const VirtualTryOn = () => {
     loadModel();
   }, []);
 
+  // Load the saved user photo from localStorage on component mount
+  useEffect(() => {
+    const savedPhoto = localStorage.getItem(USER_PHOTO_STORAGE_KEY);
+    if (savedPhoto) {
+      setUserPhoto(savedPhoto);
+    }
+  }, []);
+
   const handleUploadClick = () => {
     fileInputRef.current?.click();
   };
@@ -56,8 +67,19 @@ const VirtualTryOn = () => {
     if (file) {
       const reader = new FileReader();
       reader.onload = (event) => {
-        setUserPhoto(event.target?.result as string);
+        const photoData = event.target?.result as string;
+        setUserPhoto(photoData);
         setFinalImage(null); // Reset final image when new photo is uploaded
+        
+        // Save the photo to localStorage
+        try {
+          localStorage.setItem(USER_PHOTO_STORAGE_KEY, photoData);
+        } catch (error) {
+          console.error('Error saving photo to localStorage:', error);
+          // If localStorage fails (e.g., quota exceeded), still set the photo in state
+          // but inform the user it won't persist
+          toast.error('Unable to save your photo for future sessions. The photo will be available only for this session.');
+        }
       };
       reader.readAsDataURL(file);
     }
