@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -109,7 +110,7 @@ const Index = () => {
           </motion.section>
           
           <motion.section variants={itemVariants} className="mt-16">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               <Link to="/wardrobe" className="block">
                 <motion.div 
                   whileHover={{ y: -8, scale: 1.02 }}
@@ -160,6 +161,24 @@ const Index = () => {
                   </p>
                   <div className="mt-6 flex justify-end">
                     <ArrowRight className="h-5 w-5 text-pink-400" />
+                  </div>
+                </motion.div>
+              </Link>
+              
+              <Link to="/new-clothes" className="block">
+                <motion.div 
+                  whileHover={{ y: -8, scale: 1.02 }}
+                  className="glass-dark p-8 rounded-2xl border border-emerald-500/20 backdrop-blur-lg bg-slate-900/40 shadow-lg hover:shadow-emerald-500/10 transition-all duration-300"
+                >
+                  <div className="h-16 w-16 rounded-2xl flex items-center justify-center mb-6 bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 border border-emerald-400/20">
+                    <Shirt className="h-8 w-8 text-emerald-400" />
+                  </div>
+                  <h3 className="text-2xl font-bold mb-3 text-emerald-200">New Clothes</h3>
+                  <p className="text-emerald-100/80">
+                    Visualize how new clothes would look on you before making a purchase decision.
+                  </p>
+                  <div className="mt-6 flex justify-end">
+                    <ArrowRight className="h-5 w-5 text-emerald-400" />
                   </div>
                 </motion.div>
               </Link>
