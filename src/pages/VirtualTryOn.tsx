@@ -7,10 +7,50 @@ import { Button } from '@/components/ui/button';
 import { Camera, Upload, Info } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { ClothingItem, Outfit } from '@/lib/types';
+import { sampleClothingItems } from '@/lib/wardrobeData';
+import { toast } from 'sonner';
+
+// Sample outfit data for the virtual try-on feature
+const sampleOutfits: Outfit[] = [
+  {
+    id: 'outfit-1',
+    name: 'Casual Summer',
+    items: ['item-1', 'item-3'],
+    occasions: ['casual', 'summer'],
+    seasons: ['summer'],
+    favorite: true,
+    timesWorn: 5,
+    lastWorn: new Date('2025-03-15'),
+    dateAdded: new Date('2025-01-10')
+  },
+  {
+    id: 'outfit-2',
+    name: 'Business Meeting',
+    items: ['item-2', 'item-4'],
+    occasions: ['formal', 'business'],
+    seasons: ['all'],
+    favorite: false,
+    timesWorn: 2,
+    dateAdded: new Date('2025-02-05')
+  }
+];
 
 const VirtualTryOn = () => {
   const [showInfo, setShowInfo] = useState(false);
   const isMobile = useIsMobile();
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [finalImage, setFinalImage] = useState<string | null>(null);
+  const [selectedOutfit, setSelectedOutfit] = useState<Outfit | null>(null);
+  const [clothingItems] = useState<ClothingItem[]>(sampleClothingItems);
+  
+  const handleUploadPhoto = () => {
+    toast.info("Photo upload functionality coming soon!");
+  };
+  
+  const handleTakePhoto = () => {
+    toast.info("Camera functionality coming soon!");
+  };
   
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -64,11 +104,11 @@ const VirtualTryOn = () => {
             </div>
             
             <div className="flex space-x-2">
-              <Button variant="outline" size="sm" className="gap-2">
+              <Button variant="outline" size="sm" className="gap-2" onClick={handleUploadPhoto}>
                 <Upload className="h-4 w-4" />
                 <span>Upload Photo</span>
               </Button>
-              <Button size="sm" className="gap-2">
+              <Button size="sm" className="gap-2" onClick={handleTakePhoto}>
                 <Camera className="h-4 w-4" />
                 <span>Take Photo</span>
               </Button>
@@ -88,7 +128,12 @@ const VirtualTryOn = () => {
           )}
           
           <motion.div variants={itemVariants} className="glass-dark p-6 rounded-xl border border-white/10">
-            <VirtualFittingRoom />
+            <VirtualFittingRoom 
+              finalImage={finalImage}
+              outfit={selectedOutfit}
+              clothingItems={clothingItems}
+              isProcessing={isProcessing}
+            />
           </motion.div>
         </motion.div>
       </main>
