@@ -1,11 +1,13 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 type Theme = 'light' | 'dark';
 
 type ThemeContextType = {
   theme: Theme;
   setTheme: (theme: Theme) => void;
+  toggleTheme: () => void;
 };
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -26,6 +28,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     return 'light';
   });
 
+  const toggleTheme = () => {
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+    toast.success(`${newTheme === 'dark' ? 'Dark' : 'Light'} mode enabled`);
+  };
+
   useEffect(() => {
     // Update localStorage
     localStorage.setItem('theme', theme);
@@ -33,13 +41,15 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     // Update document class
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light');
     } else {
+      document.documentElement.classList.add('light');
       document.documentElement.classList.remove('dark');
     }
   }, [theme]);
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme }}>
+    <ThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>
       {children}
     </ThemeContext.Provider>
   );

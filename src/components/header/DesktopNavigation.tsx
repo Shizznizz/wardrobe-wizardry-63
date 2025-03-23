@@ -22,10 +22,10 @@ export const DesktopNavigation = ({ navItems, currentPath }: DesktopNavigationPr
             <NavigationMenuLink
               asChild
               className={cn(
-                "inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors",
+                "inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-all duration-300",
                 currentPath === item.path
-                  ? "text-accent bg-accent/10"
-                  : "text-muted-foreground hover:text-accent hover:bg-accent/10"
+                  ? "text-accent bg-accent/10 shadow-sm shadow-accent/20"
+                  : "text-muted-foreground hover:text-accent hover:bg-accent/5 hover:scale-105"
               )}
             >
               <Link to={item.path}>{item.name}</Link>
