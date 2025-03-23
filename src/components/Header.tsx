@@ -189,9 +189,10 @@ const Header = ({ weather }: HeaderProps) => {
         </div>
       </header>
 
+      {/* Mobile menu overlay */}
       {isMenuOpen && (
-        <div className="fixed inset-0 z-[100] md:hidden">
-          <div className="fixed inset-0 bg-white dark:bg-gray-900 flex flex-col">
+        <div className="fixed inset-0 z-[100] md:hidden bg-white dark:bg-gray-900 overflow-hidden">
+          <div className="flex flex-col h-full">
             <div className="flex justify-between items-center p-4 border-b border-gray-100 dark:border-gray-800">
               <Link to="/" className="flex items-center space-x-2">
                 <span className="font-display font-bold text-xl">{getCurrentPageName()}</span>
