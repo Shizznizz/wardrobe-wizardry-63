@@ -56,9 +56,12 @@ const OutfitSuggestion = ({
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-xl font-medium text-white">{outfit.name}</h3>
           {weather && (
-            <div className="flex items-center space-x-2 text-sm text-white/70">
+            <div className="flex items-center space-x-2 bg-black/40 rounded-full py-1.5 px-3 backdrop-blur-sm border border-white/10">
               {getWeatherIcon()}
-              <span>{weather.temperature}°C</span>
+              <span className="text-white font-medium">{weather.temperature}°C</span>
+              {weather.city && (
+                <span className="text-white/90 text-sm hidden sm:inline-block">• {weather.city}</span>
+              )}
             </div>
           )}
         </div>

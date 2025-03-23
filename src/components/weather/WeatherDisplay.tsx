@@ -14,7 +14,7 @@ const WeatherDisplay = ({ weather }: WeatherDisplayProps) => {
   return (
     <div className={`space-y-3 ${isMobile ? 'text-center' : ''}`}>
       {weather.city && (
-        <div className="text-lg font-medium">
+        <div className="text-lg font-medium text-foreground">
           {weather.city}{weather.country ? `, ${weather.country}` : ''}
         </div>
       )}
@@ -23,7 +23,7 @@ const WeatherDisplay = ({ weather }: WeatherDisplayProps) => {
           <WeatherIcon iconName={weather.icon} size={12} />
         </div>
         <div>
-          <div className="text-2xl font-medium">{weather.temperature}°C</div>
+          <div className="text-2xl font-medium text-foreground">{weather.temperature}°C</div>
           <div className="text-sm text-muted-foreground capitalize">{weather.condition}</div>
         </div>
       </div>
