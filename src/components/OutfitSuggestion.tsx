@@ -51,12 +51,12 @@ const OutfitSuggestion = ({
   };
 
   return (
-    <div className="bg-white rounded-xl border shadow-soft overflow-hidden">
+    <div className="glass-dark rounded-xl border border-white/10 overflow-hidden hover:border-white/20 transition-all">
       <div className="p-5">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xl font-medium">{outfit.name}</h3>
+          <h3 className="text-xl font-medium text-white">{outfit.name}</h3>
           {weather && (
-            <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+            <div className="flex items-center space-x-2 text-sm text-white/70">
               {getWeatherIcon()}
               <span>{weather.temperature}°C</span>
             </div>
@@ -66,7 +66,7 @@ const OutfitSuggestion = ({
         <div className="space-y-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {outfitItems.map((item) => (
-              <div key={item.id} className="relative rounded-lg overflow-hidden border bg-white">
+              <div key={item.id} className="relative rounded-lg overflow-hidden border border-white/10 bg-black/20">
                 <div className="aspect-square">
                   <img 
                     src={item.imageUrl} 
@@ -74,8 +74,8 @@ const OutfitSuggestion = ({
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <div className="absolute bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm p-2">
-                  <p className="text-sm font-medium truncate">{item.name}</p>
+                <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm p-2">
+                  <p className="text-sm font-medium truncate text-white">{item.name}</p>
                 </div>
               </div>
             ))}
@@ -86,7 +86,7 @@ const OutfitSuggestion = ({
               <Button 
                 size="sm" 
                 variant="outline"
-                className="h-10 w-10 p-0"
+                className="h-10 w-10 p-0 bg-white/10 border-white/20 text-white hover:bg-white/20 hover:text-white"
                 onClick={onLike}
               >
                 <ThumbsUp className="h-3.5 w-3.5" />
@@ -95,7 +95,7 @@ const OutfitSuggestion = ({
               <Button 
                 size="sm" 
                 variant="outline"
-                className="h-10 w-10 p-0"
+                className="h-10 w-10 p-0 bg-white/10 border-white/20 text-white hover:bg-white/20 hover:text-white"
                 onClick={onDislike}
               >
                 <ThumbsDown className="h-3.5 w-3.5" />
@@ -107,14 +107,14 @@ const OutfitSuggestion = ({
                 <TooltipTrigger asChild>
                   <Button 
                     size="sm"
-                    className="flex items-center space-x-1 group h-10 px-4 text-sm"
+                    className="flex items-center space-x-1 group h-10 px-4 text-sm bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0"
                     onClick={handleWear}
                   >
                     <span>Wear Today</span>
                     <Check className="h-3.5 w-3.5 transition-transform group-hover:scale-110" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>
+                <TooltipContent className="bg-slate-800 border-white/10 text-white">
                   <p>Log this outfit as worn today</p>
                 </TooltipContent>
               </Tooltip>

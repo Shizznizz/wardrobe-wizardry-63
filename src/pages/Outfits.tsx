@@ -485,7 +485,7 @@ const Outfits = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white">
       <Header weather={weather || undefined} />
       
       <main className="container mx-auto px-4 pt-24 pb-16">
@@ -497,18 +497,18 @@ const Outfits = () => {
         >
           <motion.section variants={itemVariants} className="space-y-6">
             <div className="text-center">
-              <h1 className="text-3xl md:text-4xl font-bold mb-3">Let us help you start the day as good as possible</h1>
-              <p className="text-lg text-muted-foreground mb-6">
-                And that is by choosing the right outfit for today's weather!
+              <h1 className="text-3xl md:text-4xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">Let us help you start the day in style</h1>
+              <p className="text-lg text-white/80 mb-6">
+                Choose the perfect outfit for today's weather with our smart suggestions
               </p>
             </div>
             
             <div className={`grid ${isMobile ? '' : 'md:grid-cols-2'} gap-6 items-start mb-8`}>
               <div className={`space-y-4 ${isMobile ? 'w-full px-2' : ''}`}>
-                <h2 className={`text-2xl font-bold ${isMobile ? 'text-center' : ''}`}>Today's Weather</h2>
+                <h2 className={`text-2xl font-bold ${isMobile ? 'text-center' : ''} bg-clip-text text-transparent bg-gradient-to-r from-blue-300 to-purple-300`}>Today's Weather</h2>
                 
                 {showLocationAlert && (
-                  <Alert variant="destructive" className="mb-4">
+                  <Alert variant="destructive" className="mb-4 border-red-500/50 bg-red-950/50 backdrop-blur-sm">
                     <AlertTriangle className="h-4 w-4" />
                     <AlertTitle>Missing Location Information</AlertTitle>
                     <AlertDescription>
@@ -525,20 +525,20 @@ const Outfits = () => {
                         name="country"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Country</FormLabel>
+                            <FormLabel className="text-white/90">Country</FormLabel>
                             <Select 
                               onValueChange={field.onChange} 
                               value={field.value}
                               defaultValue={field.value}
                             >
                               <FormControl>
-                                <SelectTrigger>
+                                <SelectTrigger className="bg-white/10 border-white/20 backdrop-blur-md text-white">
                                   <SelectValue placeholder="Select country" />
                                 </SelectTrigger>
                               </FormControl>
-                              <SelectContent>
+                              <SelectContent className="bg-slate-800/95 border-white/10 backdrop-blur-xl text-white">
                                 {countries.map((country) => (
-                                  <SelectItem key={country.code} value={country.code}>
+                                  <SelectItem key={country.code} value={country.code} className="focus:bg-purple-700/30 focus:text-white">
                                     {country.name}
                                   </SelectItem>
                                 ))}
@@ -553,7 +553,7 @@ const Outfits = () => {
                         name="city"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>City</FormLabel>
+                            <FormLabel className="text-white/90">City</FormLabel>
                             <Select 
                               onValueChange={field.onChange} 
                               value={field.value}
@@ -561,13 +561,13 @@ const Outfits = () => {
                               disabled={!selectedCountry}
                             >
                               <FormControl>
-                                <SelectTrigger>
+                                <SelectTrigger className="bg-white/10 border-white/20 backdrop-blur-md text-white">
                                   <SelectValue placeholder={selectedCountry ? "Select city" : "Select country first"} />
                                 </SelectTrigger>
                               </FormControl>
-                              <SelectContent>
+                              <SelectContent className="bg-slate-800/95 border-white/10 backdrop-blur-xl text-white">
                                 {availableCities.map((city) => (
-                                  <SelectItem key={city} value={city}>
+                                  <SelectItem key={city} value={city} className="focus:bg-purple-700/30 focus:text-white">
                                     {city}
                                   </SelectItem>
                                 ))}
@@ -582,7 +582,7 @@ const Outfits = () => {
                       type="submit" 
                       variant="outline" 
                       size="sm"
-                      className={`flex items-center gap-2 ${isMobile ? 'mx-auto' : ''}`}
+                      className={`flex items-center gap-2 ${isMobile ? 'mx-auto' : ''} bg-white/10 border-white/20 backdrop-blur-sm hover:bg-white/20 text-white`}
                       disabled={!selectedCountry || !form.watch("city")}
                     >
                       <MapPin className="h-4 w-4" />
@@ -592,7 +592,7 @@ const Outfits = () => {
                 </Form>
                 
                 <WeatherWidget
-                  className={`${isMobile ? 'max-w-[280px] mx-auto' : 'w-full'}`}
+                  className={`${isMobile ? 'max-w-[280px] mx-auto' : 'w-full'} glass-dark`}
                   onWeatherChange={handleWeatherChange}
                   city={selectedLocation.city}
                   country={selectedLocation.country}
@@ -600,30 +600,30 @@ const Outfits = () => {
                 />
                 
                 {!isWeatherLoading && weather && (
-                  <div className={`bg-accent/20 p-4 rounded-lg border ${isMobile ? 'text-center' : ''}`}>
-                    <p className="font-medium">{getWeatherRecommendation()}</p>
+                  <div className={`bg-purple-800/30 p-4 rounded-lg border border-white/10 backdrop-blur-md ${isMobile ? 'text-center' : ''}`}>
+                    <p className="font-medium text-white/90">{getWeatherRecommendation()}</p>
                   </div>
                 )}
               </div>
               
               <div className="space-y-4">
-                <h2 className={`text-2xl font-bold ${isMobile ? 'text-center' : ''}`}>Today's Suggestion</h2>
+                <h2 className={`text-2xl font-bold ${isMobile ? 'text-center' : ''} bg-clip-text text-transparent bg-gradient-to-r from-purple-300 to-pink-300`}>Today's Suggestion</h2>
                 {isWeatherLoading ? (
-                  <div className="border rounded-lg p-6 bg-white shadow-soft">
+                  <div className="glass-dark rounded-lg p-6 border border-white/10">
                     <div className="flex items-center gap-4 mb-4">
-                      <Skeleton className="h-12 w-12 rounded-full" />
+                      <Skeleton className="h-12 w-12 rounded-full bg-white/5" />
                       <div>
-                        <Skeleton className="h-6 w-32 mb-2" />
-                        <Skeleton className="h-4 w-24" />
+                        <Skeleton className="h-6 w-32 mb-2 bg-white/5" />
+                        <Skeleton className="h-4 w-24 bg-white/5" />
                       </div>
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
-                      <Skeleton className="aspect-square rounded-md" />
-                      <Skeleton className="aspect-square rounded-md" />
-                      <Skeleton className="aspect-square rounded-md hidden sm:block" />
+                      <Skeleton className="aspect-square rounded-md bg-white/5" />
+                      <Skeleton className="aspect-square rounded-md bg-white/5" />
+                      <Skeleton className="aspect-square rounded-md hidden sm:block bg-white/5" />
                     </div>
                     <div className="flex justify-end">
-                      <Skeleton className="h-10 w-28" />
+                      <Skeleton className="h-10 w-28 bg-white/5" />
                     </div>
                   </div>
                 ) : (
@@ -642,7 +642,7 @@ const Outfits = () => {
                   <Button 
                     variant="secondary" 
                     onClick={handleRegenerateOutfit}
-                    className="flex items-center justify-center w-full gap-2 h-12 text-base"
+                    className="flex items-center justify-center w-full gap-2 h-12 text-base bg-white/10 border border-white/20 text-white hover:bg-white/20"
                     disabled={isWeatherLoading}
                   >
                     <RefreshCw className="h-5 w-5" />
@@ -658,14 +658,14 @@ const Outfits = () => {
                         to="/try-on"
                         className={cn(
                           buttonVariants({ variant: "default" }),
-                          "w-full h-14 text-base font-semibold gap-2 relative group overflow-hidden bg-gradient-to-r from-primary to-primary-foreground hover:from-primary-foreground hover:to-primary transition-all duration-300"
+                          "w-full h-14 text-base font-semibold gap-2 relative group overflow-hidden bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0"
                         )}
                       >
                         <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                         <Camera className="h-5 w-5 transition-transform group-hover:scale-110" />
                         <span>Try These Clothes On Your Photo!</span>
                       </Link>
-                      <p className="text-xs text-center mt-2 text-muted-foreground">
+                      <p className="text-xs text-center mt-2 text-white/70">
                         See how these clothes look on you with our virtual try-on feature
                       </p>
                     </div>
@@ -676,24 +676,24 @@ const Outfits = () => {
           </motion.section>
           
           <motion.section variants={itemVariants} className="space-y-6">
-            <h2 className="text-3xl font-bold">My Outfits</h2>
+            <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">My Outfits</h2>
             
             {outfits.length === 0 ? (
-              <div className="flex flex-col items-center justify-center border rounded-lg p-10 space-y-4 bg-gray-50">
-                <p className="text-muted-foreground text-center">
+              <div className="flex flex-col items-center justify-center glass-dark rounded-lg p-10 space-y-4">
+                <p className="text-white/70 text-center">
                   You haven't created any outfits yet.
                 </p>
-                <Button>Create Your First Outfit</Button>
+                <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0">Create Your First Outfit</Button>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {outfits.map(outfit => (
-                  <div key={outfit.id} className="border rounded-lg overflow-hidden bg-white shadow-soft hover:shadow-hover transition-all">
+                  <div key={outfit.id} className="glass-dark rounded-lg overflow-hidden border border-white/10 hover:border-white/20 transition-all hover:-translate-y-1">
                     <div className="p-4">
-                      <h3 className="text-xl font-medium">{outfit.name}</h3>
+                      <h3 className="text-xl font-medium text-white">{outfit.name}</h3>
                       <div className="flex mt-1 space-x-2">
                         {outfit.seasons.map(season => (
-                          <span key={season} className="text-xs py-0.5 px-2 bg-secondary rounded-full capitalize">
+                          <span key={season} className="text-xs py-0.5 px-2 bg-purple-900/40 rounded-full capitalize">
                             {season}
                           </span>
                         ))}
@@ -703,7 +703,7 @@ const Outfits = () => {
                         {outfit.items.slice(0, 3).map(itemId => {
                           const item = sampleClothingItems.find(i => i.id === itemId);
                           return item ? (
-                            <div key={item.id} className="aspect-square rounded-md overflow-hidden border">
+                            <div key={item.id} className="aspect-square rounded-md overflow-hidden border border-white/10">
                               <img 
                                 src={item.imageUrl} 
                                 alt={item.name} 
@@ -715,14 +715,14 @@ const Outfits = () => {
                       </div>
                       
                       <div className="flex justify-between items-center mt-4">
-                        <div className="text-sm text-muted-foreground">
+                        <div className="text-sm text-white/70">
                           Worn {outfit.timesWorn} times
                         </div>
                         <Button 
                           variant="ghost" 
                           size="sm"
                           onClick={() => handleToggleFavorite(outfit.id)}
-                          className={outfit.favorite ? "text-red-500" : ""}
+                          className={outfit.favorite ? "text-red-500" : "text-white/80 hover:text-white hover:bg-white/10"}
                         >
                           {outfit.favorite ? "Favorited" : "Add to Favorites"}
                         </Button>
@@ -740,3 +740,4 @@ const Outfits = () => {
 };
 
 export default Outfits;
+
