@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -155,7 +154,7 @@ const Index = () => {
                   <div className="h-16 w-16 rounded-2xl flex items-center justify-center mb-6 bg-gradient-to-br from-pink-500/20 to-pink-500/5 border border-pink-400/20">
                     <Sparkles className="h-8 w-8 text-pink-400" />
                   </div>
-                  <h3 className="text-2xl font-bold mb-3 text-pink-200">Virtual Try-On</h3>
+                  <h3 className="text-2xl font-bold mb-3 text-pink-200">Showcase</h3>
                   <p className="text-pink-100/80">
                     See exactly how outfits look on you with our cutting-edge virtual fitting room.
                   </p>

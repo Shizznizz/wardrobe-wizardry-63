@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import * as tf from '@tensorflow/tfjs';
@@ -13,7 +12,6 @@ import OutfitSelector from '@/components/OutfitSelector';
 import VirtualFittingRoom from '@/components/VirtualFittingRoom';
 import { Card, CardContent } from '@/components/ui/card';
 
-// Local storage key for saving the user photo
 const USER_PHOTO_STORAGE_KEY = 'userVirtualTryOnPhoto';
 
 const VirtualTryOn = () => {
@@ -25,7 +23,6 @@ const VirtualTryOn = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [bodyPixModel, setBodyPixModel] = useState<bodyPix.BodyPix | null>(null);
 
-  // Load BodyPix model on component mount
   useEffect(() => {
     const loadModel = async () => {
       try {
@@ -50,7 +47,6 @@ const VirtualTryOn = () => {
     loadModel();
   }, []);
 
-  // Load the saved user photo from localStorage on component mount
   useEffect(() => {
     const savedPhoto = localStorage.getItem(USER_PHOTO_STORAGE_KEY);
     if (savedPhoto) {
@@ -69,15 +65,12 @@ const VirtualTryOn = () => {
       reader.onload = (event) => {
         const photoData = event.target?.result as string;
         setUserPhoto(photoData);
-        setFinalImage(null); // Reset final image when new photo is uploaded
+        setFinalImage(null);
         
-        // Save the photo to localStorage
         try {
           localStorage.setItem(USER_PHOTO_STORAGE_KEY, photoData);
         } catch (error) {
           console.error('Error saving photo to localStorage:', error);
-          // If localStorage fails (e.g., quota exceeded), still set the photo in state
-          // but inform the user it won't persist
           toast.error('Unable to save your photo for future sessions. The photo will be available only for this session.');
         }
       };
@@ -100,13 +93,8 @@ const VirtualTryOn = () => {
       setIsProcessing(true);
       toast.info('Processing your image. This may take a few moments...');
 
-      // In a real implementation, this would use bodyPix to segment the body
-      // and apply the selected outfit to the user's photo
-      
-      // Simulated processing delay
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // For now, we'll just show a placeholder result
       setFinalImage(userPhoto);
       
       toast.success('Virtual try-on complete!');
