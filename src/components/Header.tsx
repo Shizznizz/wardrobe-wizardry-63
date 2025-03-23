@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, Sun, CloudSun, Cloud, CloudRain, Umbrella, LogOut, User, Camera } from 'lucide-react';
