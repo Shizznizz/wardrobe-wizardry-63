@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, Sun, CloudSun, Cloud, CloudRain, Umbrella, LogOut, User, Camera } from 'lucide-react';
@@ -172,7 +173,7 @@ const Header = ({ weather }: HeaderProps) => {
         </div>
 
         {isMenuOpen && (
-          <div className="fixed inset-0 z-highest mobile-menu-overlay">
+          <div className="fixed inset-0 z-100 mobile-menu-overlay">
             <div className="fixed inset-0 bg-white dark:bg-gray-900 mobile-menu">
               <div className="h-full flex flex-col p-4">
                 <div className="flex justify-between items-center py-4">

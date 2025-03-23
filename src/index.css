@@ -170,6 +170,11 @@
     z-index: 9999 !important;
   }
   
+  /* Custom z-index for mobile menu */
+  .z-100 {
+    z-index: 100 !important;
+  }
+  
   /* Mobile menu styles */
   .mobile-menu {
     background-color: white !important;
