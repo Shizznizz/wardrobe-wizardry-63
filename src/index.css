@@ -111,11 +111,58 @@
   }
   
   .glass-dark {
-    @apply bg-black/10 backdrop-blur-lg border border-white/10;
+    @apply bg-black/10 backdrop-blur-lg border border-white/10 shadow-lg;
   }
 
   .neo-blur {
     @apply backdrop-blur-2xl bg-black/40 border border-white/10;
+  }
+
+  /* Futuristic elements */
+  .glow {
+    @apply relative;
+  }
+
+  .glow::before {
+    content: '';
+    @apply absolute inset-0 -z-10 bg-gradient-to-r from-blue-500 to-purple-500 opacity-50 blur-xl rounded-full;
+    animation: pulse 3s infinite alternate;
+  }
+
+  @keyframes pulse {
+    0% {
+      opacity: 0.3;
+      transform: scale(0.95);
+    }
+    100% {
+      opacity: 0.7;
+      transform: scale(1.05);
+    }
+  }
+
+  .futuristic-border {
+    @apply relative rounded-xl p-[1px] overflow-hidden;
+    background: linear-gradient(270deg, #3a8bff 0%, #9e5eff 100%);
+  }
+
+  .futuristic-border::before {
+    content: '';
+    @apply absolute inset-0 rounded-xl;
+    background: linear-gradient(270deg, rgba(58, 139, 255, 0.5) 0%, rgba(158, 94, 255, 0.5) 100%);
+    background-size: 200% 200%;
+    animation: borderFlow 3s linear infinite;
+  }
+
+  @keyframes borderFlow {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
   }
 
   /* Prevent z-index stacking issues */
@@ -179,5 +226,29 @@
   
   .nav-link-inactive {
     @apply text-muted-foreground hover:text-accent;
+  }
+
+  /* Futuristic button */
+  .btn-futuristic {
+    @apply relative overflow-hidden bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl text-lg px-8 py-6 h-auto transition-all shadow-xl hover:shadow-purple-500/20;
+  }
+
+  .btn-futuristic::before {
+    content: '';
+    @apply absolute inset-0 w-full h-full bg-gradient-to-r from-blue-400/30 to-purple-400/30 opacity-0 transition-opacity;
+  }
+
+  .btn-futuristic:hover::before {
+    @apply opacity-100;
+  }
+
+  /* Futuristic card */
+  .card-futuristic {
+    @apply glass-dark p-8 rounded-2xl border border-white/10 backdrop-blur-lg shadow-lg transition-all duration-300;
+  }
+
+  .card-futuristic:hover {
+    @apply shadow-lg shadow-blue-500/10;
+    transform: translateY(-8px);
   }
 }

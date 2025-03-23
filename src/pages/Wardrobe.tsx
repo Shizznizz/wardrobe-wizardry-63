@@ -55,7 +55,7 @@ const Wardrobe = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white">
       <Header />
       
       <main className="container mx-auto px-4 pt-24 pb-16">
@@ -66,11 +66,11 @@ const Wardrobe = () => {
           variants={containerVariants}
         >
           <motion.div variants={itemVariants} className="flex flex-wrap justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold">My Wardrobe</h1>
+            <h1 className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">My Wardrobe</h1>
             <UploadModal onUpload={handleUpload} />
           </motion.div>
           
-          <motion.div variants={itemVariants}>
+          <motion.div variants={itemVariants} className="glass-dark p-6 rounded-xl border border-white/10">
             <WardrobeGrid 
               items={items} 
               onToggleFavorite={handleToggleFavorite} 

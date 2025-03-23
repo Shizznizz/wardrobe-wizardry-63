@@ -68,7 +68,7 @@ const Settings = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white">
       <Header />
       
       <main className="container mx-auto px-4 pt-24 pb-16">
@@ -79,17 +79,20 @@ const Settings = () => {
           variants={containerVariants}
         >
           <motion.div variants={itemVariants}>
-            <h1 className="text-3xl font-bold mb-8">Settings</h1>
+            <h1 className="text-3xl font-bold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">Settings</h1>
             
             <div className="space-y-6">
               <div className="grid gap-6">
-                <div className="border rounded-lg p-4 space-y-4 border-border bg-card text-card-foreground">
-                  <h2 className="text-xl font-medium">Appearance</h2>
+                <motion.div 
+                  variants={itemVariants}
+                  className="glass-dark rounded-xl border border-white/10 p-6 space-y-4"
+                >
+                  <h2 className="text-xl font-medium text-blue-200">Appearance</h2>
                   
                   <div className="flex items-center justify-between">
                     <div>
-                      <Label htmlFor="dark-mode" className="font-medium">Dark Mode</Label>
-                      <p className="text-sm text-muted-foreground">
+                      <Label htmlFor="dark-mode" className="font-medium text-white">Dark Mode</Label>
+                      <p className="text-sm text-blue-100/80">
                         Enable dark mode for a darker UI theme
                       </p>
                     </div>
@@ -99,15 +102,18 @@ const Settings = () => {
                       onCheckedChange={handleToggleDarkMode} 
                     />
                   </div>
-                </div>
+                </motion.div>
                 
-                <div className="border rounded-lg p-4 space-y-4 border-border bg-card text-card-foreground">
-                  <h2 className="text-xl font-medium">Notifications</h2>
+                <motion.div 
+                  variants={itemVariants}
+                  className="glass-dark rounded-xl border border-white/10 p-6 space-y-4"
+                >
+                  <h2 className="text-xl font-medium text-blue-200">Notifications</h2>
                   
                   <div className="flex items-center justify-between">
                     <div>
-                      <Label htmlFor="notifications" className="font-medium">Push Notifications</Label>
-                      <p className="text-sm text-muted-foreground">
+                      <Label htmlFor="notifications" className="font-medium text-white">Push Notifications</Label>
+                      <p className="text-sm text-blue-100/80">
                         Receive notifications about weather and outfit suggestions
                       </p>
                     </div>
@@ -117,15 +123,18 @@ const Settings = () => {
                       onCheckedChange={handleToggleNotifications} 
                     />
                   </div>
-                </div>
+                </motion.div>
                 
-                <div className="border rounded-lg p-4 space-y-4 border-border bg-card text-card-foreground">
-                  <h2 className="text-xl font-medium">Data Management</h2>
+                <motion.div 
+                  variants={itemVariants}
+                  className="glass-dark rounded-xl border border-white/10 p-6 space-y-4"
+                >
+                  <h2 className="text-xl font-medium text-blue-200">Data Management</h2>
                   
                   <form onSubmit={handleExportData} className="grid gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="export-email">Export Wardrobe Data</Label>
-                      <p className="text-sm text-muted-foreground mb-2">
+                      <Label htmlFor="export-email" className="text-white">Export Wardrobe Data</Label>
+                      <p className="text-sm text-blue-100/80 mb-2">
                         We'll send your wardrobe data to the email address you provide.
                       </p>
                       <div className="flex items-center gap-2">
@@ -135,8 +144,13 @@ const Settings = () => {
                           placeholder="your@email.com" 
                           value={dataExportEmail}
                           onChange={(e) => setDataExportEmail(e.target.value)}
+                          className="bg-white/5 border-white/10 text-white placeholder:text-white/50"
                         />
-                        <Button type="submit" className="shrink-0" disabled={isSubmitting}>
+                        <Button 
+                          type="submit" 
+                          className="shrink-0 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700" 
+                          disabled={isSubmitting}
+                        >
                           <Download className="h-4 w-4 mr-2" />
                           <span>Export</span>
                         </Button>
@@ -145,27 +159,33 @@ const Settings = () => {
                   </form>
                   
                   <div className="space-y-2 pt-2">
-                    <Label htmlFor="reset-data">Reset All Data</Label>
-                    <p className="text-sm text-muted-foreground mb-2">
+                    <Label htmlFor="reset-data" className="text-white">Reset All Data</Label>
+                    <p className="text-sm text-blue-100/80 mb-2">
                       Clear all your wardrobe data and start fresh. This action cannot be undone.
                     </p>
-                    <Button variant="outline" className="w-full sm:w-auto">
+                    <Button 
+                      variant="outline" 
+                      className="w-full sm:w-auto border-white/20 text-white hover:bg-white/10"
+                    >
                       <RotateCcw className="h-4 w-4 mr-2" />
                       <span>Reset Data</span>
                     </Button>
                   </div>
                   
                   <div className="space-y-2 pt-2">
-                    <Label htmlFor="delete-account" className="text-destructive">Delete Account</Label>
-                    <p className="text-sm text-muted-foreground mb-2">
+                    <Label htmlFor="delete-account" className="text-pink-400">Delete Account</Label>
+                    <p className="text-sm text-blue-100/80 mb-2">
                       Permanently delete your account and all associated data.
                     </p>
-                    <Button variant="destructive" className="w-full sm:w-auto">
+                    <Button 
+                      variant="destructive" 
+                      className="w-full sm:w-auto bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700"
+                    >
                       <Trash2 className="h-4 w-4 mr-2" />
                       <span>Delete Account</span>
                     </Button>
                   </div>
-                </div>
+                </motion.div>
               </div>
             </div>
           </motion.div>
