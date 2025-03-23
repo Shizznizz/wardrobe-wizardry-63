@@ -114,6 +114,10 @@
     @apply bg-black/10 backdrop-blur-lg border border-white/10;
   }
 
+  .neo-blur {
+    @apply backdrop-blur-2xl bg-black/40 border border-white/10;
+  }
+
   /* Prevent z-index stacking issues */
   .z-highest {
     z-index: 9999 !important;
