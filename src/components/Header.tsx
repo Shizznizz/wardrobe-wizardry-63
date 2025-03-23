@@ -85,6 +85,7 @@ const Header = ({ weather }: HeaderProps) => {
       { name: 'Wardrobe', path: '/wardrobe' },
       { name: 'Outfits', path: '/outfits' },
       { name: 'Showcase', path: '/try-on' },
+      { name: 'New Clothes', path: '/new-clothes' },
       { name: 'Settings', path: '/settings' },
     ];
   }
@@ -143,7 +144,7 @@ const Header = ({ weather }: HeaderProps) => {
                   <User className="h-5 w-5" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent align="end" className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-lg">
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
