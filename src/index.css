@@ -192,6 +192,7 @@
     width: 100% !important;
     height: 100% !important;
     overflow: hidden !important;
+    z-index: 9999 !important;
   }
 }
 

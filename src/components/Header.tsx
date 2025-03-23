@@ -172,65 +172,64 @@ const Header = ({ weather }: HeaderProps) => {
         </div>
 
         {isMenuOpen && (
-          <div className="fixed inset-0 z-[999] mobile-menu-overlay">
-            <div className="fixed inset-0 bg-white dark:bg-gray-900 mobile-menu">
-              <div className="h-full flex flex-col p-4">
-                <div className="flex justify-between items-center py-4">
-                  <Link to="/" className="flex items-center space-x-2">
-                    <span className="font-display font-bold text-xl">{getCurrentPageName()}</span>
-                  </Link>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    <X className="h-5 w-5" />
-                  </Button>
-                </div>
-
-                <nav className="flex flex-col items-center mt-4 pt-2 space-y-6">
-                  {navItems.map((item) => (
-                    <Link
-                      key={item.path}
-                      to={item.path}
-                      className={cn(
-                        "text-xl font-medium transition-colors",
-                        location.pathname === item.path
-                          ? "text-accent bg-accent/10"
-                          : "text-muted-foreground hover:text-accent hover:bg-accent/10"
-                      )}
-                    >
-                      {item.name}
-                    </Link>
-                  ))}
-                  
-                  {!user && (
-                    <Link
-                      to="/auth"
-                      className="text-xl font-medium text-primary hover:text-primary/80"
-                    >
-                      Sign In
-                    </Link>
-                  )}
-                </nav>
-
-                {weather && (
-                  <div className="flex items-center justify-center space-x-2 py-6 mt-auto mb-6">
-                    {getWeatherIcon()}
-                    <span className="text-sm font-medium">{weather.temperature}° {weather.condition}</span>
-                  </div>
-                )}
-                
-                {user && (
-                  <button
-                    onClick={handleSignOut}
-                    className="text-xl font-medium text-red-500 hover:text-red-600 flex items-center justify-center gap-2 mt-auto mb-8"
-                  >
-                    <LogOut className="h-5 w-5" />
-                    Sign out
-                  </button>
-                )}
+          <div className="fixed inset-0 z-[9999] bg-white dark:bg-gray-900 mobile-menu-overlay" style={{ position: 'fixed', top: 0, bottom: 0, left: 0, right: 0, width: '100%', height: '100%' }}>
+            <div className="h-full flex flex-col p-4">
+              <div className="flex justify-between items-center py-4">
+                <Link to="/" className="flex items-center space-x-2">
+                  <span className="font-display font-bold text-xl">{getCurrentPageName()}</span>
+                </Link>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="text-accent hover:bg-accent/10 hover:text-accent-foreground"
+                >
+                  <X className="h-6 w-6 text-red-500" />
+                </Button>
               </div>
+
+              <nav className="flex flex-col items-center mt-4 pt-2 space-y-6">
+                {navItems.map((item) => (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className={cn(
+                      "text-xl font-medium transition-colors",
+                      location.pathname === item.path
+                        ? "text-accent bg-accent/10"
+                        : "text-muted-foreground hover:text-accent hover:bg-accent/10"
+                    )}
+                  >
+                    {item.name}
+                  </Link>
+                ))}
+                
+                {!user && (
+                  <Link
+                    to="/auth"
+                    className="text-xl font-medium text-primary hover:text-primary/80"
+                  >
+                    Sign In
+                  </Link>
+                )}
+              </nav>
+
+              {weather && (
+                <div className="flex items-center justify-center space-x-2 py-6 mt-auto mb-6">
+                  {getWeatherIcon()}
+                  <span className="text-sm font-medium">{weather.temperature}° {weather.condition}</span>
+                </div>
+              )}
+              
+              {user && (
+                <button
+                  onClick={handleSignOut}
+                  className="text-xl font-medium text-red-500 hover:text-red-600 flex items-center justify-center gap-2 mt-auto mb-8"
+                >
+                  <LogOut className="h-5 w-5" />
+                  Sign out
+                </button>
+              )}
             </div>
           </div>
         )}
