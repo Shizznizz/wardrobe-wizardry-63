@@ -126,7 +126,7 @@ const WeatherWidget = ({
   }, [city, country, onWeatherChange]);
 
   return (
-    <Card className={cn("overflow-hidden bg-white shadow-soft backdrop-blur-sm mx-auto", className)}>
+    <Card className={cn("overflow-hidden bg-black/30 backdrop-blur-sm shadow-soft border border-white/20 text-white mx-auto", className)}>
       <CardContent className="p-4">
         {isLoading ? (
           <WeatherLoading />
