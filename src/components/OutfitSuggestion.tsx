@@ -144,7 +144,7 @@ const OutfitSuggestion = ({
           {weather && (
             <div className="text-sm text-gray-600 mb-3">
               <span className="font-medium">Weather: </span>
-              {weather.temp}°C, {weather.description}
+              {weather.temperature}°C, {weather.condition}
             </div>
           )}
           

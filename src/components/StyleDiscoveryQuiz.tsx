@@ -1,7 +1,8 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Coffee, Sparkles, Party, Umbrella, Sunset, Moon, Check, ArrowRight, X } from 'lucide-react';
+import { Coffee, Sparkles, Umbrella, Sunset, Moon, Check, ArrowRight, X } from 'lucide-react';
+import { Party } from '@/components/ui/icons';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
