@@ -140,16 +140,16 @@ const Index = () => {
         )}
       </div>
       
-      <main className="container mx-auto px-4 pt-24 pb-16 relative z-10">
+      <main className="container mx-auto px-4 pt-32 pb-16 relative z-10">
         <motion.div 
           className="space-y-12"
           initial="hidden"
           animate="visible"
           variants={containerVariants}
         >
-          <motion.section variants={itemVariants} className="flex flex-col items-center justify-center text-center space-y-8 relative min-h-[60vh] flex items-center justify-center">
+          <motion.section variants={itemVariants} className="flex flex-col items-center justify-center text-center space-y-8 relative min-h-[70vh] flex items-center justify-center">
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center">
-              <div className="relative inline-block -mt-20">
+              <div className="relative inline-block -mt-32">
                 <motion.div 
                   className="absolute -inset-1 rounded-lg bg-gradient-to-r from-purple-600 via-blue-500 to-purple-600 opacity-75 blur-xl"
                   animate={{ 
@@ -176,11 +176,11 @@ const Index = () => {
                 className="w-24 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full mb-4 mt-8"
               />
               
-              <p className="text-xl text-blue-100 max-w-2xl backdrop-blur-sm py-4 px-6 rounded-lg border border-white/10 shadow-lg neo-blur mt-10">
+              <p className="text-xl text-blue-100 max-w-2xl backdrop-blur-sm py-4 px-6 rounded-lg border border-white/10 shadow-lg neo-blur mt-16">
                 Smarter styling starts here. AI-curated outfits that fit your style, your body, and your weather.
               </p>
               
-              <div className="flex flex-wrap gap-6 justify-center mt-10">
+              <div className="flex flex-wrap gap-6 justify-center mt-16">
                 <motion.div
                   whileHover={{ 
                     scale: 1.05,
