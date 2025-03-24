@@ -176,7 +176,7 @@ const Index = () => {
                 className="w-24 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full mb-4 mt-8"
               />
               
-              <p className="text-xl text-blue-100 max-w-2xl backdrop-blur-sm py-4 px-6 rounded-lg border border-white/10 shadow-lg neo-blur">
+              <p className="text-xl text-blue-100 max-w-2xl backdrop-blur-sm py-4 px-6 rounded-lg border border-white/10 shadow-lg neo-blur mt-8">
                 Smarter styling starts here. AI-curated outfits that fit your style, your body, and your weather.
               </p>
               
