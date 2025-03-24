@@ -10,7 +10,7 @@ import { ClothingItem } from '@/lib/types';
 import { sampleClothingItems, sampleOutfits, sampleUserPreferences } from '@/lib/wardrobeData';
 import { toast } from 'sonner';
 import { Confetti } from '@/components/ui/confetti';
-import { ArrowUpDown, Info, Shirt, Sparkles } from 'lucide-react';
+import { ArrowUpDown, Info, Shirt, Sparkles, LayoutGrid } from 'lucide-react';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -192,25 +192,28 @@ const Wardrobe = () => {
                 </ToggleGroup>
               </div>
               
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center">
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <div className="flex items-center space-x-2 bg-slate-900/50 p-2 pr-3 rounded-full backdrop-blur-sm border border-white/5 shadow-md transition-all duration-300 hover:border-purple-500/30">
+                      <div className="flex items-center gap-2 bg-slate-900/60 p-2 pl-3 pr-4 rounded-full backdrop-blur-sm border border-white/10 shadow-md transition-all duration-300 hover:border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/10 group">
                         <Switch 
                           id="compact-view" 
                           checked={showCompactView} 
                           onCheckedChange={setShowCompactView} 
-                          className="data-[state=checked]:bg-gradient-to-r from-indigo-500 to-purple-500"
+                          className="data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-indigo-600 data-[state=checked]:to-purple-600 data-[state=unchecked]:bg-slate-700/60"
                         />
-                        <Label htmlFor="compact-view" className="text-sm text-gray-300 cursor-pointer">
+                        <Label 
+                          htmlFor="compact-view" 
+                          className="text-xs font-medium text-gray-300 cursor-pointer transition-colors group-hover:text-white flex items-center gap-1.5"
+                        >
+                          <LayoutGrid className="h-3.5 w-3.5 text-gray-400 group-hover:text-indigo-300 transition-colors" />
                           Compact View
                         </Label>
-                        <Info className="h-4 w-4 text-gray-400" />
                       </div>
                     </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="text-sm">Show simplified view with fewer tags and smaller images</p>
+                    <TooltipContent className="bg-slate-900/90 border-white/10 text-white">
+                      <p className="text-xs">Show simplified view with fewer tags and smaller images</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
