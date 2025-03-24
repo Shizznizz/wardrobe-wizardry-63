@@ -731,7 +731,6 @@ const WardrobeGrid = ({ items, onToggleFavorite, compactView = false }: Wardrobe
             : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
         )}>
           {filteredItems.map((item) => {
-            const suggestionItem = getQuickOutfitSuggestion(item);
             return (
               <motion.div 
                 key={item.id} 
@@ -824,25 +823,6 @@ const WardrobeGrid = ({ items, onToggleFavorite, compactView = false }: Wardrobe
                         ))}
                       </div>
                     </>
-                  )}
-                  
-                  {suggestionItem && !compactView && (
-                    <div className="mt-3 border-t border-white/10 pt-2">
-                      <p className="text-xs text-gray-400 mb-1">Try with:</p>
-                      <div className="flex items-center gap-2">
-                        <div className="h-10 w-10 rounded overflow-hidden border border-white/10">
-                          <img 
-                            src={suggestionItem.imageUrl} 
-                            alt={suggestionItem.name} 
-                            className="h-full w-full object-cover"
-                          />
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-xs font-medium truncate">{suggestionItem.name}</p>
-                          <p className="text-xs text-gray-400 capitalize">{suggestionItem.type}</p>
-                        </div>
-                      </div>
-                    </div>
                   )}
                   
                   <Button 
