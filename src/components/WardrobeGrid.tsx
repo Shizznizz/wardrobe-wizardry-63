@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { ClothingItem, ClothingType, ClothingColor, ClothingSeason, Outfit, ClothingOccasion, ClothingMaterial } from '@/lib/types';
 import { cn } from '@/lib/utils';
@@ -259,7 +258,6 @@ const WardrobeGrid = ({ items, onToggleFavorite, compactView = false }: Wardrobe
     setExpandedTagsItem(expandedTagsItem === itemId ? null : itemId);
   };
 
-  // Maximum number of tags to show before "more" indicator
   const MAX_TAGS = 3;
 
   const materialOptions: ClothingMaterial[] = ['cotton', 'wool', 'silk', 'polyester', 'leather', 'denim', 'linen', 'other'];
@@ -733,10 +731,15 @@ const WardrobeGrid = ({ items, onToggleFavorite, compactView = false }: Wardrobe
                 key={item.id} 
                 className={cn(
                   "group relative rounded-2xl border overflow-hidden bg-white/10 backdrop-blur-sm transition-all hover-card cursor-pointer shadow-lg flex flex-col",
-                  compactView ? "border-white/5" : "border-white/10"
+                  compactView ? "border-white/5" : "border-white/10",
+                  "hover:border-purple-500/40 hover:shadow-xl hover:shadow-purple-500/10"
                 )}
                 onClick={() => handleItemClick(item)}
-                whileHover={{ y: -5, boxShadow: "0 10px 25px rgba(0, 0, 0, 0.1)" }}
+                whileHover={{ 
+                  y: -5, 
+                  boxShadow: "0 15px 30px rgba(139, 92, 246, 0.15)", 
+                  borderColor: "rgba(139, 92, 246, 0.4)" 
+                }}
                 transition={{ type: "spring", stiffness: 300, damping: 10 }}
               >
                 <div className={cn("overflow-hidden", compactView ? "aspect-[3/4]" : "aspect-square")}>
@@ -893,8 +896,8 @@ const WardrobeGrid = ({ items, onToggleFavorite, compactView = false }: Wardrobe
                   className={cn(
                     "absolute top-2 right-2 p-1.5 rounded-full transition-all",
                     item.favorite 
-                      ? "bg-red-50 text-red-500" 
-                      : "bg-white/80 text-gray-400 hover:text-red-500 hover:bg-red-50"
+                      ? "bg-red-50 text-red-500 hover:bg-red-100 hover:scale-110" 
+                      : "bg-white/80 text-gray-400 hover:text-red-500 hover:bg-red-50 hover:scale-110"
                   )}
                 >
                   <Heart className={cn("h-4 w-4", item.favorite && "fill-current")} />
