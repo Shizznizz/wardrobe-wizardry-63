@@ -1,6 +1,6 @@
 
 import { motion } from 'framer-motion';
-import { Check, ArrowRight, Sparkles } from 'lucide-react';
+import { Check, ArrowRight, Sparkles, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { ClothingItem, Outfit, WeatherInfo } from '@/lib/types';
@@ -33,6 +33,43 @@ const OutfitSuggestion = ({
   onLike, 
   onDislike 
 }: OutfitSuggestionProps) => {
+  
+  // Generate a friendly explanation based on weather and outfit
+  const generateOliviaReasoning = () => {
+    if (!weather) return "";
+    
+    const temp = weather.temperature;
+    const condition = weather.condition.toLowerCase();
+    const location = weather.city ? `in ${weather.city}` : '';
+    
+    // Different reasonings based on temperature and weather conditions
+    if (temp < 10) {
+      if (condition.includes('rain')) {
+        return `It's quite cold and rainy ${location} today, so I've selected warm layers that will keep you dry and stylish!`;
+      }
+      return `Since it's pretty chilly ${location} right now, I've chosen cozy pieces that will keep you warm while looking put together.`;
+    }
+    
+    if (temp < 18) {
+      if (condition.includes('cloud')) {
+        return `With the cloudy weather and mild temperatures ${location}, I thought these layers would be perfect for your day!`;
+      }
+      return `The cool but pleasant temperature ${location} calls for light layers that can be adjusted throughout your day.`;
+    }
+    
+    if (temp < 25) {
+      if (condition.includes('rain')) {
+        return `It's mild with some rain ${location}, so I've picked comfortable pieces with a light water-resistant layer.`;
+      }
+      return `The lovely spring-like weather ${location} is perfect for this balanced outfit that's neither too warm nor too cool!`;
+    }
+    
+    if (condition.includes('rain')) {
+      return `It's warm with a chance of rain ${location}, so I chose breathable fabrics with a light layer for those surprise showers!`;
+    }
+    return `With the warm weather ${location}, I've selected breathable, light fabrics that will keep you comfortable and stylish all day.`;
+  };
+
   // Determine what to render based on provided props
   const renderContent = () => {
     // If we have a suggestion object (used in the quiz)
@@ -109,8 +146,23 @@ const OutfitSuggestion = ({
         items.find(item => item.id === itemId)
       ).filter(Boolean);
       
+      // Generate Olivia's reasoning based on weather conditions
+      const oliviaReasoning = generateOliviaReasoning();
+      
       return (
         <>
+          {oliviaReasoning && (
+            <div className="mb-4 bg-purple-900/20 backdrop-blur-sm rounded-lg p-3 border border-purple-500/30">
+              <div className="flex items-start gap-2">
+                <MessageCircle className="h-5 w-5 text-purple-300 mt-0.5 flex-shrink-0" />
+                <div>
+                  <h4 className="text-sm font-bold text-purple-200 mb-1">Olivia's Reasoning:</h4>
+                  <p className="text-sm text-white/90 italic">"{oliviaReasoning}"</p>
+                </div>
+              </div>
+            </div>
+          )}
+          
           <h3 className="text-lg font-semibold mb-2">{outfit.name}</h3>
           
           <div className="grid grid-cols-2 gap-2 mb-4">
