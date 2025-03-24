@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -9,12 +10,20 @@ import { ClothingItem } from '@/lib/types';
 import { sampleClothingItems, sampleOutfits, sampleUserPreferences } from '@/lib/wardrobeData';
 import { toast } from 'sonner';
 import { Confetti } from '@/components/ui/confetti';
+import { ArrowUpDown, Shirt, Sparkles } from 'lucide-react';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 
 const Wardrobe = () => {
   const [items, setItems] = useState<ClothingItem[]>(sampleClothingItems);
   const [showUploadTip, setShowUploadTip] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [hasAddedItem, setHasAddedItem] = useState(false);
+  const [sortOption, setSortOption] = useState<'newest' | 'favorites' | 'most-worn' | 'color'>('newest');
+  const [showCompactView, setShowCompactView] = useState(false);
 
   const handleUpload = (newItem: ClothingItem) => {
     setItems(prev => [newItem, ...prev]);
@@ -87,6 +96,22 @@ const Wardrobe = () => {
     }
   };
 
+  // Sort items based on selected option
+  const sortedItems = [...items].sort((a, b) => {
+    switch (sortOption) {
+      case 'newest':
+        return new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime();
+      case 'favorites':
+        return Number(b.favorite) - Number(a.favorite);
+      case 'most-worn':
+        return b.timesWorn - a.timesWorn;
+      case 'color':
+        return a.color.localeCompare(b.color);
+      default:
+        return 0;
+    }
+  });
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white">
       <Header />
@@ -105,17 +130,63 @@ const Wardrobe = () => {
           animate="visible"
           variants={containerVariants}
         >
-          <motion.div id="upload-section" variants={itemVariants} className="flex flex-wrap justify-between items-center mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">My Wardrobe</h1>
-            <div id="upload-button">
-              <UploadModal onUpload={handleUpload} />
+          <motion.div id="upload-section" variants={itemVariants} className="flex flex-col">
+            <div className="flex flex-wrap justify-between items-center mb-3">
+              <div>
+                <h1 className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">My Wardrobe</h1>
+                <p className="mt-2 text-gray-300 text-sm md:text-base font-light">Your digital closet, always in style</p>
+              </div>
+              <div id="upload-button">
+                <UploadModal onUpload={handleUpload} />
+              </div>
+            </div>
+            
+            {/* Sorting Controls */}
+            <div className="flex justify-between items-center mt-4 mb-6 flex-wrap gap-3">
+              <div className="flex items-center gap-2">
+                <ArrowUpDown className="h-4 w-4 text-gray-400" />
+                <span className="text-sm text-gray-300">Sort by:</span>
+                <ToggleGroup type="single" value={sortOption} onValueChange={(value) => value && setSortOption(value as any)}>
+                  <ToggleGroupItem value="newest" size="sm" className="text-xs h-8">Newest</ToggleGroupItem>
+                  <ToggleGroupItem value="favorites" size="sm" className="text-xs h-8">Favorites</ToggleGroupItem>
+                  <ToggleGroupItem value="most-worn" size="sm" className="text-xs h-8">Most Worn</ToggleGroupItem>
+                  <ToggleGroupItem value="color" size="sm" className="text-xs h-8">By Color</ToggleGroupItem>
+                </ToggleGroup>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <Switch 
+                  id="compact-view" 
+                  checked={showCompactView} 
+                  onCheckedChange={setShowCompactView} 
+                />
+                <Label htmlFor="compact-view" className="text-sm text-gray-300">Compact View</Label>
+              </div>
             </div>
           </motion.div>
           
+          {items.length <= 2 ? (
+            <motion.div variants={itemVariants} className="mb-6">
+              <Card className="bg-gradient-to-r from-indigo-950/60 to-purple-950/60 border border-indigo-500/20">
+                <CardContent className="p-6 flex flex-col md:flex-row gap-4 items-center">
+                  <div className="w-16 h-16 rounded-full bg-purple-600/20 flex items-center justify-center">
+                    <Sparkles className="h-8 w-8 text-purple-300" />
+                  </div>
+                  <div className="text-center md:text-left">
+                    <h3 className="text-xl font-semibold mb-2">Let's start building your dream wardrobe!</h3>
+                    <p className="text-gray-300 mb-4">Upload your favorite pieces to create fabulous outfit combinations.</p>
+                    <UploadModal buttonText="Add Your First Item" onUpload={handleUpload} />
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ) : null}
+          
           <motion.div variants={itemVariants} className="glass-dark p-6 rounded-xl border border-white/10">
             <WardrobeGrid 
-              items={items} 
+              items={sortedItems} 
               onToggleFavorite={handleToggleFavorite} 
+              compactView={showCompactView}
             />
           </motion.div>
         </motion.div>

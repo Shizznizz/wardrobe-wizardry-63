@@ -1,8 +1,7 @@
-
 import { useState } from 'react';
-import { ClothingItem, ClothingType, ClothingColor, ClothingSeason, Outfit, ClothingOccasion } from '@/lib/types';
+import { ClothingItem, ClothingType, ClothingColor, ClothingSeason, Outfit, ClothingOccasion, ClothingMaterial } from '@/lib/types';
 import { cn } from '@/lib/utils';
-import { Heart, Filter, Shirt, Umbrella, Tag, CircleUser, ShoppingBag, Footprints, Star, Gift, Briefcase } from 'lucide-react';
+import { Heart, Filter, Shirt, Umbrella, Tag, CircleUser, ShoppingBag, Footprints, Star, Gift, Briefcase, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -11,12 +10,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import OutfitSuggestion from '@/components/OutfitSuggestion';
 import { sampleOutfits } from '@/lib/wardrobeData';
+import { motion } from 'framer-motion';
 
 interface WardrobeGridProps {
   items: ClothingItem[];
   onToggleFavorite: (id: string) => void;
+  compactView?: boolean;
 }
 
 const getClothingIcon = (type: ClothingType) => {
@@ -67,14 +69,16 @@ const getOccasionIcon = (occasion: ClothingOccasion) => {
   }
 };
 
-const WardrobeGrid = ({ items, onToggleFavorite }: WardrobeGridProps) => {
+const WardrobeGrid = ({ items, onToggleFavorite, compactView = false }: WardrobeGridProps) => {
   const [typeFilter, setTypeFilter] = useState<ClothingType | 'all'>('all');
   const [colorFilter, setColorFilter] = useState<ClothingColor | 'all'>('all');
   const [seasonFilter, setSeasonFilter] = useState<ClothingSeason | 'all'>('all');
   const [occasionFilter, setOccasionFilter] = useState<ClothingOccasion | 'all'>('all');
+  const [materialFilter, setMaterialFilter] = useState<ClothingMaterial | 'all'>('all');
   const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
   const [selectedItem, setSelectedItem] = useState<ClothingItem | null>(null);
   const [showOutfitDialog, setShowOutfitDialog] = useState(false);
+  const [activeFilterTab, setActiveFilterTab] = useState<'type' | 'color' | 'season' | 'occasion' | 'material'>('type');
 
   const filteredItems = items.filter((item) => {
     if (showOnlyFavorites && !item.favorite) return false;
@@ -82,6 +86,7 @@ const WardrobeGrid = ({ items, onToggleFavorite }: WardrobeGridProps) => {
     if (colorFilter !== 'all' && item.color !== colorFilter) return false;
     if (seasonFilter !== 'all' && !item.seasons.includes(seasonFilter as ClothingSeason)) return false;
     if (occasionFilter !== 'all' && !item.occasions.includes(occasionFilter as ClothingOccasion)) return false;
+    if (materialFilter !== 'all' && item.material !== materialFilter) return false;
     return true;
   });
 
@@ -90,6 +95,7 @@ const WardrobeGrid = ({ items, onToggleFavorite }: WardrobeGridProps) => {
     setColorFilter('all');
     setSeasonFilter('all');
     setOccasionFilter('all');
+    setMaterialFilter('all');
     setShowOnlyFavorites(false);
   };
 
@@ -249,6 +255,18 @@ const WardrobeGrid = ({ items, onToggleFavorite }: WardrobeGridProps) => {
     console.log('Disliked outfit');
   };
 
+  const getQuickOutfitSuggestion = (item: ClothingItem) => {
+    const compatibleItems = items.filter(i => 
+      i.id !== item.id && 
+      i.occasions.some(occ => item.occasions.includes(occ)) &&
+      i.seasons.some(season => item.seasons.includes(season))
+    );
+    
+    return compatibleItems.sort((a, b) => Number(b.favorite) - Number(a.favorite))[0] || null;
+  };
+
+  const materialOptions: ClothingMaterial[] = ['cotton', 'wool', 'silk', 'polyester', 'leather', 'denim', 'linen', 'other'];
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap justify-between items-center gap-4">
@@ -260,129 +278,432 @@ const WardrobeGrid = ({ items, onToggleFavorite }: WardrobeGridProps) => {
               <Button variant="default" size="sm" className="flex items-center space-x-1">
                 <Filter className="h-4 w-4" />
                 <span>Filters</span>
+                {(typeFilter !== 'all' || colorFilter !== 'all' || seasonFilter !== 'all' || occasionFilter !== 'all' || materialFilter !== 'all' || showOnlyFavorites) && (
+                  <Badge variant="secondary" className="ml-1 h-5 w-5 p-0 flex items-center justify-center">
+                    <span className="text-xs">
+                      {[
+                        typeFilter !== 'all' ? 1 : 0,
+                        colorFilter !== 'all' ? 1 : 0,
+                        seasonFilter !== 'all' ? 1 : 0,
+                        occasionFilter !== 'all' ? 1 : 0,
+                        materialFilter !== 'all' ? 1 : 0,
+                        showOnlyFavorites ? 1 : 0
+                      ].reduce((a, b) => a + b, 0)}
+                    </span>
+                  </Badge>
+                )}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-80">
+            <PopoverContent className="w-screen max-w-sm">
               <div className="space-y-4">
-                <h3 className="font-medium">Filter Items</h3>
+                <div className="flex justify-between items-center">
+                  <h3 className="font-medium">Filter Items</h3>
+                  {(typeFilter !== 'all' || colorFilter !== 'all' || seasonFilter !== 'all' || occasionFilter !== 'all' || materialFilter !== 'all' || showOnlyFavorites) && (
+                    <Button variant="ghost" size="sm" onClick={resetFilters} className="h-7 px-2 text-xs">
+                      Reset All
+                    </Button>
+                  )}
+                </div>
                 
-                <div className="space-y-2">
-                  <Label htmlFor="type-filter">Type</Label>
-                  <Select
-                    value={typeFilter}
-                    onValueChange={(value) => setTypeFilter(value as ClothingType | 'all')}
-                  >
-                    <SelectTrigger id="type-filter">
-                      <SelectValue placeholder="All types" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All types</SelectItem>
-                      <SelectItem value="shirt">Shirts</SelectItem>
-                      <SelectItem value="jeans">Jeans</SelectItem>
-                      <SelectItem value="pants">Pants</SelectItem>
-                      <SelectItem value="shorts">Shorts</SelectItem>
-                      <SelectItem value="sweater">Sweaters</SelectItem>
-                      <SelectItem value="hoodie">Hoodies</SelectItem>
-                      <SelectItem value="jacket">Jackets</SelectItem>
-                      <SelectItem value="dress">Dresses</SelectItem>
-                      <SelectItem value="skirt">Skirts</SelectItem>
-                      <SelectItem value="shoes">Shoes</SelectItem>
-                      <SelectItem value="sneakers">Sneakers</SelectItem>
-                      <SelectItem value="boots">Boots</SelectItem>
-                      <SelectItem value="accessories">Accessories</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
+                <div className="flex flex-wrap gap-1">
+                  <ToggleGroup type="single" value={activeFilterTab} onValueChange={(value) => value && setActiveFilterTab(value as any)}>
+                    <ToggleGroupItem value="type" size="sm" className="text-xs h-8">Type</ToggleGroupItem>
+                    <ToggleGroupItem value="color" size="sm" className="text-xs h-8">Color</ToggleGroupItem>
+                    <ToggleGroupItem value="season" size="sm" className="text-xs h-8">Season</ToggleGroupItem>
+                    <ToggleGroupItem value="occasion" size="sm" className="text-xs h-8">Vibe</ToggleGroupItem>
+                    <ToggleGroupItem value="material" size="sm" className="text-xs h-8">Material</ToggleGroupItem>
+                  </ToggleGroup>
                 </div>
+                
+                {activeFilterTab === 'type' && (
+                  <div className="grid grid-cols-3 gap-2">
+                    <Button 
+                      variant={typeFilter === 'all' ? "default" : "outline"} 
+                      size="sm" 
+                      className="justify-start text-xs"
+                      onClick={() => setTypeFilter('all')}
+                    >
+                      All Types
+                    </Button>
+                    <Button 
+                      variant={typeFilter === 'shirt' ? "default" : "outline"} 
+                      size="sm" 
+                      className="justify-start text-xs"
+                      onClick={() => setTypeFilter('shirt')}
+                    >
+                      <Shirt className="h-3 w-3 mr-1" />
+                      Shirts
+                    </Button>
+                    <Button 
+                      variant={typeFilter === 'pants' ? "default" : "outline"} 
+                      size="sm" 
+                      className="justify-start text-xs"
+                      onClick={() => setTypeFilter('pants')}
+                    >
+                      <ShoppingBag className="h-3 w-3 mr-1" />
+                      Pants
+                    </Button>
+                    <Button 
+                      variant={typeFilter === 'jeans' ? "default" : "outline"} 
+                      size="sm" 
+                      className="justify-start text-xs"
+                      onClick={() => setTypeFilter('jeans')}
+                    >
+                      <ShoppingBag className="h-3 w-3 mr-1" />
+                      Jeans
+                    </Button>
+                    <Button 
+                      variant={typeFilter === 'sweater' ? "default" : "outline"} 
+                      size="sm" 
+                      className="justify-start text-xs"
+                      onClick={() => setTypeFilter('sweater')}
+                    >
+                      <Umbrella className="h-3 w-3 mr-1" />
+                      Sweaters
+                    </Button>
+                    <Button 
+                      variant={typeFilter === 'hoodie' ? "default" : "outline"} 
+                      size="sm" 
+                      className="justify-start text-xs"
+                      onClick={() => setTypeFilter('hoodie')}
+                    >
+                      <Umbrella className="h-3 w-3 mr-1" />
+                      Hoodies
+                    </Button>
+                    <Button 
+                      variant={typeFilter === 'jacket' ? "default" : "outline"} 
+                      size="sm" 
+                      className="justify-start text-xs"
+                      onClick={() => setTypeFilter('jacket')}
+                    >
+                      <Umbrella className="h-3 w-3 mr-1" />
+                      Jackets
+                    </Button>
+                    <Button 
+                      variant={typeFilter === 'dress' ? "default" : "outline"} 
+                      size="sm" 
+                      className="justify-start text-xs"
+                      onClick={() => setTypeFilter('dress')}
+                    >
+                      <CircleUser className="h-3 w-3 mr-1" />
+                      Dresses
+                    </Button>
+                    <Button 
+                      variant={typeFilter === 'skirt' ? "default" : "outline"} 
+                      size="sm" 
+                      className="justify-start text-xs"
+                      onClick={() => setTypeFilter('skirt')}
+                    >
+                      <CircleUser className="h-3 w-3 mr-1" />
+                      Skirts
+                    </Button>
+                    <Button 
+                      variant={typeFilter === 'shoes' ? "default" : "outline"} 
+                      size="sm" 
+                      className="justify-start text-xs"
+                      onClick={() => setTypeFilter('shoes')}
+                    >
+                      <Footprints className="h-3 w-3 mr-1" />
+                      Shoes
+                    </Button>
+                    <Button 
+                      variant={typeFilter === 'accessories' ? "default" : "outline"} 
+                      size="sm" 
+                      className="justify-start text-xs"
+                      onClick={() => setTypeFilter('accessories')}
+                    >
+                      <Tag className="h-3 w-3 mr-1" />
+                      Accessories
+                    </Button>
+                  </div>
+                )}
+                
+                {activeFilterTab === 'color' && (
+                  <div className="grid grid-cols-4 gap-2">
+                    <button 
+                      className={cn(
+                        "h-8 rounded-md border border-input flex items-center justify-center",
+                        colorFilter === 'all' ? "bg-primary text-primary-foreground" : "bg-background hover:bg-accent hover:text-accent-foreground"
+                      )}
+                      onClick={() => setColorFilter('all')}
+                    >
+                      <span className="text-xs">All</span>
+                    </button>
+                    <button 
+                      className={cn(
+                        "h-8 rounded-md border border-input flex items-center justify-center bg-black",
+                        colorFilter === 'black' ? "ring-2 ring-primary ring-offset-2" : ""
+                      )}
+                      onClick={() => setColorFilter('black')}
+                    >
+                      <span className="text-xs text-white">Black</span>
+                    </button>
+                    <button 
+                      className={cn(
+                        "h-8 rounded-md border border-input flex items-center justify-center bg-white",
+                        colorFilter === 'white' ? "ring-2 ring-primary ring-offset-2" : ""
+                      )}
+                      onClick={() => setColorFilter('white')}
+                    >
+                      <span className="text-xs text-black">White</span>
+                    </button>
+                    <button 
+                      className={cn(
+                        "h-8 rounded-md border border-input flex items-center justify-center bg-gray-500",
+                        colorFilter === 'gray' ? "ring-2 ring-primary ring-offset-2" : ""
+                      )}
+                      onClick={() => setColorFilter('gray')}
+                    >
+                      <span className="text-xs text-white">Gray</span>
+                    </button>
+                    <button 
+                      className={cn(
+                        "h-8 rounded-md border border-input flex items-center justify-center bg-red-500",
+                        colorFilter === 'red' ? "ring-2 ring-primary ring-offset-2" : ""
+                      )}
+                      onClick={() => setColorFilter('red')}
+                    >
+                      <span className="text-xs text-white">Red</span>
+                    </button>
+                    <button 
+                      className={cn(
+                        "h-8 rounded-md border border-input flex items-center justify-center bg-blue-500",
+                        colorFilter === 'blue' ? "ring-2 ring-primary ring-offset-2" : ""
+                      )}
+                      onClick={() => setColorFilter('blue')}
+                    >
+                      <span className="text-xs text-white">Blue</span>
+                    </button>
+                    <button 
+                      className={cn(
+                        "h-8 rounded-md border border-input flex items-center justify-center bg-green-500",
+                        colorFilter === 'green' ? "ring-2 ring-primary ring-offset-2" : ""
+                      )}
+                      onClick={() => setColorFilter('green')}
+                    >
+                      <span className="text-xs text-white">Green</span>
+                    </button>
+                    <button 
+                      className={cn(
+                        "h-8 rounded-md border border-input flex items-center justify-center bg-yellow-400",
+                        colorFilter === 'yellow' ? "ring-2 ring-primary ring-offset-2" : ""
+                      )}
+                      onClick={() => setColorFilter('yellow')}
+                    >
+                      <span className="text-xs text-black">Yellow</span>
+                    </button>
+                    <button 
+                      className={cn(
+                        "h-8 rounded-md border border-input flex items-center justify-center bg-purple-500",
+                        colorFilter === 'purple' ? "ring-2 ring-primary ring-offset-2" : ""
+                      )}
+                      onClick={() => setColorFilter('purple')}
+                    >
+                      <span className="text-xs text-white">Purple</span>
+                    </button>
+                    <button 
+                      className={cn(
+                        "h-8 rounded-md border border-input flex items-center justify-center bg-pink-500",
+                        colorFilter === 'pink' ? "ring-2 ring-primary ring-offset-2" : ""
+                      )}
+                      onClick={() => setColorFilter('pink')}
+                    >
+                      <span className="text-xs text-white">Pink</span>
+                    </button>
+                    <button 
+                      className={cn(
+                        "h-8 rounded-md border border-input flex items-center justify-center bg-orange-500",
+                        colorFilter === 'orange' ? "ring-2 ring-primary ring-offset-2" : ""
+                      )}
+                      onClick={() => setColorFilter('orange')}
+                    >
+                      <span className="text-xs text-white">Orange</span>
+                    </button>
+                    <button 
+                      className={cn(
+                        "h-8 rounded-md border border-input flex items-center justify-center bg-brown-500",
+                        colorFilter === 'brown' ? "ring-2 ring-primary ring-offset-2" : ""
+                      )}
+                      onClick={() => setColorFilter('brown')}
+                    >
+                      <span className="text-xs text-white">Brown</span>
+                    </button>
+                    <button 
+                      className={cn(
+                        "h-8 rounded-md border border-input flex items-center justify-center bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500",
+                        colorFilter === 'multicolor' ? "ring-2 ring-primary ring-offset-2" : ""
+                      )}
+                      onClick={() => setColorFilter('multicolor')}
+                    >
+                      <span className="text-xs text-white">Multi</span>
+                    </button>
+                  </div>
+                )}
+                
+                {activeFilterTab === 'season' && (
+                  <div className="grid grid-cols-3 gap-2">
+                    <Button 
+                      variant={seasonFilter === 'all' ? "default" : "outline"} 
+                      size="sm" 
+                      className="justify-start text-xs"
+                      onClick={() => setSeasonFilter('all')}
+                    >
+                      All Seasons
+                    </Button>
+                    <Button 
+                      variant={seasonFilter === 'spring' ? "default" : "outline"} 
+                      size="sm" 
+                      className="justify-start text-xs"
+                      onClick={() => setSeasonFilter('spring')}
+                    >
+                      Spring
+                    </Button>
+                    <Button 
+                      variant={seasonFilter === 'summer' ? "default" : "outline"} 
+                      size="sm" 
+                      className="justify-start text-xs"
+                      onClick={() => setSeasonFilter('summer')}
+                    >
+                      Summer
+                    </Button>
+                    <Button 
+                      variant={seasonFilter === 'autumn' ? "default" : "outline"} 
+                      size="sm" 
+                      className="justify-start text-xs"
+                      onClick={() => setSeasonFilter('autumn')}
+                    >
+                      Autumn
+                    </Button>
+                    <Button 
+                      variant={seasonFilter === 'winter' ? "default" : "outline"} 
+                      size="sm" 
+                      className="justify-start text-xs"
+                      onClick={() => setSeasonFilter('winter')}
+                    >
+                      Winter
+                    </Button>
+                    <Button 
+                      variant={seasonFilter === 'all' ? "default" : "outline"} 
+                      size="sm" 
+                      className="justify-start text-xs"
+                      onClick={() => setSeasonFilter('all')}
+                    >
+                      All Year
+                    </Button>
+                  </div>
+                )}
+                
+                {activeFilterTab === 'occasion' && (
+                  <div className="grid grid-cols-2 gap-2">
+                    <Button 
+                      variant={occasionFilter === 'all' ? "default" : "outline"} 
+                      size="sm" 
+                      className="justify-start text-xs"
+                      onClick={() => setOccasionFilter('all')}
+                    >
+                      All Vibes
+                    </Button>
+                    <Button 
+                      variant={occasionFilter === 'casual' ? "default" : "outline"} 
+                      size="sm" 
+                      className="justify-start text-xs"
+                      onClick={() => setOccasionFilter('casual')}
+                    >
+                      <Shirt className="h-3 w-3 mr-1" />
+                      Casual
+                    </Button>
+                    <Button 
+                      variant={occasionFilter === 'formal' ? "default" : "outline"} 
+                      size="sm" 
+                      className="justify-start text-xs"
+                      onClick={() => setOccasionFilter('formal')}
+                    >
+                      <Briefcase className="h-3 w-3 mr-1" />
+                      Formal
+                    </Button>
+                    <Button 
+                      variant={occasionFilter === 'business' ? "default" : "outline"} 
+                      size="sm" 
+                      className="justify-start text-xs"
+                      onClick={() => setOccasionFilter('business')}
+                    >
+                      <Briefcase className="h-3 w-3 mr-1" />
+                      Business
+                    </Button>
+                    <Button 
+                      variant={occasionFilter === 'party' ? "default" : "outline"} 
+                      size="sm" 
+                      className="justify-start text-xs"
+                      onClick={() => setOccasionFilter('party')}
+                    >
+                      <Gift className="h-3 w-3 mr-1" />
+                      Party
+                    </Button>
+                    <Button 
+                      variant={occasionFilter === 'sporty' ? "default" : "outline"} 
+                      size="sm" 
+                      className="justify-start text-xs"
+                      onClick={() => setOccasionFilter('sporty')}
+                    >
+                      <ShoppingBag className="h-3 w-3 mr-1" />
+                      Sporty
+                    </Button>
+                    <Button 
+                      variant={occasionFilter === 'everyday' ? "default" : "outline"} 
+                      size="sm" 
+                      className="justify-start text-xs"
+                      onClick={() => setOccasionFilter('everyday')}
+                    >
+                      <Star className="h-3 w-3 mr-1" />
+                      Everyday
+                    </Button>
+                    <Button 
+                      variant={occasionFilter === 'date' ? "default" : "outline"} 
+                      size="sm" 
+                      className="justify-start text-xs"
+                      onClick={() => setOccasionFilter('date')}
+                    >
+                      <Gift className="h-3 w-3 mr-1" />
+                      Date
+                    </Button>
+                  </div>
+                )}
+                
+                {activeFilterTab === 'material' && (
+                  <div className="grid grid-cols-2 gap-2">
+                    <Button 
+                      variant={materialFilter === 'all' ? "default" : "outline"} 
+                      size="sm" 
+                      className="justify-start text-xs"
+                      onClick={() => setMaterialFilter('all')}
+                    >
+                      All Materials
+                    </Button>
+                    {materialOptions.map(material => (
+                      <Button 
+                        key={material}
+                        variant={materialFilter === material ? "default" : "outline"} 
+                        size="sm" 
+                        className="justify-start text-xs capitalize"
+                        onClick={() => setMaterialFilter(material)}
+                      >
+                        {material}
+                      </Button>
+                    ))}
+                  </div>
+                )}
 
-                <div className="space-y-2">
-                  <Label htmlFor="color-filter">Color</Label>
-                  <Select
-                    value={colorFilter}
-                    onValueChange={(value) => setColorFilter(value as ClothingColor | 'all')}
-                  >
-                    <SelectTrigger id="color-filter">
-                      <SelectValue placeholder="All colors" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All colors</SelectItem>
-                      <SelectItem value="black">Black</SelectItem>
-                      <SelectItem value="white">White</SelectItem>
-                      <SelectItem value="gray">Gray</SelectItem>
-                      <SelectItem value="red">Red</SelectItem>
-                      <SelectItem value="blue">Blue</SelectItem>
-                      <SelectItem value="green">Green</SelectItem>
-                      <SelectItem value="yellow">Yellow</SelectItem>
-                      <SelectItem value="purple">Purple</SelectItem>
-                      <SelectItem value="pink">Pink</SelectItem>
-                      <SelectItem value="orange">Orange</SelectItem>
-                      <SelectItem value="brown">Brown</SelectItem>
-                      <SelectItem value="multicolor">Multicolor</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="season-filter">Season</Label>
-                  <Select
-                    value={seasonFilter}
-                    onValueChange={(value) => setSeasonFilter(value as ClothingSeason | 'all')}
-                  >
-                    <SelectTrigger id="season-filter">
-                      <SelectValue placeholder="All seasons" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All seasons</SelectItem>
-                      <SelectItem value="spring">Spring</SelectItem>
-                      <SelectItem value="summer">Summer</SelectItem>
-                      <SelectItem value="autumn">Autumn</SelectItem>
-                      <SelectItem value="winter">Winter</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="occasion-filter">Occasion</Label>
-                  <Select
-                    value={occasionFilter}
-                    onValueChange={(value) => setOccasionFilter(value as ClothingOccasion | 'all')}
-                  >
-                    <SelectTrigger id="occasion-filter">
-                      <SelectValue placeholder="All occasions" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All occasions</SelectItem>
-                      <SelectItem value="casual">Casual</SelectItem>
-                      <SelectItem value="formal">Formal</SelectItem>
-                      <SelectItem value="business">Business</SelectItem>
-                      <SelectItem value="party">Party</SelectItem>
-                      <SelectItem value="sporty">Sporty</SelectItem>
-                      <SelectItem value="outdoor">Outdoor</SelectItem>
-                      <SelectItem value="everyday">Everyday</SelectItem>
-                      <SelectItem value="special">Special</SelectItem>
-                      <SelectItem value="vacation">Vacation</SelectItem>
-                      <SelectItem value="date">Date</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2 pt-2 border-t">
                   <Checkbox
                     id="favorites-only"
                     checked={showOnlyFavorites}
                     onCheckedChange={(checked) => setShowOnlyFavorites(!!checked)}
                   />
-                  <Label htmlFor="favorites-only">Show favorites only</Label>
+                  <Label htmlFor="favorites-only" className="flex items-center gap-1">
+                    <Heart className="h-3 w-3 text-red-500" />
+                    <span>Favorites only</span>
+                  </Label>
                 </div>
-
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="w-full"
-                  onClick={resetFilters}
-                >
-                  Reset Filters
-                </Button>
               </div>
             </PopoverContent>
           </Popover>
@@ -390,7 +711,7 @@ const WardrobeGrid = ({ items, onToggleFavorite }: WardrobeGridProps) => {
       </div>
 
       {filteredItems.length === 0 ? (
-        <div className="flex flex-col items-center justify-center border rounded-lg p-10 space-y-4 bg-gray-50">
+        <div className="flex flex-col items-center justify-center border rounded-lg p-10 space-y-4 bg-gray-50/5 backdrop-blur-sm">
           <p className="text-muted-foreground text-center">
             {items.length === 0 
               ? "Your wardrobe is empty. Add your first item!"
@@ -403,96 +724,160 @@ const WardrobeGrid = ({ items, onToggleFavorite }: WardrobeGridProps) => {
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {filteredItems.map((item) => (
-            <div 
-              key={item.id} 
-              className="group relative rounded-lg border overflow-hidden bg-white shadow-soft transition-all hover-card cursor-pointer"
-              onClick={() => handleItemClick(item)}
-            >
-              <div className="aspect-square overflow-hidden">
-                <img 
-                  src={item.imageUrl} 
-                  alt={item.name}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-              </div>
-              <div className="p-4">
-                <div className="flex justify-between items-start">
-                  <h3 className="font-medium truncate">{item.name}</h3>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <div className="flex items-center ml-1 text-muted-foreground">
-                          {getClothingIcon(item.type)}
+        <div className={cn(
+          "grid gap-4",
+          compactView 
+            ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6" 
+            : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+        )}>
+          {filteredItems.map((item) => {
+            const suggestionItem = getQuickOutfitSuggestion(item);
+            return (
+              <motion.div 
+                key={item.id} 
+                className={cn(
+                  "group relative rounded-lg border overflow-hidden bg-white/5 backdrop-blur-sm shadow-soft transition-all hover-card cursor-pointer",
+                  compactView ? "border-white/5" : "border-white/10"
+                )}
+                onClick={() => handleItemClick(item)}
+                whileHover={{ y: -5 }}
+                transition={{ type: "spring", stiffness: 300, damping: 10 }}
+              >
+                <div className={cn("overflow-hidden", compactView ? "aspect-[3/4]" : "aspect-square")}>
+                  <div className="relative w-full h-full overflow-hidden">
+                    <img 
+                      src={item.imageUrl} 
+                      alt={item.name}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    
+                    <div className="absolute top-1/4 left-1/4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <Sparkles className="h-6 w-6 text-white/80 animate-pulse" />
+                    </div>
+                  </div>
+                </div>
+                
+                <div className={cn("p-3", compactView ? "p-2" : "p-4")}>
+                  {!compactView && (
+                    <div className="flex justify-between items-start">
+                      <h3 className={cn(
+                        "font-medium truncate", 
+                        compactView ? "text-sm" : ""
+                      )}>{item.name}</h3>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="flex items-center ml-1 text-muted-foreground">
+                              {getClothingIcon(item.type)}
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="capitalize">{item.type}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                  )}
+                  
+                  {compactView ? (
+                    <div className="flex justify-between items-center mt-1">
+                      <h3 className="text-xs font-medium truncate">{item.name}</h3>
+                      <div className="flex items-center ml-1 text-muted-foreground">
+                        {getClothingIcon(item.type)}
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="mt-2 flex flex-wrap gap-1">
+                        <Badge variant="secondary" className="capitalize text-xs">
+                          {item.color}
+                        </Badge>
+                        <Badge variant="outline" className="capitalize text-xs">
+                          {item.material}
+                        </Badge>
+                      </div>
+                      
+                      <div className="mt-2 flex flex-wrap gap-1">
+                        {item.occasions && item.occasions.slice(0, 2).map((occasion) => (
+                          <Badge 
+                            key={occasion} 
+                            variant="outline" 
+                            className="bg-primary/10 text-primary text-xs flex items-center gap-1"
+                          >
+                            {getOccasionIcon(occasion)}
+                            <span className="capitalize">{occasion}</span>
+                          </Badge>
+                        ))}
+                        {item.occasions && item.occasions.length > 2 && (
+                          <Badge variant="outline" className="bg-primary/10 text-primary text-xs">
+                            +{item.occasions.length - 2}
+                          </Badge>
+                        )}
+                      </div>
+                      
+                      <div className="mt-2 flex flex-wrap gap-1">
+                        {item.seasons.map((season) => (
+                          <Badge key={season} variant="secondary" className="bg-primary/10 text-primary text-xs">
+                            {season}
+                          </Badge>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                  
+                  {suggestionItem && !compactView && (
+                    <div className="mt-3 border-t border-white/10 pt-2">
+                      <p className="text-xs text-gray-400 mb-1">Try with:</p>
+                      <div className="flex items-center gap-2">
+                        <div className="h-10 w-10 rounded overflow-hidden border border-white/10">
+                          <img 
+                            src={suggestionItem.imageUrl} 
+                            alt={suggestionItem.name} 
+                            className="h-full w-full object-cover"
+                          />
                         </div>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="capitalize">{item.type}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                        <div className="flex-1">
+                          <p className="text-xs font-medium truncate">{suggestionItem.name}</p>
+                          <p className="text-xs text-gray-400 capitalize">{suggestionItem.type}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  <Button 
+                    className={cn(
+                      "w-full mt-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white",
+                      compactView ? "mt-2 py-1 h-8 text-xs" : ""
+                    )}
+                    size={compactView ? "sm" : "sm"}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleMatchThis(item);
+                    }}
+                  >
+                    <Star className={cn("mr-2", compactView ? "h-3 w-3" : "h-4 w-4")} />
+                    Match This
+                  </Button>
                 </div>
                 
-                <div className="mt-2 flex flex-wrap gap-1">
-                  <Badge variant="secondary" className="capitalize text-xs">
-                    {item.color}
-                  </Badge>
-                  <Badge variant="outline" className="capitalize text-xs">
-                    {item.material}
-                  </Badge>
-                </div>
-                
-                <div className="mt-2 flex flex-wrap gap-1">
-                  {item.occasions && item.occasions.map((occasion) => (
-                    <Badge 
-                      key={occasion} 
-                      variant="outline" 
-                      className="bg-primary/10 text-primary text-xs flex items-center gap-1"
-                    >
-                      {getOccasionIcon(occasion)}
-                      <span className="capitalize">{occasion}</span>
-                    </Badge>
-                  ))}
-                </div>
-                
-                <div className="mt-2 flex flex-wrap gap-1">
-                  {item.seasons.map((season) => (
-                    <Badge key={season} variant="secondary" className="bg-primary/10 text-primary text-xs">
-                      {season}
-                    </Badge>
-                  ))}
-                </div>
-                
-                <Button 
-                  className="w-full mt-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white"
-                  size="sm"
+                <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleMatchThis(item);
+                    onToggleFavorite(item.id);
                   }}
+                  className={cn(
+                    "absolute top-2 right-2 p-1.5 rounded-full transition-all",
+                    item.favorite 
+                      ? "bg-red-50 text-red-500" 
+                      : "bg-white/80 text-gray-400 hover:text-red-500 hover:bg-red-50"
+                  )}
                 >
-                  <Star className="h-4 w-4 mr-2" />
-                  Match This
-                </Button>
-              </div>
-              
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onToggleFavorite(item.id);
-                }}
-                className={cn(
-                  "absolute top-2 right-2 p-1.5 rounded-full transition-all",
-                  item.favorite 
-                    ? "bg-red-50 text-red-500" 
-                    : "bg-white/80 text-gray-400 hover:text-red-500 hover:bg-red-50"
-                )}
-              >
-                <Heart className={cn("h-4 w-4", item.favorite && "fill-current")} />
-              </button>
-            </div>
-          ))}
+                  <Heart className={cn("h-4 w-4", item.favorite && "fill-current")} />
+                </button>
+              </motion.div>
+            );
+          })}
         </div>
       )}
 
