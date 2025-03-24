@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { ClothingItem, ClothingType, ClothingColor, ClothingSeason, Outfit } from '@/lib/types';
+import { ClothingItem, ClothingType, ClothingColor, ClothingSeason, Outfit, ClothingOccasion } from '@/lib/types';
 import { cn } from '@/lib/utils';
-import { Heart, Filter, Shirt, Umbrella, Tag, CircleUser, ShoppingBag, Footprints, Star } from 'lucide-react';
+import { Heart, Filter, Shirt, Umbrella, Tag, CircleUser, ShoppingBag, Footprints, Star, Party, Briefcase } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -18,7 +18,6 @@ interface WardrobeGridProps {
   onToggleFavorite: (id: string) => void;
 }
 
-// Helper function to get the appropriate icon for each clothing type
 const getClothingIcon = (type: ClothingType) => {
   switch (type) {
     case 'shirt':
@@ -45,10 +44,33 @@ const getClothingIcon = (type: ClothingType) => {
   }
 };
 
+const getOccasionIcon = (occasion: ClothingOccasion) => {
+  switch (occasion) {
+    case 'casual':
+      return <Shirt className="h-4 w-4" />;
+    case 'formal':
+    case 'business':
+      return <Briefcase className="h-4 w-4" />;
+    case 'party':
+    case 'special':
+    case 'date':
+      return <Party className="h-4 w-4" />;
+    case 'sporty':
+    case 'outdoor':
+    case 'vacation':
+      return <ShoppingBag className="h-4 w-4" />;
+    case 'everyday':
+      return <Star className="h-4 w-4" />;
+    default:
+      return <Tag className="h-4 w-4" />;
+  }
+};
+
 const WardrobeGrid = ({ items, onToggleFavorite }: WardrobeGridProps) => {
   const [typeFilter, setTypeFilter] = useState<ClothingType | 'all'>('all');
   const [colorFilter, setColorFilter] = useState<ClothingColor | 'all'>('all');
   const [seasonFilter, setSeasonFilter] = useState<ClothingSeason | 'all'>('all');
+  const [occasionFilter, setOccasionFilter] = useState<ClothingOccasion | 'all'>('all');
   const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
   const [selectedItem, setSelectedItem] = useState<ClothingItem | null>(null);
   const [showOutfitDialog, setShowOutfitDialog] = useState(false);
@@ -58,6 +80,7 @@ const WardrobeGrid = ({ items, onToggleFavorite }: WardrobeGridProps) => {
     if (typeFilter !== 'all' && item.type !== typeFilter) return false;
     if (colorFilter !== 'all' && item.color !== colorFilter) return false;
     if (seasonFilter !== 'all' && !item.seasons.includes(seasonFilter as ClothingSeason)) return false;
+    if (occasionFilter !== 'all' && !item.occasions.includes(occasionFilter as ClothingOccasion)) return false;
     return true;
   });
 
@@ -65,6 +88,7 @@ const WardrobeGrid = ({ items, onToggleFavorite }: WardrobeGridProps) => {
     setTypeFilter('all');
     setColorFilter('all');
     setSeasonFilter('all');
+    setOccasionFilter('all');
     setShowOnlyFavorites(false);
   };
 
@@ -73,52 +97,131 @@ const WardrobeGrid = ({ items, onToggleFavorite }: WardrobeGridProps) => {
   };
 
   const generateOutfitSuggestions = (centerItem: ClothingItem): Outfit[] => {
-    return [
-      {
-        id: 'casual-weekend',
-        name: 'Casual Weekend',
-        items: [centerItem.id, ...items.filter(i => i.id !== centerItem.id).slice(0, 2).map(i => i.id)],
-        occasions: ['weekend', 'casual'],
-        seasons: ['all'],
-        favorite: false,
-        timesWorn: 0,
-        dateAdded: new Date(),
-        personalityTags: ['casual', 'minimalist']
-      },
-      {
-        id: 'office-elegance',
-        name: 'Office Elegance',
-        items: [centerItem.id, ...items.filter(i => i.id !== centerItem.id).slice(2, 4).map(i => i.id)],
-        occasions: ['work', 'office'],
-        seasons: ['all'],
-        favorite: false,
-        timesWorn: 0,
-        dateAdded: new Date(),
-        personalityTags: ['formal', 'elegant']
-      },
-      {
-        id: 'night-out',
-        name: 'Night Out',
-        items: [centerItem.id, ...items.filter(i => i.id !== centerItem.id).slice(4, 6).map(i => i.id)],
-        occasions: ['party', 'evening'],
-        seasons: ['all'],
-        favorite: false,
-        timesWorn: 0,
-        dateAdded: new Date(),
-        personalityTags: ['bold', 'trendy']
-      },
-      {
-        id: 'seasonal-staple',
-        name: 'Seasonal Staple',
-        items: [centerItem.id, ...items.filter(i => i.id !== centerItem.id).slice(6, 8).map(i => i.id)],
-        occasions: ['daily', 'casual'],
-        seasons: centerItem.seasons,
-        favorite: false,
-        timesWorn: 0,
-        dateAdded: new Date(),
-        personalityTags: ['classic', 'casual']
-      }
-    ];
+    const similarOccasionItems = items.filter(i => 
+      i.id !== centerItem.id && 
+      i.occasions.some(occ => centerItem.occasions.includes(occ))
+    );
+    
+    const similarSeasonItems = items.filter(i => 
+      i.id !== centerItem.id && 
+      i.seasons.some(season => centerItem.seasons.includes(season))
+    );
+    
+    const casualOutfit: Outfit = {
+      id: 'casual-weekend',
+      name: 'Casual Weekend',
+      items: [centerItem.id],
+      occasions: centerItem.occasions.includes('casual') 
+        ? ['weekend', 'casual'] 
+        : [...centerItem.occasions, 'casual'].slice(0, 2),
+      seasons: centerItem.seasons,
+      favorite: false,
+      timesWorn: 0,
+      dateAdded: new Date(),
+      personalityTags: ['casual', 'minimalist']
+    };
+    
+    const casualItems = similarOccasionItems.filter(i => 
+      i.occasions.includes('casual') || i.occasions.includes('everyday')
+    ).slice(0, 2);
+    
+    if (casualItems.length < 2) {
+      const additionalItems = similarSeasonItems
+        .filter(i => !casualItems.some(ci => ci.id === i.id))
+        .slice(0, 2 - casualItems.length);
+      casualOutfit.items = [...casualOutfit.items, ...casualItems.map(i => i.id), ...additionalItems.map(i => i.id)];
+    } else {
+      casualOutfit.items = [...casualOutfit.items, ...casualItems.map(i => i.id)];
+    }
+    
+    const formalOutfit: Outfit = {
+      id: 'office-elegance',
+      name: 'Office Elegance',
+      items: [centerItem.id],
+      occasions: centerItem.occasions.includes('formal') || centerItem.occasions.includes('business')
+        ? ['work', 'office', 'business']
+        : ['work', 'office'],
+      seasons: centerItem.seasons,
+      favorite: false,
+      timesWorn: 0,
+      dateAdded: new Date(),
+      personalityTags: ['formal', 'elegant']
+    };
+    
+    const formalItems = similarOccasionItems.filter(i => 
+      i.occasions.includes('formal') || i.occasions.includes('business')
+    ).slice(0, 2);
+    
+    if (formalItems.length < 2) {
+      const additionalItems = items
+        .filter(i => i.id !== centerItem.id && !formalItems.some(fi => fi.id === i.id))
+        .slice(0, 2 - formalItems.length);
+      formalOutfit.items = [...formalOutfit.items, ...formalItems.map(i => i.id), ...additionalItems.map(i => i.id)];
+    } else {
+      formalOutfit.items = [...formalOutfit.items, ...formalItems.map(i => i.id)];
+    }
+    
+    const partyOutfit: Outfit = {
+      id: 'night-out',
+      name: 'Night Out',
+      items: [centerItem.id],
+      occasions: centerItem.occasions.some(o => ['party', 'special', 'date'].includes(o))
+        ? ['party', 'evening']
+        : ['party', 'evening'],
+      seasons: centerItem.seasons,
+      favorite: false,
+      timesWorn: 0,
+      dateAdded: new Date(),
+      personalityTags: ['bold', 'trendy']
+    };
+    
+    const partyItems = similarOccasionItems.filter(i => 
+      i.occasions.some(o => ['party', 'special', 'date'].includes(o))
+    ).slice(0, 2);
+    
+    if (partyItems.length < 2) {
+      const additionalItems = items
+        .filter(i => i.id !== centerItem.id && !partyItems.some(pi => pi.id === i.id))
+        .slice(0, 2 - partyItems.length);
+      partyOutfit.items = [...partyOutfit.items, ...partyItems.map(i => i.id), ...additionalItems.map(i => i.id)];
+    } else {
+      partyOutfit.items = [...partyOutfit.items, ...partyItems.map(i => i.id)];
+    }
+    
+    const seasonalOutfit: Outfit = {
+      id: 'seasonal-staple',
+      name: 'Seasonal Staple',
+      items: [centerItem.id],
+      occasions: centerItem.occasions.includes('everyday') 
+        ? ['daily', 'casual'] 
+        : ['daily', ...centerItem.occasions.slice(0, 1)],
+      seasons: centerItem.seasons,
+      favorite: false,
+      timesWorn: 0,
+      dateAdded: new Date(),
+      personalityTags: ['classic', 'casual']
+    };
+    
+    const seasonalItems = similarSeasonItems
+      .filter(i => !casualOutfit.items.includes(i.id) && !formalOutfit.items.includes(i.id) && !partyOutfit.items.includes(i.id))
+      .slice(0, 2);
+    
+    if (seasonalItems.length < 2) {
+      const additionalItems = items
+        .filter(i => 
+          i.id !== centerItem.id && 
+          !casualOutfit.items.includes(i.id) && 
+          !formalOutfit.items.includes(i.id) && 
+          !partyOutfit.items.includes(i.id) && 
+          !seasonalItems.some(si => si.id === i.id)
+        )
+        .slice(0, 2 - seasonalItems.length);
+      seasonalOutfit.items = [...seasonalOutfit.items, ...seasonalItems.map(i => i.id), ...additionalItems.map(i => i.id)];
+    } else {
+      seasonalOutfit.items = [...seasonalOutfit.items, ...seasonalItems.map(i => i.id)];
+    }
+    
+    return [casualOutfit, formalOutfit, partyOutfit, seasonalOutfit];
   };
 
   const [outfitSuggestions, setOutfitSuggestions] = useState<Outfit[]>([]);
@@ -237,6 +340,31 @@ const WardrobeGrid = ({ items, onToggleFavorite }: WardrobeGridProps) => {
                   </Select>
                 </div>
 
+                <div className="space-y-2">
+                  <Label htmlFor="occasion-filter">Occasion</Label>
+                  <Select
+                    value={occasionFilter}
+                    onValueChange={(value) => setOccasionFilter(value as ClothingOccasion | 'all')}
+                  >
+                    <SelectTrigger id="occasion-filter">
+                      <SelectValue placeholder="All occasions" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All occasions</SelectItem>
+                      <SelectItem value="casual">Casual</SelectItem>
+                      <SelectItem value="formal">Formal</SelectItem>
+                      <SelectItem value="business">Business</SelectItem>
+                      <SelectItem value="party">Party</SelectItem>
+                      <SelectItem value="sporty">Sporty</SelectItem>
+                      <SelectItem value="outdoor">Outdoor</SelectItem>
+                      <SelectItem value="everyday">Everyday</SelectItem>
+                      <SelectItem value="special">Special</SelectItem>
+                      <SelectItem value="vacation">Vacation</SelectItem>
+                      <SelectItem value="date">Date</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 <div className="flex items-center space-x-2">
                   <Checkbox
                     id="favorites-only"
@@ -315,6 +443,19 @@ const WardrobeGrid = ({ items, onToggleFavorite }: WardrobeGridProps) => {
                 </div>
                 
                 <div className="mt-2 flex flex-wrap gap-1">
+                  {item.occasions && item.occasions.map((occasion) => (
+                    <Badge 
+                      key={occasion} 
+                      variant="outline" 
+                      className="bg-primary/10 text-primary text-xs flex items-center gap-1"
+                    >
+                      {getOccasionIcon(occasion)}
+                      <span className="capitalize">{occasion}</span>
+                    </Badge>
+                  ))}
+                </div>
+                
+                <div className="mt-2 flex flex-wrap gap-1">
                   {item.seasons.map((season) => (
                     <Badge key={season} variant="secondary" className="bg-primary/10 text-primary text-xs">
                       {season}
@@ -354,7 +495,6 @@ const WardrobeGrid = ({ items, onToggleFavorite }: WardrobeGridProps) => {
         </div>
       )}
 
-      {/* Dialog for outfit suggestions */}
       <Dialog open={showOutfitDialog} onOpenChange={setShowOutfitDialog}>
         <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
@@ -383,6 +523,18 @@ const WardrobeGrid = ({ items, onToggleFavorite }: WardrobeGridProps) => {
                       <Badge variant="outline" className="capitalize text-xs">
                         {selectedItem.type}
                       </Badge>
+                    </div>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {selectedItem.occasions && selectedItem.occasions.map(occasion => (
+                        <Badge 
+                          key={occasion}
+                          variant="outline" 
+                          className="bg-primary/10 text-primary text-xs flex items-center gap-1"
+                        >
+                          {getOccasionIcon(occasion)}
+                          <span className="capitalize">{occasion}</span>
+                        </Badge>
+                      ))}
                     </div>
                   </div>
                 </div>

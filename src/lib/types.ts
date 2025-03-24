@@ -46,6 +46,18 @@ export type ClothingMaterial =
   | 'linen' 
   | 'other';
 
+export type ClothingOccasion = 
+  | 'casual'
+  | 'formal'
+  | 'business'
+  | 'party'
+  | 'sporty'
+  | 'outdoor'
+  | 'everyday'
+  | 'special'
+  | 'vacation'
+  | 'date';
+
 export type PersonalityTag =
   | 'minimalist'
   | 'bold'
@@ -67,6 +79,7 @@ export interface ClothingItem {
   color: ClothingColor;
   material: ClothingMaterial;
   seasons: ClothingSeason[];
+  occasions: ClothingOccasion[]; // New field for occasions
   imageUrl: string;
   favorite: boolean;
   timesWorn: number;

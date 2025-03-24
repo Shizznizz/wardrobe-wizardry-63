@@ -1,5 +1,5 @@
 
-import { ClothingItem, Outfit, UserPreferences } from './types';
+import { ClothingItem, Outfit, UserPreferences, ClothingOccasion } from './types';
 
 export const sampleClothingItems: ClothingItem[] = [
   {
@@ -9,6 +9,7 @@ export const sampleClothingItems: ClothingItem[] = [
     color: 'white',
     material: 'cotton',
     seasons: ['spring', 'summer', 'autumn'],
+    occasions: ['casual', 'everyday', 'sporty'] as ClothingOccasion[],
     imageUrl: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&q=80',
     favorite: true,
     timesWorn: 12,
@@ -22,6 +23,7 @@ export const sampleClothingItems: ClothingItem[] = [
     color: 'blue',
     material: 'denim',
     seasons: ['spring', 'autumn', 'winter'],
+    occasions: ['casual', 'everyday', 'outdoor'] as ClothingOccasion[],
     imageUrl: 'https://images.unsplash.com/photo-1542272604-787c3835535d?auto=format&fit=crop&q=80',
     favorite: true,
     timesWorn: 20,
@@ -35,6 +37,7 @@ export const sampleClothingItems: ClothingItem[] = [
     color: 'black',
     material: 'leather',
     seasons: ['autumn', 'winter'],
+    occasions: ['casual', 'date', 'party'] as ClothingOccasion[],
     imageUrl: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&q=80',
     favorite: false,
     timesWorn: 5,
@@ -48,6 +51,7 @@ export const sampleClothingItems: ClothingItem[] = [
     color: 'brown',
     material: 'cotton',
     seasons: ['spring', 'autumn'],
+    occasions: ['business', 'formal', 'date'] as ClothingOccasion[],
     imageUrl: 'https://images.unsplash.com/photo-1473966968600-fa801b869a1a?auto=format&fit=crop&q=80',
     favorite: false,
     timesWorn: 8,
@@ -61,6 +65,7 @@ export const sampleClothingItems: ClothingItem[] = [
     color: 'blue',
     material: 'wool',
     seasons: ['autumn', 'winter'],
+    occasions: ['casual', 'business', 'everyday'] as ClothingOccasion[],
     imageUrl: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&q=80',
     favorite: true,
     timesWorn: 10,
@@ -74,6 +79,7 @@ export const sampleClothingItems: ClothingItem[] = [
     color: 'white',
     material: 'other',
     seasons: ['spring', 'summer', 'autumn'],
+    occasions: ['casual', 'sporty', 'everyday'] as ClothingOccasion[],
     imageUrl: 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?auto=format&fit=crop&q=80',
     favorite: true,
     timesWorn: 25,
@@ -87,6 +93,7 @@ export const sampleClothingItems: ClothingItem[] = [
     color: 'gray',
     material: 'cotton',
     seasons: ['autumn', 'winter'],
+    occasions: ['casual', 'sporty', 'outdoor'] as ClothingOccasion[],
     imageUrl: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&q=80',
     favorite: false,
     timesWorn: 15,
@@ -100,6 +107,7 @@ export const sampleClothingItems: ClothingItem[] = [
     color: 'black',
     material: 'polyester',
     seasons: ['spring', 'summer', 'autumn'],
+    occasions: ['formal', 'party', 'special', 'date'] as ClothingOccasion[],
     imageUrl: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&q=80',
     favorite: true,
     timesWorn: 3,

@@ -1,8 +1,7 @@
-
-import { ClothingItem, Outfit, WeatherInfo, PersonalityTag } from '@/lib/types';
+import { ClothingItem, Outfit, WeatherInfo, PersonalityTag, ClothingOccasion } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { Check, ThumbsUp, ThumbsDown, Sun, Cloud, CloudRain, Camera, Tag } from 'lucide-react';
+import { Check, ThumbsUp, ThumbsDown, Sun, Cloud, CloudRain, Camera, Tag, Party, Briefcase, Shirt, ShoppingBag, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   Tooltip,
@@ -22,6 +21,40 @@ interface OutfitSuggestionProps {
   onDislike: () => void;
 }
 
+const getOccasionIcon = (occasion: string) => {
+  switch (occasion) {
+    case 'casual':
+    case 'everyday':
+      return <Shirt className="h-3 w-3" />;
+    case 'formal':
+    case 'business':
+    case 'work':
+    case 'meeting':
+    case 'interview':
+    case 'presentation':
+      return <Briefcase className="h-3 w-3" />;
+    case 'party':
+    case 'special':
+    case 'date':
+    case 'evening':
+    case 'restaurant':
+      return <Party className="h-3 w-3" />;
+    case 'sporty':
+    case 'outdoor':
+    case 'vacation':
+    case 'shopping':
+    case 'brunch':
+    case 'weekend':
+    case 'city walk':
+    case 'hangout':
+      return <ShoppingBag className="h-3 w-3" />;
+    case 'concert':
+      return <Star className="h-3 w-3" />;
+    default:
+      return <Tag className="h-3 w-3" />;
+  }
+};
+
 const OutfitSuggestion = ({
   outfit,
   items,
@@ -33,32 +66,27 @@ const OutfitSuggestion = ({
 }: OutfitSuggestionProps) => {
   const outfitItems = items.filter(item => outfit.items.includes(item.id));
   
-  // Color matching evaluation
   const getColorMatchScore = () => {
     if (outfitItems.length < 2) return null;
     
     const colors = outfitItems.map(item => item.color);
     const uniqueColors = [...new Set(colors)];
     
-    // Basic color harmony rules
     const complementaryPairs = [
       ['black', 'white'], ['blue', 'orange'], ['red', 'green'], ['yellow', 'purple']
     ];
     
-    // Monochromatic check
     if (uniqueColors.length === 1 || 
        (uniqueColors.length === 2 && (uniqueColors.includes('black') || uniqueColors.includes('white') || uniqueColors.includes('gray')))) {
       return { score: 'excellent', message: 'Monochromatic palette' };
     }
     
-    // Complementary check
     for (const pair of complementaryPairs) {
       if (colors.includes(pair[0] as any) && colors.includes(pair[1] as any)) {
         return { score: 'good', message: 'Complementary colors' };
       }
     }
     
-    // Neutral with accent check
     const neutralColors = ['black', 'white', 'gray', 'brown'];
     const accentColors = ['red', 'blue', 'green', 'yellow', 'purple', 'pink', 'orange'];
     
@@ -69,7 +97,6 @@ const OutfitSuggestion = ({
       return { score: 'good', message: 'Neutral with accent' };
     }
     
-    // Too many colors might clash
     if (uniqueColors.length > 3) {
       return { score: 'fair', message: 'Multiple colors' };
     }
@@ -90,7 +117,6 @@ const OutfitSuggestion = ({
     return <Sun className="h-5 w-5" />;
   };
 
-  // Get appropriate badge color based on personality tag
   const getTagColor = (tag: PersonalityTag) => {
     switch(tag) {
       case 'minimalist': return 'bg-gray-500/70 hover:bg-gray-500/90';
@@ -133,7 +159,6 @@ const OutfitSuggestion = ({
         </div>
         
         <div className="space-y-5">
-          {/* Personality Tags */}
           {outfit.personalityTags && outfit.personalityTags.length > 0 && (
             <div className="flex flex-wrap gap-2 mb-3">
               {outfit.personalityTags.map(tag => (
@@ -149,7 +174,6 @@ const OutfitSuggestion = ({
             </div>
           )}
           
-          {/* Color match indicator */}
           {colorMatch && (
             <div className="mb-3">
               <p className="text-sm text-white/80 flex items-center mb-1">
@@ -166,12 +190,12 @@ const OutfitSuggestion = ({
             </div>
           )}
           
-          {/* Occasions */}
           {outfit.occasions && outfit.occasions.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mb-3">
               <span className="text-xs text-white/70">Perfect for:</span>
               {outfit.occasions.map(occasion => (
-                <span key={occasion} className="text-xs py-0.5 px-2 bg-purple-800/30 rounded-full capitalize">
+                <span key={occasion} className="text-xs py-0.5 px-2 bg-purple-800/30 rounded-full capitalize flex items-center gap-1">
+                  {getOccasionIcon(occasion)}
                   {occasion}
                 </span>
               ))}
@@ -200,7 +224,6 @@ const OutfitSuggestion = ({
             ))}
           </div>
 
-          {/* Last worn information */}
           {outfit.lastWorn && (
             <div className="text-xs text-white/70 mt-1">
               Last worn: {new Date(outfit.lastWorn).toLocaleDateString()}
