@@ -1,11 +1,15 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, Shirt, Palette, Cloud, Sparkles } from 'lucide-react';
+import { ArrowRight, Shirt, Palette, Cloud, Sparkles, Clock, History } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
 import PreferencesModal from '@/components/PreferencesModal';
 import { UserPreferences } from '@/lib/types';
+import OutfitSlider from '@/components/OutfitSlider';
+import VerticalStepCards from '@/components/VerticalStepCards';
+import StylingTimeline from '@/components/StylingTimeline';
+import BackgroundShapes from '@/components/BackgroundShapes';
 
 const Index = () => {
   const [preferences, setPreferences] = useState<UserPreferences>({
@@ -52,10 +56,11 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white">
+    <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white relative overflow-hidden">
+      <BackgroundShapes />
       <Header />
       
-      <main className="container mx-auto px-4 pt-24 pb-16">
+      <main className="container mx-auto px-4 pt-24 pb-16 relative z-10">
         <motion.div 
           className="space-y-12"
           initial="hidden"
@@ -131,6 +136,36 @@ const Index = () => {
                 buttonClassName="text-lg px-5 py-3 h-10 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl shadow-xl hover:shadow-purple-500/20 min-w-[120px] border border-blue-500/20"
               />
             </div>
+          </motion.section>
+          
+          <motion.section variants={itemVariants} className="mt-16">
+            <h2 className="text-2xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+              <span className="flex items-center gap-2">
+                <Palette className="h-6 w-6" />
+                Outfit Inspirations
+              </span>
+            </h2>
+            <OutfitSlider />
+          </motion.section>
+          
+          <motion.section variants={itemVariants} className="mt-16">
+            <h2 className="text-2xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-purple-400">
+              <span className="flex items-center gap-2">
+                <Sparkles className="h-6 w-6" />
+                Showcase Process
+              </span>
+            </h2>
+            <VerticalStepCards />
+          </motion.section>
+          
+          <motion.section variants={itemVariants} className="mt-16">
+            <h2 className="text-2xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-blue-400">
+              <span className="flex items-center gap-2">
+                <History className="h-6 w-6" />
+                Styling Journey
+              </span>
+            </h2>
+            <StylingTimeline />
           </motion.section>
           
           <motion.section variants={itemVariants} className="mt-16">
