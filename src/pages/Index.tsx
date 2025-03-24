@@ -1,10 +1,8 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, Shirt, Palette, Cloud, Sparkles, Clock, History, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Button as MovingBorderButton } from '@/components/ui/moving-border';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import Header from '@/components/Header';
 import PreferencesModal from '@/components/PreferencesModal';
@@ -190,14 +188,13 @@ const Index = () => {
                   }}
                   className="min-w-[240px]"
                 >
-                  <MovingBorderButton 
+                  <Button 
+                    size="lg" 
                     onClick={handleWardrobeButtonClick}
-                    containerClassName="w-full min-w-[240px] h-14"
-                    borderClassName="bg-[radial-gradient(var(--blue-500)_40%,transparent_60%)]"
-                    className="bg-gradient-to-r from-blue-600/80 to-purple-600/80 hover:from-blue-600 hover:to-purple-600 border-blue-500/20 text-lg"
-                    duration={3000}
+                    className="group relative overflow-hidden bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl text-lg px-5 py-3 h-10 transition-all shadow-xl hover:shadow-purple-500/20 w-full border border-blue-500/20"
                   >
-                    <span className="flex items-center justify-center gap-2">
+                    <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-blue-400/20 to-purple-400/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <span className="relative flex items-center justify-center gap-2">
                       Start Building My Wardrobe
                       <motion.div
                         className="inline-block"
@@ -211,7 +208,7 @@ const Index = () => {
                         <ArrowRight className="h-5 w-5" />
                       </motion.div>
                     </span>
-                  </MovingBorderButton>
+                  </Button>
                 </motion.div>
                 
                 <PreferencesModal 
