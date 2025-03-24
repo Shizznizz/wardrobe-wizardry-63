@@ -112,8 +112,8 @@ const Index = () => {
                   <motion.div
                     initial={{ opacity: 0, scale: 0.8, y: 10 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
-                    transition={{ delay: 2, duration: 0.5 }}
-                    className="absolute top-0 right-0 transform translate-x-3/4"
+                    transition={{ delay: 1.5, duration: 0.3 }}
+                    className="absolute top-1/4 right-0 transform translate-x-[calc(100%+10px)]"
                   >
                     <div className="relative p-3 rounded-xl bg-gradient-to-br from-purple-600/90 to-pink-600/90 text-white backdrop-blur-sm shadow-lg border border-white/20 max-w-[150px]">
                       <div className="absolute -left-2 top-4 w-4 h-4 bg-gradient-to-br from-purple-600/90 to-pink-600/90 transform rotate-45 border-l border-t border-white/20"></div>
@@ -130,6 +130,49 @@ const Index = () => {
                 )}
               </motion.div>
             </div>
+            
+            {showOliviaWelcome && expandOliviaMessage && (
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="absolute top-24 right-1/4 max-w-sm z-20"
+              >
+                <div className="relative p-4 rounded-xl bg-gradient-to-br from-purple-600/90 to-pink-600/90 text-white backdrop-blur-sm shadow-lg border border-white/20">
+                  <div className="absolute -right-2 top-4 w-4 h-4 bg-gradient-to-br from-purple-600/90 to-pink-600/90 transform rotate-45 border-r border-t border-white/20"></div>
+                  <button 
+                    onClick={() => setExpandOliviaMessage(false)} 
+                    className="absolute top-2 right-2 p-1 hover:bg-white/10 rounded-full transition-colors"
+                  >
+                    <motion.div whileHover={{ rotate: 90 }} transition={{ duration: 0.2 }}>
+                      <ArrowRight className="h-4 w-4 text-white/80" />
+                    </motion.div>
+                  </button>
+                  <div className="flex items-center mb-3">
+                    <h4 className="font-medium text-white flex items-center text-sm">
+                      Olivia Bloom
+                      <Sparkles className="h-3.5 w-3.5 ml-1 text-yellow-300" />
+                    </h4>
+                    <span className="ml-2 text-xs bg-gradient-to-r from-purple-600/80 to-pink-500/80 text-white px-2 py-0.5 rounded-full text-[10px]">
+                      Style Advisor
+                    </span>
+                  </div>
+                  <p className="text-white/90 text-sm mb-3">
+                    Welcome to Future of Fashion! I'm Olivia, your personal style advisor. I'll help you create outfits that match your style and the weather. What would you like to explore today?
+                  </p>
+                  <Button 
+                    onClick={() => {
+                      setShowOliviaWelcome(false);
+                      setExpandOliviaMessage(false);
+                    }}
+                    className="text-xs px-3 py-1 h-auto bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:opacity-90"
+                    size="sm"
+                  >
+                    Thanks, Olivia!
+                  </Button>
+                </div>
+              </motion.div>
+            )}
             
             <motion.div
               animate={{ 
@@ -182,21 +225,6 @@ const Index = () => {
               />
             </div>
           </motion.section>
-          
-          {showOliviaWelcome && expandOliviaMessage && (
-            <OliviaBloomAssistant
-              message="Welcome to Future of Fashion! I'm Olivia, your personal style advisor. I'll help you create outfits that match your style and the weather. What would you like to explore today?"
-              type="welcome"
-              timing="long"
-              actionText="Thanks, Olivia!"
-              onAction={() => {
-                setShowOliviaWelcome(false);
-                setExpandOliviaMessage(false);
-              }}
-              position="center"
-              autoClose={false}
-            />
-          )}
           
           <motion.section variants={itemVariants} className="mt-8 relative">
             <StyleDiscoveryQuiz />

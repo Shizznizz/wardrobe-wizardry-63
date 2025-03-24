@@ -125,6 +125,7 @@ const Wardrobe = () => {
           favoriteColors: sampleUserPreferences.favoriteColors,
           favoriteStyles: sampleUserPreferences.favoriteStyles
         }}
+        showChatButton={true} // Enable chat button on this page
       />
     </div>
   );

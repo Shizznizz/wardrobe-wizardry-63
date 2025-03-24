@@ -20,13 +20,15 @@ interface OliviaBloomAdvisorProps {
     favoriteColors?: string[];
     favoriteStyles?: string[];
   };
+  showChatButton?: boolean;
 }
 
 const OliviaBloomAdvisor = ({ 
   outfit, 
   items, 
   weather, 
-  userPreferences 
+  userPreferences,
+  showChatButton = false
 }: OliviaBloomAdvisorProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -167,14 +169,16 @@ const OliviaBloomAdvisor = ({
 
   return (
     <>
-      {/* Chat button */}
-      <Button
-        onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 rounded-full h-14 w-14 p-0 bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 shadow-lg"
-        size="icon"
-      >
-        <MessageCircle className="h-6 w-6" />
-      </Button>
+      {/* Chat button - only show if showChatButton is true */}
+      {showChatButton && (
+        <Button
+          onClick={() => setIsOpen(true)}
+          className="fixed bottom-6 right-6 rounded-full h-14 w-14 p-0 bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 shadow-lg"
+          size="icon"
+        >
+          <MessageCircle className="h-6 w-6" />
+        </Button>
+      )}
       
       {/* Chat interface */}
       <AnimatePresence>
