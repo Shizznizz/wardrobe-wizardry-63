@@ -97,7 +97,7 @@ const Header = ({ weather }: HeaderProps) => {
         />
 
         <div className="flex items-center">
-          <WeatherDisplay weather={weather} />
+          <WeatherDisplay weather={weather} isScrolled={isScrolled} />
           <UserMenu isScrolled={isScrolled} />
 
           <Button
