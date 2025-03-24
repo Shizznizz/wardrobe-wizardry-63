@@ -207,15 +207,17 @@ const Index = () => {
               <Link to="/wardrobe" className="block">
                 <motion.div 
                   whileHover={{ y: -8, scale: 1.02 }}
-                  className="glass-dark p-8 rounded-2xl border border-blue-500/20 backdrop-blur-lg bg-slate-900/40 shadow-lg hover:shadow-blue-500/10 transition-all duration-300"
+                  className="glass-dark p-8 rounded-2xl border border-blue-500/20 backdrop-blur-lg bg-slate-900/40 shadow-lg hover:shadow-blue-500/10 transition-all duration-300 h-full flex flex-col justify-between"
                 >
-                  <div className="h-16 w-16 rounded-2xl flex items-center justify-center mb-6 bg-gradient-to-br from-blue-500/20 to-blue-500/5 border border-blue-400/20">
-                    <Shirt className="h-8 w-8 text-blue-400" />
+                  <div>
+                    <div className="h-16 w-16 rounded-2xl flex items-center justify-center mb-6 bg-gradient-to-br from-blue-500/20 to-blue-500/5 border border-blue-400/20">
+                      <Shirt className="h-8 w-8 text-blue-400" />
+                    </div>
+                    <h3 className="text-2xl font-bold mb-3 text-blue-200">Virtual Wardrobe</h3>
+                    <p className="text-blue-100/80">
+                      Digitize your entire collection with smart categorization and instant access.
+                    </p>
                   </div>
-                  <h3 className="text-2xl font-bold mb-3 text-blue-200">Virtual Wardrobe</h3>
-                  <p className="text-blue-100/80">
-                    Digitize your entire collection with smart categorization and instant access.
-                  </p>
                   <div className="mt-6 flex justify-end">
                     <ArrowRight className="h-5 w-5 text-blue-400" />
                   </div>
@@ -225,15 +227,17 @@ const Index = () => {
               <Link to="/outfits" className="block">
                 <motion.div 
                   whileHover={{ y: -8, scale: 1.02 }}
-                  className="glass-dark p-8 rounded-2xl border border-purple-500/20 backdrop-blur-lg bg-slate-900/40 shadow-lg hover:shadow-purple-500/10 transition-all duration-300"
+                  className="glass-dark p-8 rounded-2xl border border-purple-500/20 backdrop-blur-lg bg-slate-900/40 shadow-lg hover:shadow-purple-500/10 transition-all duration-300 h-full flex flex-col justify-between"
                 >
-                  <div className="h-16 w-16 rounded-2xl flex items-center justify-center mb-6 bg-gradient-to-br from-purple-500/20 to-purple-500/5 border border-purple-400/20">
-                    <Palette className="h-8 w-8 text-purple-400" />
+                  <div>
+                    <div className="h-16 w-16 rounded-2xl flex items-center justify-center mb-6 bg-gradient-to-br from-purple-500/20 to-purple-500/5 border border-purple-400/20">
+                      <Palette className="h-8 w-8 text-purple-400" />
+                    </div>
+                    <h3 className="text-2xl font-bold mb-3 text-purple-200">AI Styling</h3>
+                    <p className="text-purple-100/80">
+                      Create perfectly coordinated outfits with AI that understands your personal style.
+                    </p>
                   </div>
-                  <h3 className="text-2xl font-bold mb-3 text-purple-200">AI Styling</h3>
-                  <p className="text-purple-100/80">
-                    Create perfectly coordinated outfits with AI that understands your personal style.
-                  </p>
                   <div className="mt-6 flex justify-end">
                     <ArrowRight className="h-5 w-5 text-purple-400" />
                   </div>
@@ -243,15 +247,17 @@ const Index = () => {
               <Link to="/try-on" className="block">
                 <motion.div 
                   whileHover={{ y: -8, scale: 1.02 }}
-                  className="glass-dark p-8 rounded-2xl border border-pink-500/20 backdrop-blur-lg bg-slate-900/40 shadow-lg hover:shadow-pink-500/10 transition-all duration-300"
+                  className="glass-dark p-8 rounded-2xl border border-pink-500/20 backdrop-blur-lg bg-slate-900/40 shadow-lg hover:shadow-pink-500/10 transition-all duration-300 h-full flex flex-col justify-between"
                 >
-                  <div className="h-16 w-16 rounded-2xl flex items-center justify-center mb-6 bg-gradient-to-br from-pink-500/20 to-pink-500/5 border border-pink-400/20">
-                    <Sparkles className="h-8 w-8 text-pink-400" />
+                  <div>
+                    <div className="h-16 w-16 rounded-2xl flex items-center justify-center mb-6 bg-gradient-to-br from-pink-500/20 to-pink-500/5 border border-pink-400/20">
+                      <Sparkles className="h-8 w-8 text-pink-400" />
+                    </div>
+                    <h3 className="text-2xl font-bold mb-3 text-pink-200">Showcase</h3>
+                    <p className="text-pink-100/80">
+                      See exactly how outfits look on you with our cutting-edge virtual fitting room.
+                    </p>
                   </div>
-                  <h3 className="text-2xl font-bold mb-3 text-pink-200">Showcase</h3>
-                  <p className="text-pink-100/80">
-                    See exactly how outfits look on you with our cutting-edge virtual fitting room.
-                  </p>
                   <div className="mt-6 flex justify-end">
                     <ArrowRight className="h-5 w-5 text-pink-400" />
                   </div>
@@ -261,15 +267,17 @@ const Index = () => {
               <Link to="/new-clothes" className="block">
                 <motion.div 
                   whileHover={{ y: -8, scale: 1.02 }}
-                  className="glass-dark p-8 rounded-2xl border border-emerald-500/20 backdrop-blur-lg bg-slate-900/40 shadow-lg hover:shadow-emerald-500/10 transition-all duration-300"
+                  className="glass-dark p-8 rounded-2xl border border-emerald-500/20 backdrop-blur-lg bg-slate-900/40 shadow-lg hover:shadow-emerald-500/10 transition-all duration-300 h-full flex flex-col justify-between"
                 >
-                  <div className="h-16 w-16 rounded-2xl flex items-center justify-center mb-6 bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 border border-emerald-400/20">
-                    <Shirt className="h-8 w-8 text-emerald-400" />
+                  <div>
+                    <div className="h-16 w-16 rounded-2xl flex items-center justify-center mb-6 bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 border border-emerald-400/20">
+                      <Shirt className="h-8 w-8 text-emerald-400" />
+                    </div>
+                    <h3 className="text-2xl font-bold mb-3 text-emerald-200">New Clothes</h3>
+                    <p className="text-emerald-100/80">
+                      Visualize how new clothes would look on you before making a purchase decision.
+                    </p>
                   </div>
-                  <h3 className="text-2xl font-bold mb-3 text-emerald-200">New Clothes</h3>
-                  <p className="text-emerald-100/80">
-                    Visualize how new clothes would look on you before making a purchase decision.
-                  </p>
                   <div className="mt-6 flex justify-end">
                     <ArrowRight className="h-5 w-5 text-emerald-400" />
                   </div>
