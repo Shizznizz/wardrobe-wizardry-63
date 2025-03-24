@@ -70,6 +70,76 @@ const Index = () => {
       <BackgroundShapes />
       <Header />
       
+      <div className="fixed top-6 right-6 z-50">
+        <motion.div
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.5, type: "spring", stiffness: 200 }}
+          className="relative"
+        >
+          <Avatar className="w-16 h-16 border-2 border-pink-400 shadow-lg cursor-pointer" onClick={() => setExpandOliviaMessage(!expandOliviaMessage)}>
+            <AvatarImage src="/lovable-uploads/86bf74b8-b311-4e3c-bfd6-53819add3df8.png" alt="Olivia Bloom" />
+            <AvatarFallback className="bg-purple-800">OB</AvatarFallback>
+          </Avatar>
+          
+          {showOliviaWelcome && !expandOliviaMessage && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 1.5, duration: 0.3 }}
+              className="absolute bottom-0 right-0"
+            >
+              <div className="relative p-2 rounded-full bg-pink-500 text-white shadow-lg">
+                <MessageSquare className="h-4 w-4" />
+              </div>
+            </motion.div>
+          )}
+        </motion.div>
+        
+        {showOliviaWelcome && expandOliviaMessage && (
+          <motion.div 
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="absolute top-20 right-0 z-20 w-80"
+          >
+            <div className="relative p-4 rounded-xl bg-gradient-to-br from-purple-600/90 to-pink-600/90 text-white backdrop-blur-sm shadow-lg border border-white/20">
+              <div className="absolute -top-2 right-6 w-4 h-4 bg-gradient-to-br from-purple-600/90 to-pink-600/90 transform rotate-45 border-t border-r border-white/20"></div>
+              <button 
+                onClick={() => setExpandOliviaMessage(false)} 
+                className="absolute top-2 right-2 p-1 hover:bg-white/10 rounded-full transition-colors"
+              >
+                <motion.div whileHover={{ rotate: 90 }} transition={{ duration: 0.2 }}>
+                  <ArrowRight className="h-4 w-4 text-white/80" />
+                </motion.div>
+              </button>
+              <div className="flex items-center mb-3">
+                <h4 className="font-medium text-white flex items-center text-sm">
+                  Olivia Bloom
+                  <Sparkles className="h-3.5 w-3.5 ml-1 text-yellow-300" />
+                </h4>
+                <span className="ml-2 text-xs bg-gradient-to-r from-purple-600/80 to-pink-500/80 text-white px-2 py-0.5 rounded-full text-[10px]">
+                  Style Advisor
+                </span>
+              </div>
+              <p className="text-white/90 text-sm mb-3">
+                Welcome to Future of Fashion! I'm Olivia, your personal style advisor. I'll help you create outfits that match your style and the weather. What would you like to explore today?
+              </p>
+              <Button 
+                onClick={() => {
+                  setShowOliviaWelcome(false);
+                  setExpandOliviaMessage(false);
+                }}
+                className="text-xs px-3 py-1 h-auto bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:opacity-90"
+                size="sm"
+              >
+                Thanks, Olivia!
+              </Button>
+            </div>
+          </motion.div>
+        )}
+      </div>
+      
       <main className="container mx-auto px-4 pt-24 pb-16 relative z-10">
         <motion.div 
           className="space-y-12"
@@ -77,8 +147,8 @@ const Index = () => {
           animate="visible"
           variants={containerVariants}
         >
-          <motion.section variants={itemVariants} className="flex flex-col items-center justify-center text-center space-y-8 relative">
-            <div className="relative flex items-center justify-center gap-3 flex-wrap">
+          <motion.section variants={itemVariants} className="flex flex-col items-center justify-center text-center space-y-8 relative min-h-[60vh] flex items-center justify-center">
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center">
               <div className="relative inline-block">
                 <motion.div 
                   className="absolute -inset-1 rounded-lg bg-gradient-to-r from-purple-600 via-blue-500 to-purple-600 opacity-75 blur-xl"
@@ -98,147 +168,55 @@ const Index = () => {
               </div>
               
               <motion.div
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.5, type: "spring", stiffness: 200 }}
-                className="relative flex items-center"
-              >
-                <Avatar className="w-24 h-24 border-2 border-pink-400 shadow-lg">
-                  <AvatarImage src="/lovable-uploads/86bf74b8-b311-4e3c-bfd6-53819add3df8.png" alt="Olivia Bloom" />
-                  <AvatarFallback className="bg-purple-800">OB</AvatarFallback>
-                </Avatar>
-                
-                {showOliviaWelcome && !expandOliviaMessage && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.8, x: 10 }}
-                    animate={{ opacity: 1, scale: 1, x: 0 }}
-                    transition={{ delay: 1.5, duration: 0.3 }}
-                    className="ml-4"
-                  >
-                    <div className="relative p-3 rounded-xl bg-gradient-to-br from-purple-600/90 to-pink-600/90 text-white backdrop-blur-sm shadow-lg border border-white/20 max-w-[180px]">
-                      <div className="absolute -left-2 top-4 w-4 h-4 bg-gradient-to-br from-purple-600/90 to-pink-600/90 transform rotate-45 border-l border-t border-white/20"></div>
-                      <p className="text-xs">Hi there! I'm Olivia, your style advisor.</p>
-                      <button 
-                        onClick={() => setExpandOliviaMessage(true)}
-                        className="mt-2 text-[10px] bg-white/20 rounded-full px-2 py-0.5 hover:bg-white/30 transition-colors flex items-center justify-center w-full"
-                      >
-                        <MessageSquare className="h-3 w-3 mr-1" />
-                        Chat with me
-                      </button>
-                    </div>
-                  </motion.div>
-                )}
-              </motion.div>
-            </div>
-            
-            {showOliviaWelcome && expandOliviaMessage && (
-              <motion.div 
-                initial={{ opacity: 0, width: "180px", height: "60px" }}
                 animate={{ 
-                  opacity: 1, 
-                  width: "320px",
-                  height: "auto"
+                  scale: [1, 1.02, 1],
+                  filter: ["brightness(1)", "brightness(1.1)", "brightness(1)"] 
                 }}
-                transition={{ 
-                  duration: 0.3, 
-                  ease: "easeInOut",
-                  width: { duration: 0.15 },
-                  height: { delay: 0.15, duration: 0.15 }
-                }}
-                className="absolute z-20"
-                style={{
-                  top: "50%",
-                  left: "50%",
-                  marginLeft: "60px",
-                  marginTop: "-50px",
-                  transformOrigin: "left top"
-                }}
-              >
-                <div className="relative p-4 rounded-xl bg-gradient-to-br from-purple-600/90 to-pink-600/90 text-white backdrop-blur-sm shadow-lg border border-white/20 h-full w-full">
-                  <div className="absolute -left-2 top-10 w-4 h-4 bg-gradient-to-br from-purple-600/90 to-pink-600/90 transform rotate-45 border-l border-t border-white/20"></div>
-                  <button 
-                    onClick={() => setExpandOliviaMessage(false)} 
-                    className="absolute top-2 right-2 p-1 hover:bg-white/10 rounded-full transition-colors"
-                  >
-                    <motion.div whileHover={{ rotate: 90 }} transition={{ duration: 0.2 }}>
-                      <ArrowRight className="h-4 w-4 text-white/80" />
-                    </motion.div>
-                  </button>
-                  <div className="flex items-center mb-3">
-                    <h4 className="font-medium text-white flex items-center text-sm">
-                      Olivia Bloom
-                      <Sparkles className="h-3.5 w-3.5 ml-1 text-yellow-300" />
-                    </h4>
-                    <span className="ml-2 text-xs bg-gradient-to-r from-purple-600/80 to-pink-500/80 text-white px-2 py-0.5 rounded-full text-[10px]">
-                      Style Advisor
-                    </span>
-                  </div>
-                  <p className="text-white/90 text-sm mb-3">
-                    Welcome to Future of Fashion! I'm Olivia, your personal style advisor. I'll help you create outfits that match your style and the weather. What would you like to explore today?
-                  </p>
-                  <Button 
-                    onClick={() => {
-                      setShowOliviaWelcome(false);
-                      setExpandOliviaMessage(false);
-                    }}
-                    className="text-xs px-3 py-1 h-auto bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:opacity-90"
-                    size="sm"
-                  >
-                    Thanks, Olivia!
-                  </Button>
-                </div>
-              </motion.div>
-            )}
-            
-            <motion.div
-              animate={{ 
-                scale: [1, 1.02, 1],
-                filter: ["brightness(1)", "brightness(1.1)", "brightness(1)"] 
-              }}
-              transition={{ duration: 3, repeat: Infinity }}
-              className="w-24 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full mb-4"
-            />
-                        
-            <p className="text-xl text-blue-100 max-w-2xl backdrop-blur-sm py-4 px-6 rounded-lg border border-white/10 shadow-lg neo-blur">
-              Smarter styling starts here. AI-curated outfits that fit your style, your body, and your weather.
-            </p>
-            
-            <div className="flex flex-wrap gap-6 justify-center mt-6">
-              <motion.div
-                whileHover={{ 
-                  scale: 1.05,
-                  transition: { duration: 0.2 }
-                }}
-                className="min-w-[240px]"
-              >
-                <Button 
-                  size="lg" 
-                  onClick={handleWardrobeButtonClick}
-                  className="group relative overflow-hidden bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl text-lg px-5 py-3 h-10 transition-all shadow-xl hover:shadow-purple-500/20 w-full border border-blue-500/20"
-                >
-                  <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-blue-400/20 to-purple-400/20 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <span className="relative flex items-center justify-center gap-2">
-                    Start Building My Wardrobe
-                    <motion.div
-                      className="inline-block"
-                      animate={{ x: [0, 3, 0] }}
-                      transition={{ 
-                        duration: 1.5, 
-                        repeat: Infinity,
-                        ease: "easeInOut" 
-                      }}
-                    >
-                      <ArrowRight className="h-5 w-5" />
-                    </motion.div>
-                  </span>
-                </Button>
-              </motion.div>
-              
-              <PreferencesModal 
-                preferences={preferences} 
-                onSave={handleUpdatePreferences} 
-                buttonClassName="text-lg px-5 py-3 h-10 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl shadow-xl hover:shadow-purple-500/20 min-w-[120px] border border-blue-500/20"
+                transition={{ duration: 3, repeat: Infinity }}
+                className="w-24 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full mb-4 mt-4"
               />
+              
+              <p className="text-xl text-blue-100 max-w-2xl backdrop-blur-sm py-4 px-6 rounded-lg border border-white/10 shadow-lg neo-blur">
+                Smarter styling starts here. AI-curated outfits that fit your style, your body, and your weather.
+              </p>
+              
+              <div className="flex flex-wrap gap-6 justify-center mt-6">
+                <motion.div
+                  whileHover={{ 
+                    scale: 1.05,
+                    transition: { duration: 0.2 }
+                  }}
+                  className="min-w-[240px]"
+                >
+                  <Button 
+                    size="lg" 
+                    onClick={handleWardrobeButtonClick}
+                    className="group relative overflow-hidden bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl text-lg px-5 py-3 h-10 transition-all shadow-xl hover:shadow-purple-500/20 w-full border border-blue-500/20"
+                  >
+                    <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-blue-400/20 to-purple-400/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <span className="relative flex items-center justify-center gap-2">
+                      Start Building My Wardrobe
+                      <motion.div
+                        className="inline-block"
+                        animate={{ x: [0, 3, 0] }}
+                        transition={{ 
+                          duration: 1.5, 
+                          repeat: Infinity,
+                          ease: "easeInOut" 
+                        }}
+                      >
+                        <ArrowRight className="h-5 w-5" />
+                      </motion.div>
+                    </span>
+                  </Button>
+                </motion.div>
+                
+                <PreferencesModal 
+                  preferences={preferences} 
+                  onSave={handleUpdatePreferences} 
+                  buttonClassName="text-lg px-5 py-3 h-10 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl shadow-xl hover:shadow-purple-500/20 min-w-[120px] border border-blue-500/20"
+                />
+              </div>
             </div>
           </motion.section>
           
