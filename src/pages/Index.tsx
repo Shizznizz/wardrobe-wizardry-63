@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -71,7 +70,6 @@ const Index = () => {
       <BackgroundShapes />
       <Header />
       
-      {/* Olivia Avatar positioned beneath header */}
       <div className="fixed top-24 right-6 z-50">
         <motion.div
           initial={{ scale: 0, opacity: 0 }}
@@ -175,7 +173,7 @@ const Index = () => {
                   filter: ["brightness(1)", "brightness(1.1)", "brightness(1)"] 
                 }}
                 transition={{ duration: 3, repeat: Infinity }}
-                className="w-24 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full mb-4 mt-4"
+                className="w-24 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full mb-4 mt-8"
               />
               
               <p className="text-xl text-blue-100 max-w-2xl backdrop-blur-sm py-4 px-6 rounded-lg border border-white/10 shadow-lg neo-blur">
