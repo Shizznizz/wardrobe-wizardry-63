@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -14,6 +15,7 @@ import BackgroundShapes from '@/components/BackgroundShapes';
 import StyleSituation from '@/components/StyleSituation';
 import OliviaBloomAssistant from '@/components/OliviaBloomAssistant';
 import OliviaBadge from '@/components/OliviaBadge';
+import StyleDiscoveryQuiz from '@/components/StyleDiscoveryQuiz';
 
 const Index = () => {
   const [preferences, setPreferences] = useState<UserPreferences>({
@@ -187,6 +189,10 @@ const Index = () => {
                 buttonClassName="text-lg px-5 py-3 h-10 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl shadow-xl hover:shadow-purple-500/20 min-w-[120px] border border-blue-500/20"
               />
             </div>
+          </motion.section>
+          
+          <motion.section variants={itemVariants} className="mt-8 relative">
+            <StyleDiscoveryQuiz />
           </motion.section>
           
           <motion.section variants={itemVariants} className="mt-8 relative">
