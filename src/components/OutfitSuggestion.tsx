@@ -1,8 +1,8 @@
 
-import { ClothingItem, Outfit, WeatherInfo } from '@/lib/types';
+import { ClothingItem, Outfit, WeatherInfo, PersonalityTag } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { Check, ThumbsUp, ThumbsDown, Sun, Cloud, CloudRain, Camera } from 'lucide-react';
+import { Check, ThumbsUp, ThumbsDown, Sun, Cloud, CloudRain, Camera, Tag } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   Tooltip,
@@ -10,6 +10,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Badge } from "@/components/ui/badge";
 
 interface OutfitSuggestionProps {
   outfit: Outfit;
@@ -32,6 +33,52 @@ const OutfitSuggestion = ({
 }: OutfitSuggestionProps) => {
   const outfitItems = items.filter(item => outfit.items.includes(item.id));
   
+  // Color matching evaluation
+  const getColorMatchScore = () => {
+    if (outfitItems.length < 2) return null;
+    
+    const colors = outfitItems.map(item => item.color);
+    const uniqueColors = [...new Set(colors)];
+    
+    // Basic color harmony rules
+    const complementaryPairs = [
+      ['black', 'white'], ['blue', 'orange'], ['red', 'green'], ['yellow', 'purple']
+    ];
+    
+    // Monochromatic check
+    if (uniqueColors.length === 1 || 
+       (uniqueColors.length === 2 && (uniqueColors.includes('black') || uniqueColors.includes('white') || uniqueColors.includes('gray')))) {
+      return { score: 'excellent', message: 'Monochromatic palette' };
+    }
+    
+    // Complementary check
+    for (const pair of complementaryPairs) {
+      if (colors.includes(pair[0] as any) && colors.includes(pair[1] as any)) {
+        return { score: 'good', message: 'Complementary colors' };
+      }
+    }
+    
+    // Neutral with accent check
+    const neutralColors = ['black', 'white', 'gray', 'brown'];
+    const accentColors = ['red', 'blue', 'green', 'yellow', 'purple', 'pink', 'orange'];
+    
+    const hasNeutrals = colors.some(color => neutralColors.includes(color as string));
+    const hasOneAccent = accentColors.filter(accent => colors.includes(accent as any)).length === 1;
+    
+    if (hasNeutrals && hasOneAccent) {
+      return { score: 'good', message: 'Neutral with accent' };
+    }
+    
+    // Too many colors might clash
+    if (uniqueColors.length > 3) {
+      return { score: 'fair', message: 'Multiple colors' };
+    }
+    
+    return { score: 'good', message: 'Balanced colors' };
+  };
+  
+  const colorMatch = getColorMatchScore();
+  
   const getWeatherIcon = () => {
     if (!weather) return <Sun className="h-5 w-5" />;
     
@@ -41,6 +88,25 @@ const OutfitSuggestion = ({
     if (condition.includes('rain')) return <CloudRain className="h-5 w-5" />;
     
     return <Sun className="h-5 w-5" />;
+  };
+
+  // Get appropriate badge color based on personality tag
+  const getTagColor = (tag: PersonalityTag) => {
+    switch(tag) {
+      case 'minimalist': return 'bg-gray-500/70 hover:bg-gray-500/90';
+      case 'bold': return 'bg-red-500/70 hover:bg-red-500/90';
+      case 'trendy': return 'bg-purple-500/70 hover:bg-purple-500/90';
+      case 'classic': return 'bg-blue-500/70 hover:bg-blue-500/90';
+      case 'casual': return 'bg-green-500/70 hover:bg-green-500/90';
+      case 'formal': return 'bg-slate-700/70 hover:bg-slate-700/90';
+      case 'sporty': return 'bg-orange-500/70 hover:bg-orange-500/90';
+      case 'elegant': return 'bg-indigo-500/70 hover:bg-indigo-500/90';
+      case 'vintage': return 'bg-amber-500/70 hover:bg-amber-500/90';
+      case 'bohemian': return 'bg-teal-500/70 hover:bg-teal-500/90';
+      case 'preppy': return 'bg-emerald-500/70 hover:bg-emerald-500/90';
+      case 'artistic': return 'bg-fuchsia-500/70 hover:bg-fuchsia-500/90';
+      default: return 'bg-gray-500/70 hover:bg-gray-500/90';
+    }
   };
 
   const handleWear = () => {
@@ -67,6 +133,51 @@ const OutfitSuggestion = ({
         </div>
         
         <div className="space-y-5">
+          {/* Personality Tags */}
+          {outfit.personalityTags && outfit.personalityTags.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-3">
+              {outfit.personalityTags.map(tag => (
+                <Badge 
+                  key={tag} 
+                  variant="outline"
+                  className={cn("text-xs py-0.5 px-2 backdrop-blur-sm border-white/10", getTagColor(tag))}
+                >
+                  <Tag className="h-3 w-3 mr-1 opacity-70" />
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+          )}
+          
+          {/* Color match indicator */}
+          {colorMatch && (
+            <div className="mb-3">
+              <p className="text-sm text-white/80 flex items-center mb-1">
+                <span className="mr-2">Color harmony:</span>
+                <span className={cn(
+                  "px-2 py-0.5 rounded-full text-xs font-medium",
+                  colorMatch.score === 'excellent' ? "bg-green-500/50" : 
+                  colorMatch.score === 'good' ? "bg-blue-500/50" : 
+                  "bg-amber-500/50"
+                )}>
+                  {colorMatch.message}
+                </span>
+              </p>
+            </div>
+          )}
+          
+          {/* Occasions */}
+          {outfit.occasions && outfit.occasions.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 mb-3">
+              <span className="text-xs text-white/70">Perfect for:</span>
+              {outfit.occasions.map(occasion => (
+                <span key={occasion} className="text-xs py-0.5 px-2 bg-purple-800/30 rounded-full capitalize">
+                  {occasion}
+                </span>
+              ))}
+            </div>
+          )}
+          
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {outfitItems.map((item) => (
               <div key={item.id} className="relative rounded-lg overflow-hidden border border-white/10 bg-black/20">
@@ -79,10 +190,23 @@ const OutfitSuggestion = ({
                 </div>
                 <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm p-2">
                   <p className="text-sm font-medium truncate text-white">{item.name}</p>
+                  {item.favorite && (
+                    <div className="absolute top-2 right-2 bg-red-500/80 w-5 h-5 flex items-center justify-center rounded-full">
+                      <ThumbsUp className="h-3 w-3 text-white" />
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
           </div>
+
+          {/* Last worn information */}
+          {outfit.lastWorn && (
+            <div className="text-xs text-white/70 mt-1">
+              Last worn: {new Date(outfit.lastWorn).toLocaleDateString()}
+              {outfit.timesWorn > 0 && ` • Worn ${outfit.timesWorn} ${outfit.timesWorn === 1 ? 'time' : 'times'}`}
+            </div>
+          )}
 
           <div className="flex flex-wrap justify-between items-center pt-2">
             <div className="flex space-x-2">

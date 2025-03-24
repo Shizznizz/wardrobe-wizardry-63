@@ -46,6 +46,20 @@ export type ClothingMaterial =
   | 'linen' 
   | 'other';
 
+export type PersonalityTag =
+  | 'minimalist'
+  | 'bold'
+  | 'trendy'
+  | 'classic'
+  | 'casual'
+  | 'formal'
+  | 'sporty'
+  | 'elegant'
+  | 'vintage'
+  | 'bohemian'
+  | 'preppy'
+  | 'artistic';
+
 export interface ClothingItem {
   id: string;
   name: string;
@@ -70,6 +84,8 @@ export interface Outfit {
   timesWorn: number;
   lastWorn?: Date;
   dateAdded: Date;
+  personalityTags?: PersonalityTag[]; // New field for personality tags
+  colorScheme?: string; // Description of the color scheme
 }
 
 export interface WeatherInfo {
@@ -86,6 +102,7 @@ export interface WeatherInfo {
 export interface UserPreferences {
   favoriteColors: ClothingColor[];
   favoriteStyles: string[];
+  personalityTags?: PersonalityTag[]; // User's preferred style tags
   seasonalPreferences: {
     [key in ClothingSeason]: {
       enabled: boolean;

@@ -113,40 +113,73 @@ export const sampleOutfits: Outfit[] = [
     id: '1',
     name: 'Casual Weekend',
     items: ['1', '2', '6'],
-    occasions: ['casual', 'weekend'],
+    occasions: ['casual', 'weekend', 'shopping', 'brunch'],
     seasons: ['spring', 'summer', 'autumn'],
     favorite: true,
     timesWorn: 8,
     lastWorn: new Date('2023-10-15'),
-    dateAdded: new Date('2023-03-15')
+    dateAdded: new Date('2023-03-15'),
+    personalityTags: ['casual', 'minimalist'],
+    colorScheme: 'Neutral with blue accent'
   },
   {
     id: '2',
     name: 'Smart Casual',
     items: ['5', '4', '6'],
-    occasions: ['smart casual', 'work'],
+    occasions: ['smart casual', 'work', 'dinner', 'meeting'],
     seasons: ['autumn', 'winter'],
     favorite: false,
     timesWorn: 5,
     lastWorn: new Date('2023-10-10'),
-    dateAdded: new Date('2023-04-20')
+    dateAdded: new Date('2023-04-20'),
+    personalityTags: ['classic', 'preppy'],
+    colorScheme: 'Navy and beige'
   },
   {
     id: '3',
     name: 'Evening Out',
     items: ['8', '6'],
-    occasions: ['evening', 'date'],
+    occasions: ['evening', 'date', 'party', 'restaurant'],
     seasons: ['spring', 'summer', 'autumn'],
     favorite: true,
     timesWorn: 2,
     lastWorn: new Date('2023-09-15'),
-    dateAdded: new Date('2023-06-15')
+    dateAdded: new Date('2023-06-15'),
+    personalityTags: ['elegant', 'bold'],
+    colorScheme: 'Classic black and white'
+  },
+  {
+    id: '4',
+    name: 'Trendy Street Style',
+    items: ['1', '7', '6'],
+    occasions: ['casual', 'hangout', 'concert', 'city walk'],
+    seasons: ['autumn', 'spring'],
+    favorite: false,
+    timesWorn: 3,
+    lastWorn: new Date('2023-08-20'),
+    dateAdded: new Date('2023-05-10'),
+    personalityTags: ['trendy', 'sporty'],
+    colorScheme: 'White, gray, with pop accents'
+  },
+  {
+    id: '5',
+    name: 'Professional Look',
+    items: ['3', '4', '6'],
+    occasions: ['formal', 'business', 'interview', 'presentation'],
+    seasons: ['autumn', 'winter'],
+    favorite: true,
+    timesWorn: 6,
+    lastWorn: new Date('2023-09-05'),
+    dateAdded: new Date('2023-02-28'),
+    personalityTags: ['formal', 'classic'],
+    colorScheme: 'Black and beige sophisticated'
   }
 ];
 
 export const sampleUserPreferences: UserPreferences = {
   favoriteColors: ['blue', 'black', 'white'],
   favoriteStyles: ['casual', 'smart casual'],
+  personalityTags: ['minimalist', 'classic', 'casual'],
   seasonalPreferences: {
     spring: {
       enabled: true,
