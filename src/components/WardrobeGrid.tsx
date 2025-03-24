@@ -1,6 +1,5 @@
-
 import { useState } from 'react';
-import { ClothingItem, ClothingType, ClothingColor, ClothingSeason } from '@/lib/types';
+import { ClothingItem, ClothingType, ClothingColor, ClothingSeason, Outfit } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { Heart, Filter, Shirt, Umbrella, Tag, CircleUser, ShoppingBag, Footprints, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -12,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import OutfitSuggestion from '@/components/OutfitSuggestion';
+import { sampleOutfits } from '@/lib/wardrobeData';
 
 interface WardrobeGridProps {
   items: ClothingItem[];
@@ -72,9 +72,77 @@ const WardrobeGrid = ({ items, onToggleFavorite }: WardrobeGridProps) => {
     setSelectedItem(item);
   };
 
+  const generateOutfitSuggestions = (centerItem: ClothingItem): Outfit[] => {
+    return [
+      {
+        id: 'casual-weekend',
+        name: 'Casual Weekend',
+        items: [centerItem.id, ...items.filter(i => i.id !== centerItem.id).slice(0, 2).map(i => i.id)],
+        occasions: ['weekend', 'casual'],
+        seasons: ['all'],
+        favorite: false,
+        timesWorn: 0,
+        dateAdded: new Date(),
+        personalityTags: ['casual', 'minimalist']
+      },
+      {
+        id: 'office-elegance',
+        name: 'Office Elegance',
+        items: [centerItem.id, ...items.filter(i => i.id !== centerItem.id).slice(2, 4).map(i => i.id)],
+        occasions: ['work', 'office'],
+        seasons: ['all'],
+        favorite: false,
+        timesWorn: 0,
+        dateAdded: new Date(),
+        personalityTags: ['formal', 'elegant']
+      },
+      {
+        id: 'night-out',
+        name: 'Night Out',
+        items: [centerItem.id, ...items.filter(i => i.id !== centerItem.id).slice(4, 6).map(i => i.id)],
+        occasions: ['party', 'evening'],
+        seasons: ['all'],
+        favorite: false,
+        timesWorn: 0,
+        dateAdded: new Date(),
+        personalityTags: ['bold', 'trendy']
+      },
+      {
+        id: 'seasonal-staple',
+        name: 'Seasonal Staple',
+        items: [centerItem.id, ...items.filter(i => i.id !== centerItem.id).slice(6, 8).map(i => i.id)],
+        occasions: ['daily', 'casual'],
+        seasons: centerItem.seasons,
+        favorite: false,
+        timesWorn: 0,
+        dateAdded: new Date(),
+        personalityTags: ['classic', 'casual']
+      }
+    ];
+  };
+
+  const [outfitSuggestions, setOutfitSuggestions] = useState<Outfit[]>([]);
+  
   const handleMatchThis = (item: ClothingItem) => {
     setSelectedItem(item);
+    setOutfitSuggestions(generateOutfitSuggestions(item));
     setShowOutfitDialog(true);
+  };
+
+  const handleWearOutfit = (outfitId: string) => {
+    console.log('Wearing outfit:', outfitId);
+  };
+
+  const handleRefreshOutfit = () => {
+    console.log('Refreshing outfit suggestion');
+  };
+
+  const handleLikeOutfit = () => {
+    console.log('Liked outfit');
+  };
+
+  const handleDislikeOutfit = () => {
+    console.log('Disliked outfit');
   };
 
   return (
@@ -322,26 +390,17 @@ const WardrobeGrid = ({ items, onToggleFavorite }: WardrobeGridProps) => {
               
               <h3 className="text-lg font-medium">Suggested Outfits</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <OutfitSuggestion 
-                  title="Casual Weekend" 
-                  description="Perfect for a relaxed day out"
-                  centerpiece={selectedItem}
-                />
-                <OutfitSuggestion 
-                  title="Office Elegance" 
-                  description="Professional but stylish"
-                  centerpiece={selectedItem}
-                />
-                <OutfitSuggestion 
-                  title="Night Out" 
-                  description="For evenings and special occasions"
-                  centerpiece={selectedItem}
-                />
-                <OutfitSuggestion 
-                  title="Seasonal Staple" 
-                  description="Weather-appropriate styling"
-                  centerpiece={selectedItem}
-                />
+                {outfitSuggestions.map((outfit) => (
+                  <OutfitSuggestion 
+                    key={outfit.id}
+                    outfit={outfit}
+                    items={items}
+                    onWear={handleWearOutfit}
+                    onRefresh={handleRefreshOutfit}
+                    onLike={handleLikeOutfit}
+                    onDislike={handleDislikeOutfit}
+                  />
+                ))}
               </div>
             </div>
           )}
