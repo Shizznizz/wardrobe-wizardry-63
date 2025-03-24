@@ -722,7 +722,7 @@ const WardrobeGrid = ({ items, onToggleFavorite, compactView = false }: Wardrobe
         </div>
       ) : (
         <div className={cn(
-          "grid gap-4",
+          "grid gap-6",
           compactView 
             ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6" 
             : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
@@ -732,11 +732,11 @@ const WardrobeGrid = ({ items, onToggleFavorite, compactView = false }: Wardrobe
               <motion.div 
                 key={item.id} 
                 className={cn(
-                  "group relative rounded-lg border overflow-hidden bg-white/5 backdrop-blur-sm shadow-soft transition-all hover-card cursor-pointer",
+                  "group relative rounded-2xl border overflow-hidden bg-white/10 backdrop-blur-sm transition-all hover-card cursor-pointer shadow-lg",
                   compactView ? "border-white/5" : "border-white/10"
                 )}
                 onClick={() => handleItemClick(item)}
-                whileHover={{ y: -5 }}
+                whileHover={{ y: -5, boxShadow: "0 10px 25px rgba(0, 0, 0, 0.1)" }}
                 transition={{ type: "spring", stiffness: 300, damping: 10 }}
               >
                 <div className={cn("overflow-hidden", compactView ? "aspect-[3/4]" : "aspect-square")}>
@@ -754,11 +754,11 @@ const WardrobeGrid = ({ items, onToggleFavorite, compactView = false }: Wardrobe
                   </div>
                 </div>
                 
-                <div className={cn("p-3", compactView ? "p-2" : "p-4")}>
+                <div className={cn("p-4", compactView ? "p-3" : "p-5")}>
                   {!compactView && (
                     <div className="flex justify-between items-start">
                       <h3 className={cn(
-                        "font-medium truncate", 
+                        "font-medium truncate max-w-[85%] text-left", 
                         compactView ? "text-sm" : ""
                       )}>{item.name}</h3>
                       <TooltipProvider>
@@ -778,14 +778,14 @@ const WardrobeGrid = ({ items, onToggleFavorite, compactView = false }: Wardrobe
                   
                   {compactView ? (
                     <div className="flex justify-between items-center mt-1">
-                      <h3 className="text-xs font-medium truncate">{item.name}</h3>
+                      <h3 className="text-xs font-medium truncate max-w-[85%] text-left">{item.name}</h3>
                       <div className="flex items-center ml-1 text-muted-foreground">
                         {getClothingIcon(item.type)}
                       </div>
                     </div>
                   ) : (
                     <>
-                      <div className="mt-2 flex flex-wrap gap-1">
+                      <div className="mt-3 flex flex-wrap gap-1 text-left">
                         <Badge variant="secondary" className="capitalize text-xs">
                           {item.color}
                         </Badge>
@@ -794,14 +794,14 @@ const WardrobeGrid = ({ items, onToggleFavorite, compactView = false }: Wardrobe
                         </Badge>
                       </div>
                       
-                      <div className="mt-2 flex flex-wrap gap-1">
+                      <div className="mt-3 flex flex-wrap gap-1 text-left">
                         {expandedTagsItem === item.id ? (
                           <>
                             {item.occasions.map((occasion) => (
                               <Badge 
                                 key={occasion} 
                                 variant="outline" 
-                                className="bg-primary/10 text-primary text-xs flex items-center gap-1"
+                                className="bg-primary/10 text-primary text-[10px] flex items-center gap-1"
                               >
                                 {getOccasionIcon(occasion)}
                                 <span className="capitalize">{occasion}</span>
@@ -809,7 +809,7 @@ const WardrobeGrid = ({ items, onToggleFavorite, compactView = false }: Wardrobe
                             ))}
                             <Badge 
                               variant="outline" 
-                              className="bg-primary/10 text-primary text-xs cursor-pointer"
+                              className="bg-primary/10 text-primary text-[10px] cursor-pointer"
                               onClick={(e) => { e.stopPropagation(); toggleExpandTags(item.id); }}
                             >
                               Show less
@@ -821,7 +821,7 @@ const WardrobeGrid = ({ items, onToggleFavorite, compactView = false }: Wardrobe
                               <Badge 
                                 key={occasion} 
                                 variant="outline" 
-                                className="bg-primary/10 text-primary text-xs flex items-center gap-1"
+                                className="bg-primary/10 text-primary text-[10px] flex items-center gap-1"
                               >
                                 {getOccasionIcon(occasion)}
                                 <span className="capitalize">{occasion}</span>
@@ -830,7 +830,7 @@ const WardrobeGrid = ({ items, onToggleFavorite, compactView = false }: Wardrobe
                             {item.occasions.length > MAX_TAGS && (
                               <Badge 
                                 variant="outline" 
-                                className="bg-primary/10 text-primary text-xs cursor-pointer"
+                                className="bg-primary/10 text-primary text-[10px] cursor-pointer"
                                 onClick={(e) => { e.stopPropagation(); toggleExpandTags(item.id); }}
                               >
                                 +{item.occasions.length - MAX_TAGS} more
@@ -840,14 +840,14 @@ const WardrobeGrid = ({ items, onToggleFavorite, compactView = false }: Wardrobe
                         )}
                       </div>
                       
-                      <div className="mt-2 flex flex-wrap gap-1">
+                      <div className="mt-3 flex flex-wrap gap-1 text-left">
                         {item.seasons.slice(0, MAX_TAGS).map((season) => (
-                          <Badge key={season} variant="secondary" className="bg-primary/10 text-primary text-xs">
+                          <Badge key={season} variant="secondary" className="bg-primary/10 text-primary text-[10px]">
                             {season}
                           </Badge>
                         ))}
                         {item.seasons.length > MAX_TAGS && (
-                          <Badge variant="secondary" className="bg-primary/10 text-primary text-xs">
+                          <Badge variant="secondary" className="bg-primary/10 text-primary text-[10px]">
                             +{item.seasons.length - MAX_TAGS}
                           </Badge>
                         )}
@@ -860,8 +860,8 @@ const WardrobeGrid = ({ items, onToggleFavorite, compactView = false }: Wardrobe
                       <TooltipTrigger asChild>
                         <Button 
                           className={cn(
-                            "w-full mt-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white",
-                            compactView ? "mt-2 py-1 h-8 text-xs" : ""
+                            "w-full mt-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white",
+                            compactView ? "mt-3 py-1 h-8 text-xs" : ""
                           )}
                           size={compactView ? "sm" : "sm"}
                           onClick={(e) => {
@@ -968,3 +968,4 @@ const WardrobeGrid = ({ items, onToggleFavorite, compactView = false }: Wardrobe
 };
 
 export default WardrobeGrid;
+
