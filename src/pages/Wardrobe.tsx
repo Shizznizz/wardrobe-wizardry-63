@@ -18,6 +18,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Badge } from '@/components/ui/badge';
 
 const Wardrobe = () => {
   const [items, setItems] = useState<ClothingItem[]>(sampleClothingItems);
@@ -153,12 +154,13 @@ const Wardrobe = () => {
           variants={containerVariants}
         >
           <motion.div id="upload-section" variants={itemVariants} className="flex flex-col">
-            <div className="flex flex-wrap justify-between items-center mb-3">
-              <div>
+            <div className="flex flex-wrap justify-between items-center mb-6">
+              <div className="relative">
                 <h1 className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
                   {getPersonalizedGreeting()}
                 </h1>
-                <p className="mt-2 text-gray-300 text-sm md:text-base font-light">
+                <div className="h-1 w-3/4 mt-2 bg-gradient-to-r from-blue-400/70 via-purple-400/70 to-pink-400/70 rounded-full shadow-[0_0_10px_rgba(168,85,247,0.5)]"></div>
+                <p className="mt-3 text-gray-400 text-sm md:text-base font-light">
                   Your digital closet, always in style
                 </p>
               </div>
@@ -169,17 +171,24 @@ const Wardrobe = () => {
             
             {/* Sorting Controls */}
             <div className="flex justify-between items-center mt-4 mb-6 flex-wrap gap-3">
-              <div className="flex items-center gap-2">
-                <ArrowUpDown className="h-4 w-4 text-gray-400" />
-                <span className="text-sm text-gray-300">Sort by:</span>
-                <ToggleGroup type="single" value={sortOption} onValueChange={(value) => value && setSortOption(value as any)}>
-                  <ToggleGroupItem value="newest" size="sm" className="text-xs h-8">Newest</ToggleGroupItem>
-                  <ToggleGroupItem value="favorites" size="sm" className="text-xs h-8">Favorites</ToggleGroupItem>
-                  <ToggleGroupItem value="most-worn" size="sm" className="text-xs h-8">Most Worn</ToggleGroupItem>
-                  <ToggleGroupItem value="color" size="sm" className="text-xs h-8">By Color</ToggleGroupItem>
-                  <ToggleGroupItem value="most-matched" size="sm" className="text-xs h-8">Most Matched</ToggleGroupItem>
-                  <ToggleGroupItem value="weather-fit" size="sm" className="text-xs h-8">Weather Fit</ToggleGroupItem>
-                  <ToggleGroupItem value="not-recent" size="sm" className="text-xs h-8">Not Recent</ToggleGroupItem>
+              <div className="flex items-center gap-2 bg-slate-900/50 p-2 rounded-full backdrop-blur-sm border border-white/5 shadow-md">
+                <Badge variant="gradient" className="mr-1">
+                  <ArrowUpDown className="h-3.5 w-3.5 mr-1 text-white" />
+                  <span>Sort</span>
+                </Badge>
+                <ToggleGroup 
+                  type="single" 
+                  value={sortOption} 
+                  onValueChange={(value) => value && setSortOption(value as any)}
+                  className="bg-slate-800/40 rounded-full p-1"
+                >
+                  <ToggleGroupItem value="newest" size="sm" className="text-xs h-8 rounded-full data-[state=on]:bg-gradient-to-r from-blue-500/80 to-purple-500/80 data-[state=on]:text-white transition-all duration-200">Newest</ToggleGroupItem>
+                  <ToggleGroupItem value="favorites" size="sm" className="text-xs h-8 rounded-full data-[state=on]:bg-gradient-to-r from-blue-500/80 to-purple-500/80 data-[state=on]:text-white transition-all duration-200">Favorites</ToggleGroupItem>
+                  <ToggleGroupItem value="most-worn" size="sm" className="text-xs h-8 rounded-full data-[state=on]:bg-gradient-to-r from-blue-500/80 to-purple-500/80 data-[state=on]:text-white transition-all duration-200">Most Worn</ToggleGroupItem>
+                  <ToggleGroupItem value="color" size="sm" className="text-xs h-8 rounded-full data-[state=on]:bg-gradient-to-r from-blue-500/80 to-purple-500/80 data-[state=on]:text-white transition-all duration-200">By Color</ToggleGroupItem>
+                  <ToggleGroupItem value="most-matched" size="sm" className="text-xs h-8 rounded-full data-[state=on]:bg-gradient-to-r from-blue-500/80 to-purple-500/80 data-[state=on]:text-white transition-all duration-200">Most Matched</ToggleGroupItem>
+                  <ToggleGroupItem value="weather-fit" size="sm" className="text-xs h-8 rounded-full data-[state=on]:bg-gradient-to-r from-blue-500/80 to-purple-500/80 data-[state=on]:text-white transition-all duration-200">Weather Fit</ToggleGroupItem>
+                  <ToggleGroupItem value="not-recent" size="sm" className="text-xs h-8 rounded-full data-[state=on]:bg-gradient-to-r from-blue-500/80 to-purple-500/80 data-[state=on]:text-white transition-all duration-200">Not Recent</ToggleGroupItem>
                 </ToggleGroup>
               </div>
               
@@ -187,13 +196,14 @@ const Wardrobe = () => {
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-2 bg-slate-900/50 p-2 pr-3 rounded-full backdrop-blur-sm border border-white/5 shadow-md transition-all duration-300 hover:border-purple-500/30">
                         <Switch 
                           id="compact-view" 
                           checked={showCompactView} 
                           onCheckedChange={setShowCompactView} 
+                          className="data-[state=checked]:bg-gradient-to-r from-indigo-500 to-purple-500"
                         />
-                        <Label htmlFor="compact-view" className="text-sm text-gray-300">
+                        <Label htmlFor="compact-view" className="text-sm text-gray-300 cursor-pointer">
                           Compact View
                         </Label>
                         <Info className="h-4 w-4 text-gray-400" />
