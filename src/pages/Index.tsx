@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -70,14 +71,15 @@ const Index = () => {
       <BackgroundShapes />
       <Header />
       
-      <div className="fixed top-6 right-6 z-50">
+      {/* Olivia Avatar positioned beneath header */}
+      <div className="fixed top-24 right-6 z-50">
         <motion.div
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ delay: 0.5, type: "spring", stiffness: 200 }}
           className="relative"
         >
-          <Avatar className="w-16 h-16 border-2 border-pink-400 shadow-lg cursor-pointer" onClick={() => setExpandOliviaMessage(!expandOliviaMessage)}>
+          <Avatar className="w-20 h-20 border-2 border-pink-400 shadow-lg cursor-pointer" onClick={() => setExpandOliviaMessage(!expandOliviaMessage)}>
             <AvatarImage src="/lovable-uploads/86bf74b8-b311-4e3c-bfd6-53819add3df8.png" alt="Olivia Bloom" />
             <AvatarFallback className="bg-purple-800">OB</AvatarFallback>
           </Avatar>
@@ -101,7 +103,7 @@ const Index = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="absolute top-20 right-0 z-20 w-80"
+            className="absolute top-24 right-0 z-20 w-80"
           >
             <div className="relative p-4 rounded-xl bg-gradient-to-br from-purple-600/90 to-pink-600/90 text-white backdrop-blur-sm shadow-lg border border-white/20">
               <div className="absolute -top-2 right-6 w-4 h-4 bg-gradient-to-br from-purple-600/90 to-pink-600/90 transform rotate-45 border-t border-r border-white/20"></div>
@@ -162,7 +164,7 @@ const Index = () => {
                     repeatType: "mirror"
                   }}
                 />
-                <h1 className="relative text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 pb-2">
+                <h1 className="relative text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 pb-2 whitespace-nowrap">
                   Future of Fashion
                 </h1>
               </div>
