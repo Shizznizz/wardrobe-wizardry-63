@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import WardrobeGrid from '@/components/WardrobeGrid';
 import OliviaBloomAdvisor from '@/components/OliviaBloomAdvisor';
+import OliviaBloomAssistant from '@/components/OliviaBloomAssistant';
 import UploadModal from '@/components/UploadModal';
 import { ClothingItem } from '@/lib/types';
 import { sampleClothingItems, sampleOutfits, sampleUserPreferences } from '@/lib/wardrobeData';
@@ -11,10 +12,12 @@ import { toast } from 'sonner';
 
 const Wardrobe = () => {
   const [items, setItems] = useState<ClothingItem[]>(sampleClothingItems);
+  const [showUploadTip, setShowUploadTip] = useState(false);
 
   const handleUpload = (newItem: ClothingItem) => {
     setItems(prev => [newItem, ...prev]);
     toast.success('New item added to your wardrobe!');
+    setShowUploadTip(true);
   };
 
   const handleToggleFavorite = (id: string) => {
@@ -69,6 +72,16 @@ const Wardrobe = () => {
     }
   }, []);
 
+  const getOliviaTip = () => {
+    if (items.length <= 3) {
+      return "I see you're just starting to build your wardrobe! Try adding a few essential pieces like a versatile top, a pair of jeans, and shoes to start creating outfits.";
+    } else if (items.filter(item => item.favorite).length === 0) {
+      return "Don't forget to mark your favorite pieces! This helps me understand your style preferences when suggesting outfits.";
+    } else {
+      return "Great addition to your wardrobe! I've updated your style profile. Why not try matching this with other pieces to create a new outfit?";
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white">
       <Header />
@@ -94,6 +107,17 @@ const Wardrobe = () => {
           </motion.div>
         </motion.div>
       </main>
+      
+      {showUploadTip && (
+        <OliviaBloomAssistant
+          message={getOliviaTip()}
+          type="celebration"
+          timing="medium"
+          actionText="Got it!"
+          onAction={() => setShowUploadTip(false)}
+          position="bottom-right"
+        />
+      )}
       
       <OliviaBloomAdvisor 
         items={sampleClothingItems}

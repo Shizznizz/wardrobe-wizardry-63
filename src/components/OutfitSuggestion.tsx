@@ -1,4 +1,3 @@
-
 import { ClothingItem, Outfit, WeatherInfo, PersonalityTag, ClothingOccasion } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -11,6 +10,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
+import { useState } from 'react';
+import OliviaBloomAssistant from './OliviaBloomAssistant';
 
 interface OutfitSuggestionProps {
   outfit: Outfit;
@@ -65,6 +66,7 @@ const OutfitSuggestion = ({
   onLike,
   onDislike
 }: OutfitSuggestionProps) => {
+  const [showStyleTip, setShowStyleTip] = useState(false);
   const outfitItems = items.filter(item => outfit.items.includes(item.id));
   
   const getColorMatchScore = () => {
@@ -141,6 +143,19 @@ const OutfitSuggestion = ({
     toast.success("Great choice! Your outfit has been logged.", {
       description: "This helps us learn your preferences."
     });
+    setShowStyleTip(true);
+  };
+
+  const getOliviaStyleTip = () => {
+    const tips = [
+      `This ${outfit.personalityTags?.[0] || 'stylish'} outfit works beautifully with your complexion. The ${outfitItems[0]?.color} ${outfitItems[0]?.type} really brings out your best features!`,
+      `I love how you've chosen this look! Try accessorizing with minimal jewelry to keep the focus on the outfit's silhouette.`,
+      `Great choice for ${outfit.occasions?.[0] || 'any occasion'}! The color palette is perfectly balanced for your style profile.`,
+      `This ensemble transitions well from day to night. Consider rolling up the sleeves or adding a belt to change the vibe as needed.`,
+      `The ${colorMatch?.message.toLowerCase() || 'color combination'} in this outfit shows your eye for detail. You're going to look fantastic!`
+    ];
+    
+    return tips[Math.floor(Math.random() * tips.length)];
   };
 
   return (
@@ -273,6 +288,20 @@ const OutfitSuggestion = ({
           </div>
         </div>
       </div>
+      
+      {showStyleTip && (
+        <OliviaBloomAssistant
+          message={getOliviaStyleTip()}
+          type="suggestion"
+          timing="medium"
+          actionText="Thanks, Olivia!"
+          onAction={() => setShowStyleTip(false)}
+          position="center"
+          outfit={outfit}
+          items={outfitItems}
+          weather={weather}
+        />
+      )}
     </div>
   );
 };
