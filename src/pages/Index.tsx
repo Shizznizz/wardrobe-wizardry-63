@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -54,9 +53,7 @@ const Index = () => {
   };
 
   const handleWardrobeButtonClick = () => {
-    // Instead of redirecting, directly scroll to the upload section if on the same page
     if (window.location.pathname === "/") {
-      // Navigate to wardrobe page with the upload hash
       window.location.href = "/wardrobe#upload";
     }
   };
