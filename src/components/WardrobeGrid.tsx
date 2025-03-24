@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { ClothingItem, ClothingType, ClothingColor, ClothingSeason, Outfit, ClothingOccasion, ClothingMaterial } from '@/lib/types';
 import { cn } from '@/lib/utils';
@@ -791,23 +792,29 @@ const WardrobeGrid = ({ items, onToggleFavorite, compactView = false }: Wardrobe
                     </div>
                   ) : (
                     <>
-                      <div className="flex flex-wrap gap-1 text-left mb-2">
-                        <Badge variant="secondary" className="capitalize text-xs">
+                      <div className="flex flex-wrap gap-1.5 text-left mb-3">
+                        <Badge 
+                          variant="secondary" 
+                          className="capitalize text-sm bg-purple-950/70 text-purple-100 border border-purple-500/30 shadow-sm"
+                        >
                           {item.color}
                         </Badge>
-                        <Badge variant="outline" className="capitalize text-xs">
+                        <Badge 
+                          variant="outline" 
+                          className="capitalize text-sm bg-indigo-950/60 text-indigo-200 border border-indigo-400/30 shadow-sm"
+                        >
                           {item.material}
                         </Badge>
                       </div>
                       
-                      <div className="flex flex-wrap gap-1 text-left mb-2">
+                      <div className="flex flex-wrap gap-1.5 text-left mb-3">
                         {expandedTagsItem === item.id ? (
                           <>
                             {item.occasions.map((occasion) => (
                               <Badge 
                                 key={occasion} 
                                 variant="outline" 
-                                className="bg-primary/10 text-primary text-[10px] flex items-center gap-1"
+                                className="text-sm bg-fuchsia-950/60 text-fuchsia-200 border border-fuchsia-400/40 shadow-sm rounded-full flex items-center gap-1 px-2.5 py-0.5"
                               >
                                 {getOccasionIcon(occasion)}
                                 <span className="capitalize">{occasion}</span>
@@ -815,7 +822,7 @@ const WardrobeGrid = ({ items, onToggleFavorite, compactView = false }: Wardrobe
                             ))}
                             <Badge 
                               variant="outline" 
-                              className="bg-primary/10 text-primary text-[10px] cursor-pointer"
+                              className="text-sm bg-blue-950/60 text-blue-200 border border-blue-400/40 shadow-sm rounded-full cursor-pointer px-2.5 py-0.5"
                               onClick={(e) => { e.stopPropagation(); toggleExpandTags(item.id); }}
                             >
                               Show less
@@ -827,7 +834,7 @@ const WardrobeGrid = ({ items, onToggleFavorite, compactView = false }: Wardrobe
                               <Badge 
                                 key={occasion} 
                                 variant="outline" 
-                                className="bg-primary/10 text-primary text-[10px] flex items-center gap-1"
+                                className="text-sm bg-fuchsia-950/60 text-fuchsia-200 border border-fuchsia-400/40 shadow-sm rounded-full flex items-center gap-1 px-2.5 py-0.5"
                               >
                                 {getOccasionIcon(occasion)}
                                 <span className="capitalize">{occasion}</span>
@@ -836,7 +843,7 @@ const WardrobeGrid = ({ items, onToggleFavorite, compactView = false }: Wardrobe
                             {item.occasions.length > MAX_TAGS && (
                               <Badge 
                                 variant="outline" 
-                                className="bg-primary/10 text-primary text-[10px] cursor-pointer"
+                                className="text-sm bg-blue-950/60 text-blue-200 border border-blue-400/40 shadow-sm rounded-full cursor-pointer px-2.5 py-0.5"
                                 onClick={(e) => { e.stopPropagation(); toggleExpandTags(item.id); }}
                               >
                                 +{item.occasions.length - MAX_TAGS} more
@@ -846,14 +853,21 @@ const WardrobeGrid = ({ items, onToggleFavorite, compactView = false }: Wardrobe
                         )}
                       </div>
                       
-                      <div className="flex flex-wrap gap-1 text-left mb-2">
+                      <div className="flex flex-wrap gap-1.5 text-left mb-3">
                         {item.seasons.slice(0, MAX_TAGS).map((season) => (
-                          <Badge key={season} variant="secondary" className="bg-primary/10 text-primary text-[10px]">
+                          <Badge 
+                            key={season} 
+                            variant="secondary" 
+                            className="text-sm bg-cyan-950/60 text-cyan-100 border border-cyan-400/30 shadow-sm rounded-full px-2.5 py-0.5"
+                          >
                             {season}
                           </Badge>
                         ))}
                         {item.seasons.length > MAX_TAGS && (
-                          <Badge variant="secondary" className="bg-primary/10 text-primary text-[10px]">
+                          <Badge 
+                            variant="secondary" 
+                            className="text-sm bg-cyan-950/60 text-cyan-100 border border-cyan-400/30 shadow-sm rounded-full px-2.5 py-0.5"
+                          >
                             +{item.seasons.length - MAX_TAGS}
                           </Badge>
                         )}
