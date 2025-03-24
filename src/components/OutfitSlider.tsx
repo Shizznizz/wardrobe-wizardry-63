@@ -29,7 +29,8 @@ const outfitItems = [
   {
     id: 1,
     name: "Business Casual",
-    image: null,
+    image: "/lovable-uploads/outfit-business-casual.png",
+    quote: "Effortless professionalism with comfort in mind",
     colors: ["blue", "gray", "white"],
     season: "All year",
     gradient: "from-blue-400/70 to-gray-400/70"
@@ -37,7 +38,8 @@ const outfitItems = [
   {
     id: 2,
     name: "Winter Formal",
-    image: null,
+    image: "/lovable-uploads/outfit-winter-formal.png",
+    quote: "Cozy layers with elegant sophistication",
     colors: ["black", "burgundy", "silver"],
     season: "Winter",
     gradient: "from-purple-800/70 to-gray-800/70"
@@ -45,7 +47,8 @@ const outfitItems = [
   {
     id: 3,
     name: "Summer Breeze",
-    image: null,
+    image: "/lovable-uploads/outfit-summer-breeze.png",
+    quote: "Light fabrics that flow with every step",
     colors: ["teal", "white", "beige"],
     season: "Summer",
     gradient: "from-teal-400/70 to-blue-200/70"
@@ -53,7 +56,8 @@ const outfitItems = [
   {
     id: 4,
     name: "Autumn Layers",
-    image: null,
+    image: "/lovable-uploads/outfit-autumn-layers.png",
+    quote: "Rich textures that embrace the changing leaves",
     colors: ["brown", "orange", "cream"],
     season: "Autumn",
     gradient: "from-amber-600/70 to-orange-300/70"
@@ -61,7 +65,8 @@ const outfitItems = [
   {
     id: 5,
     name: "Spring Pastel",
-    image: null,
+    image: "/lovable-uploads/outfit-spring-pastel.png",
+    quote: "Soft hues that bloom with the season",
     colors: ["lavender", "mint", "pink"],
     season: "Spring",
     gradient: "from-purple-300/70 to-green-200/70"
@@ -101,20 +106,23 @@ const OutfitSlider = () => {
                   <motion.div whileHover={{ y: -5 }} className="h-full cursor-pointer">
                     <Card className="glass-dark border-white/10 h-full">
                       <CardContent className="p-4">
-                        <div className={`aspect-[3/4] rounded-md overflow-hidden bg-gradient-to-br ${outfit.gradient} mb-3 flex items-center justify-center`}>
+                        <div className={`aspect-[3/4] rounded-md overflow-hidden bg-gradient-to-br ${outfit.gradient} mb-3 flex items-center justify-center relative`}>
                           {outfit.image ? (
                             <img 
                               src={outfit.image} 
                               alt={outfit.name} 
-                              className="w-full h-full object-cover opacity-70 hover:opacity-100 transition-opacity"
+                              className="w-full h-full object-cover hover:opacity-90 transition-opacity"
                             />
                           ) : (
                             <div className="text-white/30 text-lg font-medium">
                               {outfit.name}
                             </div>
                           )}
+                          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3">
+                            <h3 className="text-lg font-medium text-white">{outfit.name}</h3>
+                            <p className="text-white/90 text-sm italic mt-1">{outfit.quote}</p>
+                          </div>
                         </div>
-                        <h3 className="text-xl font-medium text-white">{outfit.name}</h3>
                         <p className="text-white/70 text-sm">{outfit.season}</p>
                       </CardContent>
                       <CardFooter className="p-4 pt-0 flex gap-1">
@@ -167,6 +175,10 @@ const OutfitSlider = () => {
                         ))}
                       </div>
                     </div>
+                    
+                    <blockquote className="italic border-l-2 border-purple-500 pl-3 text-slate-300">
+                      "{outfit.quote}"
+                    </blockquote>
                     
                     <div>
                       <Button className="w-full flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
