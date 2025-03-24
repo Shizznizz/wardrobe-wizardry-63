@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -101,7 +102,7 @@ const Index = () => {
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.5, type: "spring", stiffness: 200 }}
-                className="relative"
+                className="relative flex items-center"
               >
                 <Avatar className="w-24 h-24 border-2 border-pink-400 shadow-lg">
                   <AvatarImage src="/lovable-uploads/86bf74b8-b311-4e3c-bfd6-53819add3df8.png" alt="Olivia Bloom" />
@@ -110,12 +111,12 @@ const Index = () => {
                 
                 {showOliviaWelcome && !expandOliviaMessage && (
                   <motion.div
-                    initial={{ opacity: 0, scale: 0.8, y: 10 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    initial={{ opacity: 0, scale: 0.8, x: 10 }}
+                    animate={{ opacity: 1, scale: 1, x: 0 }}
                     transition={{ delay: 1.5, duration: 0.3 }}
-                    className="absolute top-1/4 right-0 transform translate-x-[calc(100%+10px)]"
+                    className="ml-4"
                   >
-                    <div className="relative p-3 rounded-xl bg-gradient-to-br from-purple-600/90 to-pink-600/90 text-white backdrop-blur-sm shadow-lg border border-white/20 max-w-[150px]">
+                    <div className="relative p-3 rounded-xl bg-gradient-to-br from-purple-600/90 to-pink-600/90 text-white backdrop-blur-sm shadow-lg border border-white/20 max-w-[180px]">
                       <div className="absolute -left-2 top-4 w-4 h-4 bg-gradient-to-br from-purple-600/90 to-pink-600/90 transform rotate-45 border-l border-t border-white/20"></div>
                       <p className="text-xs">Hi there! I'm Olivia, your style advisor.</p>
                       <button 
@@ -136,10 +137,15 @@ const Index = () => {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.3, ease: "easeInOut" }}
-                className="absolute top-24 right-1/4 max-w-sm z-20"
+                className="absolute top-12 right-1/4 max-w-sm z-20 flex items-start"
               >
+                <Avatar className="w-24 h-24 border-2 border-pink-400 shadow-lg mr-4 flex-shrink-0">
+                  <AvatarImage src="/lovable-uploads/86bf74b8-b311-4e3c-bfd6-53819add3df8.png" alt="Olivia Bloom" />
+                  <AvatarFallback className="bg-purple-800">OB</AvatarFallback>
+                </Avatar>
+                
                 <div className="relative p-4 rounded-xl bg-gradient-to-br from-purple-600/90 to-pink-600/90 text-white backdrop-blur-sm shadow-lg border border-white/20">
-                  <div className="absolute -right-2 top-4 w-4 h-4 bg-gradient-to-br from-purple-600/90 to-pink-600/90 transform rotate-45 border-r border-t border-white/20"></div>
+                  <div className="absolute -left-2 top-10 w-4 h-4 bg-gradient-to-br from-purple-600/90 to-pink-600/90 transform rotate-45 border-l border-t border-white/20"></div>
                   <button 
                     onClick={() => setExpandOliviaMessage(false)} 
                     className="absolute top-2 right-2 p-1 hover:bg-white/10 rounded-full transition-colors"
