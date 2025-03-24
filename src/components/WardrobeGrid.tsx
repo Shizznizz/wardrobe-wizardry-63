@@ -1,7 +1,8 @@
+
 import { useState } from 'react';
 import { ClothingItem, ClothingType, ClothingColor, ClothingSeason } from '@/lib/types';
 import { cn } from '@/lib/utils';
-import { Heart, Filter, Shirt, Umbrella, Tag, CircleUser, ShoppingBag, Footprints } from 'lucide-react';
+import { Heart, Filter, Shirt, Umbrella, Tag, CircleUser, ShoppingBag, Footprints, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -9,6 +10,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import OutfitSuggestion from '@/components/OutfitSuggestion';
 
 interface WardrobeGridProps {
   items: ClothingItem[];
@@ -47,6 +50,8 @@ const WardrobeGrid = ({ items, onToggleFavorite }: WardrobeGridProps) => {
   const [colorFilter, setColorFilter] = useState<ClothingColor | 'all'>('all');
   const [seasonFilter, setSeasonFilter] = useState<ClothingSeason | 'all'>('all');
   const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<ClothingItem | null>(null);
+  const [showOutfitDialog, setShowOutfitDialog] = useState(false);
 
   const filteredItems = items.filter((item) => {
     if (showOnlyFavorites && !item.favorite) return false;
@@ -61,6 +66,15 @@ const WardrobeGrid = ({ items, onToggleFavorite }: WardrobeGridProps) => {
     setColorFilter('all');
     setSeasonFilter('all');
     setShowOnlyFavorites(false);
+  };
+
+  const handleItemClick = (item: ClothingItem) => {
+    setSelectedItem(item);
+  };
+
+  const handleMatchThis = (item: ClothingItem) => {
+    setSelectedItem(item);
+    setShowOutfitDialog(true);
   };
 
   return (
@@ -196,7 +210,8 @@ const WardrobeGrid = ({ items, onToggleFavorite }: WardrobeGridProps) => {
           {filteredItems.map((item) => (
             <div 
               key={item.id} 
-              className="group relative rounded-lg border overflow-hidden bg-white shadow-soft transition-all hover-card"
+              className="group relative rounded-lg border overflow-hidden bg-white shadow-soft transition-all hover-card cursor-pointer"
+              onClick={() => handleItemClick(item)}
             >
               <div className="aspect-square overflow-hidden">
                 <img 
@@ -238,10 +253,25 @@ const WardrobeGrid = ({ items, onToggleFavorite }: WardrobeGridProps) => {
                     </Badge>
                   ))}
                 </div>
+                
+                <Button 
+                  className="w-full mt-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleMatchThis(item);
+                  }}
+                >
+                  <Star className="h-4 w-4 mr-2" />
+                  Match This
+                </Button>
               </div>
               
               <button
-                onClick={() => onToggleFavorite(item.id)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleFavorite(item.id);
+                }}
                 className={cn(
                   "absolute top-2 right-2 p-1.5 rounded-full transition-all",
                   item.favorite 
@@ -255,6 +285,68 @@ const WardrobeGrid = ({ items, onToggleFavorite }: WardrobeGridProps) => {
           ))}
         </div>
       )}
+
+      {/* Dialog for outfit suggestions */}
+      <Dialog open={showOutfitDialog} onOpenChange={setShowOutfitDialog}>
+        <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl">
+              Outfits with {selectedItem?.name}
+            </DialogTitle>
+          </DialogHeader>
+          
+          {selectedItem && (
+            <div className="mt-4 space-y-6">
+              <div className="p-4 rounded-lg bg-indigo-50 border border-indigo-100">
+                <div className="flex items-center gap-4">
+                  <div className="w-20 h-20 rounded-md overflow-hidden border border-indigo-200">
+                    <img 
+                      src={selectedItem.imageUrl} 
+                      alt={selectedItem.name} 
+                      className="w-full h-full object-cover" 
+                    />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-lg">{selectedItem.name}</h3>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      <Badge variant="secondary" className="capitalize text-xs">
+                        {selectedItem.color}
+                      </Badge>
+                      <Badge variant="outline" className="capitalize text-xs">
+                        {selectedItem.type}
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <h3 className="text-lg font-medium">Suggested Outfits</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <OutfitSuggestion 
+                  title="Casual Weekend" 
+                  description="Perfect for a relaxed day out"
+                  centerpiece={selectedItem}
+                />
+                <OutfitSuggestion 
+                  title="Office Elegance" 
+                  description="Professional but stylish"
+                  centerpiece={selectedItem}
+                />
+                <OutfitSuggestion 
+                  title="Night Out" 
+                  description="For evenings and special occasions"
+                  centerpiece={selectedItem}
+                />
+                <OutfitSuggestion 
+                  title="Seasonal Staple" 
+                  description="Weather-appropriate styling"
+                  centerpiece={selectedItem}
+                />
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

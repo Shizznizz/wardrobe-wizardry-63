@@ -14,6 +14,7 @@ const Wardrobe = () => {
 
   const handleUpload = (newItem: ClothingItem) => {
     setItems(prev => [newItem, ...prev]);
+    toast.success('New item added to your wardrobe!');
   };
 
   const handleToggleFavorite = (id: string) => {
