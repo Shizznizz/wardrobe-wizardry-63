@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -9,15 +8,23 @@ import UploadModal from '@/components/UploadModal';
 import { ClothingItem } from '@/lib/types';
 import { sampleClothingItems, sampleOutfits, sampleUserPreferences } from '@/lib/wardrobeData';
 import { toast } from 'sonner';
+import { Confetti } from '@/components/ui/confetti';
 
 const Wardrobe = () => {
   const [items, setItems] = useState<ClothingItem[]>(sampleClothingItems);
   const [showUploadTip, setShowUploadTip] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [hasAddedItem, setHasAddedItem] = useState(false);
 
   const handleUpload = (newItem: ClothingItem) => {
     setItems(prev => [newItem, ...prev]);
     toast.success('New item added to your wardrobe!');
     setShowUploadTip(true);
+    
+    if (!hasAddedItem) {
+      setShowConfetti(true);
+      setHasAddedItem(true);
+    }
   };
 
   const handleToggleFavorite = (id: string) => {
@@ -57,13 +64,11 @@ const Wardrobe = () => {
     }
   };
 
-  // Scroll to upload section if URL has #upload hash
   useEffect(() => {
     if (window.location.hash === '#upload') {
       const uploadSection = document.getElementById('upload-section');
       if (uploadSection) {
         uploadSection.scrollIntoView({ behavior: 'smooth' });
-        // Trigger the upload modal to open
         const uploadButton = document.getElementById('upload-button');
         if (uploadButton) {
           uploadButton.click();
@@ -85,6 +90,14 @@ const Wardrobe = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white">
       <Header />
+      
+      {showConfetti && (
+        <Confetti 
+          duration={2000}
+          onComplete={() => setShowConfetti(false)}
+        />
+      )}
+      
       <main className="container mx-auto px-4 pt-24 pb-16">
         <motion.div 
           className="space-y-8"
@@ -125,7 +138,7 @@ const Wardrobe = () => {
           favoriteColors: sampleUserPreferences.favoriteColors,
           favoriteStyles: sampleUserPreferences.favoriteStyles
         }}
-        showChatButton={false} // Disabled chat button as requested
+        showChatButton={false}
       />
     </div>
   );

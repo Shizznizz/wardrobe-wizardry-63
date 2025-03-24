@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Coffee, Sparkles, Umbrella, Sunset, Moon, Check, ArrowRight, X } from 'lucide-react';
@@ -8,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import QuizQuestion from './QuizQuestion';
 import OutfitSuggestion from './OutfitSuggestion';
+import { Confetti } from '@/components/ui/confetti';
 
 interface StyleDiscoveryQuizProps {
   onClose?: () => void;
@@ -17,6 +17,7 @@ const StyleDiscoveryQuiz = ({ onClose }: StyleDiscoveryQuizProps) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [showQuiz, setShowQuiz] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
   
   const questions = [
     {
@@ -54,6 +55,10 @@ const StyleDiscoveryQuiz = ({ onClose }: StyleDiscoveryQuizProps) => {
   const handleAnswer = (questionId: string, answer: string) => {
     setAnswers({ ...answers, [questionId]: answer });
     setCurrentStep(currentStep + 1);
+    
+    if (currentStep === questions.length - 1) {
+      setShowConfetti(true);
+    }
   };
   
   const handleReset = () => {
@@ -68,8 +73,6 @@ const StyleDiscoveryQuiz = ({ onClose }: StyleDiscoveryQuizProps) => {
   };
   
   const getOutfitSuggestion = () => {
-    // This would ideally use more sophisticated logic based on answers
-    // For now using a simple mapping for demo purposes
     const moodOutfits: Record<string, string> = {
       'energetic': 'vibrant athleisure',
       'relaxed': 'comfortable casual',
@@ -113,6 +116,13 @@ const StyleDiscoveryQuiz = ({ onClose }: StyleDiscoveryQuizProps) => {
   
   return (
     <div className="relative w-full my-12">
+      {showConfetti && (
+        <Confetti 
+          duration={2000}
+          onComplete={() => setShowConfetti(false)}
+        />
+      )}
+      
       {!showQuiz ? (
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
