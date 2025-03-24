@@ -1,8 +1,10 @@
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, Shirt, Palette, Cloud, Sparkles, Clock, History } from 'lucide-react';
+import { ArrowRight, Shirt, Palette, Cloud, Sparkles, Clock, History, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import Header from '@/components/Header';
 import PreferencesModal from '@/components/PreferencesModal';
 import { UserPreferences } from '@/lib/types';
@@ -52,7 +54,11 @@ const Index = () => {
   };
 
   const handleWardrobeButtonClick = () => {
-    window.location.href = "/wardrobe#upload";
+    // Instead of redirecting, directly scroll to the upload section if on the same page
+    if (window.location.pathname === "/") {
+      // Navigate to wardrobe page with the upload hash
+      window.location.href = "/wardrobe#upload";
+    }
   };
 
   return (
@@ -68,22 +74,39 @@ const Index = () => {
           variants={containerVariants}
         >
           <motion.section variants={itemVariants} className="flex flex-col items-center justify-center text-center space-y-8">
-            <div className="relative inline-block">
-              <motion.div 
-                className="absolute -inset-1 rounded-lg bg-gradient-to-r from-purple-600 via-blue-500 to-purple-600 opacity-75 blur-xl"
-                animate={{ 
-                  opacity: [0.5, 0.8, 0.5],
-                  scale: [0.98, 1.01, 0.98]
-                }}
-                transition={{ 
-                  duration: 3, 
-                  repeat: Infinity,
-                  repeatType: "mirror"
-                }}
-              />
-              <h1 className="relative text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 pb-2">
-                Future of Fashion
-              </h1>
+            <div className="relative flex items-center justify-center gap-3 flex-wrap">
+              <div className="relative inline-block">
+                <motion.div 
+                  className="absolute -inset-1 rounded-lg bg-gradient-to-r from-purple-600 via-blue-500 to-purple-600 opacity-75 blur-xl"
+                  animate={{ 
+                    opacity: [0.5, 0.8, 0.5],
+                    scale: [0.98, 1.01, 0.98]
+                  }}
+                  transition={{ 
+                    duration: 3, 
+                    repeat: Infinity,
+                    repeatType: "mirror"
+                  }}
+                />
+                <h1 className="relative text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 pb-2">
+                  Future of Fashion
+                </h1>
+              </div>
+              
+              <motion.div
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.5, type: "spring", stiffness: 200 }}
+                className="relative"
+              >
+                <Avatar className="w-24 h-24 border-2 border-pink-400 shadow-lg">
+                  <AvatarImage src="/lovable-uploads/86bf74b8-b311-4e3c-bfd6-53819add3df8.png" alt="Olivia Bloom" />
+                  <AvatarFallback className="bg-purple-800">OB</AvatarFallback>
+                </Avatar>
+                <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-pink-500 rounded-full flex items-center justify-center shadow-lg">
+                  <MessageSquare className="w-4 h-4 text-white" />
+                </div>
+              </motion.div>
             </div>
             
             <motion.div
@@ -95,8 +118,22 @@ const Index = () => {
               className="w-24 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full mb-4"
             />
             
+            <motion.div 
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.6, duration: 0.5 }}
+              className="max-w-3xl mx-auto relative"
+            >
+              <div className="relative p-5 mb-6 rounded-2xl neo-blur shadow-lg border border-pink-500/30">
+                <div className="absolute w-4 h-4 bg-pink-500 rotate-45 top-0 right-12 -mt-2"></div>
+                <p className="text-lg text-pink-100">
+                  Hi, I'm Olivia — your personal AI stylist. Let's make magic with your wardrobe.
+                </p>
+              </div>
+            </motion.div>
+            
             <p className="text-xl text-blue-100 max-w-2xl backdrop-blur-sm py-4 px-6 rounded-lg border border-white/10 shadow-lg neo-blur">
-              Experience AI-powered wardrobe management that adapts to your style and the weather, with visual try-on technology.
+              Smarter styling starts here. AI-curated outfits that fit your style, your body, and your weather.
             </p>
             
             <div className="flex flex-wrap gap-6 justify-center mt-6">
