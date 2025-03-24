@@ -8,7 +8,7 @@ import {
   PartyPopper
 } from 'lucide-react';
 
-// Exporting an alias for PartyPopper as "Party" for simpler usage in the quiz component
+// Export the PartyPopper icon as Party for simpler usage
 export const Party = PartyPopper;
 
 export {
