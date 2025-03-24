@@ -27,10 +27,10 @@ export const DesktopNavigation = ({ navItems, currentPath, isScrolled }: Desktop
                 currentPath === item.path
                   ? isScrolled 
                     ? "text-white bg-white/20 shadow-sm shadow-purple-300/20" 
-                    : "text-white bg-white/10 shadow-sm shadow-white/20"
+                    : "text-white bg-white/20 shadow-sm shadow-white/20"
                   : isScrolled
-                    ? "text-white/80 hover:text-white hover:bg-white/10" 
-                    : "text-white/90 hover:text-white hover:bg-white/10 hover:scale-105"
+                    ? "text-white/90 hover:text-white hover:bg-white/10" 
+                    : "text-white hover:text-white hover:bg-white/10 hover:scale-105"
               )}
             >
               <Link to={item.path}>{item.name}</Link>

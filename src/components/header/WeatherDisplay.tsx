@@ -31,7 +31,7 @@ export const WeatherDisplay = ({ weather, isScrolled = false }: WeatherDisplayPr
       "hidden md:flex items-center space-x-2 rounded-full px-4 py-1.5 shadow-sm hover:shadow-md transition-all",
       isScrolled 
         ? "bg-white/10 backdrop-blur" 
-        : "glass dark:glass-dark"
+        : "bg-white/10 backdrop-blur-md"
     )}>
       {getWeatherIcon()}
       <span className="text-sm font-medium text-white">{weather.temperature}°</span>
