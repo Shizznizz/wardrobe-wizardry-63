@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import * as tf from '@tensorflow/tfjs';
@@ -11,6 +12,9 @@ import { sampleOutfits, sampleClothingItems } from '@/lib/wardrobeData';
 import OutfitSelector from '@/components/OutfitSelector';
 import VirtualFittingRoom from '@/components/VirtualFittingRoom';
 import { Card, CardContent } from '@/components/ui/card';
+import BackgroundShapes from '@/components/BackgroundShapes';
+import VerticalStepCards from '@/components/VerticalStepCards';
+import { Lightbulb, Sparkles } from 'lucide-react';
 
 const USER_PHOTO_STORAGE_KEY = 'userVirtualTryOnPhoto';
 
@@ -128,10 +132,11 @@ const VirtualTryOn = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-slate-950 text-white relative overflow-hidden">
+      <BackgroundShapes />
       <Header />
       
-      <main className="container mx-auto px-4 pt-24 pb-16">
+      <main className="container mx-auto px-4 pt-24 pb-16 relative z-10">
         <motion.div 
           className="space-y-8"
           initial="hidden"
@@ -139,24 +144,44 @@ const VirtualTryOn = () => {
           variants={containerVariants}
         >
           <motion.div variants={itemVariants} className="text-center max-w-3xl mx-auto mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-500 bg-clip-text text-transparent">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
               See How You Shine in Our Styles
             </h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-lg text-white/80 max-w-2xl mx-auto">
               Upload your photo and experience our revolutionary virtual fitting room. 
               Try on any outfit from your wardrobe instantly — no changing room needed!
             </p>
           </motion.div>
           
-          <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="space-y-4">
-              <Card className="overflow-hidden border-0 shadow-soft">
+          <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+            <div className="lg:col-span-3 space-y-6">
+              {/* Olivia Bloom Tip */}
+              <div className="neo-blur p-4 rounded-xl border border-white/10 mb-6">
+                <div className="flex items-start gap-3">
+                  <div className="shrink-0 bg-gradient-to-br from-pink-500 to-purple-600 p-2 rounded-full">
+                    <Lightbulb className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-white flex items-center gap-2">
+                      Olivia's Styling Tip
+                      <span className="inline-block">
+                        <Sparkles className="h-4 w-4 text-yellow-400" />
+                      </span>
+                    </h3>
+                    <p className="text-sm text-white/80 mt-1">
+                      For the best results, upload a photo with neutral lighting and a simple background. Stand in a natural pose facing the camera.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <Card className="bg-transparent overflow-hidden border-0 shadow-xl">
                 <CardContent className="p-0">
                   {isModelLoading ? (
-                    <div className="flex flex-col items-center space-y-4 border rounded-lg p-8">
-                      <Skeleton className="h-32 w-32 rounded-full" />
-                      <Skeleton className="h-4 w-48" />
-                      <p className="text-muted-foreground">Loading AI model...</p>
+                    <div className="flex flex-col items-center space-y-4 neo-blur rounded-lg p-8">
+                      <Skeleton className="h-32 w-32 rounded-full bg-white/5" />
+                      <Skeleton className="h-4 w-48 bg-white/5" />
+                      <p className="text-white/70">Loading AI model...</p>
                     </div>
                   ) : (
                     <>
@@ -171,10 +196,10 @@ const VirtualTryOn = () => {
                               alt="Your uploaded photo" 
                               className="w-full h-auto rounded-lg transition-transform duration-300 group-hover:scale-102" 
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-70 group-hover:opacity-80 transition-opacity"></div>
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-70 group-hover:opacity-80 transition-opacity"></div>
                             <Button 
                               variant="secondary" 
-                              className="absolute bottom-4 right-4 shadow-md"
+                              className="absolute bottom-4 right-4 shadow-md border border-white/20 bg-white/10 text-white hover:bg-white/20"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 handleUploadClick();
@@ -184,18 +209,18 @@ const VirtualTryOn = () => {
                             </Button>
                           </div>
                         ) : (
-                          <div className="bg-gradient-to-br from-purple-50 to-blue-50 dark:from-slate-900 dark:to-slate-800 p-10 rounded-lg text-center">
-                            <div className="mb-6 mx-auto w-24 h-24 rounded-full bg-gradient-to-r from-violet-400 to-blue-500 flex items-center justify-center">
+                          <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-md p-10 rounded-lg text-center border border-white/10">
+                            <div className="mb-6 mx-auto w-24 h-24 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 flex items-center justify-center">
                               <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                               </svg>
                             </div>
-                            <h3 className="text-2xl font-bold mb-3 bg-gradient-to-r from-violet-600 to-blue-500 bg-clip-text text-transparent">Upload Your Photo</h3>
-                            <p className="text-muted-foreground text-center max-w-xs mx-auto mb-6">
+                            <h3 className="text-2xl font-bold mb-3 bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">Upload Your Photo</h3>
+                            <p className="text-white/70 text-center max-w-xs mx-auto mb-6">
                               Take a full-body photo or upload one to see how our styles look on you in seconds
                             </p>
                             <Button 
-                              className="bg-gradient-to-r from-violet-600 to-blue-500 hover:from-violet-700 hover:to-blue-600 shadow-md"
+                              className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-md"
                             >
                               Select an Image
                             </Button>
@@ -217,7 +242,7 @@ const VirtualTryOn = () => {
               
               {userPhoto && (
                 <div className="space-y-4">
-                  <h2 className="text-xl font-semibold">Select an Outfit</h2>
+                  <h2 className="text-xl font-semibold text-white">Select an Outfit</h2>
                   <OutfitSelector 
                     outfits={sampleOutfits}
                     clothingItems={sampleClothingItems}
@@ -228,7 +253,7 @@ const VirtualTryOn = () => {
                   <Button 
                     onClick={handleTryOn} 
                     disabled={!selectedOutfit || isProcessing}
-                    className="w-full mt-4 bg-gradient-to-r from-violet-600 to-blue-500 hover:from-violet-700 hover:to-blue-600 h-12 text-lg font-medium shadow-md"
+                    className="w-full mt-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 h-12 text-lg font-medium shadow-md border border-white/10"
                   >
                     {isProcessing ? 'Processing...' : 'Try On This Outfit'}
                   </Button>
@@ -236,14 +261,20 @@ const VirtualTryOn = () => {
               )}
             </div>
             
-            <div className="space-y-4">
-              <h2 className="text-xl font-semibold">Result</h2>
+            <div className="lg:col-span-2 space-y-6">
+              <h2 className="text-xl font-semibold text-white">Result</h2>
               <VirtualFittingRoom 
                 finalImage={finalImage}
                 outfit={selectedOutfit}
                 clothingItems={sampleClothingItems}
                 isProcessing={isProcessing}
               />
+              
+              {/* How it works section with vertical step cards */}
+              <div className="mt-8 space-y-4">
+                <h2 className="text-xl font-semibold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">How It Works</h2>
+                <VerticalStepCards />
+              </div>
             </div>
           </motion.div>
         </motion.div>

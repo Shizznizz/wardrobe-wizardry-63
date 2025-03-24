@@ -2,7 +2,7 @@
 import { ClothingItem, Outfit } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { Download, Share2 } from 'lucide-react';
+import { Download, Share2, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface VirtualFittingRoomProps {
@@ -63,10 +63,13 @@ const VirtualFittingRoom = ({
     }
   };
 
+  // Get a subset of clothing items to show as miniatures
+  const previewItems = clothingItems.slice(0, 4);
+
   if (!finalImage && !isProcessing) {
     return (
-      <div className="border rounded-lg p-8 h-full flex flex-col items-center justify-center text-center">
-        <div className="text-muted-foreground">
+      <div className="neo-blur border border-white/10 rounded-lg p-8 h-full flex flex-col items-center justify-center text-center">
+        <div className="text-white/70">
           Upload a photo and select an outfit to see the result
         </div>
       </div>
@@ -74,12 +77,12 @@ const VirtualFittingRoom = ({
   }
 
   return (
-    <div className="border rounded-lg p-4 space-y-4">
+    <div className="neo-blur border border-white/10 rounded-lg p-4 space-y-4">
       {isProcessing ? (
         <div className="space-y-4">
-          <Skeleton className="w-full aspect-square rounded-lg" />
+          <Skeleton className="w-full aspect-square rounded-lg bg-white/5" />
           <div className="flex justify-center">
-            <p className="text-muted-foreground">Processing your virtual try-on...</p>
+            <p className="text-white/70">Processing your virtual try-on...</p>
           </div>
         </div>
       ) : finalImage ? (
@@ -88,11 +91,11 @@ const VirtualFittingRoom = ({
             <img 
               src={finalImage} 
               alt="Virtual try-on result" 
-              className="w-full rounded-lg"
+              className="w-full rounded-lg shadow-xl"
             />
             
             {outfit && (
-              <div className="absolute bottom-4 left-4 right-4 bg-black/50 backdrop-blur-sm p-4 rounded-lg">
+              <div className="absolute bottom-4 left-4 right-4 bg-black/70 backdrop-blur-md p-4 rounded-lg border border-white/10">
                 <h3 className="text-white font-medium mb-2">{outfit.name}</h3>
                 <div className="flex flex-wrap gap-2">
                   {outfit.seasons.map(season => (
@@ -108,11 +111,33 @@ const VirtualFittingRoom = ({
             )}
           </div>
           
+          {/* Outfit miniatures */}
+          {previewItems.length > 0 && (
+            <div className="py-3">
+              <h4 className="text-white/80 text-sm font-medium mb-2">Related items:</h4>
+              <div className="flex gap-2 overflow-x-auto py-1 px-1 pb-2 scrollbar-none">
+                {previewItems.map((item, index) => (
+                  <div 
+                    key={index} 
+                    className="flex-shrink-0 w-16 h-16 rounded-md overflow-hidden border border-white/20 hover:border-white/40 transition-colors"
+                  >
+                    <img 
+                      src={item.image || '/placeholder.svg'} 
+                      alt={item.name} 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          
           <div className="flex gap-2 justify-end">
             <Button 
               variant="outline" 
               size="sm"
               onClick={handleShare}
+              className="bg-white/5 border-white/20 text-white hover:bg-white/10"
             >
               <Share2 className="h-4 w-4 mr-2" />
               Share
@@ -121,6 +146,7 @@ const VirtualFittingRoom = ({
               variant="default" 
               size="sm"
               onClick={handleDownload}
+              className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white"
             >
               <Download className="h-4 w-4 mr-2" />
               Download

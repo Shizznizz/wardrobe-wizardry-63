@@ -13,28 +13,28 @@ const steps = [
     title: "Upload Your Photo",
     description: "Start by uploading a high-quality photo of yourself in neutral clothing.",
     icon: <Camera className="h-6 w-6" />,
-    color: "from-pink-500 to-purple-600"
+    color: "from-indigo-600 to-purple-700"
   },
   {
     id: 2,
     title: "Select Outfits",
     description: "Browse through your virtual wardrobe or choose from suggested styles.",
     icon: <PaintBucket className="h-6 w-6" />,
-    color: "from-purple-500 to-indigo-600"
+    color: "from-purple-600 to-pink-600"
   },
   {
     id: 3,
     title: "AI Processing",
     description: "Our advanced AI precisely maps the clothing to your body shape.",
     icon: <Upload className="h-6 w-6" />,
-    color: "from-indigo-500 to-blue-600"
+    color: "from-pink-600 to-rose-600"
   },
   {
     id: 4,
     title: "Visualize Results",
     description: "See yourself in the new outfit with realistic textures and lighting.",
     icon: <Eye className="h-6 w-6" />,
-    color: "from-blue-500 to-cyan-600"
+    color: "from-rose-600 to-orange-600"
   }
 ];
 
@@ -52,19 +52,19 @@ const VerticalStepCards = () => {
         >
           {/* Connecting line */}
           {index < steps.length - 1 && (
-            <div className="absolute left-8 top-16 bottom-0 w-0.5 bg-gradient-to-b from-white/30 to-white/5 h-full" />
+            <div className="absolute left-8 top-16 bottom-0 w-0.5 bg-gradient-to-b from-white/40 to-white/10 h-full" />
           )}
           
           <div className="flex gap-6">
             {/* Step number with gradient background */}
-            <div className={`flex-shrink-0 w-16 h-16 rounded-full bg-gradient-to-br ${step.color} flex items-center justify-center z-10`}>
+            <div className={`flex-shrink-0 w-16 h-16 rounded-full bg-gradient-to-br ${step.color} flex items-center justify-center z-10 shadow-lg shadow-${step.color.split(' ')[1].replace('to-', '')}/20`}>
               {step.icon}
             </div>
             
             {/* Card content */}
-            <div className="glass-dark p-6 rounded-xl border border-white/10 flex-1">
+            <div className="neo-blur p-6 rounded-xl flex-1 border border-white/10 hover:border-white/20 transition-all duration-300">
               <h3 className="text-xl font-semibold text-white mb-2">{step.title}</h3>
-              <p className="text-white/70">{step.description}</p>
+              <p className="text-white/80">{step.description}</p>
             </div>
           </div>
         </motion.div>
