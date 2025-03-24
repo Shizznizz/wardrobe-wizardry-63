@@ -1,41 +1,57 @@
 
 import { motion } from "framer-motion";
+import { Sparkles } from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { 
+  Card,
+  CardContent
+} from "@/components/ui/card";
 
 const timelineEvents = [
   {
     id: 1,
-    date: "April 2023",
-    title: "Summer Collection",
-    description: "First styling session with focus on summer casual wear and beachwear.",
-    image: "/placeholder.svg"
+    date: "March 2025",
+    title: "Spring Transition Collection",
+    description: "Early spring essentials with versatile layering pieces for changing temperatures.",
+    image: "/lovable-uploads/86bf74b8-b311-4e3c-bfd6-53819add3df8.png",
+    gradient: "from-emerald-200 to-blue-200",
+    oliviaComment: "Olivia's pick – Light layering for unpredictable Dutch spring weather. Focus on breathable fabrics with waterproof outer layers."
   },
   {
     id: 2,
-    date: "June 2023",
-    title: "Business Wardrobe",
-    description: "Professional attire styling for office meetings and presentations.",
-    image: "/placeholder.svg"
+    date: "June 2025",
+    title: "Summer Essentials",
+    description: "Breathable fabrics and versatile pieces for warm days and cool evenings.",
+    image: "/lovable-uploads/86bf74b8-b311-4e3c-bfd6-53819add3df8.png",
+    gradient: "from-sky-200 to-indigo-200",
+    oliviaComment: "Olivia's pick – Natural linen blends in earth tones that transition easily from beach to dinner with just a few accessories."
   },
   {
     id: 3,
-    date: "September 2023",
-    title: "Fall Essentials",
-    description: "Layering essentials for the autumn season with earthy tones.",
-    image: "/placeholder.svg"
+    date: "September 2025",
+    title: "Autumn Capsule Wardrobe",
+    description: "Rich textures and warm tones for a versatile fall wardrobe with minimal pieces.",
+    image: "/lovable-uploads/86bf74b8-b311-4e3c-bfd6-53819add3df8.png",
+    gradient: "from-amber-200 to-orange-200",
+    oliviaComment: "Olivia's pick – Investing in a quality trench coat will elevate all your autumn looks, especially in neutral tones like olive or camel."
   },
   {
     id: 4,
-    date: "December 2023",
-    title: "Holiday Specials",
-    description: "Festive styling for winter gatherings and holiday parties.",
-    image: "/placeholder.svg"
+    date: "December 2025",
+    title: "Winter Sophistication",
+    description: "Cozy yet elegant winter pieces that work for both indoor gatherings and outdoor activities.",
+    image: "/lovable-uploads/86bf74b8-b311-4e3c-bfd6-53819add3df8.png",
+    gradient: "from-blue-200 to-purple-200",
+    oliviaComment: "Olivia's pick – Layered knitwear in complementary tones creates dimension while keeping you warm. Try a fine merino base with chunky cardigan."
   },
   {
     id: 5,
-    date: "February 2024",
-    title: "Spring Preview",
-    description: "Early styling session for the upcoming spring season with light fabrics.",
-    image: "/placeholder.svg"
+    date: "March 2026",
+    title: "Next Year's Preview",
+    description: "Early look at the upcoming trends and seasonal transitions for the new year.",
+    image: "/lovable-uploads/86bf74b8-b311-4e3c-bfd6-53819add3df8.png",
+    gradient: "from-pink-200 to-rose-200",
+    oliviaComment: "Olivia's pick – Sustainable materials will be even more important next year. Look for organic cotton blends and recycled synthetics."
   }
 ];
 
@@ -56,7 +72,7 @@ const StylingTimeline = () => {
               duration: 0.5
             }}
             viewport={{ once: true, margin: "-100px" }}
-            className={`mb-12 flex items-center ${
+            className={`mb-16 flex items-center ${
               index % 2 === 0 ? "flex-row" : "flex-row-reverse"
             } relative z-10`}
           >
@@ -68,13 +84,49 @@ const StylingTimeline = () => {
               <span className="text-sm font-medium text-blue-300">{event.date}</span>
               <h3 className="text-lg font-semibold text-white mt-1">{event.title}</h3>
               <p className="text-white/70 mt-1">{event.description}</p>
+              
+              {/* Olivia's Comment */}
+              <div className="mt-4 relative bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+                <div className="flex items-start gap-3">
+                  <Avatar className="h-8 w-8 ring-2 ring-purple-500/50">
+                    <AvatarImage src="/lovable-uploads/c26c0c8c-7ff3-432a-b79b-1d22494daba6.png" alt="Olivia Bloom" />
+                    <AvatarFallback className="bg-gradient-to-br from-purple-400 to-pink-400">OB</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <div className="flex items-center gap-1">
+                      <span className="text-xs font-medium text-white/90">Style Advice</span>
+                      <Sparkles className="h-3 w-3 text-yellow-300" />
+                    </div>
+                    <p className="text-sm text-white/80 mt-1">{event.oliviaComment}</p>
+                  </div>
+                </div>
+                {/* Speech bubble triangle */}
+                <div className={`absolute ${index % 2 === 0 ? "right-[-8px]" : "left-[-8px]"} top-4 w-0 h-0 
+                  ${index % 2 === 0 
+                    ? "border-t-[6px] border-t-transparent border-l-[8px] border-l-white/10 border-b-[6px] border-b-transparent" 
+                    : "border-t-[6px] border-t-transparent border-r-[8px] border-r-white/10 border-b-[6px] border-b-transparent"
+                  }`}></div>
+              </div>
             </div>
             
             {/* Image */}
             <div className={`w-5/12 ${index % 2 === 0 ? "pl-8" : "pr-8"}`}>
-              <div className="aspect-video overflow-hidden rounded-lg glass-dark border border-white/10">
-                <img src={event.image} alt={event.title} className="w-full h-full object-cover" />
-              </div>
+              <Card className="overflow-hidden rounded-lg border border-white/10 hover:border-white/20 transition-duration-300 neo-blur">
+                <CardContent className="p-0">
+                  <div className="relative aspect-video w-full">
+                    {/* Gradient background */}
+                    <div className={`absolute inset-0 bg-gradient-to-r ${event.gradient} opacity-80`}></div>
+                    
+                    {/* Season themed styling */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="text-center p-4">
+                        <h4 className="text-lg font-medium text-gray-800">{event.date.split(" ")[0]} Collection</h4>
+                        <p className="text-sm text-gray-700 mt-1">Coming soon</p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </motion.div>
         ))}
