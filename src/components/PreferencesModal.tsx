@@ -1,5 +1,5 @@
-
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,9 +14,10 @@ import { ClothingColor, ClothingSeason, UserPreferences } from '@/lib/types';
 interface PreferencesModalProps {
   preferences: UserPreferences;
   onSave: (preferences: UserPreferences) => void;
+  buttonClassName?: string;
 }
 
-const PreferencesModal = ({ preferences, onSave }: PreferencesModalProps) => {
+const PreferencesModal = ({ preferences, onSave, buttonClassName }: PreferencesModalProps) => {
   const [open, setOpen] = useState(false);
   const [localPreferences, setLocalPreferences] = useState<UserPreferences>(preferences);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -122,10 +123,20 @@ const PreferencesModal = ({ preferences, onSave }: PreferencesModalProps) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="space-x-2">
-          <Settings className="h-4 w-4" />
-          <span>Preferences</span>
-        </Button>
+        <motion.div
+          whileHover={{ 
+            scale: 1.05,
+            transition: { duration: 0.2 }
+          }}
+        >
+          <Button 
+            variant="outline" 
+            className={`space-x-2 ${buttonClassName || ''}`}
+          >
+            <Settings className="h-4 w-4" />
+            <span>Preferences</span>
+          </Button>
+        </motion.div>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
