@@ -67,6 +67,20 @@
   }
 }
 
+@layer utilities {
+  .w-22 {
+    width: 5.5rem;
+  }
+  
+  .h-22 {
+    height: 5.5rem;
+  }
+  
+  .scale-85 {
+    transform: scale(0.85);
+  }
+}
+
 @layer base {
   * {
     @apply border-border;
@@ -81,12 +95,10 @@
     font-feature-settings: "ss01", "ss02", "cv01", "cv03";
   }
   
-  /* Smooth transitions for light/dark mode */
   body {
     transition: background-color 0.3s ease, color 0.3s ease;
   }
   
-  /* Custom scrollbar */
   ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -104,7 +116,6 @@
     @apply bg-muted-foreground/50;
   }
   
-  /* Glass effect styles */
   .glass {
     @apply bg-white/70 backdrop-blur-lg border border-white/20;
   }
@@ -117,7 +128,6 @@
     @apply backdrop-blur-2xl bg-black/40 border border-white/10;
   }
 
-  /* Futuristic elements */
   .glow {
     @apply relative;
   }
@@ -164,17 +174,14 @@
     }
   }
 
-  /* Prevent z-index stacking issues */
   .z-highest {
     z-index: 9999 !important;
   }
   
-  /* Custom z-index for mobile menu */
   .z-100 {
     z-index: 100 !important;
   }
   
-  /* Mobile menu styles */
   .mobile-menu {
     background-color: white !important;
   }
@@ -220,7 +227,6 @@
     text-wrap: balance;
   }
   
-  /* Navigation styling */
   .nav-link {
     @apply transition-colors duration-200;
   }
@@ -233,7 +239,6 @@
     @apply text-muted-foreground hover:text-accent;
   }
 
-  /* Futuristic button */
   .btn-futuristic {
     @apply relative overflow-hidden bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl text-lg px-8 py-6 h-auto transition-all shadow-xl hover:shadow-purple-500/20;
   }
@@ -247,7 +252,6 @@
     @apply opacity-100;
   }
 
-  /* Futuristic card */
   .card-futuristic {
     @apply glass-dark p-8 rounded-2xl border border-white/10 backdrop-blur-lg shadow-lg transition-all duration-300;
   }

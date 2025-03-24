@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -70,14 +71,15 @@ const Index = () => {
       <BackgroundShapes />
       <Header />
       
-      <div className="fixed top-24 right-6 z-50">
+      <div className="fixed top-40 right-6 z-50">
         <motion.div
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ delay: 0.5, type: "spring", stiffness: 200 }}
           className="relative"
         >
-          <Avatar className="w-20 h-20 border-2 border-pink-400 shadow-lg cursor-pointer" onClick={() => setExpandOliviaMessage(!expandOliviaMessage)}>
+          <div className="absolute -inset-3 rounded-full bg-gradient-to-r from-pink-500/60 via-purple-500/60 to-indigo-500/60 blur-md animate-pulse"></div>
+          <Avatar className="w-22 h-22 border-2 border-pink-400 shadow-lg cursor-pointer relative" onClick={() => setExpandOliviaMessage(!expandOliviaMessage)}>
             <AvatarImage src="/lovable-uploads/86bf74b8-b311-4e3c-bfd6-53819add3df8.png" alt="Olivia Bloom" />
             <AvatarFallback className="bg-purple-800">OB</AvatarFallback>
           </Avatar>
@@ -101,7 +103,7 @@ const Index = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="absolute top-24 right-0 z-20 w-80"
+            className="absolute top-24 right-0 z-20 w-68 scale-85 origin-top-right"
           >
             <div className="relative p-4 rounded-xl bg-gradient-to-br from-purple-600/90 to-pink-600/90 text-white backdrop-blur-sm shadow-lg border border-white/20">
               <div className="absolute -top-2 right-6 w-4 h-4 bg-gradient-to-br from-purple-600/90 to-pink-600/90 transform rotate-45 border-t border-r border-white/20"></div>
@@ -149,7 +151,7 @@ const Index = () => {
         >
           <motion.section variants={itemVariants} className="flex flex-col items-center justify-center text-center space-y-8 relative min-h-[60vh] flex items-center justify-center">
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center">
-              <div className="relative inline-block">
+              <div className="relative inline-block -mt-20">
                 <motion.div 
                   className="absolute -inset-1 rounded-lg bg-gradient-to-r from-purple-600 via-blue-500 to-purple-600 opacity-75 blur-xl"
                   animate={{ 
@@ -162,7 +164,7 @@ const Index = () => {
                     repeatType: "mirror"
                   }}
                 />
-                <h1 className="relative text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 pb-2 whitespace-nowrap">
+                <h1 className="relative text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 pb-2 whitespace-nowrap">
                   Future of Fashion
                 </h1>
               </div>
@@ -176,11 +178,11 @@ const Index = () => {
                 className="w-24 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full mb-4 mt-8"
               />
               
-              <p className="text-xl text-blue-100 max-w-2xl backdrop-blur-sm py-4 px-6 rounded-lg border border-white/10 shadow-lg neo-blur mt-8">
+              <p className="text-xl text-blue-100 max-w-2xl backdrop-blur-sm py-4 px-6 rounded-lg border border-white/10 shadow-lg neo-blur mt-10">
                 Smarter styling starts here. AI-curated outfits that fit your style, your body, and your weather.
               </p>
               
-              <div className="flex flex-wrap gap-6 justify-center mt-6">
+              <div className="flex flex-wrap gap-6 justify-center mt-10">
                 <motion.div
                   whileHover={{ 
                     scale: 1.05,
