@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -49,7 +48,6 @@ const Index = () => {
   };
 
   const handleWardrobeButtonClick = () => {
-    // Navigate to wardrobe page and scroll to upload section
     window.location.href = "/wardrobe#upload";
   };
 
@@ -97,18 +95,17 @@ const Index = () => {
             </p>
             
             <div className="flex flex-wrap gap-6 justify-center mt-6">
-              {/* Wrap Button with motion.div instead of applying motion props directly to Button */}
               <motion.div
                 whileHover={{ 
                   scale: 1.05,
                   transition: { duration: 0.2 }
                 }}
-                className="min-w-[240px]" // Added min-width to ensure consistent width
+                className="min-w-[240px]"
               >
                 <Button 
                   size="lg" 
                   onClick={handleWardrobeButtonClick}
-                  className="group relative overflow-hidden bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl text-lg px-5 py-3 h-10 transition-all shadow-xl hover:shadow-purple-500/20 w-full"
+                  className="group relative overflow-hidden bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl text-lg px-5 py-3 h-10 transition-all shadow-xl hover:shadow-purple-500/20 w-full border border-blue-500/20"
                 >
                   <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-blue-400/20 to-purple-400/20 opacity-0 group-hover:opacity-100 transition-opacity" />
                   <span className="relative flex items-center justify-center gap-2">
@@ -131,7 +128,7 @@ const Index = () => {
               <PreferencesModal 
                 preferences={preferences} 
                 onSave={handleUpdatePreferences} 
-                buttonClassName="text-lg px-5 py-3 h-10 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl shadow-xl hover:shadow-purple-500/20 min-w-[120px]"
+                buttonClassName="text-lg px-5 py-3 h-10 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl shadow-xl hover:shadow-purple-500/20 min-w-[120px] border border-blue-500/20"
               />
             </div>
           </motion.section>
