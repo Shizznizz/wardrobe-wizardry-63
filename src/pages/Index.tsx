@@ -140,16 +140,16 @@ const Index = () => {
         )}
       </div>
       
-      <main className="container mx-auto px-4 pt-32 pb-16 relative z-10">
+      <main className="container mx-auto px-4 pt-40 pb-16 relative z-10">
         <motion.div 
-          className="space-y-12"
+          className="space-y-8"
           initial="hidden"
           animate="visible"
           variants={containerVariants}
         >
           <motion.section variants={itemVariants} className="flex flex-col items-center justify-center text-center space-y-8 relative min-h-[70vh] flex items-center justify-center">
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center">
-              <div className="relative inline-block -mt-32">
+              <div className="relative inline-block -mt-20">
                 <motion.div 
                   className="absolute -inset-1 rounded-lg bg-gradient-to-r from-purple-600 via-blue-500 to-purple-600 opacity-75 blur-xl"
                   animate={{ 
