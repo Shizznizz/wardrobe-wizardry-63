@@ -133,17 +133,28 @@ const Index = () => {
             
             {showOliviaWelcome && expandOliviaMessage && (
               <motion.div 
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3, ease: "easeInOut" }}
-                className="absolute z-20 flex items-start"
+                initial={{ opacity: 0, width: "180px", height: "60px" }}
+                animate={{ 
+                  opacity: 1, 
+                  width: "320px",
+                  height: "auto"
+                }}
+                transition={{ 
+                  duration: 0.3, 
+                  ease: "easeInOut",
+                  width: { duration: 0.15 },
+                  height: { delay: 0.15, duration: 0.15 }
+                }}
+                className="absolute z-20"
                 style={{
-                  top: "calc(50% - 70px)",
-                  right: "auto",
-                  left: "calc(50% + 130px)",
+                  top: "50%",
+                  left: "50%",
+                  marginLeft: "60px",
+                  marginTop: "-50px",
+                  transformOrigin: "left top"
                 }}
               >
-                <div className="relative p-4 rounded-xl bg-gradient-to-br from-purple-600/90 to-pink-600/90 text-white backdrop-blur-sm shadow-lg border border-white/20 max-w-sm">
+                <div className="relative p-4 rounded-xl bg-gradient-to-br from-purple-600/90 to-pink-600/90 text-white backdrop-blur-sm shadow-lg border border-white/20 h-full w-full">
                   <div className="absolute -left-2 top-10 w-4 h-4 bg-gradient-to-br from-purple-600/90 to-pink-600/90 transform rotate-45 border-l border-t border-white/20"></div>
                   <button 
                     onClick={() => setExpandOliviaMessage(false)} 
