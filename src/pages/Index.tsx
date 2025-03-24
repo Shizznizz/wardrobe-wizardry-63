@@ -48,6 +48,11 @@ const Index = () => {
     }
   };
 
+  const handleWardrobeButtonClick = () => {
+    // Navigate to wardrobe page and scroll to upload section
+    window.location.href = "/wardrobe#upload";
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white">
       <Header />
@@ -92,15 +97,31 @@ const Index = () => {
             </p>
             
             <div className="flex flex-wrap gap-6 justify-center mt-6">
-              <Link to="/wardrobe">
-                <Button size="lg" className="group relative overflow-hidden bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl text-lg px-8 py-6 h-auto transition-all shadow-xl hover:shadow-purple-500/20">
-                  <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-blue-400/20 to-purple-400/20 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <span className="relative flex items-center gap-2">
-                    Get Started
-                    <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                  </span>
-                </Button>
-              </Link>
+              <Button 
+                size="lg" 
+                onClick={handleWardrobeButtonClick}
+                className="group relative overflow-hidden bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl text-lg px-8 py-6 h-auto transition-all shadow-xl hover:shadow-purple-500/20"
+                whileHover={{ 
+                  scale: 1.05,
+                  transition: { duration: 0.2 }
+                }}
+              >
+                <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-blue-400/20 to-purple-400/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <span className="relative flex items-center gap-2">
+                  Start Building My Wardrobe
+                  <motion.div
+                    className="inline-block"
+                    animate={{ x: [0, 3, 0] }}
+                    transition={{ 
+                      duration: 1.5, 
+                      repeat: Infinity,
+                      ease: "easeInOut" 
+                    }}
+                  >
+                    <ArrowRight className="h-5 w-5" />
+                  </motion.div>
+                </span>
+              </Button>
               
               <PreferencesModal 
                 preferences={preferences} 

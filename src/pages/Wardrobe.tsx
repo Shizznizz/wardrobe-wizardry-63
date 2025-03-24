@@ -53,6 +53,21 @@ const Wardrobe = () => {
     }
   };
 
+  // Scroll to upload section if URL has #upload hash
+  useEffect(() => {
+    if (window.location.hash === '#upload') {
+      const uploadSection = document.getElementById('upload-section');
+      if (uploadSection) {
+        uploadSection.scrollIntoView({ behavior: 'smooth' });
+        // Trigger the upload modal to open
+        const uploadButton = document.getElementById('upload-button');
+        if (uploadButton) {
+          uploadButton.click();
+        }
+      }
+    }
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white">
       <Header />
@@ -63,9 +78,11 @@ const Wardrobe = () => {
           animate="visible"
           variants={containerVariants}
         >
-          <motion.div variants={itemVariants} className="flex flex-wrap justify-between items-center mb-8">
+          <motion.div id="upload-section" variants={itemVariants} className="flex flex-wrap justify-between items-center mb-8">
             <h1 className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">My Wardrobe</h1>
-            <UploadModal onUpload={handleUpload} />
+            <div id="upload-button">
+              <UploadModal onUpload={handleUpload} />
+            </div>
           </motion.div>
           
           <motion.div variants={itemVariants} className="glass-dark p-6 rounded-xl border border-white/10">
