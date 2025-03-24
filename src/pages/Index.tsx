@@ -12,6 +12,8 @@ import VerticalStepCards from '@/components/VerticalStepCards';
 import StylingTimeline from '@/components/StylingTimeline';
 import BackgroundShapes from '@/components/BackgroundShapes';
 import StyleSituation from '@/components/StyleSituation';
+import OliviaBloomAssistant from '@/components/OliviaBloomAssistant';
+import OliviaBadge from '@/components/OliviaBadge';
 
 const Index = () => {
   const [preferences, setPreferences] = useState<UserPreferences>({
@@ -59,6 +61,8 @@ const Index = () => {
     }
   };
 
+  const [showOliviaWelcome, setShowOliviaWelcome] = useState(true);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white relative overflow-hidden">
       <BackgroundShapes />
@@ -71,7 +75,19 @@ const Index = () => {
           animate="visible"
           variants={containerVariants}
         >
-          <motion.section variants={itemVariants} className="flex flex-col items-center justify-center text-center space-y-8">
+          <motion.section variants={itemVariants} className="flex flex-col items-center justify-center text-center space-y-8 relative">
+            {showOliviaWelcome && (
+              <OliviaBloomAssistant
+                message="Welcome to Future of Fashion! I'm Olivia, your personal style advisor. I'll help you create outfits that match your style and the weather. What would you like to explore today?"
+                type="welcome"
+                timing="long"
+                actionText="Thanks, Olivia!"
+                onAction={() => setShowOliviaWelcome(false)}
+                position="center"
+                autoClose={false}
+              />
+            )}
+            
             <div className="relative flex items-center justify-center gap-3 flex-wrap">
               <div className="relative inline-block">
                 <motion.div 
@@ -173,11 +189,18 @@ const Index = () => {
             </div>
           </motion.section>
           
-          <motion.section variants={itemVariants} className="mt-8">
+          <motion.section variants={itemVariants} className="mt-8 relative">
             <StyleSituation />
+            
+            <OliviaBadge 
+              message="Have you tried styling based on your upcoming events? It's a great way to plan your outfits ahead of time."
+              position="top-right"
+              variant="question"
+              section="Style Situations"
+            />
           </motion.section>
           
-          <motion.section variants={itemVariants} className="mt-16">
+          <motion.section variants={itemVariants} className="mt-16 relative">
             <h2 className="text-2xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
               <span className="flex items-center gap-2">
                 <Palette className="h-6 w-6" />
@@ -185,9 +208,16 @@ const Index = () => {
               </span>
             </h2>
             <OutfitSlider />
+            
+            <OliviaBadge 
+              message="Mix and match colors from the same palette for a cohesive look. Try complementary colors for a bold statement!"
+              position="bottom-left"
+              variant="tip"
+              section="Outfit Inspirations"
+            />
           </motion.section>
           
-          <motion.section variants={itemVariants} className="mt-16">
+          <motion.section variants={itemVariants} className="mt-16 relative">
             <h2 className="text-2xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-purple-400">
               <span className="flex items-center gap-2">
                 <Sparkles className="h-6 w-6" />
@@ -195,9 +225,16 @@ const Index = () => {
               </span>
             </h2>
             <VerticalStepCards />
+            
+            <OliviaBadge 
+              message="Did you know? The average person uses only 20% of their wardrobe regularly. Our AI helps you rediscover the other 80%!"
+              position="top-left"
+              variant="fact"
+              section="Showcase Process"
+            />
           </motion.section>
           
-          <motion.section variants={itemVariants} className="mt-16">
+          <motion.section variants={itemVariants} className="mt-16 relative">
             <h2 className="text-2xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-blue-400">
               <span className="flex items-center gap-2">
                 <History className="h-6 w-6" />
@@ -205,6 +242,13 @@ const Index = () => {
               </span>
             </h2>
             <StylingTimeline />
+            
+            <OliviaBadge 
+              message="What part of your styling journey are you most excited about? I'd love to provide personalized recommendations!"
+              position="bottom-right" 
+              variant="question"
+              section="Styling Journey"
+            />
           </motion.section>
           
           <motion.section variants={itemVariants} className="mt-16">
@@ -297,4 +341,3 @@ const Index = () => {
 };
 
 export default Index;
-
