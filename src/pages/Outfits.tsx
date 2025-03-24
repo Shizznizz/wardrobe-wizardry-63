@@ -5,6 +5,7 @@ import Header from '@/components/Header';
 import WeatherWidget from '@/components/WeatherWidget';
 import OutfitSuggestion from '@/components/OutfitSuggestion';
 import OliviaBloomAdvisor from '@/components/OliviaBloomAdvisor';
+import OliviaBloomAssistant from '@/components/OliviaBloomAssistant';
 import { Button } from '@/components/ui/button';
 import { buttonVariants } from '@/components/ui/button';
 import { WeatherInfo, Outfit } from '@/lib/types';
@@ -275,7 +276,7 @@ const citiesByCountry = {
     "Linares", "Los Andes", "Melipilla", "San Felipe", "Angol", "Constitución"
   ],
   CO: [
-    "Bogotá", "Medellín", "Cali", "Barranquilla", "Cartagena", "Cúcuta", 
+    "Bogotá", "Medellín", "Cali", "Barranquilla", "Cartagena", "C��cuta", 
     "Bucaramanga", "Pereira", "Santa Marta", "Ibagué", "Pasto", "Manizales", 
     "Neiva", "Soledad", "Villavicencio", "Armenia", "Soacha", "Valledupar", 
     "Montería", "Sincelejo", "Popay��n", "Floridablanca", "Palmira", "Buenaventura", 
@@ -297,6 +298,7 @@ const Outfits = () => {
   const [selectedLocation, setSelectedLocation] = useState<{ city?: string; country?: string }>({});
   const [showLocationAlert, setShowLocationAlert] = useState(false);
   const [preferencesLoaded, setPreferencesLoaded] = useState(false);
+  const [showWelcomeMessage, setShowWelcomeMessage] = useState(true);
   const { user } = useAuth();
   const isMobile = useIsMobile();
   
@@ -543,6 +545,16 @@ const Outfits = () => {
     return "Choose an outfit appropriate for the current weather conditions.";
   };
   
+  const getWelcomeMessage = () => {
+    const userName = user?.user_metadata?.name || user?.user_metadata?.full_name || "there";
+    const location = selectedLocation.city ? `in ${selectedLocation.city}` : "today";
+    const weatherDesc = weather ? 
+      `${weather.temperature}°C ${weather.condition.toLowerCase()}` : 
+      "current weather";
+    
+    return `Hey ${userName}! Based on the ${weatherDesc} ${location}, here's something comfy and stylish for your day 💫`;
+  };
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -828,8 +840,22 @@ const Outfits = () => {
           favoriteStyles: sampleUserPreferences.favoriteStyles
         }}
       />
+      
+      {showWelcomeMessage && (
+        <OliviaBloomAssistant
+          message={getWelcomeMessage()}
+          type="welcome"
+          timing="medium"
+          actionText="Thanks, Olivia!"
+          onAction={() => setShowWelcomeMessage(false)}
+          position="bottom-right"
+          autoClose={false}
+          initialDelay={0.5}
+        />
+      )}
     </div>
   );
 };
 
 export default Outfits;
+
