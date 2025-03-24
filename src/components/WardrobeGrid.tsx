@@ -1,18 +1,17 @@
+
 import { useState } from 'react';
 import { ClothingItem, ClothingType, ClothingColor, ClothingSeason, Outfit, ClothingOccasion, ClothingMaterial } from '@/lib/types';
 import { cn } from '@/lib/utils';
-import { Heart, Filter, Shirt, Umbrella, Tag, CircleUser, ShoppingBag, Footprints, Star, Gift, Briefcase, Sparkles } from 'lucide-react';
+import { Heart, Filter, Shirt, Umbrella, Tag, CircleUser, ShoppingBag, Footprints, Star, Gift, Briefcase, Sparkles, PlusCircle, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import OutfitSuggestion from '@/components/OutfitSuggestion';
-import { sampleOutfits } from '@/lib/wardrobeData';
 import { motion } from 'framer-motion';
 
 interface WardrobeGridProps {
@@ -79,6 +78,7 @@ const WardrobeGrid = ({ items, onToggleFavorite, compactView = false }: Wardrobe
   const [selectedItem, setSelectedItem] = useState<ClothingItem | null>(null);
   const [showOutfitDialog, setShowOutfitDialog] = useState(false);
   const [activeFilterTab, setActiveFilterTab] = useState<'type' | 'color' | 'season' | 'occasion' | 'material'>('type');
+  const [expandedTagsItem, setExpandedTagsItem] = useState<string | null>(null);
 
   const filteredItems = items.filter((item) => {
     if (showOnlyFavorites && !item.favorite) return false;
@@ -255,15 +255,12 @@ const WardrobeGrid = ({ items, onToggleFavorite, compactView = false }: Wardrobe
     console.log('Disliked outfit');
   };
 
-  const getQuickOutfitSuggestion = (item: ClothingItem) => {
-    const compatibleItems = items.filter(i => 
-      i.id !== item.id && 
-      i.occasions.some(occ => item.occasions.includes(occ)) &&
-      i.seasons.some(season => item.seasons.includes(season))
-    );
-    
-    return compatibleItems.sort((a, b) => Number(b.favorite) - Number(a.favorite))[0] || null;
+  const toggleExpandTags = (itemId: string) => {
+    setExpandedTagsItem(expandedTagsItem === itemId ? null : itemId);
   };
+
+  // Maximum number of tags to show before "more" indicator
+  const MAX_TAGS = 3;
 
   const materialOptions: ClothingMaterial[] = ['cotton', 'wool', 'silk', 'polyester', 'leather', 'denim', 'linen', 'other'];
 
@@ -798,47 +795,89 @@ const WardrobeGrid = ({ items, onToggleFavorite, compactView = false }: Wardrobe
                       </div>
                       
                       <div className="mt-2 flex flex-wrap gap-1">
-                        {item.occasions && item.occasions.slice(0, 2).map((occasion) => (
-                          <Badge 
-                            key={occasion} 
-                            variant="outline" 
-                            className="bg-primary/10 text-primary text-xs flex items-center gap-1"
-                          >
-                            {getOccasionIcon(occasion)}
-                            <span className="capitalize">{occasion}</span>
-                          </Badge>
-                        ))}
-                        {item.occasions && item.occasions.length > 2 && (
-                          <Badge variant="outline" className="bg-primary/10 text-primary text-xs">
-                            +{item.occasions.length - 2}
-                          </Badge>
+                        {expandedTagsItem === item.id ? (
+                          <>
+                            {item.occasions.map((occasion) => (
+                              <Badge 
+                                key={occasion} 
+                                variant="outline" 
+                                className="bg-primary/10 text-primary text-xs flex items-center gap-1"
+                              >
+                                {getOccasionIcon(occasion)}
+                                <span className="capitalize">{occasion}</span>
+                              </Badge>
+                            ))}
+                            <Badge 
+                              variant="outline" 
+                              className="bg-primary/10 text-primary text-xs cursor-pointer"
+                              onClick={(e) => { e.stopPropagation(); toggleExpandTags(item.id); }}
+                            >
+                              Show less
+                            </Badge>
+                          </>
+                        ) : (
+                          <>
+                            {item.occasions.slice(0, MAX_TAGS).map((occasion) => (
+                              <Badge 
+                                key={occasion} 
+                                variant="outline" 
+                                className="bg-primary/10 text-primary text-xs flex items-center gap-1"
+                              >
+                                {getOccasionIcon(occasion)}
+                                <span className="capitalize">{occasion}</span>
+                              </Badge>
+                            ))}
+                            {item.occasions.length > MAX_TAGS && (
+                              <Badge 
+                                variant="outline" 
+                                className="bg-primary/10 text-primary text-xs cursor-pointer"
+                                onClick={(e) => { e.stopPropagation(); toggleExpandTags(item.id); }}
+                              >
+                                +{item.occasions.length - MAX_TAGS} more
+                              </Badge>
+                            )}
+                          </>
                         )}
                       </div>
                       
                       <div className="mt-2 flex flex-wrap gap-1">
-                        {item.seasons.map((season) => (
+                        {item.seasons.slice(0, MAX_TAGS).map((season) => (
                           <Badge key={season} variant="secondary" className="bg-primary/10 text-primary text-xs">
                             {season}
                           </Badge>
                         ))}
+                        {item.seasons.length > MAX_TAGS && (
+                          <Badge variant="secondary" className="bg-primary/10 text-primary text-xs">
+                            +{item.seasons.length - MAX_TAGS}
+                          </Badge>
+                        )}
                       </div>
                     </>
                   )}
                   
-                  <Button 
-                    className={cn(
-                      "w-full mt-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white",
-                      compactView ? "mt-2 py-1 h-8 text-xs" : ""
-                    )}
-                    size={compactView ? "sm" : "sm"}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleMatchThis(item);
-                    }}
-                  >
-                    <Star className={cn("mr-2", compactView ? "h-3 w-3" : "h-4 w-4")} />
-                    Match This
-                  </Button>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button 
+                          className={cn(
+                            "w-full mt-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white",
+                            compactView ? "mt-2 py-1 h-8 text-xs" : ""
+                          )}
+                          size={compactView ? "sm" : "sm"}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleMatchThis(item);
+                          }}
+                        >
+                          <Star className={cn("mr-2", compactView ? "h-3 w-3" : "h-4 w-4")} />
+                          Match This
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-sm">Get outfit suggestions using this item as a base</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </div>
                 
                 <button
