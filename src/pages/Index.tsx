@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -71,11 +70,11 @@ const Index = () => {
       <BackgroundShapes />
       <Header />
       
-      <div className="fixed top-40 right-6 z-50">
+      <div className="fixed top-52 right-6 z-50">
         <motion.div
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.5, type: "spring", stiffness: 200 }}
+          transition={{ delay: 0.5, type: "spring", stiffness: 200, duration: 0.5, ease: "easeOut" }}
           className="relative"
         >
           <div className="absolute -inset-3 rounded-full bg-gradient-to-r from-pink-500/60 via-purple-500/60 to-indigo-500/60 blur-md animate-pulse"></div>
@@ -103,10 +102,9 @@ const Index = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="absolute top-24 right-0 z-20 w-68 scale-85 origin-top-right"
+            className="absolute top-24 right-0 z-20 w-68 max-w-280 scale-85 origin-top-right"
           >
-            <div className="relative p-4 rounded-xl bg-gradient-to-br from-purple-600/90 to-pink-600/90 text-white backdrop-blur-sm shadow-lg border border-white/20">
-              <div className="absolute -top-2 right-6 w-4 h-4 bg-gradient-to-br from-purple-600/90 to-pink-600/90 transform rotate-45 border-t border-r border-white/20"></div>
+            <div className="olivia-bubble relative p-4 rounded-xl bg-gradient-to-br from-purple-600/90 to-pink-600/90 text-white backdrop-blur-sm shadow-lg border border-white/20 curved-pointer olivia-glow">
               <button 
                 onClick={() => setExpandOliviaMessage(false)} 
                 className="absolute top-2 right-2 p-1 hover:bg-white/10 rounded-full transition-colors"
@@ -124,7 +122,7 @@ const Index = () => {
                   Style Advisor
                 </span>
               </div>
-              <p className="text-white/90 text-sm mb-3">
+              <p className="text-white/90 text-xs mb-3">
                 Welcome to Future of Fashion! I'm Olivia, your personal style advisor. I'll help you create outfits that match your style and the weather. What would you like to explore today?
               </p>
               <Button 
