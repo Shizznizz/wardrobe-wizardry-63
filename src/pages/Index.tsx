@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -137,14 +136,14 @@ const Index = () => {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.3, ease: "easeInOut" }}
-                className="absolute top-12 right-1/4 max-w-sm z-20 flex items-start"
+                className="absolute z-20 flex items-start"
+                style={{
+                  top: "calc(50% - 70px)",
+                  right: "auto",
+                  left: "calc(50% + 130px)",
+                }}
               >
-                <Avatar className="w-24 h-24 border-2 border-pink-400 shadow-lg mr-4 flex-shrink-0">
-                  <AvatarImage src="/lovable-uploads/86bf74b8-b311-4e3c-bfd6-53819add3df8.png" alt="Olivia Bloom" />
-                  <AvatarFallback className="bg-purple-800">OB</AvatarFallback>
-                </Avatar>
-                
-                <div className="relative p-4 rounded-xl bg-gradient-to-br from-purple-600/90 to-pink-600/90 text-white backdrop-blur-sm shadow-lg border border-white/20">
+                <div className="relative p-4 rounded-xl bg-gradient-to-br from-purple-600/90 to-pink-600/90 text-white backdrop-blur-sm shadow-lg border border-white/20 max-w-sm">
                   <div className="absolute -left-2 top-10 w-4 h-4 bg-gradient-to-br from-purple-600/90 to-pink-600/90 transform rotate-45 border-l border-t border-white/20"></div>
                   <button 
                     onClick={() => setExpandOliviaMessage(false)} 
