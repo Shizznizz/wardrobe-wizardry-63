@@ -4,6 +4,7 @@ import { LogOut, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,7 +14,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export const UserMenu = () => {
+interface UserMenuProps {
+  isScrolled?: boolean;
+}
+
+export const UserMenu = ({ isScrolled = false }: UserMenuProps) => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
 
@@ -29,7 +34,17 @@ export const UserMenu = () => {
 
   if (!user) {
     return (
-      <Button variant="outline" size="sm" asChild className="ml-2 glass dark:glass-dark hover:bg-accent/5 hover:text-accent">
+      <Button 
+        variant="outline" 
+        size="sm" 
+        asChild 
+        className={cn(
+          "ml-2 transition-all duration-300",
+          isScrolled 
+            ? "bg-transparent border-white/30 text-white hover:bg-white/10 hover:text-white" 
+            : "bg-white/10 border-white/20 text-white hover:bg-white/20"
+        )}
+      >
         <Link to="/auth">Sign In</Link>
       </Button>
     );
@@ -38,7 +53,16 @@ export const UserMenu = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="ml-2 rounded-full hover:bg-accent/5 hover:text-accent">
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className={cn(
+            "ml-2 rounded-full transition-all duration-300",
+            isScrolled 
+              ? "text-white hover:bg-white/10" 
+              : "text-white hover:bg-white/10"
+          )}
+        >
           <User className="h-5 w-5" />
         </Button>
       </DropdownMenuTrigger>

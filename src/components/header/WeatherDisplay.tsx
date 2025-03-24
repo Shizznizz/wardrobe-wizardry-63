@@ -1,14 +1,16 @@
 
 import { Sun, CloudSun, Cloud, CloudRain, Umbrella } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface WeatherDisplayProps {
   weather?: {
     temperature: number;
     condition: string;
   };
+  isScrolled?: boolean;
 }
 
-export const WeatherDisplay = ({ weather }: WeatherDisplayProps) => {
+export const WeatherDisplay = ({ weather, isScrolled = false }: WeatherDisplayProps) => {
   const getWeatherIcon = () => {
     if (!weather) return <Sun className="w-5 h-5 text-yellow-400" />;
     
@@ -25,9 +27,14 @@ export const WeatherDisplay = ({ weather }: WeatherDisplayProps) => {
   if (!weather) return null;
 
   return (
-    <div className="hidden md:flex items-center space-x-2 glass dark:glass-dark rounded-full px-4 py-1.5 shadow-sm hover:shadow-md transition-all">
+    <div className={cn(
+      "hidden md:flex items-center space-x-2 rounded-full px-4 py-1.5 shadow-sm hover:shadow-md transition-all",
+      isScrolled 
+        ? "bg-white/10 backdrop-blur" 
+        : "glass dark:glass-dark"
+    )}>
       {getWeatherIcon()}
-      <span className="text-sm font-medium text-foreground">{weather.temperature}°</span>
+      <span className="text-sm font-medium text-white">{weather.temperature}°</span>
     </div>
   );
 };

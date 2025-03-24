@@ -33,7 +33,7 @@ export const MobileMenu = ({
 
   return (
     <div 
-      className="fixed inset-0 z-[9999] bg-white/95 dark:bg-gray-900/95 backdrop-blur-md mobile-menu-overlay"
+      className="fixed inset-0 z-[9999] bg-purple-900/90 backdrop-blur-md mobile-menu-overlay"
     >
       <div className="h-full flex flex-col p-4">
         <div className="flex justify-end mb-2">
@@ -41,7 +41,7 @@ export const MobileMenu = ({
             variant="ghost"
             size="icon"
             onClick={onClose}
-            className="bg-red-50 dark:bg-red-900/30 text-red-500 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50 hover:text-red-600 rounded-full"
+            className="bg-white/10 text-white hover:bg-white/20 rounded-full"
           >
             <X className="h-6 w-6" />
           </Button>
@@ -55,8 +55,8 @@ export const MobileMenu = ({
               className={cn(
                 "text-xl font-medium transition-all duration-300 px-6 py-3 rounded-full w-full text-center",
                 currentPath === item.path
-                  ? "text-accent bg-accent/10 shadow-sm shadow-accent/20"
-                  : "text-muted-foreground hover:text-accent hover:bg-accent/5"
+                  ? "text-white bg-white/20 shadow-sm"
+                  : "text-white/80 hover:text-white hover:bg-white/10"
               )}
             >
               {item.name}
@@ -66,7 +66,7 @@ export const MobileMenu = ({
           {!user && (
             <Link
               to="/auth"
-              className="text-xl font-medium text-primary hover:text-primary/80 transition-colors bg-primary/5 hover:bg-primary/10 px-6 py-3 rounded-full w-full text-center"
+              className="text-xl font-medium text-white hover:text-white transition-colors bg-white/10 hover:bg-white/20 px-6 py-3 rounded-full w-full text-center"
             >
               Sign In
             </Link>
@@ -84,7 +84,7 @@ export const MobileMenu = ({
         {user && (
           <button
             onClick={onSignOut}
-            className="text-xl font-medium text-red-500 hover:text-red-600 flex items-center justify-center gap-2 mb-8 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 px-6 py-3 rounded-full transition-colors w-full"
+            className="text-xl font-medium text-white hover:text-white/80 flex items-center justify-center gap-2 mb-8 bg-red-500/20 hover:bg-red-500/30 px-6 py-3 rounded-full transition-colors w-full"
           >
             <LogOut className="h-5 w-5" />
             Sign out
