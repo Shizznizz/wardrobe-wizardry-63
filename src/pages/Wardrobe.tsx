@@ -1,9 +1,13 @@
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import WardrobeGrid from '@/components/WardrobeGrid';
 import OliviaBloomAdvisor from '@/components/OliviaBloomAdvisor';
+import UploadModal from '@/components/UploadModal';
+import { ClothingItem } from '@/lib/types';
 import { sampleClothingItems, sampleOutfits, sampleUserPreferences } from '@/lib/wardrobeData';
+import { toast } from 'sonner';
 
 const Wardrobe = () => {
   const [items, setItems] = useState<ClothingItem[]>(sampleClothingItems);
