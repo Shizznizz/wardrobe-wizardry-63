@@ -19,6 +19,9 @@ interface OliviaBloomAssistantProps {
   weather?: WeatherInfo;
   position?: 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left' | 'center';
   autoClose?: boolean;
+  compact?: boolean;
+  initialDelay?: number;
+  showChatIcon?: boolean;
 }
 
 const getPositionClasses = (position: string) => {
@@ -51,10 +54,13 @@ const OliviaBloomAssistant = ({
   items,
   weather,
   position = 'bottom-right',
-  autoClose = true
+  autoClose = true,
+  compact = false,
+  initialDelay = 0,
+  showChatIcon = false
 }: OliviaBloomAssistantProps) => {
   const [isVisible, setIsVisible] = useState(true);
-  const [expanded, setExpanded] = useState(true);
+  const [expanded, setExpanded] = useState(!compact);
   const [minimized, setMinimized] = useState(false);
   
   // Set timings for auto close
@@ -103,11 +109,14 @@ const OliviaBloomAssistant = ({
             type: "spring", 
             stiffness: 500, 
             damping: 25,
-            delay: 1.5 // 1.5s delay for fade-in
+            delay: initialDelay // Customizable delay for fade-in
           }}
         >
           {expanded ? (
-            <div className="flex items-start gap-3 max-w-sm">
+            <div className={cn(
+              "flex items-start gap-3",
+              compact ? "max-w-[220px]" : "max-w-sm"
+            )}>
               <button 
                 onClick={handleToggleExpand}
                 className="flex-shrink-0 mt-1"
@@ -164,7 +173,10 @@ const OliviaBloomAssistant = ({
                       exit={{ opacity: 0, height: 0 }}
                       transition={{ duration: 0.2 }}
                     >
-                      <p className="text-white/90 text-sm mb-3">
+                      <p className={cn(
+                        "text-white/90 mb-3", 
+                        compact ? "text-xs" : "text-sm"
+                      )}>
                         {message}
                       </p>
                       
@@ -189,6 +201,22 @@ const OliviaBloomAssistant = ({
             >
               <MessageCircle className="h-6 w-6 text-white" />
             </button>
+          )}
+          
+          {showChatIcon && !expanded && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="absolute -top-4 -right-4 z-10"
+            >
+              <Button
+                size="icon"
+                className="h-8 w-8 rounded-full bg-gradient-to-r from-purple-600 to-pink-500 shadow-md"
+                onClick={handleToggleExpand}
+              >
+                <MessageCircle className="h-4 w-4 text-white" />
+              </Button>
+            </motion.div>
           )}
         </motion.div>
       )}

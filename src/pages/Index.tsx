@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -64,6 +63,7 @@ const Index = () => {
   };
 
   const [showOliviaWelcome, setShowOliviaWelcome] = useState(true);
+  const [expandOliviaMessage, setExpandOliviaMessage] = useState(false);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white relative overflow-hidden">
@@ -78,18 +78,6 @@ const Index = () => {
           variants={containerVariants}
         >
           <motion.section variants={itemVariants} className="flex flex-col items-center justify-center text-center space-y-8 relative">
-            {showOliviaWelcome && (
-              <OliviaBloomAssistant
-                message="Welcome to Future of Fashion! I'm Olivia, your personal style advisor. I'll help you create outfits that match your style and the weather. What would you like to explore today?"
-                type="welcome"
-                timing="long"
-                actionText="Thanks, Olivia!"
-                onAction={() => setShowOliviaWelcome(false)}
-                position="center"
-                autoClose={false}
-              />
-            )}
-            
             <div className="relative flex items-center justify-center gap-3 flex-wrap">
               <div className="relative inline-block">
                 <motion.div 
@@ -119,9 +107,27 @@ const Index = () => {
                   <AvatarImage src="/lovable-uploads/86bf74b8-b311-4e3c-bfd6-53819add3df8.png" alt="Olivia Bloom" />
                   <AvatarFallback className="bg-purple-800">OB</AvatarFallback>
                 </Avatar>
-                <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-pink-500 rounded-full flex items-center justify-center shadow-lg">
-                  <MessageSquare className="w-4 h-4 text-white" />
-                </div>
+                
+                {showOliviaWelcome && !expandOliviaMessage && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8, y: 10 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    transition={{ delay: 2, duration: 0.5 }}
+                    className="absolute top-0 right-0 transform translate-x-3/4"
+                  >
+                    <div className="relative p-3 rounded-xl bg-gradient-to-br from-purple-600/90 to-pink-600/90 text-white backdrop-blur-sm shadow-lg border border-white/20 max-w-[150px]">
+                      <div className="absolute -left-2 top-4 w-4 h-4 bg-gradient-to-br from-purple-600/90 to-pink-600/90 transform rotate-45 border-l border-t border-white/20"></div>
+                      <p className="text-xs">Hi there! I'm Olivia, your style advisor.</p>
+                      <button 
+                        onClick={() => setExpandOliviaMessage(true)}
+                        className="mt-2 text-[10px] bg-white/20 rounded-full px-2 py-0.5 hover:bg-white/30 transition-colors flex items-center justify-center w-full"
+                      >
+                        <MessageSquare className="h-3 w-3 mr-1" />
+                        Chat with me
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
               </motion.div>
             </div>
             
@@ -133,21 +139,7 @@ const Index = () => {
               transition={{ duration: 3, repeat: Infinity }}
               className="w-24 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full mb-4"
             />
-            
-            <motion.div 
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.6, duration: 0.5 }}
-              className="max-w-3xl mx-auto relative"
-            >
-              <div className="relative p-5 mb-6 rounded-2xl neo-blur shadow-lg border border-pink-500/30">
-                <div className="absolute w-4 h-4 bg-pink-500 rotate-45 top-0 right-12 -mt-2"></div>
-                <p className="text-lg text-pink-100">
-                  Hi, I'm Olivia — your personal AI stylist. Let's make magic with your wardrobe.
-                </p>
-              </div>
-            </motion.div>
-            
+                        
             <p className="text-xl text-blue-100 max-w-2xl backdrop-blur-sm py-4 px-6 rounded-lg border border-white/10 shadow-lg neo-blur">
               Smarter styling starts here. AI-curated outfits that fit your style, your body, and your weather.
             </p>
@@ -190,6 +182,21 @@ const Index = () => {
               />
             </div>
           </motion.section>
+          
+          {showOliviaWelcome && expandOliviaMessage && (
+            <OliviaBloomAssistant
+              message="Welcome to Future of Fashion! I'm Olivia, your personal style advisor. I'll help you create outfits that match your style and the weather. What would you like to explore today?"
+              type="welcome"
+              timing="long"
+              actionText="Thanks, Olivia!"
+              onAction={() => {
+                setShowOliviaWelcome(false);
+                setExpandOliviaMessage(false);
+              }}
+              position="center"
+              autoClose={false}
+            />
+          )}
           
           <motion.section variants={itemVariants} className="mt-8 relative">
             <StyleDiscoveryQuiz />
