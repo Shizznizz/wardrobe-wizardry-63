@@ -11,6 +11,7 @@ import OutfitSlider from '@/components/OutfitSlider';
 import VerticalStepCards from '@/components/VerticalStepCards';
 import StylingTimeline from '@/components/StylingTimeline';
 import BackgroundShapes from '@/components/BackgroundShapes';
+import StyleSituation from '@/components/StyleSituation';
 
 const Index = () => {
   const [preferences, setPreferences] = useState<UserPreferences>({
@@ -172,6 +173,10 @@ const Index = () => {
             </div>
           </motion.section>
           
+          <motion.section variants={itemVariants} className="mt-8">
+            <StyleSituation />
+          </motion.section>
+          
           <motion.section variants={itemVariants} className="mt-16">
             <h2 className="text-2xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
               <span className="flex items-center gap-2">
@@ -292,3 +297,4 @@ const Index = () => {
 };
 
 export default Index;
+
