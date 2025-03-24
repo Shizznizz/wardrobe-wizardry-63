@@ -122,7 +122,7 @@ const VirtualFittingRoom = ({
                     className="flex-shrink-0 w-16 h-16 rounded-md overflow-hidden border border-white/20 hover:border-white/40 transition-colors"
                   >
                     <img 
-                      src={item.image || '/placeholder.svg'} 
+                      src={item.imageUrl || '/placeholder.svg'} 
                       alt={item.name} 
                       className="w-full h-full object-cover"
                     />
