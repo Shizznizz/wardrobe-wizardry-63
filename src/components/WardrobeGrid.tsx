@@ -732,7 +732,7 @@ const WardrobeGrid = ({ items, onToggleFavorite, compactView = false }: Wardrobe
               <motion.div 
                 key={item.id} 
                 className={cn(
-                  "group relative rounded-2xl border overflow-hidden bg-white/10 backdrop-blur-sm transition-all hover-card cursor-pointer shadow-lg",
+                  "group relative rounded-2xl border overflow-hidden bg-white/10 backdrop-blur-sm transition-all hover-card cursor-pointer shadow-lg flex flex-col",
                   compactView ? "border-white/5" : "border-white/10"
                 )}
                 onClick={() => handleItemClick(item)}
@@ -754,9 +754,12 @@ const WardrobeGrid = ({ items, onToggleFavorite, compactView = false }: Wardrobe
                   </div>
                 </div>
                 
-                <div className={cn("p-4", compactView ? "p-3" : "p-5")}>
+                <div className={cn(
+                  "p-4 flex flex-col flex-grow", 
+                  compactView ? "p-3" : "p-5"
+                )}>
                   {!compactView && (
-                    <div className="flex justify-between items-start">
+                    <div className="flex justify-between items-start mb-3">
                       <h3 className={cn(
                         "font-medium truncate max-w-[85%] text-left", 
                         compactView ? "text-sm" : ""
@@ -777,7 +780,7 @@ const WardrobeGrid = ({ items, onToggleFavorite, compactView = false }: Wardrobe
                   )}
                   
                   {compactView ? (
-                    <div className="flex justify-between items-center mt-1">
+                    <div className="flex justify-between items-center mb-2">
                       <h3 className="text-xs font-medium truncate max-w-[85%] text-left">{item.name}</h3>
                       <div className="flex items-center ml-1 text-muted-foreground">
                         {getClothingIcon(item.type)}
@@ -785,7 +788,7 @@ const WardrobeGrid = ({ items, onToggleFavorite, compactView = false }: Wardrobe
                     </div>
                   ) : (
                     <>
-                      <div className="mt-3 flex flex-wrap gap-1 text-left">
+                      <div className="flex flex-wrap gap-1 text-left mb-2">
                         <Badge variant="secondary" className="capitalize text-xs">
                           {item.color}
                         </Badge>
@@ -794,7 +797,7 @@ const WardrobeGrid = ({ items, onToggleFavorite, compactView = false }: Wardrobe
                         </Badge>
                       </div>
                       
-                      <div className="mt-3 flex flex-wrap gap-1 text-left">
+                      <div className="flex flex-wrap gap-1 text-left mb-2">
                         {expandedTagsItem === item.id ? (
                           <>
                             {item.occasions.map((occasion) => (
@@ -840,7 +843,7 @@ const WardrobeGrid = ({ items, onToggleFavorite, compactView = false }: Wardrobe
                         )}
                       </div>
                       
-                      <div className="mt-3 flex flex-wrap gap-1 text-left">
+                      <div className="flex flex-wrap gap-1 text-left mb-2">
                         {item.seasons.slice(0, MAX_TAGS).map((season) => (
                           <Badge key={season} variant="secondary" className="bg-primary/10 text-primary text-[10px]">
                             {season}
@@ -855,29 +858,31 @@ const WardrobeGrid = ({ items, onToggleFavorite, compactView = false }: Wardrobe
                     </>
                   )}
                   
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button 
-                          className={cn(
-                            "w-full mt-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white",
-                            compactView ? "mt-3 py-1 h-8 text-xs" : ""
-                          )}
-                          size={compactView ? "sm" : "sm"}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleMatchThis(item);
-                          }}
-                        >
-                          <Star className={cn("mr-2", compactView ? "h-3 w-3" : "h-4 w-4")} />
-                          Match This
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="text-sm">Get outfit suggestions using this item as a base</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <div className="mt-auto pt-3">
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button 
+                            className={cn(
+                              "w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white",
+                              compactView ? "py-1 h-8 text-xs" : ""
+                            )}
+                            size={compactView ? "sm" : "sm"}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleMatchThis(item);
+                            }}
+                          >
+                            <Star className={cn("mr-2", compactView ? "h-3 w-3" : "h-4 w-4")} />
+                            Match This
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="text-sm">Get outfit suggestions using this item as a base</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
                 </div>
                 
                 <button
@@ -968,4 +973,3 @@ const WardrobeGrid = ({ items, onToggleFavorite, compactView = false }: Wardrobe
 };
 
 export default WardrobeGrid;
-
