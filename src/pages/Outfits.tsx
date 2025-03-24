@@ -1,13 +1,15 @@
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import WeatherWidget from '@/components/WeatherWidget';
 import OutfitSuggestion from '@/components/OutfitSuggestion';
+import OliviaBloomAdvisor from '@/components/OliviaBloomAdvisor';
 import { Button } from '@/components/ui/button';
 import { buttonVariants } from '@/components/ui/button';
 import { WeatherInfo, Outfit } from '@/lib/types';
-import { sampleClothingItems, sampleOutfits } from '@/lib/wardrobeData';
+import { sampleClothingItems, sampleOutfits, sampleUserPreferences } from '@/lib/wardrobeData';
 import { toast } from 'sonner';
 import { RefreshCw, Camera, MapPin, AlertTriangle } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -735,9 +737,19 @@ const Outfits = () => {
           </motion.section>
         </motion.div>
       </main>
+      
+      {/* Add OliviaBloomAdvisor component */}
+      <OliviaBloomAdvisor 
+        outfit={suggestedOutfit} 
+        items={sampleClothingItems} 
+        weather={weather || undefined}
+        userPreferences={{
+          favoriteColors: sampleUserPreferences.favoriteColors,
+          favoriteStyles: sampleUserPreferences.favoriteStyles
+        }}
+      />
     </div>
   );
 };
 
 export default Outfits;
-

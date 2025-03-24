@@ -1,22 +1,17 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
-import UploadModal from '@/components/UploadModal';
 import WardrobeGrid from '@/components/WardrobeGrid';
-import { ClothingItem } from '@/lib/types';
-import { sampleClothingItems } from '@/lib/wardrobeData';
-import { toast } from 'sonner';
-import { useIsMobile } from '@/hooks/use-mobile';
+import OliviaBloomAdvisor from '@/components/OliviaBloomAdvisor';
+import { sampleClothingItems, sampleOutfits, sampleUserPreferences } from '@/lib/wardrobeData';
 
 const Wardrobe = () => {
   const [items, setItems] = useState<ClothingItem[]>(sampleClothingItems);
-  const isMobile = useIsMobile();
-  
+
   const handleUpload = (newItem: ClothingItem) => {
     setItems(prev => [newItem, ...prev]);
   };
-  
+
   const handleToggleFavorite = (id: string) => {
     setItems(prev => 
       prev.map(item => 
@@ -32,7 +27,7 @@ const Wardrobe = () => {
       toast.success(`${item.name} ${action} favorites`);
     }
   };
-  
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -40,7 +35,7 @@ const Wardrobe = () => {
       transition: { staggerChildren: 0.05 }
     }
   };
-  
+
   const itemVariants = {
     hidden: { y: 20, opacity: 0 },
     visible: {
@@ -57,7 +52,6 @@ const Wardrobe = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white">
       <Header />
-      
       <main className="container mx-auto px-4 pt-24 pb-16">
         <motion.div 
           className="space-y-8"
@@ -78,6 +72,14 @@ const Wardrobe = () => {
           </motion.div>
         </motion.div>
       </main>
+      
+      <OliviaBloomAdvisor 
+        items={sampleClothingItems}
+        userPreferences={{
+          favoriteColors: sampleUserPreferences.favoriteColors,
+          favoriteStyles: sampleUserPreferences.favoriteStyles
+        }}
+      />
     </div>
   );
 };
