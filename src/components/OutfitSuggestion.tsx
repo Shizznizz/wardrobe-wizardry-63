@@ -1,6 +1,6 @@
 
 import { motion } from 'framer-motion';
-import { Check, ArrowRight, Sparkles, MessageCircle } from 'lucide-react';
+import { Check, ArrowRight, Sparkles, MessageCircle, Thermometer, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { ClothingItem, Outfit, WeatherInfo } from '@/lib/types';
@@ -20,6 +20,9 @@ interface OutfitSuggestionProps {
   onRefresh?: () => void;
   onLike?: () => void;
   onDislike?: () => void;
+  onMakeWarmer?: () => void;
+  onChangeTop?: () => void;
+  onChangeBottom?: () => void;
 }
 
 const OutfitSuggestion = ({ 
@@ -31,7 +34,10 @@ const OutfitSuggestion = ({
   onWear, 
   onRefresh, 
   onLike, 
-  onDislike 
+  onDislike,
+  onMakeWarmer,
+  onChangeTop,
+  onChangeBottom
 }: OutfitSuggestionProps) => {
   
   // Generate a friendly explanation based on weather and outfit
@@ -200,6 +206,7 @@ const OutfitSuggestion = ({
             </div>
           )}
           
+          {/* Original buttons */}
           <div className="flex gap-2 mt-2">
             {onWear && (
               <Button 
@@ -232,6 +239,57 @@ const OutfitSuggestion = ({
               </div>
             )}
           </div>
+          
+          {/* New outfit adjustment buttons */}
+          {(onRefresh || onMakeWarmer || onChangeTop || onChangeBottom) && (
+            <div className="grid grid-cols-2 gap-2 mt-3">
+              {onRefresh && (
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={onRefresh}
+                  className="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500/20 to-purple-500/20 hover:from-blue-500/30 hover:to-purple-500/30 border border-white/10"
+                >
+                  <RefreshCw className="h-4 w-4" />
+                  <span>Suggest Another</span>
+                </Button>
+              )}
+              
+              {onMakeWarmer && (
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={onMakeWarmer}
+                  className="flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500/20 to-red-500/20 hover:from-orange-500/30 hover:to-red-500/30 border border-white/10"
+                >
+                  <Thermometer className="h-4 w-4" />
+                  <span>Make It Warmer</span>
+                </Button>
+              )}
+              
+              {onChangeTop && (
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={onChangeTop}
+                  className="flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 hover:from-emerald-500/30 hover:to-teal-500/30 border border-white/10"
+                >
+                  Change Top
+                </Button>
+              )}
+              
+              {onChangeBottom && (
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={onChangeBottom}
+                  className="flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-500/20 to-blue-500/20 hover:from-indigo-500/30 hover:to-blue-500/30 border border-white/10"
+                >
+                  Change Bottom
+                </Button>
+              )}
+            </div>
+          )}
         </>
       );
     }

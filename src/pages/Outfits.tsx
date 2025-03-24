@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -407,6 +406,85 @@ const Outfits = () => {
     handleRegenerateOutfit();
   };
   
+  const handleMakeWarmer = () => {
+    const warmerOutfits = outfits.filter(outfit => 
+      outfit.seasons.includes('autumn') || outfit.seasons.includes('winter')
+    );
+    
+    if (warmerOutfits.length > 0) {
+      const randomIndex = Math.floor(Math.random() * warmerOutfits.length);
+      setSuggestedOutfit(warmerOutfits[randomIndex]);
+      
+      toast.success('Found a warmer outfit option', {
+        description: 'Added more layers to keep you comfortable.'
+      });
+    } else {
+      toast('No warmer outfits available', {
+        description: 'Try adding more cold-weather items to your wardrobe.'
+      });
+    }
+  };
+  
+  const handleChangeTop = () => {
+    if (outfits.length < 2) return;
+    
+    const currentOutfit = suggestedOutfit;
+    
+    const topItemId = currentOutfit.items[0];
+    
+    const differentTopOutfit = outfits.find(o => 
+      o.id !== currentOutfit.id && o.items[0] !== topItemId
+    );
+    
+    if (differentTopOutfit) {
+      const newOutfit = {
+        ...currentOutfit,
+        items: [differentTopOutfit.items[0], ...currentOutfit.items.slice(1)],
+        name: `${currentOutfit.name} (Modified)`
+      };
+      
+      setSuggestedOutfit(newOutfit);
+      
+      toast.success('Changed the top item', {
+        description: 'Keeping the rest of your outfit the same.'
+      });
+    } else {
+      toast('No alternative tops available', {
+        description: 'Try adding more variety to your wardrobe.'
+      });
+    }
+  };
+  
+  const handleChangeBottom = () => {
+    if (outfits.length < 2) return;
+    
+    const currentOutfit = suggestedOutfit;
+    
+    const bottomItemId = currentOutfit.items[1];
+    
+    const differentBottomOutfit = outfits.find(o => 
+      o.id !== currentOutfit.id && o.items.length > 1 && o.items[1] !== bottomItemId
+    );
+    
+    if (differentBottomOutfit) {
+      const newOutfit = {
+        ...currentOutfit,
+        items: [currentOutfit.items[0], differentBottomOutfit.items[1], ...currentOutfit.items.slice(2)],
+        name: `${currentOutfit.name} (Modified)`
+      };
+      
+      setSuggestedOutfit(newOutfit);
+      
+      toast.success('Changed the bottom item', {
+        description: 'Keeping the rest of your outfit the same.'
+      });
+    } else {
+      toast('No alternative bottoms available', {
+        description: 'Try adding more variety to your wardrobe.'
+      });
+    }
+  };
+  
   const handleToggleFavorite = (outfitId: string) => {
     setOutfits(prev => 
       prev.map(outfit => 
@@ -637,6 +715,9 @@ const Outfits = () => {
                     onRefresh={handleRegenerateOutfit}
                     onLike={handleLikeOutfit}
                     onDislike={handleDislikeOutfit}
+                    onMakeWarmer={handleMakeWarmer}
+                    onChangeTop={handleChangeTop}
+                    onChangeBottom={handleChangeBottom}
                   />
                 )}
                 
@@ -738,7 +819,6 @@ const Outfits = () => {
         </motion.div>
       </main>
       
-      {/* Add OliviaBloomAdvisor component */}
       <OliviaBloomAdvisor 
         outfit={suggestedOutfit} 
         items={sampleClothingItems} 
