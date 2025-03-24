@@ -1,10 +1,11 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, X, Sparkles } from 'lucide-react';
+import { MessageCircle, X, Sparkles, MinusCircle, PlusCircle } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { ClothingItem, Outfit, WeatherInfo } from '@/lib/types';
+import { cn } from '@/lib/utils';
 
 interface OliviaBloomAssistantProps {
   message: string;
@@ -54,6 +55,7 @@ const OliviaBloomAssistant = ({
 }: OliviaBloomAssistantProps) => {
   const [isVisible, setIsVisible] = useState(true);
   const [expanded, setExpanded] = useState(true);
+  const [minimized, setMinimized] = useState(false);
   
   // Set timings for auto close
   useEffect(() => {
@@ -80,6 +82,10 @@ const OliviaBloomAssistant = ({
     setExpanded(!expanded);
   };
   
+  const handleToggleMinimize = () => {
+    setMinimized(!minimized);
+  };
+  
   const handleAction = () => {
     if (onAction) onAction();
     if (autoClose) setIsVisible(false);
@@ -93,7 +99,12 @@ const OliviaBloomAssistant = ({
           initial={{ opacity: 0, y: 20, scale: 0.8 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 10, scale: 0.8 }}
-          transition={{ type: "spring", stiffness: 500, damping: 25 }}
+          transition={{ 
+            type: "spring", 
+            stiffness: 500, 
+            damping: 25,
+            delay: 1.5 // 1.5s delay for fade-in
+          }}
         >
           {expanded ? (
             <div className="flex items-start gap-3 max-w-sm">
@@ -107,37 +118,68 @@ const OliviaBloomAssistant = ({
                 </Avatar>
               </button>
               
-              <div className="flex-1 bg-white rounded-t-xl rounded-bl-xl rounded-br-2xl shadow-lg p-4 relative">
-                <button 
-                  onClick={handleClose} 
-                  className="absolute -top-3 -right-3 bg-gray-100 rounded-full p-1 shadow-sm hover:bg-gray-200 transition-colors"
-                >
-                  <X className="h-4 w-4 text-gray-500" />
-                </button>
+              <div className={cn(
+                "flex-1 rounded-t-xl rounded-bl-xl rounded-br-2xl shadow-lg p-4 relative",
+                minimized ? "max-h-16 overflow-hidden" : "",
+                "bg-gradient-to-br from-purple-800/90 to-pink-800/90 text-white backdrop-blur-sm",
+                "shadow-[0_4px_15px_rgba(0,0,0,0.2)]",
+                "border border-white/20"
+              )}>
+                <div className="absolute -right-3 -bottom-3 w-6 h-6 bg-gradient-to-br from-purple-800/90 to-pink-800/90 transform rotate-45 shadow-md border-r border-b border-white/20" />
+                
+                <div className="absolute top-2 right-2 flex gap-1.5">
+                  <button 
+                    onClick={handleToggleMinimize} 
+                    className="p-1 hover:bg-white/10 rounded-full transition-colors"
+                  >
+                    {minimized ? (
+                      <PlusCircle className="h-3.5 w-3.5 text-white/80" />
+                    ) : (
+                      <MinusCircle className="h-3.5 w-3.5 text-white/80" />
+                    )}
+                  </button>
+                  <button 
+                    onClick={handleClose} 
+                    className="p-1 hover:bg-white/10 rounded-full transition-colors"
+                  >
+                    <X className="h-3.5 w-3.5 text-white/80" />
+                  </button>
+                </div>
                 
                 <div className="flex items-center mb-2">
-                  <h4 className="font-medium text-gray-900 flex items-center">
+                  <h4 className="font-medium text-white flex items-center text-sm">
                     Olivia Bloom
-                    <Sparkles className="h-4 w-4 ml-1 text-yellow-500" />
+                    <Sparkles className="h-3.5 w-3.5 ml-1 text-yellow-300" />
                   </h4>
-                  <span className="ml-2 text-xs bg-gradient-to-r from-purple-600 to-pink-500 text-white px-2 py-0.5 rounded-full">
+                  <span className="ml-2 text-xs bg-gradient-to-r from-purple-600/80 to-pink-500/80 text-white px-2 py-0.5 rounded-full text-[10px]">
                     Style Advisor
                   </span>
                 </div>
                 
-                <p className="text-gray-600 text-sm mb-3">
-                  {message}
-                </p>
-                
-                {actionText && onAction && (
-                  <Button 
-                    onClick={handleAction}
-                    className={`text-xs px-3 py-1 h-auto bg-gradient-to-r ${getTypeClasses(type)} text-white hover:opacity-90`}
-                    size="sm"
-                  >
-                    {actionText}
-                  </Button>
-                )}
+                <AnimatePresence>
+                  {!minimized && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <p className="text-white/90 text-sm mb-3">
+                        {message}
+                      </p>
+                      
+                      {actionText && onAction && (
+                        <Button 
+                          onClick={handleAction}
+                          className={`text-xs px-3 py-1 h-auto bg-gradient-to-r ${getTypeClasses(type)} text-white hover:opacity-90`}
+                          size="sm"
+                        >
+                          {actionText}
+                        </Button>
+                      )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </div>
           ) : (
