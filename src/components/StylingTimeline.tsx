@@ -89,7 +89,7 @@ const StylingTimeline = () => {
               <div className="mt-4 relative bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
                 <div className="flex items-start gap-3">
                   <Avatar className="h-8 w-8 ring-2 ring-purple-500/50">
-                    <AvatarImage src="/lovable-uploads/c26c0c8c-7ff3-432a-b79b-1d22494daba6.png" alt="Olivia Bloom" />
+                    <AvatarImage src="/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png" alt="Olivia Bloom" />
                     <AvatarFallback className="bg-gradient-to-br from-purple-400 to-pink-400">OB</AvatarFallback>
                   </Avatar>
                   <div>

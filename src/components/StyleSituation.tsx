@@ -96,7 +96,7 @@ const StyleSituation = () => {
         >
           <div className="flex gap-3">
             <Avatar className="h-8 w-8 border border-pink-500/50">
-              <AvatarImage src="/lovable-uploads/28e5664c-3c8a-4b7e-9c99-065ad489583f.png" alt="Olivia Bloom" />
+              <AvatarImage src="/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png" alt="Olivia Bloom" />
               <AvatarFallback className="bg-gradient-to-r from-purple-600 to-pink-500">OB</AvatarFallback>
             </Avatar>
             

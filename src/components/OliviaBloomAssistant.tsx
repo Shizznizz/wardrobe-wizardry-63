@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageCircle, X, Sparkles, MinusCircle, PlusCircle } from 'lucide-react';
@@ -46,7 +45,7 @@ const getTypeClasses = (type: string) => {
 const OliviaBloomAssistant = ({ 
   message, 
   timing = 'medium', 
-  avatar = '/lovable-uploads/28e5664c-3c8a-4b7e-9c99-065ad489583f.png',
+  avatar = '/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png',
   type = 'tip',
   actionText,
   onAction,
@@ -63,7 +62,6 @@ const OliviaBloomAssistant = ({
   const [expanded, setExpanded] = useState(!compact);
   const [minimized, setMinimized] = useState(false);
   
-  // Set timings for auto close
   useEffect(() => {
     if (autoClose) {
       const timeouts = {
@@ -109,7 +107,7 @@ const OliviaBloomAssistant = ({
             type: "spring", 
             stiffness: 500, 
             damping: 25,
-            delay: initialDelay // Customizable delay for fade-in
+            delay: initialDelay
           }}
         >
           {expanded ? (

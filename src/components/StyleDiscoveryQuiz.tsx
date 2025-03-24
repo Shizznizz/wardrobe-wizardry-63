@@ -122,7 +122,7 @@ const StyleDiscoveryQuiz = ({ onClose }: StyleDiscoveryQuizProps) => {
         >
           <div className="flex flex-col md:flex-row items-center gap-6">
             <Avatar className="h-16 w-16 md:h-20 md:w-20 border-2 border-pink-400 shadow-md">
-              <AvatarImage src="/lovable-uploads/28e5664c-3c8a-4b7e-9c99-065ad489583f.png" alt="Olivia Bloom" />
+              <AvatarImage src="/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png" alt="Olivia Bloom" />
               <AvatarFallback className="bg-purple-800">OB</AvatarFallback>
             </Avatar>
             
@@ -154,7 +154,7 @@ const StyleDiscoveryQuiz = ({ onClose }: StyleDiscoveryQuizProps) => {
           <div className="flex justify-between items-center p-4 border-b border-purple-500/20">
             <div className="flex items-center gap-3">
               <Avatar className="h-10 w-10 border border-pink-400/50">
-                <AvatarImage src="/lovable-uploads/28e5664c-3c8a-4b7e-9c99-065ad489583f.png" alt="Olivia Bloom" />
+                <AvatarImage src="/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png" alt="Olivia Bloom" />
                 <AvatarFallback className="bg-purple-800">OB</AvatarFallback>
               </Avatar>
               <div>
