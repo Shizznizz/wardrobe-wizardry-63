@@ -257,7 +257,7 @@ const WardrobeGrid = ({ items, onToggleFavorite }: WardrobeGridProps) => {
         <div className="flex space-x-2">
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" size="sm" className="flex items-center space-x-1">
+              <Button variant="default" size="sm" className="flex items-center space-x-1">
                 <Filter className="h-4 w-4" />
                 <span>Filters</span>
               </Button>
