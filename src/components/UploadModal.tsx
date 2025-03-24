@@ -1,4 +1,3 @@
-
 import { useState, useRef } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -13,9 +12,10 @@ import { cn } from '@/lib/utils';
 
 interface UploadModalProps {
   onUpload: (item: any) => void;
+  buttonText?: string;
 }
 
-const UploadModal = ({ onUpload }: UploadModalProps) => {
+const UploadModal = ({ onUpload, buttonText = "Add Item" }: UploadModalProps) => {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
   const [type, setType] = useState<ClothingType | ''>('');
@@ -106,7 +106,7 @@ const UploadModal = ({ onUpload }: UploadModalProps) => {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button className="space-x-2 group">
-          <span>Add Item</span>
+          <span>{buttonText}</span>
           <Camera className="h-4 w-4 transition-transform group-hover:scale-110" />
         </Button>
       </DialogTrigger>
