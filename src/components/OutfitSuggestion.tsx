@@ -1,7 +1,8 @@
+
 import { ClothingItem, Outfit, WeatherInfo, PersonalityTag, ClothingOccasion } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { Check, ThumbsUp, ThumbsDown, Sun, Cloud, CloudRain, Camera, Tag, Party, Briefcase, Shirt, ShoppingBag, Star } from 'lucide-react';
+import { Check, ThumbsUp, ThumbsDown, Sun, Cloud, CloudRain, Camera, Tag, Gift, Briefcase, Shirt, ShoppingBag, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   Tooltip,
@@ -38,7 +39,7 @@ const getOccasionIcon = (occasion: string) => {
     case 'date':
     case 'evening':
     case 'restaurant':
-      return <Party className="h-3 w-3" />;
+      return <Gift className="h-3 w-3" />;
     case 'sporty':
     case 'outdoor':
     case 'vacation':

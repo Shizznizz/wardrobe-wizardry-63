@@ -1,7 +1,8 @@
+
 import { useState } from 'react';
 import { ClothingItem, ClothingType, ClothingColor, ClothingSeason, Outfit, ClothingOccasion } from '@/lib/types';
 import { cn } from '@/lib/utils';
-import { Heart, Filter, Shirt, Umbrella, Tag, CircleUser, ShoppingBag, Footprints, Star, Party, Briefcase } from 'lucide-react';
+import { Heart, Filter, Shirt, Umbrella, Tag, CircleUser, ShoppingBag, Footprints, Star, Gift, Briefcase } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -54,7 +55,7 @@ const getOccasionIcon = (occasion: ClothingOccasion) => {
     case 'party':
     case 'special':
     case 'date':
-      return <Party className="h-4 w-4" />;
+      return <Gift className="h-4 w-4" />;
     case 'sporty':
     case 'outdoor':
     case 'vacation':
