@@ -35,8 +35,8 @@ export const MobileMenu = ({
     <div 
       className="fixed inset-0 z-[9999] bg-white/95 dark:bg-gray-900/95 backdrop-blur-md mobile-menu-overlay"
     >
-      <div className="h-full flex flex-col p-4 pt-8">
-        <div className="flex justify-between items-center mb-6">
+      <div className="h-full flex flex-col p-4">
+        <div className="flex justify-end mb-2">
           <Button
             variant="ghost"
             size="icon"
@@ -45,21 +45,15 @@ export const MobileMenu = ({
           >
             <X className="h-6 w-6" />
           </Button>
-          
-          <Link to="/" className="flex items-center space-x-2">
-            <span className="font-display font-bold text-xl text-foreground">{getCurrentPageName(navItems, currentPath, user)}</span>
-          </Link>
-          
-          <div className="w-10"></div> {/* Empty div for balanced layout */}
         </div>
 
-        <nav className="flex flex-col items-center mt-4 pt-2 space-y-6">
+        <nav className="flex flex-col items-center mt-6 space-y-4">
           {navItems.map((item) => (
             <Link
               key={item.path}
               to={item.path}
               className={cn(
-                "text-xl font-medium transition-all duration-300 px-6 py-2 rounded-full w-full text-center",
+                "text-xl font-medium transition-all duration-300 px-6 py-3 rounded-full w-full text-center",
                 currentPath === item.path
                   ? "text-accent bg-accent/10 shadow-sm shadow-accent/20"
                   : "text-muted-foreground hover:text-accent hover:bg-accent/5"
@@ -72,7 +66,7 @@ export const MobileMenu = ({
           {!user && (
             <Link
               to="/auth"
-              className="text-xl font-medium text-primary hover:text-primary/80 transition-colors bg-primary/5 hover:bg-primary/10 px-6 py-2 rounded-full w-full text-center"
+              className="text-xl font-medium text-primary hover:text-primary/80 transition-colors bg-primary/5 hover:bg-primary/10 px-6 py-3 rounded-full w-full text-center"
             >
               Sign In
             </Link>
@@ -90,7 +84,7 @@ export const MobileMenu = ({
         {user && (
           <button
             onClick={onSignOut}
-            className="text-xl font-medium text-red-500 hover:text-red-600 flex items-center justify-center gap-2 mt-4 mb-8 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 px-6 py-3 rounded-full transition-colors w-full"
+            className="text-xl font-medium text-red-500 hover:text-red-600 flex items-center justify-center gap-2 mb-8 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 px-6 py-3 rounded-full transition-colors w-full"
           >
             <LogOut className="h-5 w-5" />
             Sign out
@@ -120,16 +114,4 @@ const WeatherMobileDisplay = ({ weather }: { weather: { temperature: number; con
       <span className="text-sm font-medium text-foreground">{weather.temperature}° {weather.condition}</span>
     </div>
   );
-};
-
-// Helper function to get current page name
-const getCurrentPageName = (
-  navItems: Array<{ name: string; path: string }>,
-  currentPath: string,
-  user: any
-) => {
-  if (currentPath === '/') return 'Home';
-  if (currentPath === '/auth') return user ? 'Profile' : 'Sign In';
-  const currentNav = navItems.find(item => item.path === currentPath);
-  return currentNav ? currentNav.name : '';
 };
