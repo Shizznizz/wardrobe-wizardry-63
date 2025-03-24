@@ -58,6 +58,20 @@ export type ClothingOccasion =
   | 'vacation'
   | 'date';
 
+export type TimeOfDay =
+  | 'morning'
+  | 'afternoon'
+  | 'evening'
+  | 'night';
+
+export type Activity =
+  | 'work'
+  | 'casual'
+  | 'sport'
+  | 'party'
+  | 'date'
+  | 'formal';
+
 export type PersonalityTag =
   | 'minimalist'
   | 'bold'

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -8,10 +9,10 @@ import OliviaBloomAdvisor from '@/components/OliviaBloomAdvisor';
 import OliviaBloomAssistant from '@/components/OliviaBloomAssistant';
 import { Button } from '@/components/ui/button';
 import { buttonVariants } from '@/components/ui/button';
-import { WeatherInfo, Outfit } from '@/lib/types';
+import { WeatherInfo, Outfit, TimeOfDay, Activity } from '@/lib/types';
 import { sampleClothingItems, sampleOutfits, sampleUserPreferences } from '@/lib/wardrobeData';
 import { toast } from 'sonner';
-import { RefreshCw, Camera, MapPin, AlertTriangle } from 'lucide-react';
+import { RefreshCw, Camera, MapPin, AlertTriangle, Calendar, AlarmClockCheck } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from '@/lib/utils';
@@ -299,6 +300,8 @@ const Outfits = () => {
   const [showLocationAlert, setShowLocationAlert] = useState(false);
   const [preferencesLoaded, setPreferencesLoaded] = useState(false);
   const [showWelcomeMessage, setShowWelcomeMessage] = useState(true);
+  const [timeOfDay, setTimeOfDay] = useState<TimeOfDay | undefined>(undefined);
+  const [activity, setActivity] = useState<Activity | undefined>(undefined);
   const { user } = useAuth();
   const isMobile = useIsMobile();
   
@@ -390,13 +393,84 @@ const Outfits = () => {
   };
   
   const handleRegenerateOutfit = () => {
-    const currentIndex = outfits.findIndex(o => o.id === suggestedOutfit.id);
-    const nextIndex = (currentIndex + 1) % outfits.length;
-    setSuggestedOutfit(outfits[nextIndex]);
+    const filteredOutfits = filterOutfitsByPreferences(outfits);
     
-    toast.success('Generated a new outfit suggestion', {
-      description: 'Based on the current weather and your preferences.'
-    });
+    if (filteredOutfits.length === 0) {
+      // If no outfits match the filters, use all outfits
+      const currentIndex = outfits.findIndex(o => o.id === suggestedOutfit.id);
+      const nextIndex = (currentIndex + 1) % outfits.length;
+      setSuggestedOutfit(outfits[nextIndex]);
+      
+      toast.info('No outfits match your current filters', {
+        description: 'Showing a general suggestion instead.'
+      });
+    } else {
+      const randomIndex = Math.floor(Math.random() * filteredOutfits.length);
+      setSuggestedOutfit(filteredOutfits[randomIndex]);
+      
+      toast.success('Generated a new outfit suggestion', {
+        description: 'Based on your preferences and current filters.'
+      });
+    }
+  };
+  
+  const handleTimeOfDayChange = (value: TimeOfDay) => {
+    setTimeOfDay(value === timeOfDay ? undefined : value);
+    
+    // After changing the filter, update the outfit suggestion
+    setTimeout(() => {
+      handleRegenerateOutfit();
+    }, 100);
+  };
+  
+  const handleActivityChange = (value: Activity) => {
+    setActivity(value === activity ? undefined : value);
+    
+    // After changing the filter, update the outfit suggestion
+    setTimeout(() => {
+      handleRegenerateOutfit();
+    }, 100);
+  };
+  
+  // Filter outfits based on time of day and activity preferences
+  const filterOutfitsByPreferences = (outfitList: Outfit[]): Outfit[] => {
+    let filtered = [...outfitList];
+    
+    // Filter by activity
+    if (activity) {
+      filtered = filtered.filter(outfit => {
+        // Match exact activity or occasion
+        return outfit.occasions.some(occasion => 
+          occasion.toLowerCase() === activity.toLowerCase() || 
+          (activity === 'work' && ['business', 'formal'].includes(occasion.toLowerCase())) ||
+          (activity === 'casual' && ['everyday', 'outdoor'].includes(occasion.toLowerCase())) ||
+          (activity === 'sport' && ['sporty', 'outdoor'].includes(occasion.toLowerCase())) ||
+          (activity === 'party' && ['special', 'date'].includes(occasion.toLowerCase()))
+        );
+      });
+    }
+    
+    // Filter by time of day (using tags or other attributes that might indicate suitability)
+    if (timeOfDay) {
+      filtered = filtered.filter(outfit => {
+        // Morning/day outfits usually favor brighter colors and casual wear
+        if (timeOfDay === 'morning' || timeOfDay === 'afternoon') {
+          return !outfit.occasions.includes('party') && !outfit.occasions.includes('formal');
+        }
+        
+        // Evening/night outfits usually favor darker colors and more formal wear
+        if (timeOfDay === 'evening' || timeOfDay === 'night') {
+          return outfit.occasions.includes('party') || 
+                 outfit.occasions.includes('formal') || 
+                 outfit.occasions.includes('date') || 
+                 outfit.occasions.includes('special');
+        }
+        
+        return true;
+      });
+    }
+    
+    return filtered;
   };
   
   const handleLikeOutfit = () => {
@@ -700,6 +774,62 @@ const Outfits = () => {
               
               <div className="space-y-4">
                 <h2 className={`text-2xl font-bold ${isMobile ? 'text-center' : ''} bg-clip-text text-transparent bg-gradient-to-r from-purple-300 to-pink-300`}>Today's Suggestion</h2>
+                
+                {/* New outfit filters */}
+                <div className="bg-purple-900/20 backdrop-blur-sm rounded-lg p-3 border border-white/10 mb-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <div className="flex items-center gap-2 mb-2 text-sm text-white/90">
+                        <Calendar className="h-4 w-4 text-purple-300" />
+                        <span>Time of Day</span>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {(['morning', 'afternoon', 'evening', 'night'] as TimeOfDay[]).map((time) => (
+                          <Button
+                            key={time}
+                            size="sm"
+                            variant={timeOfDay === time ? "default" : "outline"}
+                            onClick={() => handleTimeOfDayChange(time)}
+                            className={cn(
+                              "text-xs capitalize",
+                              timeOfDay === time 
+                                ? "bg-purple-600 hover:bg-purple-700 text-white"
+                                : "bg-white/5 border-white/20 text-white/70 hover:bg-white/10 hover:text-white"
+                            )}
+                          >
+                            {time}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <div className="flex items-center gap-2 mb-2 text-sm text-white/90">
+                        <AlarmClockCheck className="h-4 w-4 text-purple-300" />
+                        <span>Activity</span>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {(['work', 'casual', 'sport', 'party', 'date', 'formal'] as Activity[]).map((act) => (
+                          <Button
+                            key={act}
+                            size="sm"
+                            variant={activity === act ? "default" : "outline"}
+                            onClick={() => handleActivityChange(act)}
+                            className={cn(
+                              "text-xs capitalize",
+                              activity === act 
+                                ? "bg-purple-600 hover:bg-purple-700 text-white"
+                                : "bg-white/5 border-white/20 text-white/70 hover:bg-white/10 hover:text-white"
+                            )}
+                          >
+                            {act}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
                 {isWeatherLoading ? (
                   <div className="glass-dark rounded-lg p-6 border border-white/10">
                     <div className="flex items-center gap-4 mb-4">
@@ -723,6 +853,8 @@ const Outfits = () => {
                     outfit={suggestedOutfit}
                     items={sampleClothingItems}
                     weather={weather || undefined}
+                    timeOfDay={timeOfDay}
+                    activity={activity}
                     onWear={handleWearOutfit}
                     onRefresh={handleRegenerateOutfit}
                     onLike={handleLikeOutfit}
@@ -858,4 +990,3 @@ const Outfits = () => {
 };
 
 export default Outfits;
-

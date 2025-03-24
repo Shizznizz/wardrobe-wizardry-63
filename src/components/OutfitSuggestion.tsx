@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Check, ArrowRight, Sparkles, MessageCircle, Thermometer, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { ClothingItem, Outfit, WeatherInfo } from '@/lib/types';
+import { ClothingItem, Outfit, WeatherInfo, TimeOfDay, Activity } from '@/lib/types';
 
 interface OutfitSuggestionProps {
   suggestion?: {
@@ -15,6 +15,8 @@ interface OutfitSuggestionProps {
   outfit?: Outfit;
   items?: ClothingItem[];
   weather?: WeatherInfo;
+  timeOfDay?: TimeOfDay;
+  activity?: Activity;
   onReset?: () => void;
   onWear?: (outfitId: string) => void;
   onRefresh?: () => void;
@@ -30,6 +32,8 @@ const OutfitSuggestion = ({
   outfit, 
   items, 
   weather, 
+  timeOfDay,
+  activity,
   onReset, 
   onWear, 
   onRefresh, 
@@ -40,40 +44,91 @@ const OutfitSuggestion = ({
   onChangeBottom
 }: OutfitSuggestionProps) => {
   
-  // Generate a friendly explanation based on weather and outfit
+  // Generate a friendly explanation based on weather, time of day, activity and outfit
   const generateOliviaReasoning = () => {
     if (!weather) return "";
     
     const temp = weather.temperature;
     const condition = weather.condition.toLowerCase();
     const location = weather.city ? `in ${weather.city}` : '';
+    const timeContext = timeOfDay ? getTimeOfDayContext(timeOfDay) : '';
+    const activityContext = activity ? getActivityContext(activity) : '';
     
-    // Different reasonings based on temperature and weather conditions
+    // Different reasonings based on temperature, weather, time of day and activity
+    let basedOnWeather = "";
+    
     if (temp < 10) {
       if (condition.includes('rain')) {
-        return `It's quite cold and rainy ${location} today, so I've selected warm layers that will keep you dry and stylish!`;
+        basedOnWeather = `It's quite cold and rainy ${location} today, so I've selected warm layers that will keep you dry and stylish!`;
+      } else {
+        basedOnWeather = `Since it's pretty chilly ${location} right now, I've chosen cozy pieces that will keep you warm while looking put together.`;
       }
-      return `Since it's pretty chilly ${location} right now, I've chosen cozy pieces that will keep you warm while looking put together.`;
-    }
-    
-    if (temp < 18) {
+    } else if (temp < 18) {
       if (condition.includes('cloud')) {
-        return `With the cloudy weather and mild temperatures ${location}, I thought these layers would be perfect for your day!`;
+        basedOnWeather = `With the cloudy weather and mild temperatures ${location}, I thought these layers would be perfect for your day!`;
+      } else {
+        basedOnWeather = `The cool but pleasant temperature ${location} calls for light layers that can be adjusted throughout your day.`;
       }
-      return `The cool but pleasant temperature ${location} calls for light layers that can be adjusted throughout your day.`;
-    }
-    
-    if (temp < 25) {
+    } else if (temp < 25) {
       if (condition.includes('rain')) {
-        return `It's mild with some rain ${location}, so I've picked comfortable pieces with a light water-resistant layer.`;
+        basedOnWeather = `It's mild with some rain ${location}, so I've picked comfortable pieces with a light water-resistant layer.`;
+      } else {
+        basedOnWeather = `The lovely spring-like weather ${location} is perfect for this balanced outfit that's neither too warm nor too cool!`;
       }
-      return `The lovely spring-like weather ${location} is perfect for this balanced outfit that's neither too warm nor too cool!`;
+    } else {
+      if (condition.includes('rain')) {
+        basedOnWeather = `It's warm with a chance of rain ${location}, so I chose breathable fabrics with a light layer for those surprise showers!`;
+      } else {
+        basedOnWeather = `With the warm weather ${location}, I've selected breathable, light fabrics that will keep you comfortable and stylish all day.`;
+      }
     }
     
-    if (condition.includes('rain')) {
-      return `It's warm with a chance of rain ${location}, so I chose breathable fabrics with a light layer for those surprise showers!`;
+    // Combine different context elements based on what's available
+    if (timeContext && activityContext) {
+      return `${basedOnWeather} ${timeContext} ${activityContext}`;
+    } else if (timeContext) {
+      return `${basedOnWeather} ${timeContext}`;
+    } else if (activityContext) {
+      return `${basedOnWeather} ${activityContext}`;
     }
-    return `With the warm weather ${location}, I've selected breathable, light fabrics that will keep you comfortable and stylish all day.`;
+    
+    return basedOnWeather;
+  };
+  
+  // Get contextual text for time of day
+  const getTimeOfDayContext = (time: TimeOfDay): string => {
+    switch (time) {
+      case 'morning':
+        return "These colors and styles are perfect for starting your day with energy and confidence.";
+      case 'afternoon':
+        return "This outfit offers the right balance of comfort and style for your afternoon activities.";
+      case 'evening':
+        return "I've chosen pieces that transition well into the evening while keeping you comfortable.";
+      case 'night':
+        return "This ensemble has the right amount of style for nighttime events while being appropriate for the weather.";
+      default:
+        return "";
+    }
+  };
+  
+  // Get contextual text for activity
+  const getActivityContext = (activity: Activity): string => {
+    switch (activity) {
+      case 'work':
+        return "The professional silhouette is perfect for your workday while remaining comfortable and weather-appropriate.";
+      case 'casual':
+        return "This relaxed but put-together look is ideal for casual activities without sacrificing style.";
+      case 'sport':
+        return "I've selected performance-focused pieces that will keep you comfortable during physical activity.";
+      case 'party':
+        return "This outfit has the right festive elements while still being suitable for the current conditions.";
+      case 'date':
+        return "These pieces strike the perfect balance between impressive and comfortable for your date.";
+      case 'formal':
+        return "This ensemble offers the elegance you need for formal occasions while adapting to the weather.";
+      default:
+        return "";
+    }
   };
 
   // Determine what to render based on provided props
@@ -152,7 +207,7 @@ const OutfitSuggestion = ({
         items.find(item => item.id === itemId)
       ).filter(Boolean);
       
-      // Generate Olivia's reasoning based on weather conditions
+      // Generate Olivia's reasoning based on weather conditions, time of day and activity
       const oliviaReasoning = generateOliviaReasoning();
       
       return (
