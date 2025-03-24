@@ -66,13 +66,6 @@ const Header = ({ weather }: HeaderProps) => {
     ];
   }
 
-  const getCurrentPageName = () => {
-    if (location.pathname === '/') return 'Home';
-    if (location.pathname === '/auth') return user ? 'Profile' : 'Sign In';
-    const currentNav = navItems.find(item => item.path === location.pathname);
-    return currentNav ? currentNav.name : '';
-  };
-
   return (
     <header 
       className={cn(
@@ -83,12 +76,8 @@ const Header = ({ weather }: HeaderProps) => {
       )}
     >
       <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
-        <Link to="/" className="flex items-center space-x-2">
-          <span className={cn(
-            "font-display font-bold text-lg sm:text-xl",
-            isScrolled ? "text-white" : "text-white"
-          )}>{getCurrentPageName()}</span>
-        </Link>
+        {/* Empty div to maintain layout balance when page name is removed */}
+        <div className="w-8"></div>
 
         <DesktopNavigation 
           navItems={navItems} 

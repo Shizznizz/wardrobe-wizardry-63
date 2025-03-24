@@ -16,7 +16,7 @@ interface DesktopNavigationProps {
 
 export const DesktopNavigation = ({ navItems, currentPath, isScrolled }: DesktopNavigationProps) => {
   return (
-    <NavigationMenu className="hidden md:flex">
+    <NavigationMenu className="flex">
       <NavigationMenuList className="gap-2">
         {navItems.map((item) => (
           <NavigationMenuItem key={item.path}>
