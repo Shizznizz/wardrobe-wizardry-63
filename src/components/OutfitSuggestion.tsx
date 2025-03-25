@@ -5,6 +5,9 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { ClothingItem, Outfit, WeatherInfo, TimeOfDay, Activity } from '@/lib/types';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface OutfitSuggestionProps {
   suggestion?: {
@@ -90,6 +93,24 @@ const OutfitSuggestion = ({
     return "Olivia's Personalized Outfit Pick";
   };
   
+  // Get a random styling tip for the Olivia tip popup
+  const getRandomStylingTip = () => {
+    const tips = [
+      "Layer accessories with similar metals for a cohesive look.",
+      "Roll up your sleeves slightly for a more casual, relaxed vibe.",
+      "Add a belt to define your waist and elevate the whole outfit.",
+      "Try half-tucking your top for a stylish, effortless look.",
+      "For casual outfits, cuff your jeans for a more intentional finish.",
+      "Adding a third piece (like a jacket or vest) instantly elevates any look.",
+      "Match your shoes with your belt for a polished, coordinated appearance.",
+      "When in doubt, go monochromatic - it always looks chic!",
+      "Statement earrings can transform even the simplest outfit.",
+      "For cooler weather, layer thin pieces rather than one bulky item."
+    ];
+    
+    return tips[Math.floor(Math.random() * tips.length)];
+  };
+  
   // Determine what to render based on provided props
   const renderContent = () => {
     // If we have a suggestion object (used in the quiz)
@@ -172,7 +193,7 @@ const OutfitSuggestion = ({
       const accessoryItems = outfitItems.slice(2);
       
       return (
-        <div className="space-y-5">
+        <div className="space-y-5 relative">
           {/* Dynamic Heading */}
           <motion.h3 
             className="text-2xl font-semibold mb-3 text-white/90 flex items-center justify-center md:justify-start gap-2"
@@ -436,6 +457,52 @@ const OutfitSuggestion = ({
               )}
             </div>
           </motion.div>
+          
+          {/* Olivia's Tip Button - Positioned in bottom-right corner */}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      size="icon"
+                      variant="outline" 
+                      className="absolute bottom-2 right-2 rounded-full h-9 w-9 p-0 bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 shadow-md group transition-all duration-300"
+                    >
+                      <div className="flex items-center justify-center">
+                        <Avatar className="h-7 w-7 border border-pink-200/20">
+                          <AvatarImage src="/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png" alt="Olivia Bloom" />
+                          <AvatarFallback className="bg-purple-200 text-purple-700">OB</AvatarFallback>
+                        </Avatar>
+                      </div>
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent side="top" align="end" className="w-72 p-0 overflow-hidden">
+                    <div className="bg-gradient-to-r from-pink-500 to-purple-600 p-4">
+                      <div className="flex items-start gap-3">
+                        <Avatar className="h-10 w-10 border-2 border-white/20">
+                          <AvatarImage src="/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png" alt="Olivia Bloom" />
+                          <AvatarFallback className="bg-purple-200 text-purple-700">OB</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <h4 className="text-white font-medium flex items-center">
+                            <Sparkles className="h-4 w-4 mr-1 text-yellow-200" />
+                            Olivia's Styling Tip
+                          </h4>
+                          <p className="text-white/90 text-sm mt-1">
+                            {getRandomStylingTip()}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              </TooltipTrigger>
+              <TooltipContent side="left" className="bg-purple-900 text-white border-purple-700">
+                <p>💡 Olivia's Tip</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       );
     }
