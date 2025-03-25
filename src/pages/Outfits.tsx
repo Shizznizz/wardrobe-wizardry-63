@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -9,7 +8,7 @@ import StyleTip from '@/components/StyleTip';
 import TrendingItems from '@/components/TrendingItems';
 import { Button } from '@/components/ui/button';
 import { buttonVariants } from '@/components/ui/button';
-import { WeatherInfo, Outfit, TimeOfDay, Activity } from '@/lib/types';
+import { WeatherInfo, Outfit, TimeOfDay, Activity, ClothingSeason } from '@/lib/types';
 import { sampleClothingItems, sampleOutfits, sampleUserPreferences } from '@/lib/wardrobeData';
 import { toast } from 'sonner';
 import { 
@@ -61,6 +60,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useLocationPreferences } from '@/hooks/use-location-preferences';
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 
 const countries = [
   { code: "US", name: "United States" },
@@ -484,17 +484,17 @@ const Outfits = () => {
       const tempCategory = weather.temperature < 10 ? 'cold' : 
                           weather.temperature > 25 ? 'hot' : 'mild';
       
-      const season = getSeasonFromDate(new Date());
+      const season = getSeasonFromDate(new Date()) as ClothingSeason;
       
       filtered = filtered.filter(outfit => {
         const matchesSeason = outfit.seasons.includes(season);
         
         let matchesTemp = true;
-        if (tempCategory === 'cold' && !outfit.forCold) matchesTemp = false;
-        if (tempCategory === 'hot' && !outfit.forHot) matchesTemp = false;
+        if (tempCategory === 'cold' && outfit.forCold === false) matchesTemp = false;
+        if (tempCategory === 'hot' && outfit.forHot === false) matchesTemp = false;
         
         let matchesWeather = true;
-        if (weather.condition.toLowerCase().includes('rain') && !outfit.forRain) {
+        if (weather.condition.toLowerCase().includes('rain') && outfit.forRain === false) {
           matchesWeather = false;
         }
         
@@ -524,7 +524,7 @@ const Outfits = () => {
     
     if (month >= 3 && month <= 5) return 'spring';
     if (month >= 6 && month <= 8) return 'summer';
-    if (month >= 9 && month <= 11) return 'fall';
+    if (month >= 9 && month <= 11) return 'autumn';
     return 'winter';
   };
   
@@ -613,7 +613,6 @@ const Outfits = () => {
       
       <main className="container mx-auto px-4 pt-24">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          {/* Left Column - Title and Weather Info */}
           <div>
             <h1 className="text-3xl md:text-4xl font-bold mb-2">
               Good {greeting}, here's your perfect outfit for today!
@@ -662,7 +661,6 @@ const Outfits = () => {
             </div>
           </div>
           
-          {/* Right Column - Olivia Bloom Card */}
           <div className="bg-white/5 backdrop-blur-sm border border-purple-500/30 rounded-lg p-4 shadow-lg">
             <div className="flex items-start gap-3 mb-3">
               <Avatar className="border-2 border-purple-400 h-10 w-10">

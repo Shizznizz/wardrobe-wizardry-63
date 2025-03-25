@@ -1,5 +1,5 @@
 
-import { ClothingItem, Outfit, UserPreferences, ClothingOccasion } from './types';
+import { ClothingItem, Outfit, UserPreferences, ClothingOccasion, TimeOfDay, Activity } from './types';
 
 export const sampleClothingItems: ClothingItem[] = [
   {
@@ -128,7 +128,12 @@ export const sampleOutfits: Outfit[] = [
     lastWorn: new Date('2023-10-15'),
     dateAdded: new Date('2023-03-15'),
     personalityTags: ['casual', 'minimalist'],
-    colorScheme: 'Neutral with blue accent'
+    colorScheme: 'Neutral with blue accent',
+    forCold: false,
+    forHot: true,
+    forRain: false,
+    timeOfDay: ['morning', 'afternoon'],
+    activities: ['casual', 'sport']
   },
   {
     id: '2',
@@ -141,7 +146,12 @@ export const sampleOutfits: Outfit[] = [
     lastWorn: new Date('2023-10-10'),
     dateAdded: new Date('2023-04-20'),
     personalityTags: ['classic', 'preppy'],
-    colorScheme: 'Navy and beige'
+    colorScheme: 'Navy and beige',
+    forCold: true,
+    forHot: false,
+    forRain: true,
+    timeOfDay: ['morning', 'afternoon', 'evening'],
+    activities: ['work', 'formal', 'casual']
   },
   {
     id: '3',
@@ -154,7 +164,12 @@ export const sampleOutfits: Outfit[] = [
     lastWorn: new Date('2023-09-15'),
     dateAdded: new Date('2023-06-15'),
     personalityTags: ['elegant', 'bold'],
-    colorScheme: 'Classic black and white'
+    colorScheme: 'Classic black and white',
+    forCold: false,
+    forHot: true,
+    forRain: false,
+    timeOfDay: ['evening', 'night'],
+    activities: ['date', 'party']
   },
   {
     id: '4',
@@ -167,7 +182,12 @@ export const sampleOutfits: Outfit[] = [
     lastWorn: new Date('2023-08-20'),
     dateAdded: new Date('2023-05-10'),
     personalityTags: ['trendy', 'sporty'],
-    colorScheme: 'White, gray, with pop accents'
+    colorScheme: 'White, gray, with pop accents',
+    forCold: true,
+    forHot: false,
+    forRain: true,
+    timeOfDay: ['afternoon', 'evening'],
+    activities: ['casual', 'sport']
   },
   {
     id: '5',
@@ -180,7 +200,12 @@ export const sampleOutfits: Outfit[] = [
     lastWorn: new Date('2023-09-05'),
     dateAdded: new Date('2023-02-28'),
     personalityTags: ['formal', 'classic'],
-    colorScheme: 'Black and beige sophisticated'
+    colorScheme: 'Black and beige sophisticated',
+    forCold: true,
+    forHot: false,
+    forRain: true,
+    timeOfDay: ['morning', 'afternoon'],
+    activities: ['work', 'formal']
   }
 ];
 
