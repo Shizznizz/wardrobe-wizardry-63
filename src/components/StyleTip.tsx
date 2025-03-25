@@ -23,7 +23,7 @@ const StyleTip = () => {
   
   useEffect(() => {
     // Set initial tip
-    setCurrentTip(styleTips[0]);
+    setCurrentTip(styleTips[tipIndex]);
     
     // Rotate tips every 20 seconds
     const interval = setInterval(() => {
