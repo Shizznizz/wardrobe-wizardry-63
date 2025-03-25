@@ -17,7 +17,7 @@ const WeatherDisplay = ({ weather }: WeatherDisplayProps) => {
   
   return (
     <div className={cn(
-      "overflow-hidden rounded-2xl border border-white/20 shadow-lg p-4 md:p-6",
+      "overflow-hidden rounded-xl border border-white/20 shadow-lg p-4 md:p-5 h-full",
       gradientClass
     )}>
       <div className={`flex ${isMobile ? 'flex-col items-center' : 'items-start gap-6'}`}>

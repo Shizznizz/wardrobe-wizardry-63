@@ -11,6 +11,7 @@ interface OliviaBadgeProps {
   variant?: 'tip' | 'question' | 'fact';
   section?: string;
   autoOpen?: boolean;
+  className?: string;
 }
 
 const getPositionClasses = (position: string) => {
@@ -35,17 +36,22 @@ const OliviaBadge = ({
   position = 'bottom-right', 
   variant = 'tip',
   section = '',
-  autoOpen = false
+  autoOpen = false,
+  className
 }: OliviaBadgeProps) => {
   const [isOpen, setIsOpen] = useState(autoOpen);
   const [isVisible, setIsVisible] = useState(true);
 
   if (!isVisible) return null;
 
+  // Adjust for when the badge is used in a contained layout vs absolute positioning
+  const isPositioned = position !== 'static';
+
   return (
     <div className={cn(
-      "absolute z-20",
-      getPositionClasses(position)
+      isPositioned ? "absolute z-20" : "",
+      isPositioned ? getPositionClasses(position) : "",
+      className
     )}>
       <AnimatePresence>
         {isOpen ? (
