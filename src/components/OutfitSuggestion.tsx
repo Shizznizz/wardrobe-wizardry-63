@@ -1,3 +1,4 @@
+
 import { motion } from 'framer-motion';
 import { Check, ArrowRight, Sparkles, MessageCircle, Thermometer, RefreshCw, ThumbsUp, ThumbsDown, ArrowDown, ArrowUp, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -357,7 +358,7 @@ const OutfitSuggestion = ({
                 </HoverCard>
               </motion.div>
             ) : (
-              <div className="hidden sm:block" /> {/* Empty placeholder for grid alignment on desktop */}
+              <div className="hidden sm:block" /> 
             )}
           </div>
           
