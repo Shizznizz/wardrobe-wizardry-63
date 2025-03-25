@@ -9,6 +9,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface OutfitSelectorProps {
   outfits: Outfit[];
@@ -19,6 +20,7 @@ interface OutfitSelectorProps {
 
 const OutfitSelector = ({ outfits, clothingItems, onSelect, selectedOutfitId }: OutfitSelectorProps) => {
   const [activeIndex, setActiveIndex] = useState(0);
+  const isMobile = useIsMobile();
 
   const handleSelect = (outfit: Outfit) => {
     onSelect(outfit);
@@ -34,7 +36,7 @@ const OutfitSelector = ({ outfits, clothingItems, onSelect, selectedOutfitId }: 
             const isSelected = outfit.id === selectedOutfitId;
             
             return (
-              <CarouselItem key={outfit.id} className="md:basis-1/2 lg:basis-1/2">
+              <CarouselItem key={outfit.id} className={isMobile ? "basis-full" : "md:basis-1/2 lg:basis-1/2"}>
                 <div 
                   className={cn(
                     "border rounded-lg p-4 h-full cursor-pointer transition-all glass-dark",
@@ -61,11 +63,11 @@ const OutfitSelector = ({ outfits, clothingItems, onSelect, selectedOutfitId }: 
                     })}
                   </div>
                   
-                  <div className="mt-2 flex gap-1">
+                  <div className="mt-2 flex gap-1 flex-wrap">
                     {outfit.seasons.map(season => (
                       <span 
                         key={season} 
-                        className="text-xs py-0.5 px-2 bg-purple-900/40 rounded-full capitalize"
+                        className={`${isMobile ? 'text-[10px] py-0.5 px-1.5' : 'text-xs py-0.5 px-2'} bg-purple-900/40 rounded-full capitalize`}
                       >
                         {season}
                       </span>

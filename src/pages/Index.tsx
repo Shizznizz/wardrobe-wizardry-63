@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -15,6 +16,7 @@ import StyleSituation from '@/components/StyleSituation';
 import OliviaBloomAssistant from '@/components/OliviaBloomAssistant';
 import OliviaBadge from '@/components/OliviaBadge';
 import StyleDiscoveryQuiz from '@/components/StyleDiscoveryQuiz';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Index = () => {
   const [preferences, setPreferences] = useState<UserPreferences>({
@@ -30,6 +32,8 @@ const Index = () => {
     outfitReminders: false,
     reminderTime: '08:00'
   });
+  
+  const isMobile = useIsMobile();
   
   const handleUpdatePreferences = (newPreferences: UserPreferences) => {
     setPreferences(newPreferences);
@@ -70,7 +74,7 @@ const Index = () => {
       <BackgroundShapes />
       <Header />
       
-      <div className="fixed top-52 right-6 z-50">
+      <div className={`fixed ${isMobile ? 'top-24 right-3' : 'top-52 right-6'} z-50`}>
         <motion.div
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -78,7 +82,7 @@ const Index = () => {
           className="relative"
         >
           <div className="absolute -inset-3 rounded-full bg-gradient-to-r from-pink-500/60 via-purple-500/60 to-indigo-500/60 blur-md animate-pulse"></div>
-          <Avatar className="w-22 h-22 border-2 border-pink-400 shadow-lg cursor-pointer relative" onClick={() => setExpandOliviaMessage(!expandOliviaMessage)}>
+          <Avatar className={`${isMobile ? 'w-16 h-16' : 'w-22 h-22'} border-2 border-pink-400 shadow-lg cursor-pointer relative`} onClick={() => setExpandOliviaMessage(!expandOliviaMessage)}>
             <AvatarImage src="/lovable-uploads/86bf74b8-b311-4e3c-bfd6-53819add3df8.png" alt="Olivia Bloom" />
             <AvatarFallback className="bg-purple-800">OB</AvatarFallback>
           </Avatar>
@@ -102,7 +106,7 @@ const Index = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="absolute top-24 right-0 z-20 w-68 max-w-280 scale-85 origin-top-right"
+            className={`absolute ${isMobile ? 'top-20 right-0 max-w-[260px]' : 'top-24 right-0 z-20 w-68 max-w-280'} scale-85 origin-top-right`}
           >
             <div className="olivia-bubble relative p-4 rounded-xl bg-gradient-to-br from-purple-600/90 to-pink-600/90 text-white backdrop-blur-sm shadow-lg border border-white/20 curved-pointer olivia-glow">
               <button 
@@ -140,14 +144,17 @@ const Index = () => {
         )}
       </div>
       
-      <main className="container mx-auto px-4 pt-40 pb-16 relative z-10">
+      <main className={`container mx-auto px-4 ${isMobile ? 'pt-28' : 'pt-40'} pb-16 relative z-10`}>
         <motion.div 
           className="space-y-8"
           initial="hidden"
           animate="visible"
           variants={containerVariants}
         >
-          <motion.section variants={itemVariants} className="flex flex-col items-center justify-center text-center space-y-8 relative min-h-[70vh] flex items-center justify-center">
+          <motion.section 
+            variants={itemVariants} 
+            className={`flex flex-col items-center justify-center text-center space-y-8 relative ${isMobile ? 'min-h-[50vh]' : 'min-h-[70vh]'} flex items-center justify-center`}
+          >
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center">
               <div className="relative inline-block -mt-20">
                 <motion.div 
@@ -162,7 +169,7 @@ const Index = () => {
                     repeatType: "mirror"
                   }}
                 />
-                <h1 className="relative text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 pb-2 whitespace-nowrap">
+                <h1 className={`relative ${isMobile ? 'text-4xl' : 'text-6xl md:text-7xl lg:text-8xl'} font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 pb-2 whitespace-nowrap`}>
                   Future of Fashion
                 </h1>
               </div>
@@ -176,22 +183,22 @@ const Index = () => {
                 className="w-24 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full mb-4 mt-8"
               />
               
-              <p className="text-xl text-blue-100 max-w-2xl backdrop-blur-sm py-4 px-6 rounded-lg border border-white/10 shadow-lg neo-blur mt-16">
+              <p className={`${isMobile ? 'text-base' : 'text-xl'} text-blue-100 max-w-2xl backdrop-blur-sm py-4 px-6 rounded-lg border border-white/10 shadow-lg neo-blur mt-16`}>
                 Smarter styling starts here. AI-curated outfits that fit your style, your body, and your weather.
               </p>
               
-              <div className="flex flex-wrap gap-6 justify-center mt-16">
+              <div className={`flex ${isMobile ? 'flex-col' : 'flex-wrap'} gap-6 justify-center mt-16`}>
                 <motion.div
                   whileHover={{ 
                     scale: 1.05,
                     transition: { duration: 0.2 }
                   }}
-                  className="min-w-[240px]"
+                  className={`${isMobile ? 'w-full' : 'min-w-[240px]'}`}
                 >
                   <Button 
                     size="lg" 
                     onClick={handleWardrobeButtonClick}
-                    className="group relative overflow-hidden bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl text-lg px-5 py-3 h-10 transition-all shadow-xl hover:shadow-purple-500/20 w-full border border-blue-500/20"
+                    className={`group relative overflow-hidden bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl text-lg px-5 py-3 h-10 transition-all shadow-xl hover:shadow-purple-500/20 ${isMobile ? 'w-full text-base' : 'w-full'} border border-blue-500/20`}
                   >
                     <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-blue-400/20 to-purple-400/20 opacity-0 group-hover:opacity-100 transition-opacity" />
                     <span className="relative flex items-center justify-center gap-2">
@@ -214,7 +221,7 @@ const Index = () => {
                 <PreferencesModal 
                   preferences={preferences} 
                   onSave={handleUpdatePreferences} 
-                  buttonClassName="text-lg px-5 py-3 h-10 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl shadow-xl hover:shadow-purple-500/20 min-w-[120px] border border-blue-500/20"
+                  buttonClassName={`${isMobile ? 'text-base w-full' : 'text-lg'} px-5 py-3 h-10 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl shadow-xl hover:shadow-purple-500/20 min-w-[120px] border border-blue-500/20`}
                 />
               </div>
             </div>
@@ -227,67 +234,75 @@ const Index = () => {
           <motion.section variants={itemVariants} className="mt-8 relative">
             <StyleSituation />
             
-            <OliviaBadge 
-              message="Have you tried styling based on your upcoming events? It's a great way to plan your outfits ahead of time."
-              position="top-right"
-              variant="question"
-              section="Style Situations"
-            />
+            {!isMobile && (
+              <OliviaBadge 
+                message="Have you tried styling based on your upcoming events? It's a great way to plan your outfits ahead of time."
+                position="top-right"
+                variant="question"
+                section="Style Situations"
+              />
+            )}
           </motion.section>
           
           <motion.section variants={itemVariants} className="mt-16 relative">
-            <h2 className="text-2xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+            <h2 className={`${isMobile ? 'text-xl' : 'text-2xl'} font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400`}>
               <span className="flex items-center gap-2">
-                <Palette className="h-6 w-6" />
+                <Palette className={`${isMobile ? 'h-5 w-5' : 'h-6 w-6'}`} />
                 Outfit Inspirations
               </span>
             </h2>
             <OutfitSlider />
             
-            <OliviaBadge 
-              message="Mix and match colors from the same palette for a cohesive look. Try complementary colors for a bold statement!"
-              position="bottom-left"
-              variant="tip"
-              section="Outfit Inspirations"
-            />
+            {!isMobile && (
+              <OliviaBadge 
+                message="Mix and match colors from the same palette for a cohesive look. Try complementary colors for a bold statement!"
+                position="bottom-left"
+                variant="tip"
+                section="Outfit Inspirations"
+              />
+            )}
           </motion.section>
           
           <motion.section variants={itemVariants} className="mt-16 relative">
-            <h2 className="text-2xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-purple-400">
+            <h2 className={`${isMobile ? 'text-xl' : 'text-2xl'} font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-purple-400`}>
               <span className="flex items-center gap-2">
-                <Sparkles className="h-6 w-6" />
+                <Sparkles className={`${isMobile ? 'h-5 w-5' : 'h-6 w-6'}`} />
                 Showcase Process
               </span>
             </h2>
             <VerticalStepCards />
             
-            <OliviaBadge 
-              message="Did you know? The average person uses only 20% of their wardrobe regularly. Our AI helps you rediscover the other 80%!"
-              position="top-left"
-              variant="fact"
-              section="Showcase Process"
-            />
+            {!isMobile && (
+              <OliviaBadge 
+                message="Did you know? The average person uses only 20% of their wardrobe regularly. Our AI helps you rediscover the other 80%!"
+                position="top-left"
+                variant="fact"
+                section="Showcase Process"
+              />
+            )}
           </motion.section>
           
           <motion.section variants={itemVariants} className="mt-16 relative">
-            <h2 className="text-2xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-blue-400">
+            <h2 className={`${isMobile ? 'text-xl' : 'text-2xl'} font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-blue-400`}>
               <span className="flex items-center gap-2">
-                <History className="h-6 w-6" />
+                <History className={`${isMobile ? 'h-5 w-5' : 'h-6 w-6'}`} />
                 Styling Journey
               </span>
             </h2>
             <StylingTimeline />
             
-            <OliviaBadge 
-              message="What part of your styling journey are you most excited about? I'd love to provide personalized recommendations!"
-              position="bottom-right" 
-              variant="question"
-              section="Styling Journey"
-            />
+            {!isMobile && (
+              <OliviaBadge 
+                message="What part of your styling journey are you most excited about? I'd love to provide personalized recommendations!"
+                position="bottom-right" 
+                variant="question"
+                section="Styling Journey"
+              />
+            )}
           </motion.section>
           
           <motion.section variants={itemVariants} className="mt-16">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className={`grid grid-cols-1 ${isMobile ? 'gap-6' : 'md:grid-cols-2 lg:grid-cols-4 gap-8'}`}>
               <Link to="/wardrobe" className="block">
                 <motion.div 
                   whileHover={{ y: -8, scale: 1.02 }}

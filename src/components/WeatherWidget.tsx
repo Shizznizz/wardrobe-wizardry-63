@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from 'react';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
@@ -9,6 +10,7 @@ import WeatherLoading from './weather/WeatherLoading';
 import WeatherError from './weather/WeatherError';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface WeatherWidgetProps {
   className?: string;
@@ -31,6 +33,7 @@ const WeatherWidget = ({
   const locationRef = useRef<{ city?: string; country?: string }>({ city, country });
   const fetchedRef = useRef<boolean>(false);
   const { user } = useAuth();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const saveUserPreferences = async () => {
@@ -126,7 +129,7 @@ const WeatherWidget = ({
   }, [city, country, onWeatherChange]);
 
   return (
-    <div className={cn("overflow-hidden", className)}>
+    <div className={cn(`overflow-hidden ${isMobile ? 'p-2' : ''}`, className)}>
       {isLoading ? (
         <WeatherLoading />
       ) : error ? (

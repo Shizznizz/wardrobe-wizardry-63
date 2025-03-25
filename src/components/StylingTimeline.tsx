@@ -2,10 +2,8 @@
 import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { 
-  Card,
-  CardContent
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const timelineEvents = [
   {
@@ -56,6 +54,8 @@ const timelineEvents = [
 ];
 
 const StylingTimeline = () => {
+  const isMobile = useIsMobile();
+
   return (
     <div className="relative py-8">
       {/* Timeline center line */}
@@ -73,44 +73,54 @@ const StylingTimeline = () => {
             }}
             viewport={{ once: true, margin: "-100px" }}
             className={`mb-16 flex items-center ${
-              index % 2 === 0 ? "flex-row" : "flex-row-reverse"
+              isMobile ? "flex-col" : (index % 2 === 0 ? "flex-row" : "flex-row-reverse")
             } relative z-10`}
           >
             {/* Timeline node */}
-            <div className="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 z-20"></div>
+            <div className={`${isMobile ? "absolute top-0" : "absolute"} left-1/2 transform -translate-x-1/2 w-4 h-4 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 z-20`}></div>
             
             {/* Content */}
-            <div className={`w-5/12 ${index % 2 === 0 ? "pr-8 text-right" : "pl-8 text-left"}`}>
+            <div className={`${
+              isMobile 
+                ? "w-full mt-8 text-center" 
+                : `w-5/12 ${index % 2 === 0 ? "pr-8 text-right" : "pl-8 text-left"}`
+            }`}>
               <span className="text-sm font-medium text-blue-300">{event.date}</span>
-              <h3 className="text-lg font-semibold text-white mt-1">{event.title}</h3>
-              <p className="text-white/70 mt-1">{event.description}</p>
+              <h3 className={`${isMobile ? "text-base" : "text-lg"} font-semibold text-white mt-1`}>{event.title}</h3>
+              <p className={`text-white/70 mt-1 ${isMobile ? "text-sm" : ""}`}>{event.description}</p>
               
               {/* Olivia's Comment */}
-              <div className="mt-4 relative bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+              <div className={`mt-4 relative bg-white/10 backdrop-blur-sm rounded-lg ${isMobile ? "p-3" : "p-4"} border border-white/20`}>
                 <div className="flex items-start gap-3">
-                  <Avatar className="h-8 w-8 ring-2 ring-purple-500/50">
+                  <Avatar className={`${isMobile ? "h-6 w-6" : "h-8 w-8"} ring-2 ring-purple-500/50`}>
                     <AvatarImage src="/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png" alt="Olivia Bloom" />
                     <AvatarFallback className="bg-gradient-to-br from-purple-400 to-pink-400">OB</AvatarFallback>
                   </Avatar>
                   <div>
                     <div className="flex items-center gap-1">
-                      <span className="text-xs font-medium text-white/90">Style Advice</span>
-                      <Sparkles className="h-3 w-3 text-yellow-300" />
+                      <span className={`${isMobile ? "text-[10px]" : "text-xs"} font-medium text-white/90`}>Style Advice</span>
+                      <Sparkles className={`${isMobile ? "h-2.5 w-2.5" : "h-3 w-3"} text-yellow-300`} />
                     </div>
-                    <p className="text-sm text-white/80 mt-1">{event.oliviaComment}</p>
+                    <p className={`${isMobile ? "text-xs" : "text-sm"} text-white/80 mt-1`}>{event.oliviaComment}</p>
                   </div>
                 </div>
-                {/* Speech bubble triangle */}
-                <div className={`absolute ${index % 2 === 0 ? "right-[-8px]" : "left-[-8px]"} top-4 w-0 h-0 
-                  ${index % 2 === 0 
-                    ? "border-t-[6px] border-t-transparent border-l-[8px] border-l-white/10 border-b-[6px] border-b-transparent" 
-                    : "border-t-[6px] border-t-transparent border-r-[8px] border-r-white/10 border-b-[6px] border-b-transparent"
-                  }`}></div>
+                {/* Speech bubble triangle - hide on mobile */}
+                {!isMobile && (
+                  <div className={`absolute ${index % 2 === 0 ? "right-[-8px]" : "left-[-8px]"} top-4 w-0 h-0 
+                    ${index % 2 === 0 
+                      ? "border-t-[6px] border-t-transparent border-l-[8px] border-l-white/10 border-b-[6px] border-b-transparent" 
+                      : "border-t-[6px] border-t-transparent border-r-[8px] border-r-white/10 border-b-[6px] border-b-transparent"
+                    }`}></div>
+                )}
               </div>
             </div>
             
             {/* Image */}
-            <div className={`w-5/12 ${index % 2 === 0 ? "pl-8" : "pr-8"}`}>
+            <div className={`${
+              isMobile 
+                ? "w-full mt-5" 
+                : `w-5/12 ${index % 2 === 0 ? "pl-8" : "pr-8"}`
+            }`}>
               <Card className="overflow-hidden rounded-lg border border-white/10 hover:border-white/20 transition-duration-300 neo-blur">
                 <CardContent className="p-0">
                   <div className="relative aspect-video w-full">
@@ -120,8 +130,8 @@ const StylingTimeline = () => {
                     {/* Season themed styling */}
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="text-center p-4">
-                        <h4 className="text-lg font-medium text-gray-800">{event.date.split(" ")[0]} Collection</h4>
-                        <p className="text-sm text-gray-700 mt-1">Coming soon</p>
+                        <h4 className={`${isMobile ? "text-base" : "text-lg"} font-medium text-gray-800`}>{event.date.split(" ")[0]} Collection</h4>
+                        <p className={`${isMobile ? "text-xs" : "text-sm"} text-gray-700 mt-1`}>Coming soon</p>
                       </div>
                     </div>
                   </div>
