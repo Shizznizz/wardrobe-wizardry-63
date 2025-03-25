@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import WeatherWidget from '@/components/WeatherWidget';
@@ -59,6 +59,7 @@ import { useForm } from "react-hook-form";
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useLocationPreferences } from '@/hooks/use-location-preferences';
 
 const countries = [
   { code: "US", name: "United States" },
@@ -330,6 +331,7 @@ const Outfits = () => {
   const [outfitVariation, setOutfitVariation] = useState<string | null>(null);
   const { user } = useAuth();
   const isMobile = useIsMobile();
+  const { locationPreferences, saveLocationPreferences } = useLocationPreferences();
   
   const form = useForm<FormValues>({
     defaultValues: {
@@ -342,6 +344,28 @@ const Outfits = () => {
   
   useEffect(() => {
     const loadUserPreferences = async () => {
+      if (locationPreferences.country && locationPreferences.city && !preferencesLoaded) {
+        form.setValue('country', locationPreferences.country);
+        
+        const countryCities = citiesByCountry[locationPreferences.country as keyof typeof citiesByCountry] || [];
+        setAvailableCities(countryCities);
+        
+        setTimeout(() => {
+          form.setValue('city', locationPreferences.city);
+        }, 0);
+        
+        setSelectedLocation({
+          city: locationPreferences.city,
+          country: locationPreferences.country
+        });
+        
+        saveLocationPreferences(locationPreferences.country, locationPreferences.city);
+        
+        setPreferencesLoaded(true);
+        console.log('Loaded local location preferences');
+        return;
+      }
+      
       if (user && !preferencesLoaded) {
         try {
           const { data, error } = await supabase
@@ -370,7 +394,9 @@ const Outfits = () => {
               country: data.preferred_country
             });
             
-            console.log('Loaded user preferences:', data);
+            saveLocationPreferences(data.preferred_country, data.preferred_city);
+            
+            console.log('Loaded user preferences from database:', data);
             toast.success('Loaded your saved location preferences');
           }
           
@@ -382,7 +408,7 @@ const Outfits = () => {
     };
     
     loadUserPreferences();
-  }, [user, form, preferencesLoaded]);
+  }, [user, form, preferencesLoaded, locationPreferences, saveLocationPreferences]);
   
   useEffect(() => {
     if (selectedCountry) {
@@ -605,6 +631,8 @@ const Outfits = () => {
         country: data.country,
         city: data.city
       });
+      
+      saveLocationPreferences(data.country, data.city);
       
       setShowLocationAlert(false);
       
@@ -949,27 +977,37 @@ const Outfits = () => {
               </Button>
             </div>
             
-            <OutfitSuggestion 
-              outfit={suggestedOutfit}
-              items={sampleClothingItems}
-              weather={weather || undefined}
-              timeOfDay={timeOfDay}
-              activity={activity}
-              onWear={() => handleWearOutfit(suggestedOutfit.id)}
-              onRefresh={handleRegenerateOutfit}
-              onLike={handleLikeOutfit}
-              onDislike={handleDislikeOutfit}
-              onMakeWarmer={handleMakeWarmer}
-              onChangeTop={handleChangeTop}
-              onChangeBottom={handleChangeBottom}
-              onToggleFavorite={() => handleToggleFavorite(suggestedOutfit.id)}
-            />
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={suggestedOutfit.id}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <OutfitSuggestion 
+                  outfit={suggestedOutfit}
+                  items={sampleClothingItems}
+                  weather={weather || undefined}
+                  timeOfDay={timeOfDay}
+                  activity={activity}
+                  onWear={() => handleWearOutfit(suggestedOutfit.id)}
+                  onRefresh={handleRegenerateOutfit}
+                  onLike={handleLikeOutfit}
+                  onDislike={handleDislikeOutfit}
+                  onMakeWarmer={handleMakeWarmer}
+                  onChangeTop={handleChangeTop}
+                  onChangeBottom={handleChangeBottom}
+                  onToggleFavorite={() => handleToggleFavorite(suggestedOutfit.id)}
+                />
+              </motion.div>
+            </AnimatePresence>
             
             <div className="flex flex-wrap gap-2 mt-4 justify-center">
               <Button 
                 onClick={() => handleWearOutfit(suggestedOutfit.id)}
                 className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white hover:from-emerald-600 hover:to-teal-700"
-                size="sm"
+                size={isMobile ? "sm" : "default"}
               >
                 <Shirt className="h-4 w-4 mr-1" />
                 Wear This Outfit
@@ -978,7 +1016,7 @@ const Outfits = () => {
               <Button 
                 onClick={handleMakeWarmer}
                 variant="outline"
-                size="sm"
+                size={isMobile ? "sm" : "default"}
                 className="border-white/20 text-white bg-white/5 hover:bg-white/10"
               >
                 <ThermometerSun className="h-4 w-4 mr-1 text-orange-300" />
@@ -988,7 +1026,7 @@ const Outfits = () => {
               <Button 
                 onClick={() => handleToggleFavorite(suggestedOutfit.id)}
                 variant="outline"
-                size="sm"
+                size={isMobile ? "sm" : "default"}
                 className={cn(
                   "border-white/20 text-white bg-white/5 hover:bg-white/10",
                   suggestedOutfit.favorite && "bg-pink-600/30 border-pink-400"
@@ -998,7 +1036,7 @@ const Outfits = () => {
                   "h-4 w-4 mr-1",
                   suggestedOutfit.favorite ? "text-pink-400 fill-pink-400" : "text-pink-300"
                 )} />
-                {suggestedOutfit.favorite ? "Favorited" : "Add to Favorites"}
+                {isMobile ? "Favorite" : (suggestedOutfit.favorite ? "Favorited" : "Add to Favorites")}
               </Button>
             </div>
             
@@ -1006,31 +1044,31 @@ const Outfits = () => {
               <Button 
                 onClick={handleChangeTop}
                 variant="outline"
-                size="sm"
+                size={isMobile ? "sm" : "default"}
                 className="border-white/20 text-white bg-white/5 hover:bg-white/10"
               >
                 <Shirt className="h-4 w-4 mr-1 text-blue-300" />
-                Change Top
+                {isMobile ? "Top" : "Change Top"}
               </Button>
               
               <Button 
                 onClick={handleChangeBottom}
                 variant="outline"
-                size="sm"
+                size={isMobile ? "sm" : "default"}
                 className="border-white/20 text-white bg-white/5 hover:bg-white/10"
               >
                 <PanelBottom className="h-4 w-4 mr-1 text-indigo-300" />
-                Change Bottom
+                {isMobile ? "Bottom" : "Change Bottom"}
               </Button>
               
               <Button 
                 onClick={handleRegenerateOutfit}
                 variant="outline"
-                size="sm"
+                size={isMobile ? "sm" : "default"}
                 className="border-white/20 text-white bg-white/5 hover:bg-white/10"
               >
                 <RefreshCw className="h-4 w-4 mr-1 text-purple-300" />
-                New Suggestion
+                {isMobile ? "New" : "New Suggestion"}
               </Button>
             </div>
           </div>
