@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -11,7 +12,10 @@ import { buttonVariants } from '@/components/ui/button';
 import { WeatherInfo, Outfit, TimeOfDay, Activity } from '@/lib/types';
 import { sampleClothingItems, sampleOutfits, sampleUserPreferences } from '@/lib/wardrobeData';
 import { toast } from 'sonner';
-import { RefreshCw, Camera, MapPin, AlertTriangle, Calendar, AlarmClockCheck, MessageCircle, Sun, CloudRain, CloudSun, Cloud } from 'lucide-react';
+import { 
+  RefreshCw, Camera, MapPin, AlertTriangle, Calendar, AlarmClockCheck, 
+  MessageCircle, Sun, CloudRain, CloudSun, Cloud, Sparkles, Zap
+} from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from '@/lib/utils';
@@ -626,26 +630,46 @@ const Outfits = () => {
 
   const getGreeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return "Good Morning";
-    if (hour < 18) return "Good Afternoon";
-    return "Good Evening";
+    if (hour < 12) return "Good morning";
+    if (hour < 18) return "Good afternoon";
+    return "Good evening";
   };
   
   return (
     <div className="min-h-screen bg-background pb-20">
       <Header />
       
-      <div className="w-full py-6 md:py-8 bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
-        <div className="container px-4 sm:px-6 max-w-6xl mx-auto">
-          <h1 className="text-3xl md:text-4xl font-bold text-center">{getGreeting()}, {user?.user_metadata?.full_name || 'Style Explorer'}</h1>
-          <p className="text-lg text-center mt-2 text-white/80">Your perfect outfit awaits. Let's dress to impress today!</p>
+      {/* Futuristic Title Banner */}
+      <div className="w-full pt-10 pb-8 bg-gradient-to-r from-violet-800 via-purple-700 to-indigo-800 text-white relative overflow-hidden mt-0">
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-0 left-[10%] w-20 h-20 rounded-full bg-purple-300 blur-xl"></div>
+          <div className="absolute top-[30%] right-[5%] w-32 h-32 rounded-full bg-indigo-400 blur-xl"></div>
+          <div className="absolute bottom-0 left-[30%] w-40 h-40 rounded-full bg-violet-300 blur-xl"></div>
+        </div>
+        
+        <div className="container px-4 sm:px-6 max-w-6xl mx-auto relative z-10">
+          <div className="flex items-center justify-center mb-2">
+            <Sparkles className="h-6 w-6 mr-2 text-purple-200" />
+            <h1 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white via-purple-100 to-indigo-200 tracking-tight">
+              {getGreeting()} there
+            </h1>
+            <Zap className="h-6 w-6 ml-2 text-yellow-300" />
+          </div>
+          
+          <p className="text-lg text-center mt-2 text-purple-100">
+            Here's your perfect look for today{weather ? ` (${weather.temperature}°${weather.unit || 'C'} ${weather.condition})` : ''}
+          </p>
+          
+          <p className="text-sm text-center mt-1 text-purple-200/80">
+            Olivia helps you find the perfect outfit for today's weather and your style preferences.
+          </p>
         </div>
       </div>
       
       <div className="container px-4 sm:px-6 max-w-6xl mx-auto mt-8">
         {/* Location Settings Form */}
         <div className="mb-8 bg-muted/50 rounded-xl border p-4 md:p-6">
-          <h2 className="text-xl font-bold mb-4">Location Settings</h2>
+          <h2 className="text-xl font-bold mb-4">Weather Conditions</h2>
           
           {showLocationAlert && (
             <Alert variant="destructive" className="mb-4">
