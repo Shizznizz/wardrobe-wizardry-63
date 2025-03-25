@@ -164,7 +164,17 @@ const WeatherDisplay = ({ weather }: WeatherDisplayProps) => {
     }
     
     return (
-      <motion.div variants={sunVariants} animate="animate" className="text-amber-400">
+      <motion.div
+        animate={{
+          rotate: 360,
+          transition: { 
+            duration: 20, 
+            repeat: Infinity, 
+            ease: "linear" 
+          }
+        }}
+        className="text-amber-400"
+      >
         <Sun size={iconSize} strokeWidth={1.5} />
       </motion.div>
     );
