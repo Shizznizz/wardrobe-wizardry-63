@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { ClothingItem, Outfit, WeatherInfo, TimeOfDay, Activity } from '@/lib/types';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 interface OutfitSuggestionProps {
   suggestion?: {
@@ -26,7 +27,7 @@ interface OutfitSuggestionProps {
   onMakeWarmer?: () => void;
   onChangeTop?: () => void;
   onChangeBottom?: () => void;
-  onToggleFavorite?: () => void; // Added the missing prop
+  onToggleFavorite?: () => void;
 }
 
 const OutfitSuggestion = ({ 
@@ -165,7 +166,7 @@ const OutfitSuggestion = ({
       // Find the actual items from the outfit.items array (which contains ids)
       const outfitItems = outfit.items.map(itemId => 
         items.find(item => item.id === itemId)
-      ).filter(Boolean);
+      ).filter(Boolean) as ClothingItem[];
       
       // Group items by category (assuming first is top, second is bottom, etc.)
       const topItem = outfitItems[0];
@@ -176,7 +177,7 @@ const OutfitSuggestion = ({
         <div className="space-y-5">
           {/* Dynamic Heading */}
           <motion.h3 
-            className="text-2xl font-semibold mb-3 text-white/90 flex items-center justify-center md:justify-start gap-2"
+            className="text-2xl font-semibold mb-3 text-white/90 flex items-center justify-center gap-2"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
@@ -185,12 +186,12 @@ const OutfitSuggestion = ({
             {getDynamicHeading()}
           </motion.h3>
 
-          {/* Visual Flow Container */}
-          <div className="relative">
-            {/* Top Item with animation */}
+          {/* Items displayed side by side with equal sizing */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 overflow-x-auto pb-2">
+            {/* Top Item */}
             {topItem && (
               <motion.div 
-                className="mb-6 relative"
+                className="relative"
                 initial="hidden"
                 animate="visible"
                 custom={0}
@@ -198,15 +199,20 @@ const OutfitSuggestion = ({
               >
                 <HoverCard>
                   <HoverCardTrigger asChild>
-                    <div className="relative rounded-lg overflow-hidden border border-white/20 shadow-md group cursor-pointer max-w-[85%] mx-auto">
-                      <motion.img 
-                        src={topItem.imageUrl} 
-                        alt={topItem.name} 
-                        className="w-full aspect-square object-cover transition-all duration-300 group-hover:scale-110"
-                        whileHover={{ scale: 1.05 }}
-                      />
-                      <div className="absolute bottom-0 left-0 right-0 bg-black/60 p-2 text-sm text-white truncate">
-                        {topItem.name}
+                    <div className="relative bg-white/5 rounded-lg overflow-hidden border border-white/20 shadow-md group cursor-pointer h-full">
+                      <div className="aspect-square w-full">
+                        <AspectRatio ratio={1 / 1}>
+                          <motion.img 
+                            src={topItem.imageUrl} 
+                            alt={topItem.name} 
+                            className="w-full h-full object-cover transition-all duration-300 group-hover:scale-110"
+                            whileHover={{ scale: 1.05 }}
+                          />
+                        </AspectRatio>
+                      </div>
+                      <div className="p-3">
+                        <h4 className="text-white font-medium truncate">{topItem.name}</h4>
+                        <p className="text-white/70 text-sm">{topItem.type} • {topItem.color}</p>
                       </div>
                       
                       {/* Change top button */}
@@ -215,7 +221,10 @@ const OutfitSuggestion = ({
                           <Button 
                             size="sm" 
                             variant="outline" 
-                            onClick={onChangeTop}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onChangeTop();
+                            }}
                             className="bg-black/40 backdrop-blur-sm border-white/20 text-white text-xs p-1.5 h-auto"
                           >
                             <RefreshCw className="h-3 w-3 mr-1" />
@@ -229,31 +238,23 @@ const OutfitSuggestion = ({
                     <div className="space-y-2">
                       <h4 className="font-medium">{topItem.name}</h4>
                       <p className="text-sm text-slate-300">{topItem.type} • {topItem.color}</p>
-                      <img 
-                        src={topItem.imageUrl} 
-                        alt={topItem.name} 
-                        className="w-full rounded-md object-cover aspect-square"
-                      />
+                      <div className="rounded overflow-hidden">
+                        <img 
+                          src={topItem.imageUrl} 
+                          alt={topItem.name} 
+                          className="w-full rounded-md object-cover aspect-square"
+                        />
+                      </div>
                     </div>
                   </HoverCardContent>
                 </HoverCard>
-                
-                {/* Downward arrow */}
-                <motion.div 
-                  className="flex justify-center my-2"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.3, duration: 0.5 }}
-                >
-                  <ArrowDown className="h-5 w-5 text-purple-400 animate-bounce" />
-                </motion.div>
               </motion.div>
             )}
             
-            {/* Bottom Item with animation */}
+            {/* Bottom Item */}
             {bottomItem && (
               <motion.div 
-                className="mb-6 relative"
+                className="relative"
                 initial="hidden"
                 animate="visible"
                 custom={1}
@@ -261,15 +262,20 @@ const OutfitSuggestion = ({
               >
                 <HoverCard>
                   <HoverCardTrigger asChild>
-                    <div className="relative rounded-lg overflow-hidden border border-white/20 shadow-md group cursor-pointer max-w-[85%] mx-auto">
-                      <motion.img 
-                        src={bottomItem.imageUrl} 
-                        alt={bottomItem.name} 
-                        className="w-full aspect-square object-cover transition-all duration-300 group-hover:scale-110"
-                        whileHover={{ scale: 1.05 }}
-                      />
-                      <div className="absolute bottom-0 left-0 right-0 bg-black/60 p-2 text-sm text-white truncate">
-                        {bottomItem.name}
+                    <div className="relative bg-white/5 rounded-lg overflow-hidden border border-white/20 shadow-md group cursor-pointer h-full">
+                      <div className="aspect-square w-full">
+                        <AspectRatio ratio={1 / 1}>
+                          <motion.img 
+                            src={bottomItem.imageUrl} 
+                            alt={bottomItem.name} 
+                            className="w-full h-full object-cover transition-all duration-300 group-hover:scale-110"
+                            whileHover={{ scale: 1.05 }}
+                          />
+                        </AspectRatio>
+                      </div>
+                      <div className="p-3">
+                        <h4 className="text-white font-medium truncate">{bottomItem.name}</h4>
+                        <p className="text-white/70 text-sm">{bottomItem.type} • {bottomItem.color}</p>
                       </div>
                       
                       {/* Change bottom button */}
@@ -278,7 +284,10 @@ const OutfitSuggestion = ({
                           <Button 
                             size="sm" 
                             variant="outline" 
-                            onClick={onChangeBottom}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onChangeBottom();
+                            }}
                             className="bg-black/40 backdrop-blur-sm border-white/20 text-white text-xs p-1.5 h-auto"
                           >
                             <RefreshCw className="h-3 w-3 mr-1" />
@@ -292,69 +301,91 @@ const OutfitSuggestion = ({
                     <div className="space-y-2">
                       <h4 className="font-medium">{bottomItem.name}</h4>
                       <p className="text-sm text-slate-300">{bottomItem.type} • {bottomItem.color}</p>
-                      <img 
-                        src={bottomItem.imageUrl} 
-                        alt={bottomItem.name} 
-                        className="w-full rounded-md object-cover aspect-square"
-                      />
+                      <div className="rounded overflow-hidden">
+                        <img 
+                          src={bottomItem.imageUrl} 
+                          alt={bottomItem.name} 
+                          className="w-full rounded-md object-cover aspect-square"
+                        />
+                      </div>
                     </div>
                   </HoverCardContent>
                 </HoverCard>
-                
-                {/* Accessories indicator with downward arrow if there are accessory items */}
-                {accessoryItems.length > 0 && (
-                  <motion.div 
-                    className="flex justify-center my-2"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.5, duration: 0.5 }}
-                  >
-                    <ArrowDown className="h-5 w-5 text-purple-400 animate-bounce" />
-                  </motion.div>
-                )}
               </motion.div>
             )}
             
-            {/* Accessories Grid */}
-            {accessoryItems.length > 0 && (
+            {/* Accessories - if no accessories, show placeholder for grid alignment */}
+            {accessoryItems.length > 0 ? (
               <motion.div 
-                className="grid grid-cols-2 gap-3 mb-6 max-w-[85%] mx-auto"
+                className="relative"
                 initial="hidden"
                 animate="visible"
                 custom={2}
                 variants={itemVariants}
               >
-                {accessoryItems.map((item, index) => item && (
-                  <HoverCard key={index}>
-                    <HoverCardTrigger asChild>
-                      <div className="relative rounded-lg overflow-hidden border border-white/20 shadow-md group cursor-pointer">
-                        <motion.img 
-                          src={item.imageUrl} 
-                          alt={item.name} 
-                          className="w-full aspect-square object-cover transition-all duration-300 group-hover:scale-110"
-                          whileHover={{ scale: 1.05 }}
-                        />
-                        <div className="absolute bottom-0 left-0 right-0 bg-black/60 p-2 text-sm text-white truncate">
-                          {item.name}
-                        </div>
+                <HoverCard>
+                  <HoverCardTrigger asChild>
+                    <div className="relative bg-white/5 rounded-lg overflow-hidden border border-white/20 shadow-md group cursor-pointer h-full">
+                      <div className="aspect-square w-full">
+                        <AspectRatio ratio={1 / 1}>
+                          <motion.img 
+                            src={accessoryItems[0]?.imageUrl} 
+                            alt={accessoryItems[0]?.name} 
+                            className="w-full h-full object-cover transition-all duration-300 group-hover:scale-110"
+                            whileHover={{ scale: 1.05 }}
+                          />
+                        </AspectRatio>
                       </div>
-                    </HoverCardTrigger>
-                    <HoverCardContent className="w-80 bg-slate-800 border-slate-700 text-white">
-                      <div className="space-y-2">
-                        <h4 className="font-medium">{item.name}</h4>
-                        <p className="text-sm text-slate-300">{item.type} • {item.color}</p>
+                      <div className="p-3">
+                        <h4 className="text-white font-medium truncate">{accessoryItems[0]?.name}</h4>
+                        <p className="text-white/70 text-sm">{accessoryItems[0]?.type} • {accessoryItems[0]?.color}</p>
+                      </div>
+                    </div>
+                  </HoverCardTrigger>
+                  <HoverCardContent className="w-80 bg-slate-800 border-slate-700 text-white">
+                    <div className="space-y-2">
+                      <h4 className="font-medium">{accessoryItems[0]?.name}</h4>
+                      <p className="text-sm text-slate-300">{accessoryItems[0]?.type} • {accessoryItems[0]?.color}</p>
+                      <div className="rounded overflow-hidden">
                         <img 
-                          src={item.imageUrl} 
-                          alt={item.name} 
+                          src={accessoryItems[0]?.imageUrl} 
+                          alt={accessoryItems[0]?.name} 
                           className="w-full rounded-md object-cover aspect-square"
                         />
                       </div>
-                    </HoverCardContent>
-                  </HoverCard>
-                ))}
+                    </div>
+                  </HoverCardContent>
+                </HoverCard>
               </motion.div>
+            ) : (
+              <div className="hidden sm:block" /> {/* Empty placeholder for grid alignment on desktop */}
             )}
           </div>
+          
+          {/* Multiple accessories (if more than one) */}
+          {accessoryItems.length > 1 && (
+            <motion.div 
+              className="grid grid-cols-2 sm:grid-cols-4 gap-3"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+            >
+              {accessoryItems.slice(1).map((item, index) => (
+                <div key={index} className="relative bg-white/5 rounded-lg overflow-hidden border border-white/20 shadow-sm">
+                  <AspectRatio ratio={1 / 1}>
+                    <img 
+                      src={item.imageUrl} 
+                      alt={item.name} 
+                      className="w-full h-full object-cover"
+                    />
+                  </AspectRatio>
+                  <div className="absolute bottom-0 left-0 right-0 bg-black/60 px-2 py-1">
+                    <p className="text-white text-xs truncate">{item.name}</p>
+                  </div>
+                </div>
+              ))}
+            </motion.div>
+          )}
           
           {/* Tags */}
           <motion.div 
@@ -410,32 +441,6 @@ const OutfitSuggestion = ({
                 </Button>
               </div>
             )}
-            
-            {/* Outfit Adjustment Buttons */}
-            <div className="grid grid-cols-2 gap-3 pt-1">
-              {onMakeWarmer && (
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  onClick={onMakeWarmer}
-                  className="flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500/20 to-red-500/20 hover:from-orange-500/30 hover:to-red-500/30 border border-white/10"
-                >
-                  <Thermometer className="h-4 w-4" />
-                  <span>Make It Warmer</span>
-                </Button>
-              )}
-              
-              {onWear && (
-                <Button 
-                  size="sm" 
-                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 border-0"
-                  onClick={() => onWear(outfit.id)}
-                >
-                  <Check className="h-4 w-4 mr-1" />
-                  Wear This Outfit
-                </Button>
-              )}
-            </div>
           </motion.div>
         </div>
       );
