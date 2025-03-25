@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
 import { Sun, CloudSun, Cloud, CloudRain, Umbrella } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -30,11 +31,50 @@ export const MobileMenu = ({
 
   if (!isOpen) return null;
 
+  const menuVariants = {
+    hidden: { opacity: 0, x: '100%' },
+    visible: { 
+      opacity: 1, 
+      x: 0,
+      transition: { 
+        type: 'spring',
+        stiffness: 300,
+        damping: 30
+      }
+    },
+    exit: { 
+      opacity: 0, 
+      x: '100%',
+      transition: { 
+        ease: 'easeInOut',
+        duration: 0.2
+      }  
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: i => ({ 
+      opacity: 1, 
+      y: 0,
+      transition: { 
+        delay: i * 0.05,
+        duration: 0.2
+      }
+    })
+  };
+
   return (
     <div 
       className="fixed inset-0 z-[9999] bg-purple-900/90 backdrop-blur-md mobile-menu-overlay"
     >
-      <div className="h-full flex flex-col p-4">
+      <motion.div 
+        className="h-full flex flex-col p-4"
+        variants={menuVariants}
+        initial="hidden"
+        animate="visible"
+        exit="exit"
+      >
         <div className="flex justify-end mb-2">
           <Button
             variant="ghost"
@@ -47,54 +87,80 @@ export const MobileMenu = ({
         </div>
 
         <nav className="flex flex-col items-center mt-6 space-y-4">
-          {navItems.map((item) => (
-            <Link
+          {navItems.map((item, i) => (
+            <motion.div
               key={item.path}
-              to={item.path}
-              onClick={onClose}
-              className={cn(
-                "text-xl font-medium transition-all duration-300 px-6 py-3 rounded-full w-full text-center",
-                currentPath === item.path
-                  ? "text-white bg-white/20 shadow-sm"
-                  : "text-white/80 hover:text-white hover:bg-white/10"
-              )}
+              custom={i}
+              variants={itemVariants}
+              initial="hidden"
+              animate="visible"
+              className="w-full"
             >
-              {item.name}
-            </Link>
+              <Link
+                to={item.path}
+                onClick={onClose}
+                className={cn(
+                  "text-lg font-medium transition-all duration-300 px-6 py-3 rounded-full w-full flex justify-center items-center",
+                  currentPath === item.path
+                    ? "text-white bg-white/20 shadow-sm"
+                    : "text-white/80 hover:text-white hover:bg-white/10"
+                )}
+              >
+                {item.name}
+              </Link>
+            </motion.div>
           ))}
           
           {!user && (
-            <Link
-              to="/auth"
-              onClick={onClose}
-              className="text-xl font-medium text-white hover:text-white transition-colors bg-white/10 hover:bg-white/20 px-6 py-3 rounded-full w-full text-center"
+            <motion.div 
+              custom={navItems.length}
+              variants={itemVariants}
+              initial="hidden"
+              animate="visible"
+              className="w-full"
             >
-              Sign In
-            </Link>
+              <Link
+                to="/auth"
+                onClick={onClose}
+                className="text-lg font-medium text-white hover:text-white transition-colors bg-white/10 hover:bg-white/20 px-6 py-3 rounded-full w-full flex justify-center items-center"
+              >
+                Sign In
+              </Link>
+            </motion.div>
           )}
         </nav>
 
         <div className="flex-grow"></div>
 
         {weather && (
-          <div className="flex items-center justify-center space-x-2 py-4">
+          <motion.div 
+            variants={itemVariants}
+            custom={navItems.length + 1}
+            initial="hidden"
+            animate="visible"
+            className="flex items-center justify-center space-x-2 py-4"
+          >
             <WeatherMobileDisplay weather={weather} />
-          </div>
+          </motion.div>
         )}
         
         {user && (
-          <button
+          <motion.button
+            variants={itemVariants}
+            custom={navItems.length + 2}
+            initial="hidden"
+            animate="visible"
             onClick={() => {
               onSignOut();
               onClose();
             }}
-            className="text-xl font-medium text-white hover:text-white/80 flex items-center justify-center gap-2 mb-8 bg-red-500/20 hover:bg-red-500/30 px-6 py-3 rounded-full transition-colors w-full"
+            className="text-lg font-medium text-white hover:text-white/80 flex items-center justify-center gap-2 mb-8 bg-red-500/20 hover:bg-red-500/30 px-6 py-3 rounded-full transition-colors w-full"
           >
             <LogOut className="h-5 w-5" />
             Sign out
-          </button>
+          </motion.button>
         )}
-      </div>
+      </motion.div>
     </div>
   );
 };

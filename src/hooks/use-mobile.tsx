@@ -19,7 +19,7 @@ export function useIsMobile() {
       setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
     }
 
-    // Add event listener with debounce for better performance
+    // Add event listener with better debounce for performance
     let timeoutId: ReturnType<typeof setTimeout>;
     const debouncedHandleResize = () => {
       clearTimeout(timeoutId);

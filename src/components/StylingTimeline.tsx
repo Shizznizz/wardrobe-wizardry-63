@@ -72,36 +72,36 @@ const StylingTimeline = () => {
               duration: 0.5
             }}
             viewport={{ once: true, margin: "-100px" }}
-            className={`mb-16 flex items-center ${
+            className={`mb-12 sm:mb-16 flex items-center ${
               isMobile ? "flex-col" : (index % 2 === 0 ? "flex-row" : "flex-row-reverse")
             } relative z-10`}
           >
             {/* Timeline node */}
-            <div className={`${isMobile ? "absolute top-0" : "absolute"} left-1/2 transform -translate-x-1/2 w-4 h-4 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 z-20`}></div>
+            <div className={`${isMobile ? "absolute top-0" : "absolute"} left-1/2 transform -translate-x-1/2 w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 z-20`}></div>
             
             {/* Content */}
             <div className={`${
               isMobile 
-                ? "w-full mt-8 text-center" 
+                ? "w-full mt-6 text-center px-4" 
                 : `w-5/12 ${index % 2 === 0 ? "pr-8 text-right" : "pl-8 text-left"}`
             }`}>
-              <span className="text-sm font-medium text-blue-300">{event.date}</span>
-              <h3 className={`${isMobile ? "text-base" : "text-lg"} font-semibold text-white mt-1`}>{event.title}</h3>
-              <p className={`text-white/70 mt-1 ${isMobile ? "text-sm" : ""}`}>{event.description}</p>
+              <span className="text-xs sm:text-sm font-medium text-blue-300">{event.date}</span>
+              <h3 className="text-sm sm:text-lg font-semibold text-white mt-1">{event.title}</h3>
+              <p className="text-white/70 mt-1 text-xs sm:text-sm">{event.description}</p>
               
               {/* Olivia's Comment */}
-              <div className={`mt-4 relative bg-white/10 backdrop-blur-sm rounded-lg ${isMobile ? "p-3" : "p-4"} border border-white/20`}>
-                <div className="flex items-start gap-3">
-                  <Avatar className={`${isMobile ? "h-6 w-6" : "h-8 w-8"} ring-2 ring-purple-500/50`}>
+              <div className={`mt-3 sm:mt-4 relative bg-white/10 backdrop-blur-sm rounded-lg p-3 sm:p-4 border border-white/20`}>
+                <div className="flex items-start gap-2 sm:gap-3">
+                  <Avatar className="h-6 w-6 sm:h-8 sm:w-8 ring-2 ring-purple-500/50">
                     <AvatarImage src="/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png" alt="Olivia Bloom" />
                     <AvatarFallback className="bg-gradient-to-br from-purple-400 to-pink-400">OB</AvatarFallback>
                   </Avatar>
                   <div>
                     <div className="flex items-center gap-1">
-                      <span className={`${isMobile ? "text-[10px]" : "text-xs"} font-medium text-white/90`}>Style Advice</span>
-                      <Sparkles className={`${isMobile ? "h-2.5 w-2.5" : "h-3 w-3"} text-yellow-300`} />
+                      <span className="text-[10px] sm:text-xs font-medium text-white/90">Style Advice</span>
+                      <Sparkles className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-yellow-300" />
                     </div>
-                    <p className={`${isMobile ? "text-xs" : "text-sm"} text-white/80 mt-1`}>{event.oliviaComment}</p>
+                    <p className="text-xs sm:text-sm text-white/80 mt-1">{event.oliviaComment}</p>
                   </div>
                 </div>
                 {/* Speech bubble triangle - hide on mobile */}
@@ -118,7 +118,7 @@ const StylingTimeline = () => {
             {/* Image */}
             <div className={`${
               isMobile 
-                ? "w-full mt-5" 
+                ? "w-full mt-4 px-4" 
                 : `w-5/12 ${index % 2 === 0 ? "pl-8" : "pr-8"}`
             }`}>
               <Card className="overflow-hidden rounded-lg border border-white/10 hover:border-white/20 transition-duration-300 neo-blur">
@@ -129,9 +129,9 @@ const StylingTimeline = () => {
                     
                     {/* Season themed styling */}
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="text-center p-4">
-                        <h4 className={`${isMobile ? "text-base" : "text-lg"} font-medium text-gray-800`}>{event.date.split(" ")[0]} Collection</h4>
-                        <p className={`${isMobile ? "text-xs" : "text-sm"} text-gray-700 mt-1`}>Coming soon</p>
+                      <div className="text-center p-3 sm:p-4">
+                        <h4 className="text-sm sm:text-lg font-medium text-gray-800">{event.date.split(" ")[0]} Collection</h4>
+                        <p className="text-xs sm:text-sm text-gray-700 mt-1">Coming soon</p>
                       </div>
                     </div>
                   </div>

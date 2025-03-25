@@ -39,16 +39,16 @@ const OutfitSelector = ({ outfits, clothingItems, onSelect, selectedOutfitId }: 
               <CarouselItem key={outfit.id} className={isMobile ? "basis-full" : "md:basis-1/2 lg:basis-1/2"}>
                 <div 
                   className={cn(
-                    "border rounded-lg p-4 h-full cursor-pointer transition-all glass-dark",
+                    "border rounded-lg p-3 sm:p-4 h-full cursor-pointer transition-all glass-dark",
                     isSelected 
                       ? "border-blue-400 ring-2 ring-blue-400/30" 
                       : "border-white/10 hover:border-white/30"
                   )}
                   onClick={() => handleSelect(outfit)}
                 >
-                  <h3 className="font-medium mb-2 text-white">{outfit.name}</h3>
+                  <h3 className="font-medium mb-2 text-white text-sm sm:text-base">{outfit.name}</h3>
                   
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-3 gap-1 sm:gap-2">
                     {outfit.items.slice(0, 3).map(itemId => {
                       const item = clothingItems.find(i => i.id === itemId);
                       return item ? (

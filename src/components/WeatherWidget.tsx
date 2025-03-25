@@ -129,7 +129,7 @@ const WeatherWidget = ({
   }, [city, country, onWeatherChange]);
 
   return (
-    <div className={cn(`overflow-hidden ${isMobile ? 'p-2' : ''}`, className)}>
+    <div className={cn(`overflow-hidden ${isMobile ? 'p-2' : 'p-4'}`, className)}>
       {isLoading ? (
         <WeatherLoading />
       ) : error ? (

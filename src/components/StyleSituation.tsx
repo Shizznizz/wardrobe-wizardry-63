@@ -67,10 +67,10 @@ const StyleSituation = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className={`w-full max-w-3xl mx-auto bg-slate-900/60 backdrop-blur-sm border border-purple-500/20 rounded-xl p-${isMobile ? '4' : '6'} shadow-xl`}
+      className="w-full max-w-3xl mx-auto bg-slate-900/60 backdrop-blur-sm border border-purple-500/20 rounded-xl p-3 sm:p-6 shadow-xl"
     >
-      <h3 className={`${isMobile ? 'text-lg' : 'text-xl'} font-semibold mb-4 text-center bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-purple-400 flex items-center justify-center gap-2`}>
-        <Sparkles className={`${isMobile ? 'h-4 w-4' : 'h-5 w-5'} text-pink-400`} />
+      <h3 className="text-lg sm:text-xl font-semibold mb-4 text-center bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-purple-400 flex items-center justify-center gap-2">
+        <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-pink-400" />
         Style Situation
       </h3>
       
@@ -79,14 +79,14 @@ const StyleSituation = () => {
           value={situation}
           onChange={(e) => setSituation(e.target.value)}
           placeholder={isMobile ? "Describe event (e.g., 'Date, 15°C')" : "Describe your event (e.g., 'Date in 15°C')"}
-          className="flex-grow bg-slate-800/60 border-purple-500/30 text-white placeholder:text-slate-400"
+          className="flex-grow bg-slate-800/60 border-purple-500/30 text-white placeholder:text-slate-400 text-sm sm:text-base"
         />
         <Button 
           type="submit" 
           className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
           disabled={isTyping || !situation.trim()}
         >
-          <SendHorizontal className={`${isMobile ? 'h-4 w-4' : 'h-5 w-5'}`} />
+          <SendHorizontal className="h-4 w-4 sm:h-5 sm:w-5" />
         </Button>
       </form>
       
@@ -94,17 +94,17 @@ const StyleSituation = () => {
         <motion.div 
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-slate-800/40 backdrop-blur-sm rounded-lg p-4 border border-purple-500/20"
+          className="bg-slate-800/40 backdrop-blur-sm rounded-lg p-3 sm:p-4 border border-purple-500/20"
         >
-          <div className="flex gap-3">
-            <Avatar className={`${isMobile ? 'h-7 w-7' : 'h-8 w-8'} border border-pink-500/50`}>
+          <div className="flex gap-2 sm:gap-3">
+            <Avatar className="h-7 w-7 sm:h-8 sm:w-8 border border-pink-500/50">
               <AvatarImage src="/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png" alt="Olivia Bloom" />
               <AvatarFallback className="bg-gradient-to-r from-purple-600 to-pink-500">OB</AvatarFallback>
             </Avatar>
             
             <div className="flex-1">
-              <div className={`${isMobile ? 'text-[10px]' : 'text-xs'} text-purple-300 mb-1`}>Olivia's suggestion:</div>
-              <p className={`text-white ${isMobile ? 'text-xs' : 'text-sm'}`}>
+              <div className="text-[10px] sm:text-xs text-purple-300 mb-1">Olivia's suggestion:</div>
+              <p className="text-white text-xs sm:text-sm">
                 {typedText}
                 {isTyping && (
                   <span className="inline-block w-2 h-4 bg-purple-400 ml-1 animate-pulse"></span>
