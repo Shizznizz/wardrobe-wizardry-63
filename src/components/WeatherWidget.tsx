@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { WeatherInfo } from '@/lib/types';
 import { toast } from 'sonner';
@@ -126,17 +126,15 @@ const WeatherWidget = ({
   }, [city, country, onWeatherChange]);
 
   return (
-    <Card className={cn("overflow-hidden bg-black/30 backdrop-blur-sm shadow-soft border border-white/20 text-white mx-auto", className)}>
-      <CardContent className="p-4">
-        {isLoading ? (
-          <WeatherLoading />
-        ) : error ? (
-          <WeatherError error={error} weather={weather} />
-        ) : weather ? (
-          <WeatherDisplay weather={weather} />
-        ) : null}
-      </CardContent>
-    </Card>
+    <div className={cn("overflow-hidden", className)}>
+      {isLoading ? (
+        <WeatherLoading />
+      ) : error ? (
+        <WeatherError error={error} weather={weather} />
+      ) : weather ? (
+        <WeatherDisplay weather={weather} />
+      ) : null}
+    </div>
   );
 };
 

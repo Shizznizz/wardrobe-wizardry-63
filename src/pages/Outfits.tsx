@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -758,24 +757,17 @@ const Outfits = () => {
                 </Form>
                 
                 <WeatherWidget
-                  className={`${isMobile ? 'max-w-[280px] mx-auto' : 'w-full'} glass-dark`}
+                  className={`${isMobile ? 'max-w-sm mx-auto' : 'w-full'}`}
                   onWeatherChange={handleWeatherChange}
                   city={selectedLocation.city}
                   country={selectedLocation.country}
                   savePreferences={!!user}
                 />
-                
-                {!isWeatherLoading && weather && (
-                  <div className={`bg-purple-800/30 p-4 rounded-lg border border-white/10 backdrop-blur-md ${isMobile ? 'text-center' : ''}`}>
-                    <p className="font-medium text-white/90">{getWeatherRecommendation()}</p>
-                  </div>
-                )}
               </div>
               
               <div className="space-y-4">
                 <h2 className={`text-2xl font-bold ${isMobile ? 'text-center' : ''} bg-clip-text text-transparent bg-gradient-to-r from-purple-300 to-pink-300`}>Today's Suggestion</h2>
                 
-                {/* New outfit filters */}
                 <div className="bg-purple-900/20 backdrop-blur-sm rounded-lg p-3 border border-white/10 mb-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
