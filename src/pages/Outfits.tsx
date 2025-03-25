@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -688,6 +689,99 @@ const Outfits = () => {
           </div>
         </div>
         
+        {/* Weather Update Section - Full Width */}
+        <div className="mb-8">
+          <Card className="bg-gradient-to-br from-gray-900/80 to-black/90 border-white/10 overflow-hidden">
+            <CardContent className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Weather Location Form - Left Side */}
+                <div>
+                  <h3 className="text-xl font-semibold mb-4">Weather Location</h3>
+                  
+                  <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                      <FormField
+                        control={form.control}
+                        name="country"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Country</FormLabel>
+                            <Select 
+                              onValueChange={field.onChange} 
+                              defaultValue={field.value}
+                            >
+                              <FormControl>
+                                <SelectTrigger className="bg-white/10 border-white/20">
+                                  <SelectValue placeholder="Select a country" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {countries.map((country) => (
+                                  <SelectItem key={country.code} value={country.code}>
+                                    {country.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form.control}
+                        name="city"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>City</FormLabel>
+                            <Select
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                              disabled={!selectedCountry || availableCities.length === 0}
+                            >
+                              <FormControl>
+                                <SelectTrigger className="bg-white/10 border-white/20">
+                                  <SelectValue placeholder="Select a city" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {availableCities.map((city) => (
+                                  <SelectItem key={city} value={city}>
+                                    {city}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <Button type="submit" className="w-full">
+                        <MapPin className="h-4 w-4 mr-2" />
+                        Update Weather
+                      </Button>
+                    </form>
+                  </Form>
+                </div>
+                
+                {/* Live Weather Update - Right Side */}
+                <div>
+                  <h3 className="text-xl font-semibold mb-4">Live Weather Update</h3>
+                  {isWeatherLoading ? (
+                    <Skeleton className="h-32 w-full bg-white/10" />
+                  ) : (
+                    <WeatherWidget 
+                      className="bg-gradient-to-br from-gray-900/80 to-black/90 border border-white/10 rounded-lg overflow-hidden"
+                      onWeatherChange={handleWeatherChange}
+                      city={selectedLocation.city}
+                      country={selectedLocation.country}
+                    />
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+        
         {showLocationAlert && (
           <Alert variant="destructive" className="mb-6 bg-orange-900/50 border-orange-600">
             <AlertTriangle className="h-4 w-4" />
@@ -732,83 +826,6 @@ const Outfits = () => {
               </div>
               
               <div className="lg:col-span-1 space-y-6">
-                <Card className="bg-gradient-to-br from-gray-900/80 to-black/90 border-white/10 overflow-hidden">
-                  <div className="px-4 py-4">
-                    <Form {...form}>
-                      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                        <h3 className="text-xl font-semibold mb-2">Update Location</h3>
-                        
-                        <FormField
-                          control={form.control}
-                          name="country"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Country</FormLabel>
-                              <Select 
-                                onValueChange={field.onChange} 
-                                defaultValue={field.value}
-                              >
-                                <FormControl>
-                                  <SelectTrigger className="bg-white/10 border-white/20">
-                                    <SelectValue placeholder="Select a country" />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                  {countries.map((country) => (
-                                    <SelectItem key={country.code} value={country.code}>
-                                      {country.name}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </FormItem>
-                          )}
-                        />
-                        
-                        <FormField
-                          control={form.control}
-                          name="city"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>City</FormLabel>
-                              <Select
-                                onValueChange={field.onChange}
-                                defaultValue={field.value}
-                                disabled={!selectedCountry || availableCities.length === 0}
-                              >
-                                <FormControl>
-                                  <SelectTrigger className="bg-white/10 border-white/20">
-                                    <SelectValue placeholder="Select a city" />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                  {availableCities.map((city) => (
-                                    <SelectItem key={city} value={city}>
-                                      {city}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </FormItem>
-                          )}
-                        />
-                        
-                        <Button type="submit" className="w-full">
-                          <MapPin className="h-4 w-4 mr-2" />
-                          Update Weather
-                        </Button>
-                      </form>
-                    </Form>
-                  </div>
-                </Card>
-                
-                <WeatherWidget 
-                  className="bg-gradient-to-br from-gray-900/80 to-black/90 border border-white/10 rounded-lg overflow-hidden"
-                  onWeatherChange={handleWeatherChange}
-                  city={selectedLocation.city}
-                  country={selectedLocation.country}
-                />
-                
                 <StyleTip />
               </div>
             </div>
