@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ClothingItem, Outfit, WeatherInfo, TimeOfDay, Activity } from '@/lib/types';
@@ -40,8 +39,8 @@ interface OutfitSuggestionProps {
   weather?: WeatherInfo;
   timeOfDay?: TimeOfDay;
   activity?: Activity;
-  suggestion?: OutfitSuggestionItem; // Add suggestion prop for StyleDiscoveryQuiz
-  onWear?: (outfitId?: string) => void; // Make outfitId optional
+  suggestion?: OutfitSuggestionItem;
+  onWear?: (outfitId?: string) => void;
   onRefresh?: () => void;
   onLike?: () => void;
   onDislike?: () => void;
@@ -49,7 +48,7 @@ interface OutfitSuggestionProps {
   onChangeTop?: () => void;
   onChangeBottom?: () => void;
   onToggleFavorite?: () => void;
-  onReset?: () => void; // Add onReset for StyleDiscoveryQuiz
+  onReset?: () => void;
 }
 
 const OutfitSuggestion: React.FC<OutfitSuggestionProps> = ({
