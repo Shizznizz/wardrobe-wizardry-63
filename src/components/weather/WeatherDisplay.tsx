@@ -98,7 +98,7 @@ const WeatherDisplay = ({ weather }: WeatherDisplayProps) => {
           duration: 1.5, 
           repeat: Infinity, 
           ease: "easeInOut",
-          repeatType: "mirror" // Fixed: Change from string to one of the allowed literal types
+          repeatType: "mirror" // Fixed: Use literal type instead of string
         }
       }
     };
