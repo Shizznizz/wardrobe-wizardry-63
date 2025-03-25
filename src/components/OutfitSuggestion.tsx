@@ -26,6 +26,7 @@ interface OutfitSuggestionProps {
   onMakeWarmer?: () => void;
   onChangeTop?: () => void;
   onChangeBottom?: () => void;
+  onToggleFavorite?: () => void; // Added the missing prop
 }
 
 const OutfitSuggestion = ({ 
