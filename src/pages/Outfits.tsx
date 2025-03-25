@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -639,8 +638,8 @@ const Outfits = () => {
     <div className="min-h-screen bg-background pb-20">
       <Header />
       
-      {/* Futuristic Title Banner */}
-      <div className="w-full pt-10 pb-8 bg-gradient-to-r from-violet-800 via-purple-700 to-indigo-800 text-white relative overflow-hidden mt-0">
+      {/* Futuristic Title Banner with proper spacing */}
+      <div className="w-full pt-20 pb-8 bg-gradient-to-r from-violet-800 via-purple-700 to-indigo-800 text-white relative overflow-hidden mt-16">
         <div className="absolute inset-0 opacity-20">
           <div className="absolute top-0 left-[10%] w-20 h-20 rounded-full bg-purple-300 blur-xl"></div>
           <div className="absolute top-[30%] right-[5%] w-32 h-32 rounded-full bg-indigo-400 blur-xl"></div>
