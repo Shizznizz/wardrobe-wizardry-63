@@ -623,93 +623,28 @@ const Outfits = () => {
   };
   
   const userStyles = sampleUserPreferences.favoriteStyles || [];
+
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good Morning";
+    if (hour < 18) return "Good Afternoon";
+    return "Good Evening";
+  };
   
   return (
     <div className="min-h-screen bg-background pb-20">
       <Header />
       
-      <div className="container px-4 sm:px-6 max-w-6xl mx-auto">
-        <div className="w-full py-6 md:py-8 mb-6 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl shadow-md text-white">
-          <div className="container max-w-6xl mx-auto px-4">
-            <h1 className="text-3xl md:text-4xl font-bold text-center">Your Perfect Outfit Awaits</h1>
-            <p className="text-lg text-center mt-2 text-white/80">Dress confidently with personalized style recommendations for any occasion</p>
-          </div>
+      <div className="w-full py-6 md:py-8 bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
+        <div className="container px-4 sm:px-6 max-w-6xl mx-auto">
+          <h1 className="text-3xl md:text-4xl font-bold text-center">{getGreeting()}, {user?.user_metadata?.full_name || 'Style Explorer'}</h1>
+          <p className="text-lg text-center mt-2 text-white/80">Your perfect outfit awaits. Let's dress to impress today!</p>
         </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          {/* Weather Widget */}
-          <div className="h-full">
-            <h2 className="text-xl font-bold mb-3">Current Weather</h2>
-            <WeatherWidget 
-              onWeatherChange={handleWeatherChange}
-            />
-          </div>
-          
-          {/* Olivia's Advice */}
-          <div className="h-full">
-            <h2 className="text-xl font-bold mb-3">Olivia's Style Advice</h2>
-            <div className="rounded-xl border shadow-sm bg-gradient-to-br from-pink-50 to-purple-50 dark:from-purple-950/20 dark:to-indigo-950/30 p-5 flex flex-col h-[calc(100%-32px)]">
-              <div className="flex items-start gap-3 mb-4">
-                <Avatar className="h-10 w-10 border-2 border-white/30 shadow-sm">
-                  <AvatarImage src="/lovable-uploads/28e5664c-3c8a-4b7e-9c99-065ad489583f.png" alt="Olivia" />
-                  <AvatarFallback className="bg-purple-600">OB</AvatarFallback>
-                </Avatar>
-                <div>
-                  <p className="font-semibold text-sm">Olivia Bloom</p>
-                  <p className="text-xs text-muted-foreground">Style Assistant</p>
-                </div>
-              </div>
-              
-              <div className="flex-1 space-y-4">
-                <div className="bg-white/60 dark:bg-gray-800/40 rounded-lg p-3 shadow-sm border border-white/40 dark:border-gray-700/40 text-sm">
-                  {weather ? (
-                    <p>Based on the current weather in {selectedLocation.city || 'your area'} ({weather.temperature}°{weather.unit || 'C'}, {weather.condition}), I've picked an outfit that's both stylish and practical.</p>
-                  ) : (
-                    <p>I'll help you dress appropriately for the weather once we have your location.</p>
-                  )}
-                </div>
-                
-                <div className="bg-white/60 dark:bg-gray-800/40 rounded-lg p-3 shadow-sm border border-white/40 dark:border-gray-700/40 text-sm">
-                  <p>Your style preferences show you enjoy {userStyles.join(', ') || 'versatile'} styles. I've taken this into account for today's recommendation.</p>
-                </div>
-                
-                {suggestedOutfit && (
-                  <div className="bg-white/60 dark:bg-gray-800/40 rounded-lg p-3 shadow-sm border border-white/40 dark:border-gray-700/40 text-sm">
-                    <p>The "{suggestedOutfit.name}" outfit would be perfect for today. It works well for {suggestedOutfit.occasions?.join(', ') || 'various'} occasions, making it versatile for your day.</p>
-                  </div>
-                )}
-                
-                {activity && (
-                  <div className="bg-white/60 dark:bg-gray-800/40 rounded-lg p-3 shadow-sm border border-white/40 dark:border-gray-700/40 text-sm">
-                    <p>Since you're planning for {activity} activities today, I've selected items that provide the right balance of comfort and style.</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        {/* Outfit Suggestion - Full Width */}
-        <div className="mb-8">
-          <h2 className="text-xl font-bold mb-3">Today's Outfit Suggestion</h2>
-          <div className="bg-white dark:bg-gray-950 rounded-xl border shadow-sm p-4 md:p-6">
-            <OutfitSuggestion 
-              outfit={suggestedOutfit}
-              onLike={handleLikeOutfit}
-              onDislike={handleDislikeOutfit}
-              onWear={() => handleWearOutfit(suggestedOutfit.id)}
-              onRefresh={handleRegenerateOutfit}
-              onMakeWarmer={handleMakeWarmer}
-              onChangeTop={handleChangeTop}
-              onChangeBottom={handleChangeBottom}
-              weather={weather || undefined}
-              items={sampleClothingItems}
-            />
-          </div>
-        </div>
-        
+      </div>
+      
+      <div className="container px-4 sm:px-6 max-w-6xl mx-auto mt-8">
         {/* Location Settings Form */}
-        <div className="mt-8 bg-muted/50 rounded-xl border p-4 md:p-6">
+        <div className="mb-8 bg-muted/50 rounded-xl border p-4 md:p-6">
           <h2 className="text-xl font-bold mb-4">Location Settings</h2>
           
           {showLocationAlert && (
@@ -789,6 +724,82 @@ const Outfits = () => {
               </Button>
             </form>
           </Form>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          {/* Weather Widget */}
+          <div className="h-full">
+            <h2 className="text-xl font-bold mb-3">Current Weather</h2>
+            <WeatherWidget 
+              onWeatherChange={handleWeatherChange}
+              city={selectedLocation.city}
+              country={selectedLocation.country}
+              savePreferences={true}
+              showError={true}
+            />
+          </div>
+          
+          {/* Olivia's Advice */}
+          <div className="h-full">
+            <h2 className="text-xl font-bold mb-3">Olivia's Style Advice</h2>
+            <div className="rounded-xl border shadow-sm bg-gradient-to-br from-pink-50 to-purple-50 dark:from-purple-950/20 dark:to-indigo-950/30 p-5 flex flex-col h-[calc(100%-32px)]">
+              <div className="flex items-start gap-3 mb-4">
+                <Avatar className="h-10 w-10 border-2 border-white/30 shadow-sm">
+                  <AvatarImage src="/lovable-uploads/28e5664c-3c8a-4b7e-9c99-065ad489583f.png" alt="Olivia" />
+                  <AvatarFallback className="bg-purple-600">OB</AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="font-semibold text-sm">Olivia Bloom</p>
+                  <p className="text-xs text-muted-foreground">Style Assistant</p>
+                </div>
+              </div>
+              
+              <div className="flex-1 space-y-4">
+                <div className="bg-white/60 dark:bg-gray-800/40 rounded-lg p-3 shadow-sm border border-white/40 dark:border-gray-700/40 text-sm">
+                  {weather ? (
+                    <p>Based on the current weather in {selectedLocation.city || 'your area'} ({weather.temperature}°{weather.unit || 'C'}, {weather.condition}), I've picked an outfit that's both stylish and practical.</p>
+                  ) : (
+                    <p>I'll help you dress appropriately for the weather once we have your location.</p>
+                  )}
+                </div>
+                
+                <div className="bg-white/60 dark:bg-gray-800/40 rounded-lg p-3 shadow-sm border border-white/40 dark:border-gray-700/40 text-sm">
+                  <p>Your style preferences show you enjoy {userStyles && userStyles.length > 0 ? userStyles.join(', ') : 'versatile'} styles. I've taken this into account for today's recommendation.</p>
+                </div>
+                
+                {suggestedOutfit && (
+                  <div className="bg-white/60 dark:bg-gray-800/40 rounded-lg p-3 shadow-sm border border-white/40 dark:border-gray-700/40 text-sm">
+                    <p>The "{suggestedOutfit.name}" outfit would be perfect for today. It works well for {suggestedOutfit.occasions && suggestedOutfit.occasions.length > 0 ? suggestedOutfit.occasions.join(', ') : 'various'} occasions, making it versatile for your day.</p>
+                  </div>
+                )}
+                
+                {activity && (
+                  <div className="bg-white/60 dark:bg-gray-800/40 rounded-lg p-3 shadow-sm border border-white/40 dark:border-gray-700/40 text-sm">
+                    <p>Since you're planning for {activity} activities today, I've selected items that provide the right balance of comfort and style.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Outfit Suggestion - Full Width */}
+        <div className="mb-8">
+          <h2 className="text-xl font-bold mb-3">Today's Outfit Suggestion</h2>
+          <div className="bg-white dark:bg-gray-950 rounded-xl border shadow-sm p-4 md:p-6">
+            <OutfitSuggestion 
+              outfit={suggestedOutfit}
+              onLike={handleLikeOutfit}
+              onDislike={handleDislikeOutfit}
+              onWear={() => handleWearOutfit(suggestedOutfit.id)}
+              onRefresh={handleRegenerateOutfit}
+              onMakeWarmer={handleMakeWarmer}
+              onChangeTop={handleChangeTop}
+              onChangeBottom={handleChangeBottom}
+              weather={weather || undefined}
+              items={sampleClothingItems}
+            />
+          </div>
         </div>
         
         {/* Activity and Time Filters */}
