@@ -34,30 +34,6 @@
     --ring: 210 90% 50%;
 
     --radius: 0.75rem;
-    
-    --black: #000000;
-    --white: #ffffff;
-    --gray: #808080;
-    --red: #ff0000;
-    --blue: #0000ff;
-    --green: #008000;
-    --yellow: #ffff00;
-    --purple: #800080;
-    --pink: #ffc0cb;
-    --orange: #ffa500;
-    --brown: #a52a2a;
-    --multicolor: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet);
-    
-    --space-xs: 0.25rem;
-    --space-sm: 0.5rem;
-    --space-md: 1rem;
-    --space-lg: 1.5rem;
-    --space-xl: 2rem;
-    --space-2xl: 3rem;
-    
-    --transition-fast: 150ms;
-    --transition-normal: 300ms;
-    --transition-slow: 500ms;
   }
 
   .dark {
@@ -329,47 +305,5 @@
   .card-futuristic:hover {
     @apply shadow-lg shadow-blue-500/10;
     transform: translateY(-8px);
-  }
-
-  .outfit-item-card {
-    @apply relative overflow-hidden rounded-lg bg-black/20 border border-white/10 transition-all duration-300;
-  }
-  
-  .outfit-item-image {
-    @apply aspect-square object-cover w-full h-full transition-transform duration-300;
-  }
-  
-  .outfit-item-card:hover .outfit-item-image {
-    @apply scale-105;
-  }
-  
-  .outfit-item-details {
-    @apply absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3;
-  }
-  
-  .outfit-section {
-    @apply p-5 bg-white/10 backdrop-blur-md rounded-xl border border-white/20 mb-6;
-  }
-  
-  .section-header {
-    @apply text-xl font-semibold text-white flex items-center gap-2 mb-4;
-  }
-  
-  .fade-in {
-    animation: fadeIn var(--transition-normal) ease forwards;
-  }
-  
-  .fade-out {
-    animation: fadeOut var(--transition-normal) ease forwards;
-  }
-  
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  
-  @keyframes fadeOut {
-    from { opacity: 1; transform: translateY(0); }
-    to { opacity: 0; transform: translateY(-10px); }
   }
 }

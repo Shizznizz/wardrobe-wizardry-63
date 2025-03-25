@@ -1,7 +1,8 @@
+
 import { useState } from 'react';
 import { ClothingItem, ClothingType, ClothingColor, ClothingSeason, Outfit, ClothingOccasion, ClothingMaterial } from '@/lib/types';
 import { cn } from '@/lib/utils';
-import { Heart, Filter, Shirt, Umbrella, Sunset, Moon, Check, ShoppingBag, CircleUser, Footprints, Star, Gift, Briefcase, Sparkles, PlusCircle, Info, Tag } from 'lucide-react';
+import { Heart, Filter, Shirt, Umbrella, Tag, CircleUser, ShoppingBag, Footprints, Star, Gift, Briefcase, Sparkles, PlusCircle, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -973,11 +974,10 @@ const WardrobeGrid = ({ items, onToggleFavorite, compactView = false }: Wardrobe
                     key={outfit.id}
                     outfit={outfit}
                     items={items}
-                    onWear={() => handleWearOutfit(outfit.id)}
+                    onWear={handleWearOutfit}
                     onRefresh={handleRefreshOutfit}
-                    onLike={() => handleLikeOutfit()}
-                    onDislike={() => handleDislikeOutfit()}
-                    onToggleFavorite={() => onToggleFavorite(outfit.id)}
+                    onLike={handleLikeOutfit}
+                    onDislike={handleDislikeOutfit}
                   />
                 ))}
               </div>
@@ -990,4 +990,3 @@ const WardrobeGrid = ({ items, onToggleFavorite, compactView = false }: Wardrobe
 };
 
 export default WardrobeGrid;
-

@@ -1,305 +1,462 @@
-import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ClothingItem, Outfit, WeatherInfo, TimeOfDay, Activity } from '@/lib/types';
-import { 
-  ThumbsUp, 
-  ThumbsDown, 
-  Thermometer, 
-  RefreshCw, 
-  ThermometerSun, 
-  Shirt, 
-  PanelBottom, 
-  Heart, 
-  Stars, 
-  Sun, 
-  Moon,
-  Briefcase,
-  Dumbbell,
-  PartyPopper,
-  Coffee,
-  HeartHandshake
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
-import { useIsMobile } from '@/hooks/use-mobile';
 
-// Define an interface for the suggestion object passed from StyleDiscoveryQuiz
-interface OutfitSuggestionItem {
-  title: string;
-  description: string;
-  image: string;
-  items: string[];
-}
+import { motion } from 'framer-motion';
+import { Check, ArrowRight, Sparkles, MessageCircle, Thermometer, RefreshCw, ThumbsUp, ThumbsDown, ArrowDown, ArrowUp, MapPin } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { ClothingItem, Outfit, WeatherInfo, TimeOfDay, Activity } from '@/lib/types';
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 
 interface OutfitSuggestionProps {
+  suggestion?: {
+    title: string;
+    description: string;
+    image: string;
+    items: string[];
+  };
   outfit?: Outfit;
   items?: ClothingItem[];
   weather?: WeatherInfo;
   timeOfDay?: TimeOfDay;
   activity?: Activity;
-  suggestion?: OutfitSuggestionItem;
-  onWear?: (outfitId?: string) => void;
+  onReset?: () => void;
+  onWear?: (outfitId: string) => void;
   onRefresh?: () => void;
   onLike?: () => void;
   onDislike?: () => void;
   onMakeWarmer?: () => void;
   onChangeTop?: () => void;
   onChangeBottom?: () => void;
-  onToggleFavorite?: () => void;
-  onReset?: () => void;
 }
 
-const OutfitSuggestion: React.FC<OutfitSuggestionProps> = ({
-  outfit,
-  items = [],
-  weather,
+const OutfitSuggestion = ({ 
+  suggestion, 
+  outfit, 
+  items, 
+  weather, 
   timeOfDay,
   activity,
-  suggestion,
-  onWear,
-  onRefresh,
-  onLike,
+  onReset, 
+  onWear, 
+  onRefresh, 
+  onLike, 
   onDislike,
   onMakeWarmer,
   onChangeTop,
-  onChangeBottom,
-  onToggleFavorite,
-  onReset
-}) => {
-  const isMobile = useIsMobile();
+  onChangeBottom
+}: OutfitSuggestionProps) => {
   
-  // If we have a suggestion (from StyleDiscoveryQuiz) but no outfit
-  if (suggestion && !outfit) {
-    return (
-      <div className="py-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 20 }}
-          transition={{ duration: 0.3 }}
-          className="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-purple-500/20"
-        >
-          <h3 className="text-lg font-semibold mb-3">{suggestion.title}</h3>
-          <div className="aspect-video rounded-lg overflow-hidden mb-4 bg-gray-900/50">
-            <img src={suggestion.image} alt={suggestion.title} className="w-full h-full object-cover" />
-          </div>
-          <p className="text-sm text-white/80 mb-3">{suggestion.description}</p>
-          <div className="space-y-2 mb-4">
-            {suggestion.items.map((item, idx) => (
-              <div key={idx} className="flex items-center gap-2 text-sm">
-                <div className="h-2 w-2 rounded-full bg-purple-500" />
-                <span>{item}</span>
-              </div>
-            ))}
-          </div>
-          <div className="flex justify-between mt-4">
-            <Button variant="outline" size="sm" onClick={onReset} className="bg-white/10 border-white/20 hover:bg-white/20">
-              Try Again
-            </Button>
-            <Button className="bg-gradient-to-r from-pink-500 to-purple-600 text-white">
-              Save Outfit
-            </Button>
-          </div>
-        </motion.div>
-      </div>
-    );
-  }
-
-  // If we don't have an outfit or items, return nothing
-  if (!outfit || items.length === 0) {
-    return null;
-  }
+  // Framer Motion variants for animations
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: (i: number) => ({
+      opacity: 1,
+      y: 0,
+      transition: {
+        delay: i * 0.15,
+        duration: 0.5,
+        ease: "easeOut"
+      }
+    })
+  };
   
-  // Filter the items to only show the ones in the outfit
-  const outfitItems = outfit.items
-    .map(id => items.find(item => item.id === id))
-    .filter(item => item !== undefined) as ClothingItem[];
-
-  const getActivityIcon = (activity?: Activity) => {
-    if (!activity) return null;
-    
-    switch (activity) {
-      case 'work':
-        return <Briefcase className="h-4 w-4" />;
-      case 'sport':
-        return <Dumbbell className="h-4 w-4" />;
-      case 'party':
-        return <PartyPopper className="h-4 w-4" />;
-      case 'date':
-        return <HeartHandshake className="h-4 w-4" />;
-      case 'casual':
-        return <Coffee className="h-4 w-4" />;
-      default:
-        return null;
+  const buttonVariants = {
+    hidden: { opacity: 0, scale: 0.9 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      transition: {
+        delay: 0.6,
+        duration: 0.3
+      }
     }
   };
-
-  const getTimeIcon = (time?: TimeOfDay) => {
-    if (!time) return null;
+  
+  // Generate dynamic heading based on weather and location
+  const getDynamicHeading = () => {
+    if (!weather) return "Olivia's Outfit Pick for You";
     
-    if (time === 'morning' || time === 'afternoon') {
-      return <Sun className="h-4 w-4" />;
-    } else {
-      return <Moon className="h-4 w-4" />;
+    // Create personalized heading based on available information
+    const locationText = weather.city ? `for ${weather.city}` : '';
+    const weatherText = weather.temperature !== undefined ? ` (${weather.temperature}°C)` : '';
+    
+    if (activity && weather.city) {
+      return `Your Perfect ${activity} Outfit ${locationText}${weatherText}`;
+    } else if (weather.city) {
+      return `Olivia's Pick ${locationText} Today${weatherText}`;
+    } else if (weather.temperature !== undefined) {
+      return `Your Perfect Outfit for ${weather.temperature}°C ${weather.condition}`;
     }
+    
+    return "Olivia's Personalized Outfit Pick";
+  };
+  
+  // Determine what to render based on provided props
+  const renderContent = () => {
+    // If we have a suggestion object (used in the quiz)
+    if (suggestion) {
+      return (
+        <>
+          <div className="mb-3 flex justify-center">
+            <div className="bg-gradient-to-r from-green-400 to-emerald-500 text-white px-3 py-1 rounded-full text-sm flex items-center">
+              <Check className="h-4 w-4 mr-1" /> Perfect Match Found!
+            </div>
+          </div>
+          
+          <h3 className="text-xl md:text-2xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-purple-400">
+            {suggestion.title}
+          </h3>
+          
+          <div className="relative rounded-lg overflow-hidden mb-4 max-w-sm mx-auto mt-4">
+            <img 
+              src={suggestion.image} 
+              alt={suggestion.title} 
+              className="w-full object-cover shadow-lg h-64"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-purple-900/70 via-transparent to-transparent flex items-end">
+              <div className="p-4 w-full">
+                <div className="text-xs uppercase tracking-wider text-purple-200 mb-1 font-semibold">Olivia says...</div>
+                <p className="text-white italic text-sm">
+                  "{suggestion.description}"
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-white/5 rounded-lg p-4 mb-6">
+            <h4 className="text-sm font-medium text-purple-200 mb-2 flex items-center justify-center">
+              <Sparkles className="h-4 w-4 mr-1 text-purple-300" /> Key Pieces
+            </h4>
+            <ul className="space-y-2">
+              {suggestion.items.map((item, index) => (
+                <li 
+                  key={index}
+                  className="text-sm text-white/80 flex items-center gap-2"
+                >
+                  <div className="h-1.5 w-1.5 rounded-full bg-pink-400"></div>
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+          
+          <div className="flex gap-4 justify-center">
+            {onReset && (
+              <Button
+                onClick={onReset}
+                variant="outline"
+                className="border-purple-500/30 text-purple-300 hover:bg-purple-500/10"
+              >
+                Try Again
+              </Button>
+            )}
+            
+            <Button className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700">
+              <span>Explore More</span>
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
+        </>
+      );
+    }
+    
+    // If we have an outfit object (used in wardrobe and outfits pages)
+    if (outfit && items) {
+      // Find the actual items from the outfit.items array (which contains ids)
+      const outfitItems = outfit.items.map(itemId => 
+        items.find(item => item.id === itemId)
+      ).filter(Boolean);
+      
+      // Group items by category (assuming first is top, second is bottom, etc.)
+      const topItem = outfitItems[0];
+      const bottomItem = outfitItems[1];
+      const accessoryItems = outfitItems.slice(2);
+      
+      return (
+        <div className="space-y-5">
+          {/* Dynamic Heading */}
+          <motion.h3 
+            className="text-2xl font-semibold mb-3 text-white/90 flex items-center justify-center md:justify-start gap-2"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            {weather?.city && <MapPin className="h-5 w-5 text-purple-400" />}
+            {getDynamicHeading()}
+          </motion.h3>
+
+          {/* Visual Flow Container */}
+          <div className="relative">
+            {/* Top Item with animation */}
+            {topItem && (
+              <motion.div 
+                className="mb-6 relative"
+                initial="hidden"
+                animate="visible"
+                custom={0}
+                variants={itemVariants}
+              >
+                <HoverCard>
+                  <HoverCardTrigger asChild>
+                    <div className="relative rounded-lg overflow-hidden border border-white/20 shadow-md group cursor-pointer max-w-[85%] mx-auto">
+                      <motion.img 
+                        src={topItem.imageUrl} 
+                        alt={topItem.name} 
+                        className="w-full aspect-square object-cover transition-all duration-300 group-hover:scale-110"
+                        whileHover={{ scale: 1.05 }}
+                      />
+                      <div className="absolute bottom-0 left-0 right-0 bg-black/60 p-2 text-sm text-white truncate">
+                        {topItem.name}
+                      </div>
+                      
+                      {/* Change top button */}
+                      {onChangeTop && (
+                        <div className="absolute top-2 right-2">
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            onClick={onChangeTop}
+                            className="bg-black/40 backdrop-blur-sm border-white/20 text-white text-xs p-1.5 h-auto"
+                          >
+                            <RefreshCw className="h-3 w-3 mr-1" />
+                            Change
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </HoverCardTrigger>
+                  <HoverCardContent className="w-80 bg-slate-800 border-slate-700 text-white">
+                    <div className="space-y-2">
+                      <h4 className="font-medium">{topItem.name}</h4>
+                      <p className="text-sm text-slate-300">{topItem.type} • {topItem.color}</p>
+                      <img 
+                        src={topItem.imageUrl} 
+                        alt={topItem.name} 
+                        className="w-full rounded-md object-cover aspect-square"
+                      />
+                    </div>
+                  </HoverCardContent>
+                </HoverCard>
+                
+                {/* Downward arrow */}
+                <motion.div 
+                  className="flex justify-center my-2"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3, duration: 0.5 }}
+                >
+                  <ArrowDown className="h-5 w-5 text-purple-400 animate-bounce" />
+                </motion.div>
+              </motion.div>
+            )}
+            
+            {/* Bottom Item with animation */}
+            {bottomItem && (
+              <motion.div 
+                className="mb-6 relative"
+                initial="hidden"
+                animate="visible"
+                custom={1}
+                variants={itemVariants}
+              >
+                <HoverCard>
+                  <HoverCardTrigger asChild>
+                    <div className="relative rounded-lg overflow-hidden border border-white/20 shadow-md group cursor-pointer max-w-[85%] mx-auto">
+                      <motion.img 
+                        src={bottomItem.imageUrl} 
+                        alt={bottomItem.name} 
+                        className="w-full aspect-square object-cover transition-all duration-300 group-hover:scale-110"
+                        whileHover={{ scale: 1.05 }}
+                      />
+                      <div className="absolute bottom-0 left-0 right-0 bg-black/60 p-2 text-sm text-white truncate">
+                        {bottomItem.name}
+                      </div>
+                      
+                      {/* Change bottom button */}
+                      {onChangeBottom && (
+                        <div className="absolute top-2 right-2">
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            onClick={onChangeBottom}
+                            className="bg-black/40 backdrop-blur-sm border-white/20 text-white text-xs p-1.5 h-auto"
+                          >
+                            <RefreshCw className="h-3 w-3 mr-1" />
+                            Change
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </HoverCardTrigger>
+                  <HoverCardContent className="w-80 bg-slate-800 border-slate-700 text-white">
+                    <div className="space-y-2">
+                      <h4 className="font-medium">{bottomItem.name}</h4>
+                      <p className="text-sm text-slate-300">{bottomItem.type} • {bottomItem.color}</p>
+                      <img 
+                        src={bottomItem.imageUrl} 
+                        alt={bottomItem.name} 
+                        className="w-full rounded-md object-cover aspect-square"
+                      />
+                    </div>
+                  </HoverCardContent>
+                </HoverCard>
+                
+                {/* Accessories indicator with downward arrow if there are accessory items */}
+                {accessoryItems.length > 0 && (
+                  <motion.div 
+                    className="flex justify-center my-2"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.5, duration: 0.5 }}
+                  >
+                    <ArrowDown className="h-5 w-5 text-purple-400 animate-bounce" />
+                  </motion.div>
+                )}
+              </motion.div>
+            )}
+            
+            {/* Accessories Grid */}
+            {accessoryItems.length > 0 && (
+              <motion.div 
+                className="grid grid-cols-2 gap-3 mb-6 max-w-[85%] mx-auto"
+                initial="hidden"
+                animate="visible"
+                custom={2}
+                variants={itemVariants}
+              >
+                {accessoryItems.map((item, index) => item && (
+                  <HoverCard key={index}>
+                    <HoverCardTrigger asChild>
+                      <div className="relative rounded-lg overflow-hidden border border-white/20 shadow-md group cursor-pointer">
+                        <motion.img 
+                          src={item.imageUrl} 
+                          alt={item.name} 
+                          className="w-full aspect-square object-cover transition-all duration-300 group-hover:scale-110"
+                          whileHover={{ scale: 1.05 }}
+                        />
+                        <div className="absolute bottom-0 left-0 right-0 bg-black/60 p-2 text-sm text-white truncate">
+                          {item.name}
+                        </div>
+                      </div>
+                    </HoverCardTrigger>
+                    <HoverCardContent className="w-80 bg-slate-800 border-slate-700 text-white">
+                      <div className="space-y-2">
+                        <h4 className="font-medium">{item.name}</h4>
+                        <p className="text-sm text-slate-300">{item.type} • {item.color}</p>
+                        <img 
+                          src={item.imageUrl} 
+                          alt={item.name} 
+                          className="w-full rounded-md object-cover aspect-square"
+                        />
+                      </div>
+                    </HoverCardContent>
+                  </HoverCard>
+                ))}
+              </motion.div>
+            )}
+          </div>
+          
+          {/* Tags */}
+          <motion.div 
+            className="flex flex-wrap gap-1.5"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.3 }}
+          >
+            {outfit.seasons.map(season => (
+              <span key={season} className="text-xs px-2 py-0.5 rounded-full bg-blue-900/40 text-blue-100 border border-blue-800/30">
+                {season}
+              </span>
+            ))}
+            {outfit.occasions.map(occasion => (
+              <span key={occasion} className="text-xs px-2 py-0.5 rounded-full bg-purple-900/40 text-purple-100 border border-purple-800/30">
+                {occasion}
+              </span>
+            ))}
+          </motion.div>
+          
+          {/* Interaction Buttons with visual indicator */}
+          <motion.div 
+            className="relative mt-6 pt-4"
+            initial="hidden"
+            animate="visible"
+            variants={buttonVariants}
+          >
+            {/* Up arrow indicator for interaction */}
+            <div className="absolute -top-1 left-1/2 transform -translate-x-1/2">
+              <ArrowUp className="h-5 w-5 text-purple-400 animate-bounce" />
+            </div>
+            
+            {/* Like/Dislike Buttons */}
+            {onLike && onDislike && (
+              <div className="flex justify-center gap-4 pt-1 mb-4">
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  onClick={onLike} 
+                  className="flex-1 bg-white/5 border-white/20 text-white/90 hover:bg-white/10 hover:text-white group"
+                >
+                  <ThumbsUp className="h-4 w-4 mr-2 group-hover:text-green-400" />
+                  Like This
+                </Button>
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  onClick={onDislike} 
+                  className="flex-1 bg-white/5 border-white/20 text-white/90 hover:bg-white/10 hover:text-white group"
+                >
+                  <ThumbsDown className="h-4 w-4 mr-2 group-hover:text-red-400" />
+                  Not For Me
+                </Button>
+              </div>
+            )}
+            
+            {/* Outfit Adjustment Buttons */}
+            <div className="grid grid-cols-2 gap-3 pt-1">
+              {onMakeWarmer && (
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={onMakeWarmer}
+                  className="flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500/20 to-red-500/20 hover:from-orange-500/30 hover:to-red-500/30 border border-white/10"
+                >
+                  <Thermometer className="h-4 w-4" />
+                  <span>Make It Warmer</span>
+                </Button>
+              )}
+              
+              {onWear && (
+                <Button 
+                  size="sm" 
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 border-0"
+                  onClick={() => onWear(outfit.id)}
+                >
+                  <Check className="h-4 w-4 mr-1" />
+                  Wear This Outfit
+                </Button>
+              )}
+            </div>
+          </motion.div>
+        </div>
+      );
+    }
+    
+    // Fallback if no recognized props pattern
+    return (
+      <div className="p-4 text-center">
+        <p>No outfit data available</p>
+      </div>
+    );
   };
 
   return (
-    <div className="py-2">
-      <div className="mb-3 flex justify-between items-center">
-        <h3 className="text-xl font-semibold text-white">
-          {outfit.name}
-          {outfit.favorite && (
-            <Heart className="inline-block ml-2 h-5 w-5 text-pink-400 fill-pink-400" />
-          )}
-        </h3>
-        
-        <div className="flex gap-1">
-          {outfit.personalityTags?.map(tag => (
-            <Badge key={tag} variant="outline" className="bg-white/10 text-xs">
-              {tag}
-            </Badge>
-          ))}
-        </div>
-      </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
-        <AnimatePresence>
-          {outfitItems.map((item, index) => (
-            <motion.div 
-              key={`${outfit.id}-${item.id}`}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.3, delay: index * 0.1 }}
-              className="relative group"
-            >
-              <Card className="overflow-hidden bg-black/20 border border-white/10 h-full">
-                <div className="relative aspect-square overflow-hidden">
-                  <img 
-                    src={item.imageUrl} 
-                    alt={item.name} 
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
-                    <div className="text-white text-sm font-medium truncate">{item.name}</div>
-                    <div className="flex gap-1 mt-1 flex-wrap">
-                      <Badge variant="outline" className="bg-black/30 text-white text-xs border-white/20">
-                        {item.type}
-                      </Badge>
-                      <Badge variant="outline" className="bg-black/30 text-xs border-white/20" style={{ color: `var(--${item.color})` }}>
-                        {item.color}
-                      </Badge>
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      </div>
-      
-      <div className="glass-dark p-4 rounded-xl mt-4 border border-white/10">
-        <div className="flex flex-wrap gap-2 mb-3">
-          {outfit.seasons.map(season => (
-            <Badge key={season} className="bg-gradient-to-r from-blue-500/40 to-purple-500/40 text-white">
-              {season}
-            </Badge>
-          ))}
-          
-          {outfit.occasions.map(occasion => (
-            <Badge key={occasion} variant="outline" className="bg-white/10 text-white">
-              {occasion}
-            </Badge>
-          ))}
-          
-          {timeOfDay && (
-            <Badge className="bg-gradient-to-r from-indigo-500/40 to-pink-500/40 text-white flex items-center gap-1">
-              {getTimeIcon(timeOfDay)}
-              {timeOfDay}
-            </Badge>
-          )}
-          
-          {activity && (
-            <Badge className="bg-gradient-to-r from-green-500/40 to-emerald-500/40 text-white flex items-center gap-1">
-              {getActivityIcon(activity)}
-              {activity}
-            </Badge>
-          )}
-        </div>
-        
-        {outfit.description && (
-          <p className="text-gray-200 text-sm mb-3">{outfit.description}</p>
-        )}
-        
-        {weather && (
-          <div className="flex items-center gap-2 text-sm text-gray-300 mb-2">
-            <ThermometerSun className="h-4 w-4 text-yellow-300" />
-            <span>
-              Selected for {weather.temperature}°C {weather.condition} weather
-              {weather.feelsLike && weather.feelsLike !== weather.temperature && ` (feels like ${weather.feelsLike}°C)`}
-            </span>
-          </div>
-        )}
-        
-        <div className="flex flex-wrap md:flex-nowrap gap-2 justify-between mt-4">
-          {onLike && (
-            <Button 
-              onClick={onLike} 
-              variant="outline" 
-              size="sm" 
-              className="flex-1 md:flex-none bg-white/5 border-white/10 hover:bg-white/10 text-white"
-            >
-              <ThumbsUp className="h-4 w-4 mr-1 text-green-400" />
-              Like
-            </Button>
-          )}
-          
-          {onDislike && (
-            <Button 
-              onClick={onDislike} 
-              variant="outline" 
-              size="sm" 
-              className="flex-1 md:flex-none bg-white/5 border-white/10 hover:bg-white/10 text-white"
-            >
-              <ThumbsDown className="h-4 w-4 mr-1 text-red-400" />
-              Dislike
-            </Button>
-          )}
-          
-          {onToggleFavorite && (
-            <Button 
-              onClick={onToggleFavorite} 
-              variant="outline"
-              size="sm" 
-              className={cn(
-                "flex-1 md:flex-none bg-white/5 border-white/10 hover:bg-white/10 text-white",
-                outfit.favorite && "bg-pink-600/30 border-pink-400"
-              )}
-            >
-              <Heart className={cn(
-                "h-4 w-4 mr-1",
-                outfit.favorite ? "text-pink-400 fill-pink-400" : "text-pink-300"
-              )} />
-              {outfit.favorite ? "Favorited" : "Favorite"}
-            </Button>
-          )}
-          
-          {onWear && (
-            <Button 
-              onClick={() => onWear(outfit.id)} 
-              variant="default" 
-              size="sm" 
-              className="flex-1 md:flex-none"
-            >
-              Wear This
-            </Button>
-          )}
-        </div>
-      </div>
-    </div>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.3 }}
+    >
+      {renderContent()}
+    </motion.div>
   );
 };
 

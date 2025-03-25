@@ -1,46 +1,20 @@
 import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import WeatherWidget from '@/components/WeatherWidget';
 import OutfitSuggestion from '@/components/OutfitSuggestion';
-import StyleTip from '@/components/StyleTip';
-import TrendingItems from '@/components/TrendingItems';
+import OliviaBloomAdvisor from '@/components/OliviaBloomAdvisor';
+import OliviaBloomAssistant from '@/components/OliviaBloomAssistant';
 import { Button } from '@/components/ui/button';
 import { buttonVariants } from '@/components/ui/button';
-import { WeatherInfo, Outfit, TimeOfDay, Activity, ClothingSeason } from '@/lib/types';
+import { WeatherInfo, Outfit, TimeOfDay, Activity } from '@/lib/types';
 import { sampleClothingItems, sampleOutfits, sampleUserPreferences } from '@/lib/wardrobeData';
 import { toast } from 'sonner';
-import { 
-  RefreshCw, 
-  Camera, 
-  MapPin, 
-  AlertTriangle, 
-  Calendar, 
-  AlarmClockCheck, 
-  MessageCircle, 
-  Sun, 
-  CloudRain, 
-  CloudSun, 
-  Cloud,
-  Sparkles,
-  Umbrella,
-  ThermometerSnowflake,
-  ThermometerSun,
-  Shirt,
-  PanelBottom,
-  Heart,
-  Shuffle,
-  Glasses,
-  Crown,
-  Layers,
-  BadgePlus,
-  Scissors
-} from 'lucide-react';
+import { RefreshCw, Camera, MapPin, AlertTriangle, Calendar, AlarmClockCheck, MessageCircle } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from '@/lib/utils';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import {
   Select,
   SelectContent,
@@ -59,8 +33,6 @@ import { useForm } from "react-hook-form";
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { useLocationPreferences } from '@/hooks/use-location-preferences';
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 
 const countries = [
   { code: "US", name: "United States" },
@@ -329,10 +301,8 @@ const Outfits = () => {
   const [showWelcomeMessage, setShowWelcomeMessage] = useState(true);
   const [timeOfDay, setTimeOfDay] = useState<TimeOfDay | undefined>(undefined);
   const [activity, setActivity] = useState<Activity | undefined>(undefined);
-  const [outfitVariation, setOutfitVariation] = useState<string | null>(null);
   const { user } = useAuth();
   const isMobile = useIsMobile();
-  const { locationPreferences, saveLocationPreferences } = useLocationPreferences();
   
   const form = useForm<FormValues>({
     defaultValues: {
@@ -345,28 +315,6 @@ const Outfits = () => {
   
   useEffect(() => {
     const loadUserPreferences = async () => {
-      if (locationPreferences.country && locationPreferences.city && !preferencesLoaded) {
-        form.setValue('country', locationPreferences.country);
-        
-        const countryCities = citiesByCountry[locationPreferences.country as keyof typeof citiesByCountry] || [];
-        setAvailableCities(countryCities);
-        
-        setTimeout(() => {
-          form.setValue('city', locationPreferences.city);
-        }, 0);
-        
-        setSelectedLocation({
-          city: locationPreferences.city,
-          country: locationPreferences.country
-        });
-        
-        saveLocationPreferences(locationPreferences.country, locationPreferences.city);
-        
-        setPreferencesLoaded(true);
-        console.log('Loaded local location preferences');
-        return;
-      }
-      
       if (user && !preferencesLoaded) {
         try {
           const { data, error } = await supabase
@@ -395,9 +343,7 @@ const Outfits = () => {
               country: data.preferred_country
             });
             
-            saveLocationPreferences(data.preferred_country, data.preferred_city);
-            
-            console.log('Loaded user preferences from database:', data);
+            console.log('Loaded user preferences:', data);
             toast.success('Loaded your saved location preferences');
           }
           
@@ -409,7 +355,7 @@ const Outfits = () => {
     };
     
     loadUserPreferences();
-  }, [user, form, preferencesLoaded, locationPreferences, saveLocationPreferences]);
+  }, [user, form, preferencesLoaded]);
   
   useEffect(() => {
     if (selectedCountry) {
@@ -443,15 +389,13 @@ const Outfits = () => {
           : outfit
       )
     );
-    toast.success("Great choice! Outfit has been logged as worn today.", {
-      description: "This helps Olivia learn your preferences better."
-    });
   };
   
   const handleRegenerateOutfit = () => {
     const filteredOutfits = filterOutfitsByPreferences(outfits);
     
     if (filteredOutfits.length === 0) {
+      // If no outfits match the filters, use all outfits
       const currentIndex = outfits.findIndex(o => o.id === suggestedOutfit.id);
       const nextIndex = (currentIndex + 1) % outfits.length;
       setSuggestedOutfit(outfits[nextIndex]);
@@ -462,416 +406,414 @@ const Outfits = () => {
     } else {
       const randomIndex = Math.floor(Math.random() * filteredOutfits.length);
       setSuggestedOutfit(filteredOutfits[randomIndex]);
-    }
-
-    toast.success("Generated a new outfit suggestion");
-  };
-  
-  const handleTimeOfDayChange = (time: TimeOfDay) => {
-    setTimeOfDay(time);
-    handleRegenerateOutfit();
-  };
-  
-  const handleActivityChange = (selected: Activity) => {
-    setActivity(selected);
-    handleRegenerateOutfit();
-  };
-  
-  const filterOutfitsByPreferences = (outfitsList: Outfit[]): Outfit[] => {
-    let filtered = [...outfitsList];
-    
-    if (weather) {
-      const tempCategory = weather.temperature < 10 ? 'cold' : 
-                          weather.temperature > 25 ? 'hot' : 'mild';
       
-      const season = getSeasonFromDate(new Date()) as ClothingSeason;
-      
-      filtered = filtered.filter(outfit => {
-        const matchesSeason = outfit.seasons.includes(season);
-        
-        let matchesTemp = true;
-        if (tempCategory === 'cold' && outfit.forCold === false) matchesTemp = false;
-        if (tempCategory === 'hot' && outfit.forHot === false) matchesTemp = false;
-        
-        let matchesWeather = true;
-        if (weather.condition.toLowerCase().includes('rain') && outfit.forRain === false) {
-          matchesWeather = false;
-        }
-        
-        return matchesSeason && matchesTemp && matchesWeather;
+      toast.success('Generated a new outfit suggestion', {
+        description: 'Based on your preferences and current filters.'
       });
     }
+  };
+  
+  const handleTimeOfDayChange = (value: TimeOfDay) => {
+    setTimeOfDay(value === timeOfDay ? undefined : value);
     
-    if (timeOfDay) {
-      filtered = filtered.filter(outfit => {
-        const timeMatch = outfit.timeOfDay ? outfit.timeOfDay.includes(timeOfDay) : true;
-        return timeMatch;
-      });
-    }
+    // After changing the filter, update the outfit suggestion
+    setTimeout(() => {
+      handleRegenerateOutfit();
+    }, 100);
+  };
+  
+  const handleActivityChange = (value: Activity) => {
+    setActivity(value === activity ? undefined : value);
     
+    // After changing the filter, update the outfit suggestion
+    setTimeout(() => {
+      handleRegenerateOutfit();
+    }, 100);
+  };
+  
+  const filterOutfitsByPreferences = (outfitList: Outfit[]): Outfit[] => {
+    let filtered = [...outfitList];
+    
+    // Filter by activity
     if (activity) {
       filtered = filtered.filter(outfit => {
-        const activityMatch = outfit.activities ? outfit.activities.includes(activity) : true;
-        return activityMatch;
+        // Match exact activity or occasion
+        return outfit.occasions.some(occasion => 
+          occasion.toLowerCase() === activity.toLowerCase() || 
+          (activity === 'work' && ['business', 'formal'].includes(occasion.toLowerCase())) ||
+          (activity === 'casual' && ['everyday', 'outdoor'].includes(occasion.toLowerCase())) ||
+          (activity === 'sport' && ['sporty', 'outdoor'].includes(occasion.toLowerCase())) ||
+          (activity === 'party' && ['special', 'date'].includes(occasion.toLowerCase()))
+        );
+      });
+    }
+    
+    // Filter by time of day (using tags or other attributes that might indicate suitability)
+    if (timeOfDay) {
+      filtered = filtered.filter(outfit => {
+        // Morning/day outfits usually favor brighter colors and casual wear
+        if (timeOfDay === 'morning' || timeOfDay === 'afternoon') {
+          return !outfit.occasions.includes('party') && !outfit.occasions.includes('formal');
+        }
+        
+        // Evening/night outfits usually favor darker colors and more formal wear
+        if (timeOfDay === 'evening' || timeOfDay === 'night') {
+          return outfit.occasions.includes('party') || 
+                 outfit.occasions.includes('formal') || 
+                 outfit.occasions.includes('date') || 
+                 outfit.occasions.includes('special');
+        }
+        
+        return true;
       });
     }
     
     return filtered;
   };
   
-  const getSeasonFromDate = (date: Date): string => {
-    const month = date.getMonth() + 1;
-    
-    if (month >= 3 && month <= 5) return 'spring';
-    if (month >= 6 && month <= 8) return 'summer';
-    if (month >= 9 && month <= 11) return 'autumn';
-    return 'winter';
-  };
-  
-  const getTimeOfDayGreeting = (): string => {
-    const hour = new Date().getHours();
-    
-    if (hour >= 5 && hour < 12) return 'morning';
-    if (hour >= 12 && hour < 17) return 'afternoon';
-    if (hour >= 17 && hour < 22) return 'evening';
-    return 'night';
-  };
-  
   const handleLikeOutfit = () => {
-    toast.success("You liked this outfit!", {
-      description: "This helps improve your recommendations."
-    });
+    toast.success('We\'ll suggest more outfits like this!');
   };
   
   const handleDislikeOutfit = () => {
+    toast.success('We\'ll suggest fewer outfits like this.');
     handleRegenerateOutfit();
-    toast.success("Generated a new outfit suggestion for you.", {
-      description: "Thanks for your feedback."
-    });
   };
   
-  const toggleFavoriteOutfit = () => {
+  const handleMakeWarmer = () => {
+    const warmerOutfits = outfits.filter(outfit => 
+      outfit.seasons.includes('autumn') || outfit.seasons.includes('winter')
+    );
+    
+    if (warmerOutfits.length > 0) {
+      const randomIndex = Math.floor(Math.random() * warmerOutfits.length);
+      setSuggestedOutfit(warmerOutfits[randomIndex]);
+      
+      toast.success('Found a warmer outfit option', {
+        description: 'Added more layers to keep you comfortable.'
+      });
+    } else {
+      toast('No warmer outfits available', {
+        description: 'Try adding more cold-weather items to your wardrobe.'
+      });
+    }
+  };
+  
+  const handleChangeTop = () => {
+    if (outfits.length < 2) return;
+    
+    const currentOutfit = suggestedOutfit;
+    
+    const topItemId = currentOutfit.items[0];
+    
+    const differentTopOutfit = outfits.find(o => 
+      o.id !== currentOutfit.id && o.items[0] !== topItemId
+    );
+    
+    if (differentTopOutfit) {
+      const newOutfit = {
+        ...currentOutfit,
+        items: [differentTopOutfit.items[0], ...currentOutfit.items.slice(1)],
+        name: `${currentOutfit.name} (Modified)`
+      };
+      
+      setSuggestedOutfit(newOutfit);
+      
+      toast.success('Changed the top item', {
+        description: 'Keeping the rest of your outfit the same.'
+      });
+    } else {
+      toast('No alternative tops available', {
+        description: 'Try adding more variety to your wardrobe.'
+      });
+    }
+  };
+  
+  const handleChangeBottom = () => {
+    if (outfits.length < 2) return;
+    
+    const currentOutfit = suggestedOutfit;
+    
+    const bottomItemId = currentOutfit.items[1];
+    
+    const differentBottomOutfit = outfits.find(o => 
+      o.id !== currentOutfit.id && o.items.length > 1 && o.items[1] !== bottomItemId
+    );
+    
+    if (differentBottomOutfit) {
+      const newOutfit = {
+        ...currentOutfit,
+        items: [currentOutfit.items[0], differentBottomOutfit.items[1], ...currentOutfit.items.slice(2)],
+        name: `${currentOutfit.name} (Modified)`
+      };
+      
+      setSuggestedOutfit(newOutfit);
+      
+      toast.success('Changed the bottom item', {
+        description: 'Keeping the rest of your outfit the same.'
+      });
+    } else {
+      toast('No alternative bottoms available', {
+        description: 'Try adding more variety to your wardrobe.'
+      });
+    }
+  };
+  
+  const handleToggleFavorite = (outfitId: string) => {
     setOutfits(prev => 
       prev.map(outfit => 
-        outfit.id === suggestedOutfit.id 
-          ? { 
-              ...outfit, 
-              favorite: !outfit.favorite
-            } 
+        outfit.id === outfitId 
+          ? { ...outfit, favorite: !outfit.favorite } 
           : outfit
       )
     );
     
-    setSuggestedOutfit(prev => ({
-      ...prev,
-      favorite: !prev.favorite
-    }));
-    
-    if (!suggestedOutfit.favorite) {
-      toast.success("Added to favorites!");
-    } else {
-      toast.success("Removed from favorites");
+    const outfit = outfits.find(outfit => outfit.id === outfitId);
+    if (outfit) {
+      const action = !outfit.favorite ? 'added to' : 'removed from';
+      toast.success(`"${outfit.name}" outfit ${action} favorites`);
     }
   };
-  
-  const onSubmit = async (data: FormValues) => {
-    setSelectedLocation({
-      city: data.city,
-      country: data.country
-    });
-    
-    saveLocationPreferences(data.country, data.city);
-    
-    toast.success("Location updated", {
-      description: `Weather set to ${data.city}, ${data.country}`
-    });
+
+  const onSubmit = (data: FormValues) => {
+    if (data.country && data.city) {
+      const countryName = countries.find(c => c.code === data.country)?.name || data.country;
+      
+      setSelectedLocation({
+        country: data.country,
+        city: data.city
+      });
+      
+      setShowLocationAlert(false);
+      
+      toast.success(`Location updated to ${data.city}, ${countryName}`, {
+        description: "Weather data will update with the new location"
+      });
+    }
   };
-  
-  useEffect(() => {
-    if (selectedLocation.city && selectedLocation.country && isWeatherLoading) {
-      setShowLocationAlert(false);
-    } else if (!isWeatherLoading && !weather?.city) {
-      setShowLocationAlert(true);
-    } else {
-      setShowLocationAlert(false);
-    }
-  }, [selectedLocation, isWeatherLoading, weather]);
-  
-  useEffect(() => {
-    if (showWelcomeMessage) {
-      setTimeout(() => {
-        setShowWelcomeMessage(false);
-      }, 5000);
-    }
-  }, [showWelcomeMessage]);
-  
-  const greeting = getTimeOfDayGreeting();
   
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-900 to-black text-white pb-24">
-      <Header weather={weather ? { temperature: weather.temperature, condition: weather.condition } : undefined} />
+    <div className="min-h-screen bg-gradient-to-b from-purple-900 via-indigo-900 to-blue-900">
+      <Header />
       
-      <main className="container mx-auto px-4 pt-24">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <div>
-            <h1 className="text-3xl md:text-4xl font-bold mb-2">
-              Good {greeting}, here's your perfect outfit for today!
-            </h1>
-            
-            {weather && (
-              <p className="text-lg text-white/80 mb-4">
-                Selected for {weather.temperature}°C in {weather.city || 'your area'}
-              </p>
-            )}
-            
-            {suggestedOutfit && (
-              <h2 className="text-xl md:text-2xl font-semibold mb-4">
-                {suggestedOutfit.name}
-                {suggestedOutfit.favorite && (
-                  <Heart className="inline-block ml-2 h-5 w-5 text-pink-400 fill-pink-400" />
-                )}
-              </h2>
-            )}
-            
-            <div className="flex flex-wrap gap-2 mb-6">
-              <Select value={timeOfDay} onValueChange={(val) => handleTimeOfDayChange(val as TimeOfDay)}>
-                <SelectTrigger className="w-full md:w-[180px] bg-white/10 border-white/20">
-                  <SelectValue placeholder="Time of day" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="morning">Morning</SelectItem>
-                  <SelectItem value="afternoon">Afternoon</SelectItem>
-                  <SelectItem value="evening">Evening</SelectItem>
-                  <SelectItem value="night">Night</SelectItem>
-                </SelectContent>
-              </Select>
-              
-              <Select value={activity} onValueChange={(val) => handleActivityChange(val as Activity)}>
-                <SelectTrigger className="w-full md:w-[180px] bg-white/10 border-white/20">
-                  <SelectValue placeholder="Activity" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="casual">Casual</SelectItem>
-                  <SelectItem value="work">Work</SelectItem>
-                  <SelectItem value="sport">Sport</SelectItem>
-                  <SelectItem value="party">Party</SelectItem>
-                  <SelectItem value="date">Date</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          
-          <div className="bg-white/5 backdrop-blur-sm border border-purple-500/30 rounded-lg p-4 shadow-lg">
-            <div className="flex items-start gap-3 mb-3">
-              <Avatar className="border-2 border-purple-400 h-10 w-10">
-                <AvatarImage src="/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png" alt="Olivia Bloom" />
-                <AvatarFallback>OB</AvatarFallback>
-              </Avatar>
-              <div>
-                <h3 className="font-semibold text-purple-100">Olivia Bloom</h3>
-                <p className="text-sm text-white/60">Your AI Style Assistant</p>
-              </div>
-            </div>
-            
-            {weather && (
-              <p className="text-white/90 mb-3">
-                Based on the {weather.temperature}°C {weather.condition.toLowerCase()}, 
-                I've chosen something {weather.temperature < 15 ? 'warm and cozy' : 'light and comfortable'} 
-                that will keep you {weather.temperature < 15 ? 'protected from the cold' : 'cool throughout the day'}.
-              </p>
-            )}
-            
-            <p className="text-white/90">
-              This outfit works well for {activity || 'everyday activities'} during the {timeOfDay || greeting}.
-              Feel free to swap items if you want to try something different!
-            </p>
-          </div>
+      <main className="container max-w-6xl px-4 pt-20 pb-20">
+        <div className="mb-6 text-center md:text-left">
+          <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+            Today's Outfit
+          </h1>
+          <p className="text-purple-200 text-sm md:text-base">
+            Let's find the perfect outfit based on your style, the weather, and your plans.
+          </p>
         </div>
         
-        {/* Weather Update Section - Full Width */}
-        <div className="mb-8">
-          <div className="bg-purple-800/70 backdrop-blur-sm rounded-lg overflow-hidden">
-            <div className="p-6 pb-4">
-              <h3 className="text-xl font-semibold mb-4">Weather Conditions</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-10">
+          {/* Left Column - Weather and Filters */}
+          <div className="space-y-6">
+            {/* Weather Box */}
+            <div className="bg-white/10 backdrop-blur-md rounded-xl p-5 border border-white/20">
+              <h2 className="text-lg font-semibold text-white mb-4">Weather Conditions</h2>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Weather Location Form - Left Side */}
-                <div>
-                  <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
-                        <FormField
-                          control={form.control}
-                          name="country"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-white/90">Country</FormLabel>
-                              <Select 
-                                onValueChange={field.onChange} 
-                                defaultValue={field.value}
-                              >
-                                <FormControl>
-                                  <SelectTrigger className="bg-purple-950/60 border-purple-700/50 text-white">
-                                    <SelectValue placeholder="Select a country" />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                  {countries.map((country) => (
-                                    <SelectItem key={country.code} value={country.code}>
-                                      {country.name}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </FormItem>
-                          )}
-                        />
-                        
-                        <FormField
-                          control={form.control}
-                          name="city"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-white/90">City</FormLabel>
-                              <Select
-                                onValueChange={field.onChange}
-                                defaultValue={field.value}
-                                disabled={!selectedCountry || availableCities.length === 0}
-                              >
-                                <FormControl>
-                                  <SelectTrigger className="bg-purple-950/60 border-purple-700/50 text-white">
-                                    <SelectValue placeholder="Select a city" />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                  {availableCities.map((city) => (
-                                    <SelectItem key={city} value={city}>
-                                      {city}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                      
-                      <Button 
-                        type="submit" 
-                        className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
-                      >
-                        <MapPin className="h-4 w-4 mr-2" />
-                        Update Location
-                      </Button>
-                    </form>
-                  </Form>
-                </div>
-                
-                {/* Live Weather Update - Right Side */}
-                <div>
-                  {isWeatherLoading ? (
-                    <Skeleton className="h-32 w-full bg-purple-700/30" />
-                  ) : weather ? (
-                    <div className="bg-purple-700/40 backdrop-blur-sm rounded-lg p-5">
-                      <div className="flex items-center gap-4">
-                        <div className="text-5xl text-white flex items-center justify-center">
-                          {weather.icon === 'sun' && <Sun size={60} className="text-yellow-300" />}
-                          {weather.icon === 'cloud' && <Cloud size={60} className="text-gray-300" />}
-                          {weather.icon === 'rain' && <CloudRain size={60} className="text-blue-300" />}
-                          {weather.icon === 'fog' && <Cloud size={60} className="text-gray-400" />}
-                          {weather.icon === 'snow' && <CloudRain size={60} className="text-white" />}
-                          {!weather.icon && <CloudSun size={60} className="text-yellow-200" />}
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-white/80">
-                            Weather Mood: {weather.condition}
-                          </p>
-                          <p className="text-sm text-white/70">
-                            {weather.city}, {weather.country}
-                          </p>
-                          <div className="flex items-baseline">
-                            <span className="text-4xl font-bold">{weather.temperature}°C</span>
-                            <span className="ml-1 text-white/70">({weather.condition})</span>
-                          </div>
-                          
-                          <div className="flex flex-col gap-1 mt-2">
-                            <div className="flex items-center text-sm text-white/80">
-                              <ThermometerSun className="h-4 w-4 mr-1" />
-                              Feels like: {weather.feelsLike || weather.temperature}°C
-                            </div>
-                            <div className="flex items-center text-sm text-white/80">
-                              <CloudSun className="h-4 w-4 mr-1" />
-                              Wind: {weather.windSpeed || '?'} m/s
-                            </div>
-                            <div className="flex items-center text-sm text-white/80">
-                              <Umbrella className="h-4 w-4 mr-1" />
-                              Humidity: {weather.humidity || '?'}%
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="bg-purple-700/40 backdrop-blur-sm rounded-lg p-5 flex justify-center items-center h-32">
-                      <p className="text-white/70">No weather data available</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        {showLocationAlert && (
-          <Alert variant="destructive" className="mb-6 bg-orange-900/50 border-orange-600">
-            <AlertTriangle className="h-4 w-4" />
-            <AlertTitle>Location needed</AlertTitle>
-            <AlertDescription>
-              Please set your location below to get personalized outfit recommendations based on your local weather.
-            </AlertDescription>
-          </Alert>
-        )}
-        
-        <div className="space-y-8">
-          {isWeatherLoading ? (
-            <div className="mb-6">
-              <Skeleton className="h-12 w-full mb-2 bg-white/10" />
-              <Skeleton className="h-32 w-full bg-white/10" />
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-              <div className="lg:col-span-3">
-                <OutfitSuggestion 
-                  outfit={suggestedOutfit} 
-                  items={sampleClothingItems} 
-                  weather={weather || undefined}
-                  timeOfDay={timeOfDay}
-                  activity={activity}
-                  onWear={handleWearOutfit}
-                  onLike={handleLikeOutfit}
-                  onDislike={handleDislikeOutfit}
-                  onToggleFavorite={toggleFavoriteOutfit}
-                />
-                
-                <div className="flex justify-center mt-4">
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mb-6">
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="country"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">Country</FormLabel>
+                          <Select 
+                            onValueChange={field.onChange} 
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select country" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {countries.map(country => (
+                                <SelectItem key={country.code} value={country.code}>
+                                  {country.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="city"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">City</FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                            disabled={!selectedCountry || availableCities.length === 0}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder={availableCities.length === 0 ? "Select country first" : "Select city"} />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {availableCities.map(city => (
+                                <SelectItem key={city} value={city}>
+                                  {city}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  
                   <Button 
-                    onClick={handleRegenerateOutfit} 
-                    variant="default" 
-                    className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white"
+                    type="submit" 
+                    className="w-full bg-gradient-to-r from-indigo-500 to-purple-600"
+                    disabled={!form.watch("country") || !form.watch("city")}
                   >
-                    <RefreshCw className="h-4 w-4 mr-2" />
-                    Generate New Outfit
+                    <MapPin className="w-4 h-4 mr-2" />
+                    Update Location
                   </Button>
+                </form>
+                
+                <WeatherWidget 
+                  className="mt-4" 
+                  onWeatherChange={handleWeatherChange}
+                  city={selectedLocation.city}
+                  country={selectedLocation.country}
+                  savePreferences={!!user}
+                />
+              </Form>
+            </div>
+            
+            {/* Outfit Filters */}
+            <div className="bg-white/10 backdrop-blur-md rounded-xl p-5 border border-white/20">
+              <h2 className="text-lg font-semibold text-white mb-4">Outfit Filters</h2>
+              
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-sm text-purple-200 mb-2 flex items-center">
+                    <Calendar className="h-4 w-4 mr-1" />
+                    Time of Day
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {(['morning', 'afternoon', 'evening', 'night'] as TimeOfDay[]).map((time) => (
+                      <Button
+                        key={time}
+                        onClick={() => handleTimeOfDayChange(time)}
+                        variant="outline"
+                        size="sm"
+                        className={cn(
+                          "border-white/20 text-white capitalize",
+                          timeOfDay === time 
+                            ? "bg-purple-600/50 border-purple-400" 
+                            : "bg-white/5 hover:bg-white/10"
+                        )}
+                      >
+                        {time}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+                
+                <div>
+                  <h3 className="text-sm text-purple-200 mb-2 flex items-center">
+                    <AlarmClockCheck className="h-4 w-4 mr-1" />
+                    Activity
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {(['work', 'casual', 'sport', 'party', 'date', 'formal'] as Activity[]).map((act) => (
+                      <Button
+                        key={act}
+                        onClick={() => handleActivityChange(act)}
+                        variant="outline"
+                        size="sm"
+                        className={cn(
+                          "border-white/20 text-white capitalize",
+                          activity === act 
+                            ? "bg-blue-600/50 border-blue-400" 
+                            : "bg-white/5 hover:bg-white/10"
+                        )}
+                      >
+                        {act}
+                      </Button>
+                    ))}
+                  </div>
                 </div>
               </div>
-              
-              <div className="lg:col-span-1 space-y-6">
-                <StyleTip />
+            </div>
+          </div>
+          
+          {/* Right Column - Olivia's Reasoning and Outfit Suggestion */}
+          <div className="space-y-6">
+            {/* Olivia's Reasoning */}
+            <div className="bg-white/10 backdrop-blur-md rounded-xl p-5 border border-white/20">
+              <div className="flex items-start gap-4">
+                <div className="flex-1">
+                  <h3 className="text-md font-semibold text-white mb-2 flex items-center">
+                    <MessageCircle className="h-4 w-4 mr-2" />
+                    Olivia's Outfit Reasoning
+                  </h3>
+                  <div className="text-sm text-purple-100 space-y-2">
+                    <p>
+                      {weather ? 
+                        `Based on the ${weather.temperature}°C ${weather.condition} weather, and your selected filters, I've chosen a ${weather.temperature < 15 ? 'warm' : 'cool and comfortable'} outfit that's perfect for today.`
+                        : 
+                        "Once you set your location, I'll analyze the weather and suggest an appropriate outfit for you."
+                      }
+                    </p>
+                    {timeOfDay && (
+                      <p>
+                        For {timeOfDay} hours, I've selected pieces that work well with the lighting and social context of this time.
+                      </p>
+                    )}
+                    {activity && (
+                      <p>
+                        This outfit is suitable for {activity} activities, balancing comfort, style, and functionality.
+                      </p>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
-          )}
-          
-          <TrendingItems />
+            
+            {/* Outfit Suggestion */}
+            <div className="bg-white/10 backdrop-blur-md rounded-xl p-5 border border-white/20">
+              <div className="mb-4 flex justify-between items-center">
+                <h2 className="text-xl font-semibold text-white">Suggested Outfit</h2>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={handleRegenerateOutfit} 
+                  className="text-purple-200 hover:text-white hover:bg-purple-600/30"
+                >
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Generate New
+                </Button>
+              </div>
+              
+              <OutfitSuggestion 
+                outfit={suggestedOutfit}
+                items={sampleClothingItems}
+                weather={weather || undefined}
+                timeOfDay={timeOfDay}
+                activity={activity}
+                onWear={handleWearOutfit}
+                onRefresh={handleRegenerateOutfit}
+                onLike={handleLikeOutfit}
+                onDislike={handleDislikeOutfit}
+                onMakeWarmer={handleMakeWarmer}
+                onChangeTop={handleChangeTop}
+                onChangeBottom={handleChangeBottom}
+              />
+            </div>
+          </div>
         </div>
       </main>
     </div>

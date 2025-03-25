@@ -113,13 +113,6 @@ export interface Outfit {
   dateAdded: Date;
   personalityTags?: PersonalityTag[]; // New field for personality tags
   colorScheme?: string; // Description of the color scheme
-  description?: string; // Adding the missing description property
-  styling?: string[]; // Adding the missing styling property
-  forCold?: boolean; // Added property for cold weather suitability
-  forHot?: boolean; // Added property for hot weather suitability
-  forRain?: boolean; // Added property for rainy weather suitability
-  timeOfDay?: TimeOfDay[]; // Added property for time of day suitability
-  activities?: Activity[]; // Added property for activity suitability
 }
 
 export interface WeatherInfo {

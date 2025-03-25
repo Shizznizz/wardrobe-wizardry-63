@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Coffee, Sparkles, Umbrella, Sunset, Moon, Check, ArrowRight, X } from 'lucide-react';
