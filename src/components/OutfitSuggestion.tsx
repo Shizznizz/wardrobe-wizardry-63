@@ -1,4 +1,3 @@
-
 import { motion } from 'framer-motion';
 import { Check, ArrowRight, Sparkles, MessageCircle, Thermometer, RefreshCw, ThumbsUp, ThumbsDown, ArrowDown, ArrowUp, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -45,7 +44,6 @@ const OutfitSuggestion = ({
   onChangeBottom
 }: OutfitSuggestionProps) => {
   
-  // Framer Motion variants for animations
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: (i: number) => ({
@@ -71,28 +69,24 @@ const OutfitSuggestion = ({
     }
   };
   
-  // Generate dynamic heading based on weather and location
   const getDynamicHeading = () => {
     if (!weather) return "Olivia's Outfit Pick for You";
     
-    // Create personalized heading based on available information
     const locationText = weather.city ? `for ${weather.city}` : '';
-    const weatherText = weather.temperature !== undefined ? ` (${weather.temperature}°C)` : '';
+    const weatherText = weather.temperature !== undefined ? ` (${weather.temperature}°${weather.unit || 'C'})` : '';
     
     if (activity && weather.city) {
       return `Your Perfect ${activity} Outfit ${locationText}${weatherText}`;
     } else if (weather.city) {
       return `Olivia's Pick ${locationText} Today${weatherText}`;
     } else if (weather.temperature !== undefined) {
-      return `Your Perfect Outfit for ${weather.temperature}°C ${weather.condition}`;
+      return `Your Perfect Outfit for ${weather.temperature}°${weather.unit || 'C'} ${weather.condition}`;
     }
     
     return "Olivia's Personalized Outfit Pick";
   };
   
-  // Determine what to render based on provided props
   const renderContent = () => {
-    // If we have a suggestion object (used in the quiz)
     if (suggestion) {
       return (
         <>
@@ -159,21 +153,17 @@ const OutfitSuggestion = ({
       );
     }
     
-    // If we have an outfit object (used in wardrobe and outfits pages)
     if (outfit && items) {
-      // Find the actual items from the outfit.items array (which contains ids)
       const outfitItems = outfit.items.map(itemId => 
         items.find(item => item.id === itemId)
       ).filter(Boolean);
       
-      // Group items by category (assuming first is top, second is bottom, etc.)
       const topItem = outfitItems[0];
       const bottomItem = outfitItems[1];
       const accessoryItems = outfitItems.slice(2);
       
       return (
         <div className="space-y-5">
-          {/* Dynamic Heading */}
           <motion.h3 
             className="text-2xl font-semibold mb-3 text-white/90 flex items-center justify-center md:justify-start gap-2"
             initial={{ opacity: 0, y: -10 }}
@@ -184,9 +174,7 @@ const OutfitSuggestion = ({
             {getDynamicHeading()}
           </motion.h3>
 
-          {/* Visual Flow Container */}
           <div className="relative">
-            {/* Top Item with animation */}
             {topItem && (
               <motion.div 
                 className="mb-6 relative"
@@ -208,7 +196,6 @@ const OutfitSuggestion = ({
                         {topItem.name}
                       </div>
                       
-                      {/* Change top button */}
                       {onChangeTop && (
                         <div className="absolute top-2 right-2">
                           <Button 
@@ -237,7 +224,6 @@ const OutfitSuggestion = ({
                   </HoverCardContent>
                 </HoverCard>
                 
-                {/* Downward arrow */}
                 <motion.div 
                   className="flex justify-center my-2"
                   initial={{ opacity: 0 }}
@@ -249,7 +235,6 @@ const OutfitSuggestion = ({
               </motion.div>
             )}
             
-            {/* Bottom Item with animation */}
             {bottomItem && (
               <motion.div 
                 className="mb-6 relative"
@@ -271,7 +256,6 @@ const OutfitSuggestion = ({
                         {bottomItem.name}
                       </div>
                       
-                      {/* Change bottom button */}
                       {onChangeBottom && (
                         <div className="absolute top-2 right-2">
                           <Button 
@@ -300,7 +284,6 @@ const OutfitSuggestion = ({
                   </HoverCardContent>
                 </HoverCard>
                 
-                {/* Accessories indicator with downward arrow if there are accessory items */}
                 {accessoryItems.length > 0 && (
                   <motion.div 
                     className="flex justify-center my-2"
@@ -314,7 +297,6 @@ const OutfitSuggestion = ({
               </motion.div>
             )}
             
-            {/* Accessories Grid */}
             {accessoryItems.length > 0 && (
               <motion.div 
                 className="grid grid-cols-2 gap-3 mb-6 max-w-[85%] mx-auto"
@@ -355,38 +337,34 @@ const OutfitSuggestion = ({
             )}
           </div>
           
-          {/* Tags */}
           <motion.div 
             className="flex flex-wrap gap-1.5"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.3 }}
           >
-            {outfit.seasons.map(season => (
+            {outfit.seasons?.map(season => (
               <span key={season} className="text-xs px-2 py-0.5 rounded-full bg-blue-900/40 text-blue-100 border border-blue-800/30">
                 {season}
               </span>
             ))}
-            {outfit.occasions.map(occasion => (
+            {outfit.occasions?.map(occasion => (
               <span key={occasion} className="text-xs px-2 py-0.5 rounded-full bg-purple-900/40 text-purple-100 border border-purple-800/30">
                 {occasion}
               </span>
             ))}
           </motion.div>
           
-          {/* Interaction Buttons with visual indicator */}
           <motion.div 
             className="relative mt-6 pt-4"
             initial="hidden"
             animate="visible"
             variants={buttonVariants}
           >
-            {/* Up arrow indicator for interaction */}
             <div className="absolute -top-1 left-1/2 transform -translate-x-1/2">
               <ArrowUp className="h-5 w-5 text-purple-400 animate-bounce" />
             </div>
             
-            {/* Like/Dislike Buttons */}
             {onLike && onDislike && (
               <div className="flex justify-center gap-4 pt-1 mb-4">
                 <Button 
@@ -410,7 +388,6 @@ const OutfitSuggestion = ({
               </div>
             )}
             
-            {/* Outfit Adjustment Buttons */}
             <div className="grid grid-cols-2 gap-3 pt-1">
               {onMakeWarmer && (
                 <Button
@@ -440,7 +417,6 @@ const OutfitSuggestion = ({
       );
     }
     
-    // Fallback if no recognized props pattern
     return (
       <div className="p-4 text-center">
         <p>No outfit data available</p>

@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -623,6 +622,8 @@ const Outfits = () => {
     }
   };
   
+  const userStyles = sampleUserPreferences.styles || [];
+  
   return (
     <div className="min-h-screen bg-background pb-20">
       <Header />
@@ -639,9 +640,10 @@ const Outfits = () => {
           {/* Weather Widget */}
           <div className="h-full">
             <h2 className="text-xl font-bold mb-3">Current Weather</h2>
-            <WeatherWidget onWeatherChange={handleWeatherChange} 
-                           selectedLocation={selectedLocation} 
-                           showError={false} />
+            <WeatherWidget 
+              onWeatherChange={handleWeatherChange}
+              showError={false} 
+            />
           </div>
           
           {/* Olivia's Advice */}
@@ -662,19 +664,19 @@ const Outfits = () => {
               <div className="flex-1 space-y-4">
                 <div className="bg-white/60 dark:bg-gray-800/40 rounded-lg p-3 shadow-sm border border-white/40 dark:border-gray-700/40 text-sm">
                   {weather ? (
-                    <p>Based on the current weather in {selectedLocation.city || 'your area'} ({weather.temperature}°{weather.temperatureUnit}, {weather.condition}), I've picked an outfit that's both stylish and practical.</p>
+                    <p>Based on the current weather in {selectedLocation.city || 'your area'} ({weather.temperature}°{weather.unit || 'C'}, {weather.condition}), I've picked an outfit that's both stylish and practical.</p>
                   ) : (
                     <p>I'll help you dress appropriately for the weather once we have your location.</p>
                   )}
                 </div>
                 
                 <div className="bg-white/60 dark:bg-gray-800/40 rounded-lg p-3 shadow-sm border border-white/40 dark:border-gray-700/40 text-sm">
-                  <p>Your style preferences show you enjoy {sampleUserPreferences.preferredStyles.join(', ')} styles. I've taken this into account for today's recommendation.</p>
+                  <p>Your style preferences show you enjoy {userStyles.join(', ') || 'versatile'} styles. I've taken this into account for today's recommendation.</p>
                 </div>
                 
                 {suggestedOutfit && (
                   <div className="bg-white/60 dark:bg-gray-800/40 rounded-lg p-3 shadow-sm border border-white/40 dark:border-gray-700/40 text-sm">
-                    <p>The "{suggestedOutfit.name}" outfit would be perfect for today. It works well for {suggestedOutfit.occasions.join(', ')} occasions, making it versatile for your day.</p>
+                    <p>The "{suggestedOutfit.name}" outfit would be perfect for today. It works well for {suggestedOutfit.occasions?.join(', ') || 'various'} occasions, making it versatile for your day.</p>
                   </div>
                 )}
                 
@@ -697,12 +699,12 @@ const Outfits = () => {
               onLike={handleLikeOutfit}
               onDislike={handleDislikeOutfit}
               onWear={() => handleWearOutfit(suggestedOutfit.id)}
-              onToggleFavorite={() => handleToggleFavorite(suggestedOutfit.id)}
-              onRegenerateOutfit={handleRegenerateOutfit}
+              onRefresh={handleRegenerateOutfit}
               onMakeWarmer={handleMakeWarmer}
               onChangeTop={handleChangeTop}
               onChangeBottom={handleChangeBottom}
-              weather={weather}
+              weather={weather || undefined}
+              items={sampleClothingItems}
             />
           </div>
         </div>
