@@ -1,5 +1,5 @@
 
-import { Thermometer, Wind } from 'lucide-react';
+import { Thermometer, Wind, Cloud, Droplets } from 'lucide-react';
 import { WeatherInfo } from '@/lib/types';
 import { getWeatherMood } from './WeatherUtils';
 
@@ -42,6 +42,13 @@ const WeatherDetails = ({ weather, isMobile }: WeatherDetailsProps) => {
           <div className="flex items-center gap-2 text-sm text-white/90">
             <Wind className="h-4 w-4" />
             <span>Wind: {weather.windSpeed} m/s</span>
+          </div>
+        )}
+        
+        {weather.humidity !== undefined && (
+          <div className="flex items-center gap-2 text-sm text-white/90">
+            <Droplets className="h-4 w-4" />
+            <span>Humidity: {weather.humidity}%</span>
           </div>
         )}
       </div>

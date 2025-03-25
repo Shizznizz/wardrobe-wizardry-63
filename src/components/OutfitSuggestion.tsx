@@ -1,6 +1,6 @@
 
 import { motion } from 'framer-motion';
-import { Check, ArrowRight, Sparkles, MessageCircle, Thermometer, RefreshCw, ThumbsUp, ThumbsDown, ArrowDown, ArrowUp } from 'lucide-react';
+import { Check, ArrowRight, Sparkles, MessageCircle, Thermometer, RefreshCw, ThumbsUp, ThumbsDown, ArrowDown, ArrowUp, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { ClothingItem, Outfit, WeatherInfo, TimeOfDay, Activity } from '@/lib/types';
@@ -69,6 +69,25 @@ const OutfitSuggestion = ({
         duration: 0.3
       }
     }
+  };
+  
+  // Generate dynamic heading based on weather and location
+  const getDynamicHeading = () => {
+    if (!weather) return "Olivia's Outfit Pick for You";
+    
+    // Create personalized heading based on available information
+    const locationText = weather.city ? `for ${weather.city}` : '';
+    const weatherText = weather.temperature !== undefined ? ` (${weather.temperature}°C)` : '';
+    
+    if (activity && weather.city) {
+      return `Your Perfect ${activity} Outfit ${locationText}${weatherText}`;
+    } else if (weather.city) {
+      return `Olivia's Pick ${locationText} Today${weatherText}`;
+    } else if (weather.temperature !== undefined) {
+      return `Your Perfect Outfit for ${weather.temperature}°C ${weather.condition}`;
+    }
+    
+    return "Olivia's Personalized Outfit Pick";
   };
   
   // Determine what to render based on provided props
@@ -154,8 +173,17 @@ const OutfitSuggestion = ({
       
       return (
         <div className="space-y-5">
-          <h3 className="text-xl font-semibold mb-1">{outfit.name}</h3>
-          
+          {/* Dynamic Heading */}
+          <motion.h3 
+            className="text-2xl font-semibold mb-3 text-white/90 flex items-center justify-center md:justify-start gap-2"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            {weather?.city && <MapPin className="h-5 w-5 text-purple-400" />}
+            {getDynamicHeading()}
+          </motion.h3>
+
           {/* Visual Flow Container */}
           <div className="relative">
             {/* Top Item with animation */}
@@ -169,7 +197,7 @@ const OutfitSuggestion = ({
               >
                 <HoverCard>
                   <HoverCardTrigger asChild>
-                    <div className="relative rounded-lg overflow-hidden border border-white/20 shadow-md group cursor-pointer max-w-[90%] mx-auto">
+                    <div className="relative rounded-lg overflow-hidden border border-white/20 shadow-md group cursor-pointer max-w-[85%] mx-auto">
                       <motion.img 
                         src={topItem.imageUrl} 
                         alt={topItem.name} 
@@ -232,7 +260,7 @@ const OutfitSuggestion = ({
               >
                 <HoverCard>
                   <HoverCardTrigger asChild>
-                    <div className="relative rounded-lg overflow-hidden border border-white/20 shadow-md group cursor-pointer max-w-[90%] mx-auto">
+                    <div className="relative rounded-lg overflow-hidden border border-white/20 shadow-md group cursor-pointer max-w-[85%] mx-auto">
                       <motion.img 
                         src={bottomItem.imageUrl} 
                         alt={bottomItem.name} 
@@ -289,7 +317,7 @@ const OutfitSuggestion = ({
             {/* Accessories Grid */}
             {accessoryItems.length > 0 && (
               <motion.div 
-                className="grid grid-cols-2 gap-3 mb-6 max-w-[90%] mx-auto"
+                className="grid grid-cols-2 gap-3 mb-6 max-w-[85%] mx-auto"
                 initial="hidden"
                 animate="visible"
                 custom={2}
