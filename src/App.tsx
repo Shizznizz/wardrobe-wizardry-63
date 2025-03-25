@@ -5,17 +5,23 @@ import {
   Route,
   Routes
 } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ThemeProvider } from './components/ThemeProvider';
-import { NotFound } from './pages/NotFound';
+import { QueryClient, QueryClientProvider } from 'react-query';
+import { ThemeProvider } from './components/theme-provider';
+import Home from './pages/Home';
 import Wardrobe from './pages/Wardrobe';
 import Outfits from './pages/Outfits';
 import Settings from './pages/Settings';
 import ScrollToTop from './components/ScrollToTop';
-import Showcase from './pages/Showcase';
-import VirtualTryOn from './pages/VirtualTryOn';
-import Auth from './pages/Auth';
+import Quiz from './pages/Quiz';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
+import Contact from './pages/Contact';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import { AuthProvider } from './hooks/useAuth';
+import { ProtectedRoute } from './components/ProtectedRoute';
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
@@ -24,7 +30,7 @@ const queryClient = new QueryClient();
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
+      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
         <TooltipProvider>
           <AuthProvider>
             <div className="min-h-screen">
@@ -32,13 +38,39 @@ function App() {
               <Router>
                 <ScrollToTop />
                 <Routes>
-                  <Route path="/auth" element={<Auth />} />
-                  <Route path="/" element={<Showcase />} />
-                  <Route path="/virtual-try-on" element={<VirtualTryOn />} />
-                  <Route path="/wardrobe" element={<Wardrobe />} />
-                  <Route path="/outfits" element={<Outfits />} />
-                  <Route path="/settings" element={<Settings />} />
-                  <Route path="*" element={<NotFound />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/signup" element={<Signup />} />
+                  <Route path="/forgot-password" element={<ForgotPassword />} />
+                  <Route path="/reset-password/:token" element={<ResetPassword />} />
+                  <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                  <Route path="/terms-of-service" element={<TermsOfService />} />
+                  <Route path="/contact" element={<Contact />} />
+                  <Route path="/" element={<Home />} />
+                  <Route path="/quiz" element={<Quiz />} />
+                  <Route
+                    path="/wardrobe"
+                    element={
+                      <ProtectedRoute>
+                        <Wardrobe />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/outfits"
+                    element={
+                      <ProtectedRoute>
+                        <Outfits />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/settings"
+                    element={
+                      <ProtectedRoute>
+                        <Settings />
+                      </ProtectedRoute>
+                    }
+                  />
                 </Routes>
               </Router>
             </div>

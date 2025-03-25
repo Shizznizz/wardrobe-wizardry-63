@@ -1,9 +1,10 @@
+
 import { Link, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 
-export const NotFound = () => {
+const NotFound = () => {
   const location = useLocation();
 
   useEffect(() => {
