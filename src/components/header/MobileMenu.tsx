@@ -4,7 +4,6 @@ import { X, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
-import { WeatherDisplay } from './WeatherDisplay';
 import { Sun, CloudSun, Cloud, CloudRain, Umbrella } from 'lucide-react';
 
 interface MobileMenuProps {
@@ -52,6 +51,7 @@ export const MobileMenu = ({
             <Link
               key={item.path}
               to={item.path}
+              onClick={onClose}
               className={cn(
                 "text-xl font-medium transition-all duration-300 px-6 py-3 rounded-full w-full text-center",
                 currentPath === item.path
@@ -66,6 +66,7 @@ export const MobileMenu = ({
           {!user && (
             <Link
               to="/auth"
+              onClick={onClose}
               className="text-xl font-medium text-white hover:text-white transition-colors bg-white/10 hover:bg-white/20 px-6 py-3 rounded-full w-full text-center"
             >
               Sign In
@@ -83,7 +84,10 @@ export const MobileMenu = ({
         
         {user && (
           <button
-            onClick={onSignOut}
+            onClick={() => {
+              onSignOut();
+              onClose();
+            }}
             className="text-xl font-medium text-white hover:text-white/80 flex items-center justify-center gap-2 mb-8 bg-red-500/20 hover:bg-red-500/30 px-6 py-3 rounded-full transition-colors w-full"
           >
             <LogOut className="h-5 w-5" />

@@ -2,8 +2,9 @@
 import { ClothingItem, Outfit } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { Download, Share2, Sparkles } from 'lucide-react';
+import { Download, Share2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface VirtualFittingRoomProps {
   finalImage: string | null;
@@ -18,6 +19,8 @@ const VirtualFittingRoom = ({
   clothingItems,
   isProcessing 
 }: VirtualFittingRoomProps) => {
+  const isMobile = useIsMobile();
+  
   const handleDownload = async () => {
     if (!finalImage) return;
     
@@ -64,11 +67,11 @@ const VirtualFittingRoom = ({
   };
 
   // Get a subset of clothing items to show as miniatures
-  const previewItems = clothingItems.slice(0, 4);
+  const previewItems = clothingItems.slice(0, isMobile ? 3 : 4);
 
   if (!finalImage && !isProcessing) {
     return (
-      <div className="neo-blur border border-white/10 rounded-lg p-8 h-full flex flex-col items-center justify-center text-center">
+      <div className="neo-blur border border-white/10 rounded-lg p-4 md:p-8 h-full flex flex-col items-center justify-center text-center">
         <div className="text-white/70">
           Upload a photo and select an outfit to see the result
         </div>
@@ -95,8 +98,8 @@ const VirtualFittingRoom = ({
             />
             
             {outfit && (
-              <div className="absolute bottom-4 left-4 right-4 bg-black/70 backdrop-blur-md p-4 rounded-lg border border-white/10">
-                <h3 className="text-white font-medium mb-2">{outfit.name}</h3>
+              <div className="absolute bottom-4 left-4 right-4 bg-black/70 backdrop-blur-md p-3 md:p-4 rounded-lg border border-white/10">
+                <h3 className="text-white font-medium text-sm md:text-base mb-2">{outfit.name}</h3>
                 <div className="flex flex-wrap gap-2">
                   {outfit.seasons.map(season => (
                     <span 
@@ -119,7 +122,7 @@ const VirtualFittingRoom = ({
                 {previewItems.map((item, index) => (
                   <div 
                     key={index} 
-                    className="flex-shrink-0 w-16 h-16 rounded-md overflow-hidden border border-white/20 hover:border-white/40 transition-colors"
+                    className="flex-shrink-0 w-14 h-14 md:w-16 md:h-16 rounded-md overflow-hidden border border-white/20 hover:border-white/40 transition-colors"
                   >
                     <img 
                       src={item.imageUrl || '/placeholder.svg'} 
@@ -132,21 +135,23 @@ const VirtualFittingRoom = ({
             </div>
           )}
           
-          <div className="flex gap-2 justify-end">
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={handleShare}
-              className="bg-white/5 border-white/20 text-white hover:bg-white/10"
-            >
-              <Share2 className="h-4 w-4 mr-2" />
-              Share
-            </Button>
+          <div className={`flex gap-2 ${isMobile ? 'flex-col' : 'justify-end'}`}>
+            {navigator.share && (
+              <Button 
+                variant="outline" 
+                size={isMobile ? "default" : "sm"}
+                onClick={handleShare}
+                className={`${isMobile ? 'w-full' : ''} bg-white/5 border-white/20 text-white hover:bg-white/10`}
+              >
+                <Share2 className="h-4 w-4 mr-2" />
+                Share
+              </Button>
+            )}
             <Button 
               variant="default" 
-              size="sm"
+              size={isMobile ? "default" : "sm"}
               onClick={handleDownload}
-              className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white"
+              className={`${isMobile ? 'w-full' : ''} bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white`}
             >
               <Download className="h-4 w-4 mr-2" />
               Download

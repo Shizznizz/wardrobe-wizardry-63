@@ -1,6 +1,7 @@
 
 import { Sun, CloudSun, Cloud, CloudRain, Umbrella } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface WeatherDisplayProps {
   weather?: {
@@ -11,6 +12,8 @@ interface WeatherDisplayProps {
 }
 
 export const WeatherDisplay = ({ weather, isScrolled = false }: WeatherDisplayProps) => {
+  const isMobile = useIsMobile();
+  
   const getWeatherIcon = () => {
     if (!weather) return <Sun className="w-5 h-5 text-yellow-400" />;
     
@@ -24,7 +27,7 @@ export const WeatherDisplay = ({ weather, isScrolled = false }: WeatherDisplayPr
     return <Sun className="w-5 h-5 text-yellow-400" />;
   };
 
-  if (!weather) return null;
+  if (!weather || isMobile) return null;
 
   return (
     <div className={cn(

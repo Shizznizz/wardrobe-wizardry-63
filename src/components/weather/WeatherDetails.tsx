@@ -12,7 +12,7 @@ const WeatherDetails = ({ weather, isMobile }: WeatherDetailsProps) => {
   const weatherMood = getWeatherMood(weather);
   
   return (
-    <div className={`space-y-3 ${isMobile ? 'text-center' : ''}`}>
+    <div className={`space-y-3 ${isMobile ? 'text-center w-full' : ''}`}>
       <div>
         <h3 className="text-lg font-medium text-white/90">
           Weather Mood: <span className="font-bold">{weatherMood}</span>
@@ -30,7 +30,7 @@ const WeatherDetails = ({ weather, isMobile }: WeatherDetailsProps) => {
         <div className="text-sm text-white/80 capitalize">({weather.condition})</div>
       </div>
       
-      <div className="flex flex-wrap gap-4 pt-2">
+      <div className={`flex flex-wrap ${isMobile ? 'justify-center' : ''} gap-4 pt-2`}>
         {weather.feelsLike !== undefined && (
           <div className="flex items-center gap-2 text-sm text-white/90">
             <Thermometer className="h-4 w-4" />

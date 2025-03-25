@@ -17,12 +17,13 @@ const WeatherDisplay = ({ weather }: WeatherDisplayProps) => {
   
   return (
     <div className={cn(
-      "overflow-hidden rounded-2xl border border-white/20 shadow-lg p-6",
+      "overflow-hidden rounded-2xl border border-white/20 shadow-lg p-4 md:p-6",
       gradientClass
     )}>
       <div className={`flex ${isMobile ? 'flex-col items-center' : 'items-start gap-6'}`}>
-        <div className={`${isMobile ? 'mb-4' : ''}`}>
-          <WeatherIconSelector iconName={weather.icon || weather.condition.toLowerCase()} />
+        <div className={`${isMobile ? 'mb-4 flex justify-center' : ''}`}>
+          <WeatherIconSelector iconName={weather.icon || weather.condition.toLowerCase()} 
+            iconSize={isMobile ? 60 : 50} />
         </div>
         
         <WeatherDetails weather={weather} isMobile={isMobile} />
