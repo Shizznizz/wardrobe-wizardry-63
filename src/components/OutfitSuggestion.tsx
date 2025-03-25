@@ -1,4 +1,3 @@
-
 import { motion } from 'framer-motion';
 import { Check, ArrowRight, Sparkles, MessageCircle, Thermometer, RefreshCw, ThumbsUp, ThumbsDown, ArrowDown, ArrowUp, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
