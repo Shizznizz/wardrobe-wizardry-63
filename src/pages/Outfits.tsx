@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -302,7 +303,276 @@ type FormValues = {
 };
 
 const Outfits = () => {
-  // Rest of the component code remains unchanged
+  const [currentWeather, setCurrentWeather] = useState<WeatherInfo | null>(null);
+  const [selectedOutfit, setSelectedOutfit] = useState<Outfit | null>(null);
+  const [timeOfDay, setTimeOfDay] = useState<TimeOfDay>('morning');
+  const [activity, setActivity] = useState<Activity>('casual');
+  const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isFiltersVisible, setIsFiltersVisible] = useState(false);
+  const { user } = useAuth();
+  const isMobile = useIsMobile();
+  
+  const form = useForm<FormValues>({
+    defaultValues: {
+      country: 'US',
+      city: 'New York',
+    },
+  });
+  
+  const handleWeatherChange = (weatherData: WeatherInfo) => {
+    setCurrentWeather(weatherData);
+    setIsLoading(false);
+  };
+  
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+    // Simulate refresh delay
+    setTimeout(() => {
+      const randomOutfitIndex = Math.floor(Math.random() * sampleOutfits.length);
+      setSelectedOutfit(sampleOutfits[randomOutfitIndex]);
+      setIsRefreshing(false);
+      toast.success("Your outfit has been refreshed!");
+    }, 1000);
+  };
+  
+  // Initial outfit selection on mount
+  useEffect(() => {
+    const loadInitialOutfit = () => {
+      setIsLoading(true);
+      setTimeout(() => {
+        const randomOutfitIndex = Math.floor(Math.random() * sampleOutfits.length);
+        setSelectedOutfit(sampleOutfits[randomOutfitIndex]);
+        setIsLoading(false);
+      }, 1500);
+    };
+    
+    loadInitialOutfit();
+  }, []);
+  
+  const selectedCountry = form.watch('country');
+  const cities = selectedCountry ? citiesByCountry[selectedCountry as keyof typeof citiesByCountry] || [] : [];
+  
+  const timeOfDayIcons = {
+    morning: <Coffee className="h-4 w-4 mr-1" />,
+    afternoon: <Sun className="h-4 w-4 mr-1" />,
+    evening: <Sunset className="h-4 w-4 mr-1" />,
+    night: <Moon className="h-4 w-4 mr-1" />
+  };
+  
+  const activityIcons = {
+    work: <AlarmClockCheck className="h-4 w-4 mr-1" />,
+    casual: <Coffee className="h-4 w-4 mr-1" />,
+    sport: <RefreshCw className="h-4 w-4 mr-1" />,
+    party: <Party className="h-4 w-4 mr-1" />,
+    date: <Sparkles className="h-4 w-4 mr-1" />,
+    formal: <Calendar className="h-4 w-4 mr-1" />
+  };
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Header />
+      
+      <main className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold mb-6">Your Outfit Suggestions</h1>
+        
+        <div className="grid gap-6 md:grid-cols-12">
+          {/* Outfits and Weather Section */}
+          <div className="md:col-span-8 space-y-6">
+            {/* Weather Selection Form */}
+            <Form {...form}>
+              <form className="space-y-4 p-4 bg-card rounded-lg shadow">
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="country"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Country</FormLabel>
+                        <Select 
+                          onValueChange={field.onChange} 
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select country" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {countries.map((country) => (
+                              <SelectItem key={country.code} value={country.code}>
+                                {country.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="city"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>City</FormLabel>
+                        <Select 
+                          onValueChange={field.onChange} 
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select city" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {cities.map((city) => (
+                              <SelectItem key={city} value={city}>
+                                {city}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </form>
+            </Form>
+            
+            {/* Weather and Outfit Suggestion */}
+            <div className="p-4 bg-card rounded-lg shadow">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-semibold">Today's Outfit Suggestion</h2>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleRefresh}
+                  disabled={isRefreshing || isLoading}
+                >
+                  {isRefreshing ? 
+                    <Skeleton className="h-4 w-4 rounded-full mr-2" /> : 
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                  }
+                  New Suggestion
+                </Button>
+              </div>
+              
+              {isLoading ? (
+                <div className="space-y-4">
+                  <Skeleton className="h-[300px] w-full rounded-md" />
+                  <div className="flex space-x-2">
+                    <Skeleton className="h-8 w-24 rounded-md" />
+                    <Skeleton className="h-8 w-24 rounded-md" />
+                  </div>
+                </div>
+              ) : error ? (
+                <Alert variant="destructive">
+                  <AlertTriangle className="h-4 w-4" />
+                  <AlertTitle>Error</AlertTitle>
+                  <AlertDescription>
+                    {error}
+                  </AlertDescription>
+                </Alert>
+              ) : (
+                <div>
+                  {selectedOutfit && (
+                    <OutfitSuggestion outfit={selectedOutfit} />
+                  )}
+                  
+                  <Collapsible className="mt-4">
+                    <CollapsibleTrigger asChild>
+                      <Button variant="ghost" size="sm" className="flex items-center justify-between w-full">
+                        <span>Outfit Preferences</span>
+                        <span className="text-muted-foreground text-sm">Time & Activity</span>
+                      </Button>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="mt-2 space-y-4">
+                      <div>
+                        <h3 className="text-sm font-medium mb-2">Time of Day</h3>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                          {(Object.keys(timeOfDayIcons) as TimeOfDay[]).map((time) => (
+                            <Button
+                              key={time}
+                              variant={timeOfDay === time ? "default" : "outline"}
+                              size="sm"
+                              className="flex items-center justify-center"
+                              onClick={() => setTimeOfDay(time)}
+                            >
+                              {timeOfDayIcons[time]}
+                              <span className="capitalize">{time}</span>
+                            </Button>
+                          ))}
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <h3 className="text-sm font-medium mb-2">Activity</h3>
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                          {(Object.keys(activityIcons) as Activity[]).map((act) => (
+                            <Button
+                              key={act}
+                              variant={activity === act ? "default" : "outline"}
+                              size="sm"
+                              className="flex items-center justify-center"
+                              onClick={() => setActivity(act)}
+                            >
+                              {activityIcons[act]}
+                              <span className="capitalize">{act}</span>
+                            </Button>
+                          ))}
+                        </div>
+                      </div>
+                    </CollapsibleContent>
+                  </Collapsible>
+                </div>
+              )}
+            </div>
+          </div>
+          
+          {/* Weather and Reasoning Section */}
+          <div className="md:col-span-4 space-y-6">
+            <div className="bg-card rounded-lg shadow overflow-hidden">
+              <div className="p-4 border-b">
+                <h2 className="text-lg font-semibold">Weather Mood</h2>
+              </div>
+              <WeatherWidget
+                className="bg-transparent"
+                onWeatherChange={handleWeatherChange}
+                city={form.getValues('city')}
+                country={form.getValues('country')}
+                savePreferences={true}
+              />
+            </div>
+            
+            <div className="bg-card rounded-lg shadow">
+              <div className="p-4 border-b">
+                <h2 className="text-lg font-semibold flex items-center">
+                  <MessageCircle className="w-4 h-4 mr-2" />
+                  Olivia's Reasoning
+                </h2>
+              </div>
+              <div className="p-4">
+                <OliviaBloomAdvisor 
+                  weather={currentWeather}
+                  timeOfDay={timeOfDay}
+                  activity={activity}
+                  selectedOutfit={selectedOutfit}
+                />
+              </div>
+            </div>
+            
+            <div className="bg-card rounded-lg shadow">
+              <div className="p-4">
+                <OliviaBloomAssistant />
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
 };
 
 export default Outfits;
