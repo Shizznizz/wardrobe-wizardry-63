@@ -37,6 +37,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const countries = [
   { code: "US", name: "United States" },
@@ -638,7 +639,7 @@ const Outfits = () => {
     <div className="min-h-screen bg-background pb-20">
       <Header />
       
-      {/* Futuristic Title Banner with proper spacing */}
+      {/* Futuristic Title Banner with proper spacing and rounded bottom */}
       <div className="w-full pt-20 pb-8 bg-gradient-to-r from-violet-800 via-purple-700 to-indigo-800 text-white relative overflow-hidden mt-16">
         <div className="absolute inset-0 opacity-20">
           <div className="absolute top-0 left-[10%] w-20 h-20 rounded-full bg-purple-300 blur-xl"></div>
@@ -663,105 +664,117 @@ const Outfits = () => {
             Olivia helps you find the perfect outfit for today's weather and your style preferences.
           </p>
         </div>
+        
+        {/* Add decorative bottom edge with curved transition */}
+        <div className="absolute bottom-0 left-0 right-0 h-8 bg-background" style={{ 
+          borderTopLeftRadius: '50% 100%', 
+          borderTopRightRadius: '50% 100%' 
+        }}></div>
       </div>
       
-      <div className="container px-4 sm:px-6 max-w-6xl mx-auto mt-8">
-        {/* Location Settings Form */}
-        <div className="mb-8 bg-muted/50 rounded-xl border p-4 md:p-6">
-          <h2 className="text-xl font-bold mb-4">Weather Conditions</h2>
+      <div className="container px-4 sm:px-6 max-w-6xl mx-auto mt-4">
+        {/* Merged Weather Panel */}
+        <Card className="mb-8 border border-purple-200/20 shadow-lg overflow-hidden">
+          <CardHeader className="bg-gradient-to-r from-purple-900/30 to-indigo-900/30 pb-2">
+            <CardTitle className="flex items-center text-xl font-bold">
+              <Cloud className="h-5 w-5 mr-2 text-purple-300" />
+              Today's Weather in {selectedLocation.city || 'Your Area'}
+            </CardTitle>
+          </CardHeader>
           
-          {showLocationAlert && (
-            <Alert variant="destructive" className="mb-4">
-              <AlertTriangle className="h-4 w-4" />
-              <AlertTitle>Missing Location</AlertTitle>
-              <AlertDescription>
-                Please select both a country and city to get accurate weather and outfit recommendations.
-              </AlertDescription>
-            </Alert>
-          )}
-          
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="country"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Country</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        value={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a country" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {countries.map((country) => (
-                            <SelectItem key={country.code} value={country.code}>
-                              {country.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </FormItem>
-                  )}
-                />
+          <CardContent className="p-4 md:p-6">
+            {showLocationAlert && (
+              <Alert variant="destructive" className="mb-4">
+                <AlertTriangle className="h-4 w-4" />
+                <AlertTitle>Missing Location</AlertTitle>
+                <AlertDescription>
+                  Please select both a country and city to get accurate weather and outfit recommendations.
+                </AlertDescription>
+              </Alert>
+            )}
+            
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="country"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Country</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                          value={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select a country" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {countries.map((country) => (
+                              <SelectItem key={country.code} value={country.code}>
+                                {country.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="city"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>City</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                          value={field.value}
+                          disabled={!selectedCountry}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder={selectedCountry ? "Select a city" : "Select a country first"} />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {availableCities.map((city) => (
+                              <SelectItem key={city} value={city}>
+                                {city}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormItem>
+                    )}
+                  />
+                </div>
                 
-                <FormField
-                  control={form.control}
-                  name="city"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>City</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        value={field.value}
-                        disabled={!selectedCountry}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder={selectedCountry ? "Select a city" : "Select a country first"} />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {availableCities.map((city) => (
-                            <SelectItem key={city} value={city}>
-                              {city}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </FormItem>
-                  )}
+                <Button type="submit" className="w-full sm:w-auto">
+                  <MapPin className="mr-2 h-4 w-4" />
+                  Update Location
+                </Button>
+              </form>
+              
+              <div className="mt-2">
+                <WeatherWidget 
+                  onWeatherChange={handleWeatherChange}
+                  city={selectedLocation.city}
+                  country={selectedLocation.country}
+                  savePreferences={true}
+                  showError={true}
+                  className="rounded-xl shadow-md"
                 />
               </div>
-              
-              <Button type="submit" className="w-full sm:w-auto">
-                <MapPin className="mr-2 h-4 w-4" />
-                Update Location
-              </Button>
-            </form>
-          </Form>
-        </div>
+            </Form>
+          </CardContent>
+        </Card>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          {/* Weather Widget */}
-          <div className="h-full">
-            <h2 className="text-xl font-bold mb-3">Current Weather</h2>
-            <WeatherWidget 
-              onWeatherChange={handleWeatherChange}
-              city={selectedLocation.city}
-              country={selectedLocation.country}
-              savePreferences={true}
-              showError={true}
-            />
-          </div>
-          
           {/* Olivia's Advice */}
           <div className="h-full">
             <h2 className="text-xl font-bold mb-3">Olivia's Style Advice</h2>
@@ -804,24 +817,24 @@ const Outfits = () => {
               </div>
             </div>
           </div>
-        </div>
-        
-        {/* Outfit Suggestion - Full Width */}
-        <div className="mb-8">
-          <h2 className="text-xl font-bold mb-3">Today's Outfit Suggestion</h2>
-          <div className="bg-white dark:bg-gray-950 rounded-xl border shadow-sm p-4 md:p-6">
-            <OutfitSuggestion 
-              outfit={suggestedOutfit}
-              onLike={handleLikeOutfit}
-              onDislike={handleDislikeOutfit}
-              onWear={() => handleWearOutfit(suggestedOutfit.id)}
-              onRefresh={handleRegenerateOutfit}
-              onMakeWarmer={handleMakeWarmer}
-              onChangeTop={handleChangeTop}
-              onChangeBottom={handleChangeBottom}
-              weather={weather || undefined}
-              items={sampleClothingItems}
-            />
+          
+          {/* Outfit Suggestion - Now in half width on larger screens */}
+          <div className="h-full">
+            <h2 className="text-xl font-bold mb-3">Today's Outfit Suggestion</h2>
+            <div className="bg-white dark:bg-gray-950 rounded-xl border shadow-sm p-4 h-[calc(100%-32px)] overflow-auto">
+              <OutfitSuggestion 
+                outfit={suggestedOutfit}
+                onLike={handleLikeOutfit}
+                onDislike={handleDislikeOutfit}
+                onWear={() => handleWearOutfit(suggestedOutfit.id)}
+                onRefresh={handleRegenerateOutfit}
+                onMakeWarmer={handleMakeWarmer}
+                onChangeTop={handleChangeTop}
+                onChangeBottom={handleChangeBottom}
+                weather={weather || undefined}
+                items={sampleClothingItems}
+              />
+            </div>
           </div>
         </div>
         

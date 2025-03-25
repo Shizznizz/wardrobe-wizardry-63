@@ -24,8 +24,10 @@ const WeatherDisplay = ({ weather, className }: WeatherDisplayProps) => {
     )}>
       <div className={`flex ${isMobile ? 'flex-col items-center' : 'items-start gap-6'}`}>
         <div className={`${isMobile ? 'mb-4 flex justify-center' : ''}`}>
-          <WeatherIconSelector iconName={weather.icon || weather.condition.toLowerCase()} 
-            iconSize={isMobile ? 60 : 50} />
+          <WeatherIconSelector 
+            iconName={weather.icon || weather.condition.toLowerCase()} 
+            iconSize={isMobile ? 60 : 80} 
+          />
         </div>
         
         <WeatherDetails weather={weather} isMobile={isMobile} />
