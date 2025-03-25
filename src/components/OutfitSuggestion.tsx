@@ -26,28 +26,39 @@ import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 
+// Define an interface for the suggestion object passed from StyleDiscoveryQuiz
+interface OutfitSuggestionItem {
+  title: string;
+  description: string;
+  image: string;
+  items: string[];
+}
+
 interface OutfitSuggestionProps {
-  outfit: Outfit;
-  items: ClothingItem[];
+  outfit?: Outfit;
+  items?: ClothingItem[];
   weather?: WeatherInfo;
   timeOfDay?: TimeOfDay;
   activity?: Activity;
-  onWear: () => void;
-  onRefresh: () => void;
-  onLike: () => void;
-  onDislike: () => void;
-  onMakeWarmer: () => void;
-  onChangeTop: () => void;
-  onChangeBottom: () => void;
-  onToggleFavorite: () => void;
+  suggestion?: OutfitSuggestionItem; // Add suggestion prop for StyleDiscoveryQuiz
+  onWear?: (outfitId?: string) => void; // Make outfitId optional
+  onRefresh?: () => void;
+  onLike?: () => void;
+  onDislike?: () => void;
+  onMakeWarmer?: () => void;
+  onChangeTop?: () => void;
+  onChangeBottom?: () => void;
+  onToggleFavorite?: () => void;
+  onReset?: () => void; // Add onReset for StyleDiscoveryQuiz
 }
 
 const OutfitSuggestion: React.FC<OutfitSuggestionProps> = ({
   outfit,
-  items,
+  items = [],
   weather,
   timeOfDay,
   activity,
+  suggestion,
   onWear,
   onRefresh,
   onLike,
@@ -55,9 +66,52 @@ const OutfitSuggestion: React.FC<OutfitSuggestionProps> = ({
   onMakeWarmer,
   onChangeTop,
   onChangeBottom,
-  onToggleFavorite
+  onToggleFavorite,
+  onReset
 }) => {
   const isMobile = useIsMobile();
+  
+  // If we have a suggestion (from StyleDiscoveryQuiz) but no outfit
+  if (suggestion && !outfit) {
+    return (
+      <div className="py-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 20 }}
+          transition={{ duration: 0.3 }}
+          className="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-purple-500/20"
+        >
+          <h3 className="text-lg font-semibold mb-3">{suggestion.title}</h3>
+          <div className="aspect-video rounded-lg overflow-hidden mb-4 bg-gray-900/50">
+            <img src={suggestion.image} alt={suggestion.title} className="w-full h-full object-cover" />
+          </div>
+          <p className="text-sm text-white/80 mb-3">{suggestion.description}</p>
+          <div className="space-y-2 mb-4">
+            {suggestion.items.map((item, idx) => (
+              <div key={idx} className="flex items-center gap-2 text-sm">
+                <div className="h-2 w-2 rounded-full bg-purple-500" />
+                <span>{item}</span>
+              </div>
+            ))}
+          </div>
+          <div className="flex justify-between mt-4">
+            <Button variant="outline" size="sm" onClick={onReset} className="bg-white/10 border-white/20 hover:bg-white/20">
+              Try Again
+            </Button>
+            <Button className="bg-gradient-to-r from-pink-500 to-purple-600 text-white">
+              Save Outfit
+            </Button>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
+
+  // If we don't have an outfit or items, return nothing
+  if (!outfit || items.length === 0) {
+    return null;
+  }
   
   // Filter the items to only show the ones in the outfit
   const outfitItems = outfit.items
@@ -192,41 +246,58 @@ const OutfitSuggestion: React.FC<OutfitSuggestionProps> = ({
         )}
         
         <div className="flex flex-wrap md:flex-nowrap gap-2 justify-between mt-4">
-          <Button 
-            onClick={onLike} 
-            variant="outline" 
-            size="sm" 
-            className="flex-1 md:flex-none bg-white/5 border-white/10 hover:bg-white/10 text-white"
-          >
-            <ThumbsUp className="h-4 w-4 mr-1 text-green-400" />
-            Like
-          </Button>
+          {onLike && (
+            <Button 
+              onClick={onLike} 
+              variant="outline" 
+              size="sm" 
+              className="flex-1 md:flex-none bg-white/5 border-white/10 hover:bg-white/10 text-white"
+            >
+              <ThumbsUp className="h-4 w-4 mr-1 text-green-400" />
+              Like
+            </Button>
+          )}
           
-          <Button 
-            onClick={onDislike} 
-            variant="outline" 
-            size="sm" 
-            className="flex-1 md:flex-none bg-white/5 border-white/10 hover:bg-white/10 text-white"
-          >
-            <ThumbsDown className="h-4 w-4 mr-1 text-red-400" />
-            Dislike
-          </Button>
+          {onDislike && (
+            <Button 
+              onClick={onDislike} 
+              variant="outline" 
+              size="sm" 
+              className="flex-1 md:flex-none bg-white/5 border-white/10 hover:bg-white/10 text-white"
+            >
+              <ThumbsDown className="h-4 w-4 mr-1 text-red-400" />
+              Dislike
+            </Button>
+          )}
           
-          <Button 
-            onClick={onToggleFavorite} 
-            variant="outline"
-            size="sm" 
-            className={cn(
-              "flex-1 md:flex-none bg-white/5 border-white/10 hover:bg-white/10 text-white",
-              outfit.favorite && "bg-pink-600/30 border-pink-400"
-            )}
-          >
-            <Heart className={cn(
-              "h-4 w-4 mr-1",
-              outfit.favorite ? "text-pink-400 fill-pink-400" : "text-pink-300"
-            )} />
-            {outfit.favorite ? "Favorited" : "Favorite"}
-          </Button>
+          {onToggleFavorite && (
+            <Button 
+              onClick={onToggleFavorite} 
+              variant="outline"
+              size="sm" 
+              className={cn(
+                "flex-1 md:flex-none bg-white/5 border-white/10 hover:bg-white/10 text-white",
+                outfit.favorite && "bg-pink-600/30 border-pink-400"
+              )}
+            >
+              <Heart className={cn(
+                "h-4 w-4 mr-1",
+                outfit.favorite ? "text-pink-400 fill-pink-400" : "text-pink-300"
+              )} />
+              {outfit.favorite ? "Favorited" : "Favorite"}
+            </Button>
+          )}
+          
+          {onWear && (
+            <Button 
+              onClick={() => onWear(outfit.id)} 
+              variant="default" 
+              size="sm" 
+              className="flex-1 md:flex-none"
+            >
+              Wear This
+            </Button>
+          )}
         </div>
       </div>
     </div>

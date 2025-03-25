@@ -978,6 +978,7 @@ const WardrobeGrid = ({ items, onToggleFavorite, compactView = false }: Wardrobe
                     onRefresh={handleRefreshOutfit}
                     onLike={handleLikeOutfit}
                     onDislike={handleDislikeOutfit}
+                    onToggleFavorite={onToggleFavorite}
                   />
                 ))}
               </div>
