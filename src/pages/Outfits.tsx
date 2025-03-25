@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -607,7 +608,9 @@ const Outfits = () => {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-10">
+          {/* Left Column - Weather and Filters */}
           <div className="space-y-6">
+            {/* Weather Box */}
             <div className="bg-white/10 backdrop-blur-md rounded-xl p-5 border border-white/20">
               <h2 className="text-lg font-semibold text-white mb-4">Weather Conditions</h2>
               
@@ -690,6 +693,7 @@ const Outfits = () => {
               </Form>
             </div>
             
+            {/* Outfit Filters */}
             <div className="bg-white/10 backdrop-blur-md rounded-xl p-5 border border-white/20">
               <h2 className="text-lg font-semibold text-white mb-4">Outfit Filters</h2>
               
@@ -746,6 +750,7 @@ const Outfits = () => {
               </div>
             </div>
             
+            {/* Olivia's Reasoning */}
             <div className="bg-white/10 backdrop-blur-md rounded-xl p-5 border border-white/20">
               <div className="flex items-start gap-4">
                 <div className="flex-1">
@@ -777,6 +782,7 @@ const Outfits = () => {
             </div>
           </div>
           
+          {/* Right Column - Outfit Suggestion */}
           <div className="bg-white/10 backdrop-blur-md rounded-xl p-5 border border-white/20">
             <div className="mb-4 flex justify-between items-center">
               <h2 className="text-xl font-semibold text-white">Suggested Outfit</h2>
@@ -813,4 +819,3 @@ const Outfits = () => {
 };
 
 export default Outfits;
-
