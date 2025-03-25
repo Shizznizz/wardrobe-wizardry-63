@@ -27,6 +27,13 @@ const Header = ({ weather }: HeaderProps) => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
 
+  // Get the current page name from the path
+  const getPageTitle = () => {
+    const path = location.pathname;
+    if (path === '/') return 'Home';
+    return path.charAt(1).toUpperCase() + path.slice(2);
+  };
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
@@ -76,8 +83,12 @@ const Header = ({ weather }: HeaderProps) => {
       )}
     >
       <div className="container mx-auto px-3 md:px-6 flex items-center justify-between">
-        {/* Empty div to maintain layout balance when page name is removed */}
-        <div className="w-8"></div>
+        {/* Page title (visible on mobile) */}
+        <div className="text-white md:hidden">
+          <h1 className="text-xl font-display font-semibold tracking-tight">
+            {getPageTitle()}
+          </h1>
+        </div>
 
         <DesktopNavigation 
           navItems={navItems} 
