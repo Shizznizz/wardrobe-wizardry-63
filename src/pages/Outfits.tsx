@@ -11,7 +11,11 @@ import { buttonVariants } from '@/components/ui/button';
 import { WeatherInfo, Outfit, TimeOfDay, Activity } from '@/lib/types';
 import { sampleClothingItems, sampleOutfits, sampleUserPreferences } from '@/lib/wardrobeData';
 import { toast } from 'sonner';
-import { RefreshCw, Camera, MapPin, AlertTriangle, Calendar, AlarmClockCheck, MessageCircle, Sun, CloudRain, CloudSun, Cloud } from 'lucide-react';
+import { 
+  RefreshCw, Camera, MapPin, AlertTriangle, Calendar, AlarmClockCheck, 
+  MessageCircle, Sun, CloudRain, CloudSun, Cloud, Coffee, Sunset, Moon, 
+  Sparkles, Umbrella, Party 
+} from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from '@/lib/utils';
@@ -33,6 +37,11 @@ import { useForm } from "react-hook-form";
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useIsMobile } from '@/hooks/use-mobile';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 const countries = [
   { code: "US", name: "United States" },
@@ -301,6 +310,7 @@ const Outfits = () => {
   const [showWelcomeMessage, setShowWelcomeMessage] = useState(true);
   const [timeOfDay, setTimeOfDay] = useState<TimeOfDay | undefined>(undefined);
   const [activity, setActivity] = useState<Activity | undefined>(undefined);
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const { user } = useAuth();
   const isMobile = useIsMobile();
   
@@ -622,6 +632,40 @@ const Outfits = () => {
   
   const userName = user?.user_metadata?.full_name || user?.user_metadata?.name || 'there';
   
+  const getTimeOfDayIcon = (time: TimeOfDay) => {
+    switch(time) {
+      case 'morning':
+        return <Coffee className="h-4 w-4 mr-1" />;
+      case 'afternoon':
+        return <Sun className="h-4 w-4 mr-1" />;
+      case 'evening':
+        return <Sunset className="h-4 w-4 mr-1" />;
+      case 'night':
+        return <Moon className="h-4 w-4 mr-1" />;
+      default:
+        return <Calendar className="h-4 w-4 mr-1" />;
+    }
+  };
+  
+  const getActivityIcon = (act: Activity) => {
+    switch(act) {
+      case 'work':
+        return <Coffee className="h-4 w-4 mr-1" />;
+      case 'casual':
+        return <Sparkles className="h-4 w-4 mr-1" />;
+      case 'sport':
+        return <Umbrella className="h-4 w-4 mr-1" />;
+      case 'party':
+        return <Party className="h-4 w-4 mr-1" />;
+      case 'date':
+        return <Sparkles className="h-4 w-4 mr-1" />;
+      case 'formal':
+        return <Sparkles className="h-4 w-4 mr-1" />;
+      default:
+        return <AlarmClockCheck className="h-4 w-4 mr-1" />;
+    }
+  };
+  
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-900 via-indigo-900 to-blue-900">
       <Header />
@@ -741,85 +785,48 @@ const Outfits = () => {
                 />
               </Form>
             </div>
-            
-            <div className="bg-white/10 backdrop-blur-md rounded-xl p-5 border border-white/20">
-              <h2 className="text-lg font-semibold text-white mb-4">Outfit Filters</h2>
-              
-              <div className="space-y-4">
-                <div>
-                  <h3 className="text-sm text-purple-200 mb-2 flex items-center">
-                    <Calendar className="h-4 w-4 mr-1" />
-                    Time of Day
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {(['morning', 'afternoon', 'evening', 'night'] as TimeOfDay[]).map((time) => (
-                      <Button
-                        key={time}
-                        onClick={() => handleTimeOfDayChange(time)}
-                        variant="outline"
-                        size="sm"
-                        className={cn(
-                          "border-white/20 text-white capitalize",
-                          timeOfDay === time 
-                            ? "bg-purple-600/50 border-purple-400" 
-                            : "bg-white/5 hover:bg-white/10"
-                        )}
-                      >
-                        {time}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-                
-                <div>
-                  <h3 className="text-sm text-purple-200 mb-2 flex items-center">
-                    <AlarmClockCheck className="h-4 w-4 mr-1" />
-                    Activity
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {(['work', 'casual', 'sport', 'party', 'date', 'formal'] as Activity[]).map((act) => (
-                      <Button
-                        key={act}
-                        onClick={() => handleActivityChange(act)}
-                        variant="outline"
-                        size="sm"
-                        className={cn(
-                          "border-white/20 text-white capitalize",
-                          activity === act 
-                            ? "bg-blue-600/50 border-blue-400" 
-                            : "bg-white/5 hover:bg-white/10"
-                        )}
-                      >
-                        {act}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
           
           <div className="space-y-6">
             <div className="bg-white/10 backdrop-blur-md rounded-xl p-5 border border-white/20">
-              <div className="flex items-start gap-4">
-                <div className="flex-1">
+              <h2 className="text-lg font-semibold text-white mb-4">Outfit Intelligence</h2>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-purple-800/30 rounded-xl p-4 border border-purple-500/20">
                   <h3 className="text-md font-semibold text-white mb-2 flex items-center">
-                    <MessageCircle className="h-4 w-4 mr-2" />
-                    Olivia's Outfit Reasoning
+                    <Cloud className="h-4 w-4 mr-2" />
+                    Weather Mood
                   </h3>
                   <div className="text-sm text-purple-100 space-y-2">
                     <p>
                       {weather ? 
-                        `Based on the ${weather.temperature}°C ${weather.condition} weather, and your selected filters, I've chosen a ${weather.temperature < 15 ? 'warm' : 'cool and comfortable'} outfit that's perfect for today.`
+                        `${weather.temperature}°C ${weather.condition} weather is ideal for ${weather.temperature < 15 ? 'warm, layered clothing' : 'lighter, breathable outfits'}.`
                         : 
-                        "Once you set your location, I'll analyze the weather and suggest an appropriate outfit for you."
+                        "Set your location to get weather-based outfit suggestions."
                       }
                     </p>
-                    {timeOfDay && (
+                    {weather && weather.feelsLike && (
                       <p>
-                        For {timeOfDay} hours, I've selected pieces that work well with the lighting and social context of this time.
+                        It feels like {weather.feelsLike}°C, so dress accordingly.
                       </p>
                     )}
+                  </div>
+                </div>
+                
+                <div className="bg-indigo-800/30 rounded-xl p-4 border border-indigo-500/20">
+                  <h3 className="text-md font-semibold text-white mb-2 flex items-center">
+                    <MessageCircle className="h-4 w-4 mr-2" />
+                    Olivia's Reasoning
+                  </h3>
+                  <div className="text-sm text-purple-100 space-y-2">
+                    <p>
+                      {timeOfDay && (
+                        `For ${timeOfDay} hours, I've selected pieces that work well with the lighting and social context.`
+                      )}
+                      {!timeOfDay && (
+                        `I'm suggesting an outfit based on the current weather and your preferences.`
+                      )}
+                    </p>
                     {activity && (
                       <p>
                         This outfit is suitable for {activity} activities, balancing comfort, style, and functionality.
@@ -858,6 +865,84 @@ const Outfits = () => {
                 onChangeTop={handleChangeTop}
                 onChangeBottom={handleChangeBottom}
               />
+              
+              <Collapsible 
+                open={isFiltersOpen} 
+                onOpenChange={setIsFiltersOpen}
+                className="mt-4 bg-purple-800/20 rounded-xl border border-purple-500/20 overflow-hidden"
+              >
+                <CollapsibleTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="w-full flex items-center justify-between p-3 text-purple-100 hover:text-white hover:bg-purple-700/20"
+                  >
+                    <span className="flex items-center">
+                      <Sparkles className="h-4 w-4 mr-2" />
+                      Customize Your Outfit
+                    </span>
+                    <span className="text-xs text-purple-300">
+                      {isFiltersOpen ? "Hide Filters" : "Show Filters"}
+                    </span>
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="p-4 space-y-4">
+                  <div>
+                    <h3 className="text-sm text-purple-200 mb-2 flex items-center">
+                      <Calendar className="h-4 w-4 mr-1" />
+                      Time of Day
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {(['morning', 'afternoon', 'evening', 'night'] as TimeOfDay[]).map((time) => (
+                        <Button
+                          key={time}
+                          onClick={() => handleTimeOfDayChange(time)}
+                          variant="outline"
+                          size="sm"
+                          className={cn(
+                            "border-white/20 text-white capitalize",
+                            timeOfDay === time 
+                              ? "bg-purple-600/50 border-purple-400" 
+                              : "bg-white/5 hover:bg-white/10"
+                          )}
+                        >
+                          <span className="flex items-center">
+                            {getTimeOfDayIcon(time)}
+                            {time}
+                          </span>
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h3 className="text-sm text-purple-200 mb-2 flex items-center">
+                      <AlarmClockCheck className="h-4 w-4 mr-1" />
+                      Activity
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {(['work', 'casual', 'sport', 'party', 'date', 'formal'] as Activity[]).map((act) => (
+                        <Button
+                          key={act}
+                          onClick={() => handleActivityChange(act)}
+                          variant="outline"
+                          size="sm"
+                          className={cn(
+                            "border-white/20 text-white capitalize",
+                            activity === act 
+                              ? "bg-blue-600/50 border-blue-400" 
+                              : "bg-white/5 hover:bg-white/10"
+                          )}
+                        >
+                          <span className="flex items-center">
+                            {getActivityIcon(act)}
+                            {act}
+                          </span>
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
             </div>
           </div>
         </div>
