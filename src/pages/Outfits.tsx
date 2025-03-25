@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -691,73 +690,78 @@ const Outfits = () => {
         
         {/* Weather Update Section - Full Width */}
         <div className="mb-8">
-          <Card className="bg-gradient-to-br from-gray-900/80 to-black/90 border-white/10 overflow-hidden">
-            <CardContent className="p-6">
+          <div className="bg-purple-800/70 backdrop-blur-sm rounded-lg overflow-hidden">
+            <div className="p-6 pb-4">
+              <h3 className="text-xl font-semibold mb-4">Weather Conditions</h3>
+              
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Weather Location Form - Left Side */}
                 <div>
-                  <h3 className="text-xl font-semibold mb-4">Weather Location</h3>
-                  
                   <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                      <FormField
-                        control={form.control}
-                        name="country"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Country</FormLabel>
-                            <Select 
-                              onValueChange={field.onChange} 
-                              defaultValue={field.value}
-                            >
-                              <FormControl>
-                                <SelectTrigger className="bg-white/10 border-white/20">
-                                  <SelectValue placeholder="Select a country" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {countries.map((country) => (
-                                  <SelectItem key={country.code} value={country.code}>
-                                    {country.name}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </FormItem>
-                        )}
-                      />
+                      <div className="grid grid-cols-2 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="country"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white/90">Country</FormLabel>
+                              <Select 
+                                onValueChange={field.onChange} 
+                                defaultValue={field.value}
+                              >
+                                <FormControl>
+                                  <SelectTrigger className="bg-purple-950/60 border-purple-700/50 text-white">
+                                    <SelectValue placeholder="Select a country" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {countries.map((country) => (
+                                    <SelectItem key={country.code} value={country.code}>
+                                      {country.name}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={form.control}
+                          name="city"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white/90">City</FormLabel>
+                              <Select
+                                onValueChange={field.onChange}
+                                defaultValue={field.value}
+                                disabled={!selectedCountry || availableCities.length === 0}
+                              >
+                                <FormControl>
+                                  <SelectTrigger className="bg-purple-950/60 border-purple-700/50 text-white">
+                                    <SelectValue placeholder="Select a city" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {availableCities.map((city) => (
+                                    <SelectItem key={city} value={city}>
+                                      {city}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </FormItem>
+                          )}
+                        />
+                      </div>
                       
-                      <FormField
-                        control={form.control}
-                        name="city"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>City</FormLabel>
-                            <Select
-                              onValueChange={field.onChange}
-                              defaultValue={field.value}
-                              disabled={!selectedCountry || availableCities.length === 0}
-                            >
-                              <FormControl>
-                                <SelectTrigger className="bg-white/10 border-white/20">
-                                  <SelectValue placeholder="Select a city" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {availableCities.map((city) => (
-                                  <SelectItem key={city} value={city}>
-                                    {city}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <Button type="submit" className="w-full">
+                      <Button 
+                        type="submit" 
+                        className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
+                      >
                         <MapPin className="h-4 w-4 mr-2" />
-                        Update Weather
+                        Update Location
                       </Button>
                     </form>
                   </Form>
@@ -765,21 +769,57 @@ const Outfits = () => {
                 
                 {/* Live Weather Update - Right Side */}
                 <div>
-                  <h3 className="text-xl font-semibold mb-4">Live Weather Update</h3>
                   {isWeatherLoading ? (
-                    <Skeleton className="h-32 w-full bg-white/10" />
+                    <Skeleton className="h-32 w-full bg-purple-700/30" />
+                  ) : weather ? (
+                    <div className="bg-purple-700/40 backdrop-blur-sm rounded-lg p-5">
+                      <div className="flex items-center gap-4">
+                        <div className="text-5xl text-white flex items-center justify-center">
+                          {weather.icon === 'sun' && <Sun size={60} className="text-yellow-300" />}
+                          {weather.icon === 'cloud' && <Cloud size={60} className="text-gray-300" />}
+                          {weather.icon === 'rain' && <CloudRain size={60} className="text-blue-300" />}
+                          {weather.icon === 'fog' && <Cloud size={60} className="text-gray-400" />}
+                          {weather.icon === 'snow' && <CloudRain size={60} className="text-white" />}
+                          {!weather.icon && <CloudSun size={60} className="text-yellow-200" />}
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-white/80">
+                            Weather Mood: {weather.condition}
+                          </p>
+                          <p className="text-sm text-white/70">
+                            {weather.city}, {weather.country}
+                          </p>
+                          <div className="flex items-baseline">
+                            <span className="text-4xl font-bold">{weather.temperature}°C</span>
+                            <span className="ml-1 text-white/70">({weather.condition})</span>
+                          </div>
+                          
+                          <div className="flex flex-col gap-1 mt-2">
+                            <div className="flex items-center text-sm text-white/80">
+                              <ThermometerSun className="h-4 w-4 mr-1" />
+                              Feels like: {weather.feelsLike || weather.temperature}°C
+                            </div>
+                            <div className="flex items-center text-sm text-white/80">
+                              <CloudSun className="h-4 w-4 mr-1" />
+                              Wind: {weather.windSpeed || '?'} m/s
+                            </div>
+                            <div className="flex items-center text-sm text-white/80">
+                              <Umbrella className="h-4 w-4 mr-1" />
+                              Humidity: {weather.humidity || '?'}%
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   ) : (
-                    <WeatherWidget 
-                      className="bg-gradient-to-br from-gray-900/80 to-black/90 border border-white/10 rounded-lg overflow-hidden"
-                      onWeatherChange={handleWeatherChange}
-                      city={selectedLocation.city}
-                      country={selectedLocation.country}
-                    />
+                    <div className="bg-purple-700/40 backdrop-blur-sm rounded-lg p-5 flex justify-center items-center h-32">
+                      <p className="text-white/70">No weather data available</p>
+                    </div>
                   )}
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
         
         {showLocationAlert && (
