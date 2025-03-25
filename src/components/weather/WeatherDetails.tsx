@@ -1,6 +1,7 @@
 
 import { Thermometer, Wind } from 'lucide-react';
 import { WeatherInfo } from '@/lib/types';
+import { getWeatherMood } from './WeatherUtils';
 
 interface WeatherDetailsProps {
   weather: WeatherInfo;
@@ -8,11 +9,14 @@ interface WeatherDetailsProps {
 }
 
 const WeatherDetails = ({ weather, isMobile }: WeatherDetailsProps) => {
+  const weatherMood = getWeatherMood(weather);
+  
   return (
     <div className={`space-y-3 ${isMobile ? 'text-center' : ''}`}>
       <div>
         <h3 className="text-lg font-medium text-white/90">
-          Weather Mood: <span className="font-bold">{weather.condition.includes('cloud') ? '& Cloudy' : ''}</span>
+          Weather Mood: <span className="font-bold">{weatherMood}</span>
+          {weather.condition.includes('cloud') ? ' & Cloudy' : ''}
         </h3>
         {weather.city && (
           <div className="text-base text-white/80">

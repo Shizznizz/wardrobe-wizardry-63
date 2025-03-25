@@ -22,7 +22,7 @@ const WeatherDisplay = ({ weather }: WeatherDisplayProps) => {
     )}>
       <div className={`flex ${isMobile ? 'flex-col items-center' : 'items-start gap-6'}`}>
         <div className={`${isMobile ? 'mb-4' : ''}`}>
-          <WeatherIconSelector iconName={weather.icon || ''} />
+          <WeatherIconSelector iconName={weather.icon || weather.condition.toLowerCase()} />
         </div>
         
         <WeatherDetails weather={weather} isMobile={isMobile} />
