@@ -13,9 +13,10 @@ import { sampleClothingItems, sampleOutfits, sampleUserPreferences } from '@/lib
 import { toast } from 'sonner';
 import { 
   RefreshCw, Camera, MapPin, AlertTriangle, Calendar, AlarmClockCheck, 
-  MessageCircle, Sun, CloudRain, CloudSun, Cloud, Sparkles, Umbrella
+  MessageCircle, Sun, CloudRain, CloudSun, Cloud, Sparkles, Umbrella,
+  PartyPopper
 } from 'lucide-react';
-import { Coffee, Sunset, Moon, Party } from '@/components/ui/icons';
+import { Coffee, Sunset, Moon } from '@/components/ui/icons';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from '@/lib/utils';
@@ -42,6 +43,8 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+
+const Party = PartyPopper;
 
 const countries = [
   { code: "US", name: "United States" },
@@ -301,3 +304,5 @@ type FormValues = {
 const Outfits = () => {
   // Rest of the component code remains unchanged
 };
+
+export default Outfits;
