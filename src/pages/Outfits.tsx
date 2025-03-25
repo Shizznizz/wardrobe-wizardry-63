@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -749,7 +748,10 @@ const Outfits = () => {
                 </div>
               </div>
             </div>
-            
+          </div>
+          
+          {/* Right Column - Olivia's Reasoning and Outfit Suggestion */}
+          <div className="space-y-6">
             {/* Olivia's Reasoning */}
             <div className="bg-white/10 backdrop-blur-md rounded-xl p-5 border border-white/20">
               <div className="flex items-start gap-4">
@@ -780,37 +782,37 @@ const Outfits = () => {
                 </div>
               </div>
             </div>
-          </div>
-          
-          {/* Right Column - Outfit Suggestion */}
-          <div className="bg-white/10 backdrop-blur-md rounded-xl p-5 border border-white/20">
-            <div className="mb-4 flex justify-between items-center">
-              <h2 className="text-xl font-semibold text-white">Suggested Outfit</h2>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={handleRegenerateOutfit} 
-                className="text-purple-200 hover:text-white hover:bg-purple-600/30"
-              >
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Generate New
-              </Button>
-            </div>
             
-            <OutfitSuggestion 
-              outfit={suggestedOutfit}
-              items={sampleClothingItems}
-              weather={weather || undefined}
-              timeOfDay={timeOfDay}
-              activity={activity}
-              onWear={handleWearOutfit}
-              onRefresh={handleRegenerateOutfit}
-              onLike={handleLikeOutfit}
-              onDislike={handleDislikeOutfit}
-              onMakeWarmer={handleMakeWarmer}
-              onChangeTop={handleChangeTop}
-              onChangeBottom={handleChangeBottom}
-            />
+            {/* Outfit Suggestion */}
+            <div className="bg-white/10 backdrop-blur-md rounded-xl p-5 border border-white/20">
+              <div className="mb-4 flex justify-between items-center">
+                <h2 className="text-xl font-semibold text-white">Suggested Outfit</h2>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={handleRegenerateOutfit} 
+                  className="text-purple-200 hover:text-white hover:bg-purple-600/30"
+                >
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Generate New
+                </Button>
+              </div>
+              
+              <OutfitSuggestion 
+                outfit={suggestedOutfit}
+                items={sampleClothingItems}
+                weather={weather || undefined}
+                timeOfDay={timeOfDay}
+                activity={activity}
+                onWear={handleWearOutfit}
+                onRefresh={handleRegenerateOutfit}
+                onLike={handleLikeOutfit}
+                onDislike={handleDislikeOutfit}
+                onMakeWarmer={handleMakeWarmer}
+                onChangeTop={handleChangeTop}
+                onChangeBottom={handleChangeBottom}
+              />
+            </div>
           </div>
         </div>
       </main>
