@@ -4,6 +4,7 @@ import { Check, ArrowRight, Sparkles, MessageCircle, Thermometer, RefreshCw, Thu
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { ClothingItem, Outfit, WeatherInfo, TimeOfDay, Activity } from '@/lib/types';
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 
 interface OutfitSuggestionProps {
   suggestion?: {
@@ -166,31 +167,47 @@ const OutfitSuggestion = ({
                 custom={0}
                 variants={itemVariants}
               >
-                <div className="relative rounded-lg overflow-hidden border border-white/20 shadow-md group">
-                  <img 
-                    src={topItem.imageUrl} 
-                    alt={topItem.name} 
-                    className="w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <div className="absolute bottom-0 left-0 right-0 bg-black/60 p-2 text-sm text-white truncate">
-                    {topItem.name}
-                  </div>
-                  
-                  {/* Change top button */}
-                  {onChangeTop && (
-                    <div className="absolute top-2 right-2">
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        onClick={onChangeTop}
-                        className="bg-black/40 backdrop-blur-sm border-white/20 text-white text-xs p-1.5 h-auto"
-                      >
-                        <RefreshCw className="h-3 w-3 mr-1" />
-                        Change
-                      </Button>
+                <HoverCard>
+                  <HoverCardTrigger asChild>
+                    <div className="relative rounded-lg overflow-hidden border border-white/20 shadow-md group cursor-pointer max-w-[90%] mx-auto">
+                      <motion.img 
+                        src={topItem.imageUrl} 
+                        alt={topItem.name} 
+                        className="w-full aspect-square object-cover transition-all duration-300 group-hover:scale-110"
+                        whileHover={{ scale: 1.05 }}
+                      />
+                      <div className="absolute bottom-0 left-0 right-0 bg-black/60 p-2 text-sm text-white truncate">
+                        {topItem.name}
+                      </div>
+                      
+                      {/* Change top button */}
+                      {onChangeTop && (
+                        <div className="absolute top-2 right-2">
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            onClick={onChangeTop}
+                            className="bg-black/40 backdrop-blur-sm border-white/20 text-white text-xs p-1.5 h-auto"
+                          >
+                            <RefreshCw className="h-3 w-3 mr-1" />
+                            Change
+                          </Button>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
+                  </HoverCardTrigger>
+                  <HoverCardContent className="w-80 bg-slate-800 border-slate-700 text-white">
+                    <div className="space-y-2">
+                      <h4 className="font-medium">{topItem.name}</h4>
+                      <p className="text-sm text-slate-300">{topItem.category} • {topItem.color}</p>
+                      <img 
+                        src={topItem.imageUrl} 
+                        alt={topItem.name} 
+                        className="w-full rounded-md object-cover aspect-square"
+                      />
+                    </div>
+                  </HoverCardContent>
+                </HoverCard>
                 
                 {/* Downward arrow */}
                 <motion.div 
@@ -213,31 +230,47 @@ const OutfitSuggestion = ({
                 custom={1}
                 variants={itemVariants}
               >
-                <div className="relative rounded-lg overflow-hidden border border-white/20 shadow-md group">
-                  <img 
-                    src={bottomItem.imageUrl} 
-                    alt={bottomItem.name} 
-                    className="w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <div className="absolute bottom-0 left-0 right-0 bg-black/60 p-2 text-sm text-white truncate">
-                    {bottomItem.name}
-                  </div>
-                  
-                  {/* Change bottom button */}
-                  {onChangeBottom && (
-                    <div className="absolute top-2 right-2">
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        onClick={onChangeBottom}
-                        className="bg-black/40 backdrop-blur-sm border-white/20 text-white text-xs p-1.5 h-auto"
-                      >
-                        <RefreshCw className="h-3 w-3 mr-1" />
-                        Change
-                      </Button>
+                <HoverCard>
+                  <HoverCardTrigger asChild>
+                    <div className="relative rounded-lg overflow-hidden border border-white/20 shadow-md group cursor-pointer max-w-[90%] mx-auto">
+                      <motion.img 
+                        src={bottomItem.imageUrl} 
+                        alt={bottomItem.name} 
+                        className="w-full aspect-square object-cover transition-all duration-300 group-hover:scale-110"
+                        whileHover={{ scale: 1.05 }}
+                      />
+                      <div className="absolute bottom-0 left-0 right-0 bg-black/60 p-2 text-sm text-white truncate">
+                        {bottomItem.name}
+                      </div>
+                      
+                      {/* Change bottom button */}
+                      {onChangeBottom && (
+                        <div className="absolute top-2 right-2">
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            onClick={onChangeBottom}
+                            className="bg-black/40 backdrop-blur-sm border-white/20 text-white text-xs p-1.5 h-auto"
+                          >
+                            <RefreshCw className="h-3 w-3 mr-1" />
+                            Change
+                          </Button>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
+                  </HoverCardTrigger>
+                  <HoverCardContent className="w-80 bg-slate-800 border-slate-700 text-white">
+                    <div className="space-y-2">
+                      <h4 className="font-medium">{bottomItem.name}</h4>
+                      <p className="text-sm text-slate-300">{bottomItem.category} • {bottomItem.color}</p>
+                      <img 
+                        src={bottomItem.imageUrl} 
+                        alt={bottomItem.name} 
+                        className="w-full rounded-md object-cover aspect-square"
+                      />
+                    </div>
+                  </HoverCardContent>
+                </HoverCard>
                 
                 {/* Accessories indicator with downward arrow if there are accessory items */}
                 {accessoryItems.length > 0 && (
@@ -256,23 +289,39 @@ const OutfitSuggestion = ({
             {/* Accessories Grid */}
             {accessoryItems.length > 0 && (
               <motion.div 
-                className="grid grid-cols-2 gap-3 mb-6"
+                className="grid grid-cols-2 gap-3 mb-6 max-w-[90%] mx-auto"
                 initial="hidden"
                 animate="visible"
                 custom={2}
                 variants={itemVariants}
               >
                 {accessoryItems.map((item, index) => item && (
-                  <div key={index} className="relative rounded-lg overflow-hidden border border-white/20 shadow-md group">
-                    <img 
-                      src={item.imageUrl} 
-                      alt={item.name} 
-                      className="w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <div className="absolute bottom-0 left-0 right-0 bg-black/60 p-2 text-sm text-white truncate">
-                      {item.name}
-                    </div>
-                  </div>
+                  <HoverCard key={index}>
+                    <HoverCardTrigger asChild>
+                      <div className="relative rounded-lg overflow-hidden border border-white/20 shadow-md group cursor-pointer">
+                        <motion.img 
+                          src={item.imageUrl} 
+                          alt={item.name} 
+                          className="w-full aspect-square object-cover transition-all duration-300 group-hover:scale-110"
+                          whileHover={{ scale: 1.05 }}
+                        />
+                        <div className="absolute bottom-0 left-0 right-0 bg-black/60 p-2 text-sm text-white truncate">
+                          {item.name}
+                        </div>
+                      </div>
+                    </HoverCardTrigger>
+                    <HoverCardContent className="w-80 bg-slate-800 border-slate-700 text-white">
+                      <div className="space-y-2">
+                        <h4 className="font-medium">{item.name}</h4>
+                        <p className="text-sm text-slate-300">{item.category} • {item.color}</p>
+                        <img 
+                          src={item.imageUrl} 
+                          alt={item.name} 
+                          className="w-full rounded-md object-cover aspect-square"
+                        />
+                      </div>
+                    </HoverCardContent>
+                  </HoverCard>
                 ))}
               </motion.div>
             )}

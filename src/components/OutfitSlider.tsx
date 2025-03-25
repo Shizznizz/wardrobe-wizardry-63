@@ -104,14 +104,16 @@ const OutfitSlider = () => {
               <Dialog>
                 <DialogTrigger asChild>
                   <motion.div whileHover={{ y: -5 }} className="h-full cursor-pointer">
-                    <Card className="glass-dark border-white/10 h-full">
+                    <Card className="glass-dark border-white/10 h-full transform transition-all duration-300 hover:scale-[1.02]">
                       <CardContent className="p-4">
                         <div className={`aspect-[3/4] rounded-md overflow-hidden bg-gradient-to-br ${outfit.gradient} mb-3 flex items-center justify-center relative`}>
                           {outfit.image ? (
-                            <img 
+                            <motion.img 
                               src={outfit.image} 
                               alt={outfit.name} 
-                              className="w-full h-full object-cover hover:opacity-90 transition-opacity"
+                              className="w-full h-full object-cover transition-opacity duration-300 hover:opacity-90"
+                              whileHover={{ scale: 1.05 }}
+                              transition={{ duration: 0.3 }}
                             />
                           ) : (
                             <div className="text-white/30 text-lg font-medium">
@@ -150,10 +152,12 @@ const OutfitSlider = () => {
                   <div className="grid gap-4">
                     <div className={`aspect-video rounded-lg overflow-hidden bg-gradient-to-br ${outfit.gradient} flex items-center justify-center`}>
                       {outfit.image ? (
-                        <img 
+                        <motion.img 
                           src={outfit.image} 
                           alt={outfit.name} 
                           className="w-full h-full object-cover"
+                          whileHover={{ scale: 1.05 }}
+                          transition={{ duration: 0.5 }}
                         />
                       ) : (
                         <div className="text-white/50 text-xl font-medium">
