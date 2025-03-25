@@ -18,7 +18,7 @@ const WeatherDisplay = ({ weather, className }: WeatherDisplayProps) => {
   
   return (
     <div className={cn(
-      "overflow-hidden rounded-xl border border-white/20 shadow-lg p-4 md:p-5 h-full",
+      "overflow-hidden rounded-xl border border-white/20 shadow-lg p-4 md:p-5 h-full transition-all duration-300 hover:shadow-xl",
       gradientClass,
       className
     )}>
