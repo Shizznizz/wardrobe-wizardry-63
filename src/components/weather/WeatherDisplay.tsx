@@ -8,9 +8,10 @@ import WeatherDetails from './WeatherDetails';
 
 interface WeatherDisplayProps {
   weather: WeatherInfo;
+  className?: string;
 }
 
-const WeatherDisplay = ({ weather }: WeatherDisplayProps) => {
+const WeatherDisplay = ({ weather, className }: WeatherDisplayProps) => {
   const isMobile = useIsMobile();
   const weatherMood = getWeatherMood(weather);
   const gradientClass = getWeatherGradient(weather);
@@ -18,7 +19,8 @@ const WeatherDisplay = ({ weather }: WeatherDisplayProps) => {
   return (
     <div className={cn(
       "overflow-hidden rounded-xl border border-white/20 shadow-lg p-4 md:p-5 h-full",
-      gradientClass
+      gradientClass,
+      className
     )}>
       <div className={`flex ${isMobile ? 'flex-col items-center' : 'items-start gap-6'}`}>
         <div className={`${isMobile ? 'mb-4 flex justify-center' : ''}`}>

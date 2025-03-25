@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 
 interface OliviaBadgeProps {
   message: string;
-  position?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';
+  position?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left' | 'static';
   variant?: 'tip' | 'question' | 'fact';
   section?: string;
   autoOpen?: boolean;

@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -578,4 +579,302 @@ const Outfits = () => {
 
   const onSubmit = (data: FormValues) => {
     if (data.country && data.city) {
-      const countryName = countries.find(c => c
+      const countryName = countries.find(c => c.code === data.country)?.name || data.country;
+      
+      setSelectedLocation({
+        city: data.city,
+        country: data.country
+      });
+      
+      if (user) {
+        // Save user preferences to Supabase
+        const savePreferences = async () => {
+          try {
+            const { error } = await supabase
+              .from('user_preferences')
+              .upsert({
+                user_id: user.id,
+                preferred_country: data.country,
+                preferred_city: data.city,
+                updated_at: new Date().toISOString()
+              }, {
+                onConflict: 'user_id'
+              });
+            
+            if (error) {
+              console.error('Error saving preferences:', error);
+              toast.error('Failed to save your location preferences');
+              return;
+            }
+            
+            toast.success('Saved your location preferences');
+          } catch (err) {
+            console.error('Failed to save user preferences:', err);
+            toast.error('Something went wrong');
+          }
+        };
+        
+        savePreferences();
+      }
+      
+      setShowLocationAlert(false);
+    } else {
+      setShowLocationAlert(true);
+    }
+  };
+  
+  return (
+    <div className="min-h-screen bg-background pb-20">
+      <Header />
+      
+      <div className="container px-4 sm:px-6 max-w-6xl mx-auto">
+        <div className="w-full py-6 md:py-8 mb-6 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl shadow-md text-white">
+          <div className="container max-w-6xl mx-auto px-4">
+            <h1 className="text-3xl md:text-4xl font-bold text-center">Your Perfect Outfit Awaits</h1>
+            <p className="text-lg text-center mt-2 text-white/80">Dress confidently with personalized style recommendations for any occasion</p>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          {/* Weather Widget */}
+          <div className="h-full">
+            <h2 className="text-xl font-bold mb-3">Current Weather</h2>
+            <WeatherWidget onWeatherChange={handleWeatherChange} 
+                           selectedLocation={selectedLocation} 
+                           showError={false} />
+          </div>
+          
+          {/* Olivia's Advice */}
+          <div className="h-full">
+            <h2 className="text-xl font-bold mb-3">Olivia's Style Advice</h2>
+            <div className="rounded-xl border shadow-sm bg-gradient-to-br from-pink-50 to-purple-50 dark:from-purple-950/20 dark:to-indigo-950/30 p-5 flex flex-col h-[calc(100%-32px)]">
+              <div className="flex items-start gap-3 mb-4">
+                <Avatar className="h-10 w-10 border-2 border-white/30 shadow-sm">
+                  <AvatarImage src="/lovable-uploads/28e5664c-3c8a-4b7e-9c99-065ad489583f.png" alt="Olivia" />
+                  <AvatarFallback className="bg-purple-600">OB</AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="font-semibold text-sm">Olivia Bloom</p>
+                  <p className="text-xs text-muted-foreground">Style Assistant</p>
+                </div>
+              </div>
+              
+              <div className="flex-1 space-y-4">
+                <div className="bg-white/60 dark:bg-gray-800/40 rounded-lg p-3 shadow-sm border border-white/40 dark:border-gray-700/40 text-sm">
+                  {weather ? (
+                    <p>Based on the current weather in {selectedLocation.city || 'your area'} ({weather.temperature}°{weather.temperatureUnit}, {weather.condition}), I've picked an outfit that's both stylish and practical.</p>
+                  ) : (
+                    <p>I'll help you dress appropriately for the weather once we have your location.</p>
+                  )}
+                </div>
+                
+                <div className="bg-white/60 dark:bg-gray-800/40 rounded-lg p-3 shadow-sm border border-white/40 dark:border-gray-700/40 text-sm">
+                  <p>Your style preferences show you enjoy {sampleUserPreferences.preferredStyles.join(', ')} styles. I've taken this into account for today's recommendation.</p>
+                </div>
+                
+                {suggestedOutfit && (
+                  <div className="bg-white/60 dark:bg-gray-800/40 rounded-lg p-3 shadow-sm border border-white/40 dark:border-gray-700/40 text-sm">
+                    <p>The "{suggestedOutfit.name}" outfit would be perfect for today. It works well for {suggestedOutfit.occasions.join(', ')} occasions, making it versatile for your day.</p>
+                  </div>
+                )}
+                
+                {activity && (
+                  <div className="bg-white/60 dark:bg-gray-800/40 rounded-lg p-3 shadow-sm border border-white/40 dark:border-gray-700/40 text-sm">
+                    <p>Since you're planning for {activity} activities today, I've selected items that provide the right balance of comfort and style.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Outfit Suggestion - Full Width */}
+        <div className="mb-8">
+          <h2 className="text-xl font-bold mb-3">Today's Outfit Suggestion</h2>
+          <div className="bg-white dark:bg-gray-950 rounded-xl border shadow-sm p-4 md:p-6">
+            <OutfitSuggestion 
+              outfit={suggestedOutfit}
+              onLike={handleLikeOutfit}
+              onDislike={handleDislikeOutfit}
+              onWear={() => handleWearOutfit(suggestedOutfit.id)}
+              onToggleFavorite={() => handleToggleFavorite(suggestedOutfit.id)}
+              onRegenerateOutfit={handleRegenerateOutfit}
+              onMakeWarmer={handleMakeWarmer}
+              onChangeTop={handleChangeTop}
+              onChangeBottom={handleChangeBottom}
+              weather={weather}
+            />
+          </div>
+        </div>
+        
+        {/* Location Settings Form */}
+        <div className="mt-8 bg-muted/50 rounded-xl border p-4 md:p-6">
+          <h2 className="text-xl font-bold mb-4">Location Settings</h2>
+          
+          {showLocationAlert && (
+            <Alert variant="destructive" className="mb-4">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertTitle>Missing Location</AlertTitle>
+              <AlertDescription>
+                Please select both a country and city to get accurate weather and outfit recommendations.
+              </AlertDescription>
+            </Alert>
+          )}
+          
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="country"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Country</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        value={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a country" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {countries.map((country) => (
+                            <SelectItem key={country.code} value={country.code}>
+                              {country.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="city"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>City</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        value={field.value}
+                        disabled={!selectedCountry}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder={selectedCountry ? "Select a city" : "Select a country first"} />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {availableCities.map((city) => (
+                            <SelectItem key={city} value={city}>
+                              {city}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormItem>
+                  )}
+                />
+              </div>
+              
+              <Button type="submit" className="w-full sm:w-auto">
+                <MapPin className="mr-2 h-4 w-4" />
+                Update Location
+              </Button>
+            </form>
+          </Form>
+        </div>
+        
+        {/* Activity and Time Filters */}
+        <div className="mt-8">
+          <h2 className="text-xl font-bold mb-4">Outfit Filters</h2>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+            <div>
+              <h3 className="text-lg font-medium mb-3">Time of Day</h3>
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  variant={timeOfDay === 'morning' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => handleTimeOfDayChange('morning')}
+                  className="flex items-center"
+                >
+                  <Sun className="mr-1 h-4 w-4" />
+                  Morning
+                </Button>
+                <Button
+                  variant={timeOfDay === 'afternoon' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => handleTimeOfDayChange('afternoon')}
+                  className="flex items-center"
+                >
+                  <CloudSun className="mr-1 h-4 w-4" />
+                  Afternoon
+                </Button>
+                <Button
+                  variant={timeOfDay === 'evening' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => handleTimeOfDayChange('evening')}
+                  className="flex items-center"
+                >
+                  <Cloud className="mr-1 h-4 w-4" />
+                  Evening
+                </Button>
+                <Button
+                  variant={timeOfDay === 'night' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => handleTimeOfDayChange('night')}
+                  className="flex items-center"
+                >
+                  <AlarmClockCheck className="mr-1 h-4 w-4" />
+                  Night
+                </Button>
+              </div>
+            </div>
+            
+            <div>
+              <h3 className="text-lg font-medium mb-3">Activity</h3>
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  variant={activity === 'casual' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => handleActivityChange('casual')}
+                >
+                  Casual
+                </Button>
+                <Button
+                  variant={activity === 'work' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => handleActivityChange('work')}
+                >
+                  Work
+                </Button>
+                <Button
+                  variant={activity === 'sport' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => handleActivityChange('sport')}
+                >
+                  Sport
+                </Button>
+                <Button
+                  variant={activity === 'party' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => handleActivityChange('party')}
+                >
+                  Party
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Outfits;
