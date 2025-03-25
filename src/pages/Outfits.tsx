@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -335,7 +334,6 @@ const Outfits = () => {
 
   const selectedCountry = form.watch("country");
   
-  // User preferences loading
   useEffect(() => {
     const loadUserPreferences = async () => {
       if (user && !preferencesLoaded) {
@@ -380,7 +378,6 @@ const Outfits = () => {
     loadUserPreferences();
   }, [user, form, preferencesLoaded]);
   
-  // City selection based on country
   useEffect(() => {
     if (selectedCountry) {
       const cities = citiesByCountry[selectedCountry as keyof typeof citiesByCountry] || [];
@@ -422,7 +419,6 @@ const Outfits = () => {
     const filteredOutfits = filterOutfitsByPreferences(outfits);
     
     if (filteredOutfits.length === 0) {
-      // If no outfits match the filters, use all outfits
       const currentIndex = outfits.findIndex(o => o.id === suggestedOutfit.id);
       const nextIndex = (currentIndex + 1) % outfits.length;
       setSuggestedOutfit(outfits[nextIndex]);
@@ -443,7 +439,6 @@ const Outfits = () => {
   const handleTimeOfDayChange = (value: TimeOfDay) => {
     setTimeOfDay(value === timeOfDay ? undefined : value);
     
-    // After changing the filter, update the outfit suggestion
     setTimeout(() => {
       handleRegenerateOutfit();
     }, 100);
@@ -452,7 +447,6 @@ const Outfits = () => {
   const handleActivityChange = (value: Activity) => {
     setActivity(value === activity ? undefined : value);
     
-    // After changing the filter, update the outfit suggestion
     setTimeout(() => {
       handleRegenerateOutfit();
     }, 100);
@@ -461,10 +455,8 @@ const Outfits = () => {
   const filterOutfitsByPreferences = (outfitList: Outfit[]): Outfit[] => {
     let filtered = [...outfitList];
     
-    // Filter by activity
     if (activity) {
       filtered = filtered.filter(outfit => {
-        // Match exact activity or occasion
         return outfit.occasions.some(occasion => 
           occasion.toLowerCase() === activity.toLowerCase() || 
           (activity === 'work' && ['business', 'formal'].includes(occasion.toLowerCase())) ||
@@ -475,15 +467,12 @@ const Outfits = () => {
       });
     }
     
-    // Filter by time of day (using tags or other attributes that might indicate suitability)
     if (timeOfDay) {
       filtered = filtered.filter(outfit => {
-        // Morning/day outfits usually favor brighter colors and casual wear
         if (timeOfDay === 'morning' || timeOfDay === 'afternoon') {
           return !outfit.occasions.includes('party') && !outfit.occasions.includes('formal');
         }
         
-        // Evening/night outfits usually favor darker colors and more formal wear
         if (timeOfDay === 'evening' || timeOfDay === 'night') {
           return outfit.occasions.includes('party') || 
                  outfit.occasions.includes('formal') || 
@@ -690,9 +679,8 @@ const Outfits = () => {
           </motion.p>
         </motion.div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-10">
-          {/* Left Column - Weather, Filters, and new components */}
-          <div className="space-y-6 md:order-1">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div className="space-y-6">
             <div className="bg-white/10 backdrop-blur-md rounded-xl p-5 border border-white/20">
               <h2 className="text-lg font-semibold text-white mb-4 flex items-center">
                 <Umbrella className="h-5 w-5 mr-2 text-blue-300" />
@@ -777,7 +765,48 @@ const Outfits = () => {
                 />
               </Form>
             </div>
-            
+          </div>
+          
+          <div className="space-y-6">
+            <div className="bg-white/10 backdrop-blur-md rounded-xl p-5 border border-white/20">
+              <div className="flex items-start gap-4">
+                <Avatar className="h-10 w-10 border-2 border-white/70 shadow-md flex-shrink-0">
+                  <AvatarImage src="/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png" alt="Olivia Bloom" />
+                  <AvatarFallback className="bg-gradient-to-r from-purple-600 to-pink-500 text-white">OB</AvatarFallback>
+                </Avatar>
+                
+                <div className="flex-1">
+                  <h3 className="text-md font-semibold text-white mb-2 flex items-center">
+                    Olivia's Outfit Reasoning
+                    <MessageCircle className="h-4 w-4 ml-2 text-purple-300" />
+                  </h3>
+                  <div className="text-sm text-purple-100 space-y-2 relative bg-white/5 p-3 rounded-lg rounded-tl-none border border-white/10">
+                    <p>
+                      {weather ? 
+                        `Based on the ${weather.temperature}°C ${weather.condition} weather, and your selected filters, I've chosen a ${weather.temperature < 15 ? 'warm' : 'cool and comfortable'} outfit that's perfect for today.`
+                        : 
+                        "Once you set your location, I'll analyze the weather and suggest an appropriate outfit for you."
+                      }
+                    </p>
+                    {timeOfDay && (
+                      <p>
+                        For {timeOfDay} hours, I've selected pieces that work well with the lighting and social context of this time.
+                      </p>
+                    )}
+                    {activity && (
+                      <p>
+                        This outfit is suitable for {activity} activities, balancing comfort, style, and functionality.
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-10">
+          <div className="space-y-6 md:order-1">
             <div className="bg-white/10 backdrop-blur-md rounded-xl p-5 border border-white/20">
               <h2 className="text-lg font-semibold text-white mb-4 flex items-center">
                 <Shirt className="h-5 w-5 mr-2 text-purple-300" />
@@ -837,50 +866,12 @@ const Outfits = () => {
               </div>
             </div>
             
-            {/* New Style Tip Component */}
             <StyleTip />
             
-            {/* New Trending Items Component */}
             <TrendingItems />
           </div>
           
-          {/* Right Column - Outfit Suggestions */}
           <div className="space-y-6 md:order-2">
-            <div className="bg-white/10 backdrop-blur-md rounded-xl p-5 border border-white/20">
-              <div className="flex items-start gap-4">
-                <Avatar className="h-10 w-10 border-2 border-white/70 shadow-md flex-shrink-0">
-                  <AvatarImage src="/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png" alt="Olivia Bloom" />
-                  <AvatarFallback className="bg-gradient-to-r from-purple-600 to-pink-500 text-white">OB</AvatarFallback>
-                </Avatar>
-                
-                <div className="flex-1">
-                  <h3 className="text-md font-semibold text-white mb-2 flex items-center">
-                    Olivia's Outfit Reasoning
-                    <MessageCircle className="h-4 w-4 ml-2 text-purple-300" />
-                  </h3>
-                  <div className="text-sm text-purple-100 space-y-2 relative bg-white/5 p-3 rounded-lg rounded-tl-none border border-white/10">
-                    <p>
-                      {weather ? 
-                        `Based on the ${weather.temperature}°C ${weather.condition} weather, and your selected filters, I've chosen a ${weather.temperature < 15 ? 'warm' : 'cool and comfortable'} outfit that's perfect for today.`
-                        : 
-                        "Once you set your location, I'll analyze the weather and suggest an appropriate outfit for you."
-                      }
-                    </p>
-                    {timeOfDay && (
-                      <p>
-                        For {timeOfDay} hours, I've selected pieces that work well with the lighting and social context of this time.
-                      </p>
-                    )}
-                    {activity && (
-                      <p>
-                        This outfit is suitable for {activity} activities, balancing comfort, style, and functionality.
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-            
             <div className="bg-white/10 backdrop-blur-md rounded-xl p-5 border border-white/20">
               <div className="mb-4 flex justify-between items-center">
                 <h2 className="text-xl font-semibold text-white flex items-center">

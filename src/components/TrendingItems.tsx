@@ -61,9 +61,9 @@ const TrendingItems = () => {
             className="relative group"
           >
             <div className="aspect-square rounded-lg overflow-hidden shadow-md border border-white/20 bg-gradient-to-br from-purple-900/50 to-pink-900/50">
-              {item.image ? (
+              {item.imageUrl ? (
                 <img 
-                  src={item.image} 
+                  src={item.imageUrl} 
                   alt={item.name}
                   className="w-full h-full object-cover transition-transform group-hover:scale-110"
                 />
