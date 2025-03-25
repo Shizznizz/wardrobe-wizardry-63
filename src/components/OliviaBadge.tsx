@@ -10,14 +10,15 @@ interface OliviaBadgeProps {
   position?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';
   variant?: 'tip' | 'question' | 'fact';
   section?: string;
+  autoOpen?: boolean;
 }
 
 const getPositionClasses = (position: string) => {
   switch(position) {
-    case 'top-right': return 'top-0 right-0';
-    case 'top-left': return 'top-0 left-0';
-    case 'bottom-left': return 'bottom-0 left-0';
-    default: return 'bottom-0 right-0';
+    case 'top-right': return 'top-4 right-4';
+    case 'top-left': return 'top-4 left-4';
+    case 'bottom-left': return 'bottom-4 left-4';
+    default: return 'bottom-4 right-4';
   }
 };
 
@@ -33,16 +34,17 @@ const OliviaBadge = ({
   message, 
   position = 'bottom-right', 
   variant = 'tip',
-  section = '' 
+  section = '',
+  autoOpen = false
 }: OliviaBadgeProps) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(autoOpen);
   const [isVisible, setIsVisible] = useState(true);
 
   if (!isVisible) return null;
 
   return (
     <div className={cn(
-      "absolute z-20 p-2",
+      "absolute z-20",
       getPositionClasses(position)
     )}>
       <AnimatePresence>

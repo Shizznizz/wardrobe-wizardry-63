@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -233,15 +232,6 @@ const Index = () => {
           
           <motion.section variants={itemVariants} className="mt-8 relative">
             <StyleSituation />
-            
-            {!isMobile && (
-              <OliviaBadge 
-                message="Have you tried styling based on your upcoming events? It's a great way to plan your outfits ahead of time."
-                position="top-right"
-                variant="question"
-                section="Style Situations"
-              />
-            )}
           </motion.section>
           
           <motion.section variants={itemVariants} className="mt-16 relative">
@@ -252,15 +242,6 @@ const Index = () => {
               </span>
             </h2>
             <OutfitSlider />
-            
-            {!isMobile && (
-              <OliviaBadge 
-                message="Mix and match colors from the same palette for a cohesive look. Try complementary colors for a bold statement!"
-                position="bottom-left"
-                variant="tip"
-                section="Outfit Inspirations"
-              />
-            )}
           </motion.section>
           
           <motion.section variants={itemVariants} className="mt-16 relative">
@@ -271,15 +252,6 @@ const Index = () => {
               </span>
             </h2>
             <VerticalStepCards />
-            
-            {!isMobile && (
-              <OliviaBadge 
-                message="Did you know? The average person uses only 20% of their wardrobe regularly. Our AI helps you rediscover the other 80%!"
-                position="top-left"
-                variant="fact"
-                section="Showcase Process"
-              />
-            )}
           </motion.section>
           
           <motion.section variants={itemVariants} className="mt-16 relative">
@@ -290,15 +262,53 @@ const Index = () => {
               </span>
             </h2>
             <StylingTimeline />
+          </motion.section>
+          
+          <motion.section variants={itemVariants} className="mt-16 p-6 rounded-xl border border-purple-500/20 backdrop-blur-lg bg-slate-900/40">
+            <h2 className={`${isMobile ? 'text-xl' : 'text-2xl'} font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400`}>
+              <span className="flex items-center gap-2">
+                <Sparkles className={`${isMobile ? 'h-5 w-5' : 'h-6 w-6'}`} />
+                Olivia's Style Advice
+              </span>
+            </h2>
             
-            {!isMobile && (
-              <OliviaBadge 
-                message="What part of your styling journey are you most excited about? I'd love to provide personalized recommendations!"
-                position="bottom-right" 
-                variant="question"
-                section="Styling Journey"
-              />
-            )}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="relative p-5 rounded-lg bg-gradient-to-br from-purple-900/60 to-pink-900/60 border border-white/10">
+                <OliviaBadge 
+                  message="Mix and match colors from the same palette for a cohesive look. Try complementary colors for a bold statement!"
+                  position="top-right"
+                  variant="tip"
+                  section="Outfit Inspirations"
+                />
+              </div>
+              
+              <div className="relative p-5 rounded-lg bg-gradient-to-br from-blue-900/60 to-indigo-900/60 border border-white/10">
+                <OliviaBadge 
+                  message="Did you know? The average person uses only 20% of their wardrobe regularly. Our AI helps you rediscover the other 80%!"
+                  position="top-right"
+                  variant="fact"
+                  section="Wardrobe Usage"
+                />
+              </div>
+              
+              <div className="relative p-5 rounded-lg bg-gradient-to-br from-emerald-900/60 to-teal-900/60 border border-white/10">
+                <OliviaBadge 
+                  message="Have you tried styling based on your upcoming events? It's a great way to plan your outfits ahead of time."
+                  position="top-right"
+                  variant="question"
+                  section="Style Planning"
+                />
+              </div>
+              
+              <div className="relative p-5 rounded-lg bg-gradient-to-br from-rose-900/60 to-orange-900/60 border border-white/10">
+                <OliviaBadge 
+                  message="What part of your styling journey are you most excited about? I'd love to provide personalized recommendations!"
+                  position="top-right" 
+                  variant="question"
+                  section="Styling Journey"
+                />
+              </div>
+            </div>
           </motion.section>
           
           <motion.section variants={itemVariants} className="mt-16">
