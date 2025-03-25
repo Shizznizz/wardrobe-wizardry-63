@@ -56,7 +56,7 @@ const OutfitSelector = ({ outfits, clothingItems, onSelect, selectedOutfitId }: 
                           <img 
                             src={item.imageUrl} 
                             alt={item.name} 
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-cover object-center"
                           />
                         </div>
                       ) : null;
@@ -64,7 +64,7 @@ const OutfitSelector = ({ outfits, clothingItems, onSelect, selectedOutfitId }: 
                   </div>
                   
                   <div className="mt-2 flex gap-1 flex-wrap">
-                    {outfit.seasons.map(season => (
+                    {outfit.seasons?.map(season => (
                       <span 
                         key={season} 
                         className={`${isMobile ? 'text-[10px] py-0.5 px-1.5' : 'text-xs py-0.5 px-2'} bg-purple-900/40 rounded-full capitalize`}
