@@ -5,26 +5,19 @@ import {
   Route,
   Routes
 } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from 'react-query';
-import { ThemeProvider } from './components/theme-provider';
-import Home from './pages/Home';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ThemeProvider } from './components/ThemeProvider';
 import Wardrobe from './pages/Wardrobe';
 import Outfits from './pages/Outfits';
 import Settings from './pages/Settings';
 import ScrollToTop from './components/ScrollToTop';
-import Quiz from './pages/Quiz';
-import PrivacyPolicy from './pages/PrivacyPolicy';
-import TermsOfService from './pages/TermsOfService';
-import Contact from './pages/Contact';
-import Login from './pages/Login';
-import Signup from './pages/Signup';
-import ForgotPassword from './pages/ForgotPassword';
-import ResetPassword from './pages/ResetPassword';
+import NotFound from './pages/NotFound';
 import { AuthProvider } from './hooks/useAuth';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
+// Create a new QueryClient instance
 const queryClient = new QueryClient();
 
 function App() {
@@ -38,15 +31,10 @@ function App() {
               <Router>
                 <ScrollToTop />
                 <Routes>
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/signup" element={<Signup />} />
-                  <Route path="/forgot-password" element={<ForgotPassword />} />
-                  <Route path="/reset-password/:token" element={<ResetPassword />} />
-                  <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                  <Route path="/terms-of-service" element={<TermsOfService />} />
-                  <Route path="/contact" element={<Contact />} />
-                  <Route path="/" element={<Home />} />
-                  <Route path="/quiz" element={<Quiz />} />
+                  {/* Public routes */}
+                  <Route path="/" element={<div className="flex items-center justify-center min-h-screen">Home Page</div>} />
+                  
+                  {/* Protected routes */}
                   <Route
                     path="/wardrobe"
                     element={
@@ -71,6 +59,9 @@ function App() {
                       </ProtectedRoute>
                     }
                   />
+                  
+                  {/* Catch-all route for 404 */}
+                  <Route path="*" element={<NotFound />} />
                 </Routes>
               </Router>
             </div>
