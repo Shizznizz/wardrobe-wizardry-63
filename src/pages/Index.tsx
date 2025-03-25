@@ -73,8 +73,7 @@ const Index = () => {
       <BackgroundShapes />
       <Header />
       
-      {/* Olivia Bloom Avatar - Repositioned for mobile */}
-      <div className={`fixed ${isMobile ? 'left-1/2 transform -translate-x-1/2 top-32 z-30' : 'top-52 right-6'} z-50`}>
+      <div className={`fixed ${isMobile ? 'right-4 top-48 z-30' : 'top-52 right-6'} z-50`}>
         <motion.div
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -106,7 +105,7 @@ const Index = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className={`absolute ${isMobile ? 'left-1/2 transform -translate-x-1/2 top-20 max-w-[300px]' : 'top-24 right-0 z-20 w-68 max-w-280'} scale-85 origin-top-right`}
+            className={`absolute ${isMobile ? 'right-0 top-20 max-w-[250px]' : 'top-24 right-0 z-20 w-68 max-w-280'} scale-85 origin-top-right`}
           >
             <div className="olivia-bubble relative p-4 rounded-xl bg-gradient-to-br from-purple-600/90 to-pink-600/90 text-white backdrop-blur-sm shadow-lg border border-white/20 curved-pointer olivia-glow">
               <button 
@@ -155,7 +154,6 @@ const Index = () => {
             variants={itemVariants} 
             className={`flex flex-col items-center justify-center text-center space-y-4 relative ${isMobile ? 'min-h-[55vh]' : 'min-h-[70vh]'}`}
           >
-            {/* Title Section - Ensuring it's the first thing visible on mobile */}
             <div className={`${isMobile ? 'mt-8 mb-28' : '-mt-20'} relative inline-block`}>
               <motion.div 
                 className="absolute -inset-1 rounded-lg bg-gradient-to-r from-purple-600 via-blue-500 to-purple-600 opacity-75 blur-xl"
