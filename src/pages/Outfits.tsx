@@ -650,7 +650,7 @@ const Outfits = () => {
     const edgierOutfit = {
       ...currentOutfit,
       name: `${currentOutfit.name} (Edgier)`,
-      description: `${currentOutfit.description || ''} with an edgy twist`,
+      description: currentOutfit.description || 'Edgy version with darker tones and statement pieces',
       styling: [...(currentOutfit.styling || []), 'edgy']
     };
     
@@ -1172,4 +1172,3 @@ const Outfits = () => {
 };
 
 export default Outfits;
-
