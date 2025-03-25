@@ -199,7 +199,7 @@ const OutfitSuggestion = ({
                   <HoverCardContent className="w-80 bg-slate-800 border-slate-700 text-white">
                     <div className="space-y-2">
                       <h4 className="font-medium">{topItem.name}</h4>
-                      <p className="text-sm text-slate-300">{topItem.category} • {topItem.color}</p>
+                      <p className="text-sm text-slate-300">{topItem.type} • {topItem.color}</p>
                       <img 
                         src={topItem.imageUrl} 
                         alt={topItem.name} 
@@ -262,7 +262,7 @@ const OutfitSuggestion = ({
                   <HoverCardContent className="w-80 bg-slate-800 border-slate-700 text-white">
                     <div className="space-y-2">
                       <h4 className="font-medium">{bottomItem.name}</h4>
-                      <p className="text-sm text-slate-300">{bottomItem.category} • {bottomItem.color}</p>
+                      <p className="text-sm text-slate-300">{bottomItem.type} • {bottomItem.color}</p>
                       <img 
                         src={bottomItem.imageUrl} 
                         alt={bottomItem.name} 
@@ -313,7 +313,7 @@ const OutfitSuggestion = ({
                     <HoverCardContent className="w-80 bg-slate-800 border-slate-700 text-white">
                       <div className="space-y-2">
                         <h4 className="font-medium">{item.name}</h4>
-                        <p className="text-sm text-slate-300">{item.category} • {item.color}</p>
+                        <p className="text-sm text-slate-300">{item.type} • {item.color}</p>
                         <img 
                           src={item.imageUrl} 
                           alt={item.name} 
