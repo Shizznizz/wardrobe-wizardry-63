@@ -11,7 +11,7 @@ import { buttonVariants } from '@/components/ui/button';
 import { WeatherInfo, Outfit, TimeOfDay, Activity } from '@/lib/types';
 import { sampleClothingItems, sampleOutfits, sampleUserPreferences } from '@/lib/wardrobeData';
 import { toast } from 'sonner';
-import { RefreshCw, Camera, MapPin, AlertTriangle, Calendar, AlarmClockCheck, MessageCircle } from 'lucide-react';
+import { RefreshCw, Camera, MapPin, AlertTriangle, Calendar, AlarmClockCheck, MessageCircle, Sun, CloudRain, CloudSun, Cloud } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from '@/lib/utils';
@@ -592,24 +592,74 @@ const Outfits = () => {
     }
   };
   
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    
+    if (hour < 12) return "Good morning";
+    if (hour < 18) return "Good afternoon";
+    return "Good evening";
+  };
+  
+  const getWeatherIcon = () => {
+    if (!weather) return <Sun className="text-amber-400 animate-pulse h-6 w-6" />;
+    
+    const condition = weather.condition.toLowerCase();
+    
+    if (condition.includes('rain') || condition.includes('drizzle')) {
+      return <CloudRain className="text-blue-300 h-6 w-6" />;
+    }
+    
+    if (condition.includes('cloud')) {
+      return <Cloud className="text-gray-300 h-6 w-6" />;
+    }
+    
+    if (condition.includes('cloud') && condition.includes('sun')) {
+      return <CloudSun className="text-amber-300 h-6 w-6" />;
+    }
+    
+    return <Sun className="text-amber-400 h-6 w-6" />;
+  };
+  
+  const userName = user?.user_metadata?.full_name || user?.user_metadata?.name || 'there';
+  
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-900 via-indigo-900 to-blue-900">
       <Header />
       
       <main className="container max-w-6xl px-4 pt-20 pb-20">
-        <div className="mb-6 text-center md:text-left">
-          <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
-            Today's Outfit
-          </h1>
-          <p className="text-purple-200 text-sm md:text-base">
-            Let's find the perfect outfit based on your style, the weather, and your plans.
+        <motion.div 
+          className="mb-8 text-center md:text-left"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="flex items-center justify-center md:justify-start gap-3 mb-2">
+            <h1 className="text-3xl md:text-4xl font-bold text-white">
+              {getGreeting()} {userName}
+            </h1>
+            <motion.div 
+              initial={{ rotate: -10, scale: 0.9 }}
+              animate={{ rotate: 0, scale: 1 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              {getWeatherIcon()}
+            </motion.div>
+          </div>
+          <motion.p 
+            className="text-purple-200 text-lg md:text-xl"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            Here's your perfect look for today {weather ? `(${weather.temperature}°C ${weather.condition})` : ''}
+          </motion.p>
+          <p className="text-purple-200/70 text-sm mt-1">
+            Let's find the ideal outfit based on your style, the weather, and your plans.
           </p>
-        </div>
+        </motion.div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-10">
-          {/* Left Column - Weather and Filters */}
           <div className="space-y-6">
-            {/* Weather Box */}
             <div className="bg-white/10 backdrop-blur-md rounded-xl p-5 border border-white/20">
               <h2 className="text-lg font-semibold text-white mb-4">Weather Conditions</h2>
               
@@ -692,7 +742,6 @@ const Outfits = () => {
               </Form>
             </div>
             
-            {/* Outfit Filters */}
             <div className="bg-white/10 backdrop-blur-md rounded-xl p-5 border border-white/20">
               <h2 className="text-lg font-semibold text-white mb-4">Outfit Filters</h2>
               
@@ -750,9 +799,7 @@ const Outfits = () => {
             </div>
           </div>
           
-          {/* Right Column - Olivia's Reasoning and Outfit Suggestion */}
           <div className="space-y-6">
-            {/* Olivia's Reasoning */}
             <div className="bg-white/10 backdrop-blur-md rounded-xl p-5 border border-white/20">
               <div className="flex items-start gap-4">
                 <div className="flex-1">
@@ -783,7 +830,6 @@ const Outfits = () => {
               </div>
             </div>
             
-            {/* Outfit Suggestion */}
             <div className="bg-white/10 backdrop-blur-md rounded-xl p-5 border border-white/20">
               <div className="mb-4 flex justify-between items-center">
                 <h2 className="text-xl font-semibold text-white">Suggested Outfit</h2>
