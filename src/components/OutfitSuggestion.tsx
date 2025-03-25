@@ -1,5 +1,6 @@
+
 import { motion } from 'framer-motion';
-import { Check, ArrowRight, Sparkles, MessageCircle, Thermometer, RefreshCw, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { Check, ArrowRight, Sparkles, MessageCircle, Thermometer, RefreshCw, ThumbsUp, ThumbsDown, ArrowDown, ArrowUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { ClothingItem, Outfit, WeatherInfo, TimeOfDay, Activity } from '@/lib/types';
@@ -42,6 +43,32 @@ const OutfitSuggestion = ({
   onChangeTop,
   onChangeBottom
 }: OutfitSuggestionProps) => {
+  
+  // Framer Motion variants for animations
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: (i: number) => ({
+      opacity: 1,
+      y: 0,
+      transition: {
+        delay: i * 0.15,
+        duration: 0.5,
+        ease: "easeOut"
+      }
+    })
+  };
+  
+  const buttonVariants = {
+    hidden: { opacity: 0, scale: 0.9 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      transition: {
+        delay: 0.6,
+        duration: 0.3
+      }
+    }
+  };
   
   // Determine what to render based on provided props
   const renderContent = () => {
@@ -119,28 +146,145 @@ const OutfitSuggestion = ({
         items.find(item => item.id === itemId)
       ).filter(Boolean);
       
+      // Group items by category (assuming first is top, second is bottom, etc.)
+      const topItem = outfitItems[0];
+      const bottomItem = outfitItems[1];
+      const accessoryItems = outfitItems.slice(2);
+      
       return (
         <div className="space-y-5">
           <h3 className="text-xl font-semibold mb-1">{outfit.name}</h3>
           
-          {/* Items Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-2 gap-3">
-            {outfitItems.map((item, index) => item && (
-              <div key={index} className="relative rounded-lg overflow-hidden border border-white/20 shadow-md group">
-                <img 
-                  src={item.imageUrl} 
-                  alt={item.name} 
-                  className="w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                <div className="absolute bottom-0 left-0 right-0 bg-black/60 p-2 text-sm text-white truncate">
-                  {item.name}
+          {/* Visual Flow Container */}
+          <div className="relative">
+            {/* Top Item with animation */}
+            {topItem && (
+              <motion.div 
+                className="mb-6 relative"
+                initial="hidden"
+                animate="visible"
+                custom={0}
+                variants={itemVariants}
+              >
+                <div className="relative rounded-lg overflow-hidden border border-white/20 shadow-md group">
+                  <img 
+                    src={topItem.imageUrl} 
+                    alt={topItem.name} 
+                    className="w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 bg-black/60 p-2 text-sm text-white truncate">
+                    {topItem.name}
+                  </div>
+                  
+                  {/* Change top button */}
+                  {onChangeTop && (
+                    <div className="absolute top-2 right-2">
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        onClick={onChangeTop}
+                        className="bg-black/40 backdrop-blur-sm border-white/20 text-white text-xs p-1.5 h-auto"
+                      >
+                        <RefreshCw className="h-3 w-3 mr-1" />
+                        Change
+                      </Button>
+                    </div>
+                  )}
                 </div>
-              </div>
-            ))}
+                
+                {/* Downward arrow */}
+                <motion.div 
+                  className="flex justify-center my-2"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3, duration: 0.5 }}
+                >
+                  <ArrowDown className="h-5 w-5 text-purple-400 animate-bounce" />
+                </motion.div>
+              </motion.div>
+            )}
+            
+            {/* Bottom Item with animation */}
+            {bottomItem && (
+              <motion.div 
+                className="mb-6 relative"
+                initial="hidden"
+                animate="visible"
+                custom={1}
+                variants={itemVariants}
+              >
+                <div className="relative rounded-lg overflow-hidden border border-white/20 shadow-md group">
+                  <img 
+                    src={bottomItem.imageUrl} 
+                    alt={bottomItem.name} 
+                    className="w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 bg-black/60 p-2 text-sm text-white truncate">
+                    {bottomItem.name}
+                  </div>
+                  
+                  {/* Change bottom button */}
+                  {onChangeBottom && (
+                    <div className="absolute top-2 right-2">
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        onClick={onChangeBottom}
+                        className="bg-black/40 backdrop-blur-sm border-white/20 text-white text-xs p-1.5 h-auto"
+                      >
+                        <RefreshCw className="h-3 w-3 mr-1" />
+                        Change
+                      </Button>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Accessories indicator with downward arrow if there are accessory items */}
+                {accessoryItems.length > 0 && (
+                  <motion.div 
+                    className="flex justify-center my-2"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.5, duration: 0.5 }}
+                  >
+                    <ArrowDown className="h-5 w-5 text-purple-400 animate-bounce" />
+                  </motion.div>
+                )}
+              </motion.div>
+            )}
+            
+            {/* Accessories Grid */}
+            {accessoryItems.length > 0 && (
+              <motion.div 
+                className="grid grid-cols-2 gap-3 mb-6"
+                initial="hidden"
+                animate="visible"
+                custom={2}
+                variants={itemVariants}
+              >
+                {accessoryItems.map((item, index) => item && (
+                  <div key={index} className="relative rounded-lg overflow-hidden border border-white/20 shadow-md group">
+                    <img 
+                      src={item.imageUrl} 
+                      alt={item.name} 
+                      className="w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <div className="absolute bottom-0 left-0 right-0 bg-black/60 p-2 text-sm text-white truncate">
+                      {item.name}
+                    </div>
+                  </div>
+                ))}
+              </motion.div>
+            )}
           </div>
           
           {/* Tags */}
-          <div className="flex flex-wrap gap-1.5">
+          <motion.div 
+            className="flex flex-wrap gap-1.5"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.3 }}
+          >
             {outfit.seasons.map(season => (
               <span key={season} className="text-xs px-2 py-0.5 rounded-full bg-blue-900/40 text-blue-100 border border-blue-800/30">
                 {season}
@@ -151,79 +295,70 @@ const OutfitSuggestion = ({
                 {occasion}
               </span>
             ))}
-          </div>
+          </motion.div>
           
-          {/* Like/Dislike Buttons */}
-          {onLike && onDislike && (
-            <div className="flex justify-center gap-4 pt-1">
-              <Button 
-                size="sm" 
-                variant="outline" 
-                onClick={onLike} 
-                className="flex-1 bg-white/5 border-white/20 text-white/90 hover:bg-white/10 hover:text-white group"
-              >
-                <ThumbsUp className="h-4 w-4 mr-2 group-hover:text-green-400" />
-                Like This
-              </Button>
-              <Button 
-                size="sm" 
-                variant="outline" 
-                onClick={onDislike} 
-                className="flex-1 bg-white/5 border-white/20 text-white/90 hover:bg-white/10 hover:text-white group"
-              >
-                <ThumbsDown className="h-4 w-4 mr-2 group-hover:text-red-400" />
-                Not For Me
-              </Button>
+          {/* Interaction Buttons with visual indicator */}
+          <motion.div 
+            className="relative mt-6 pt-4"
+            initial="hidden"
+            animate="visible"
+            variants={buttonVariants}
+          >
+            {/* Up arrow indicator for interaction */}
+            <div className="absolute -top-1 left-1/2 transform -translate-x-1/2">
+              <ArrowUp className="h-5 w-5 text-purple-400 animate-bounce" />
             </div>
-          )}
-          
-          {/* Outfit Adjustment Buttons */}
-          <div className="grid grid-cols-2 gap-3 pt-1">
-            {onChangeTop && (
-              <Button
-                size="sm"
-                variant="secondary"
-                onClick={onChangeTop}
-                className="flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 hover:from-emerald-500/30 hover:to-teal-500/30 border border-white/10"
-              >
-                Change Top
-              </Button>
+            
+            {/* Like/Dislike Buttons */}
+            {onLike && onDislike && (
+              <div className="flex justify-center gap-4 pt-1 mb-4">
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  onClick={onLike} 
+                  className="flex-1 bg-white/5 border-white/20 text-white/90 hover:bg-white/10 hover:text-white group"
+                >
+                  <ThumbsUp className="h-4 w-4 mr-2 group-hover:text-green-400" />
+                  Like This
+                </Button>
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  onClick={onDislike} 
+                  className="flex-1 bg-white/5 border-white/20 text-white/90 hover:bg-white/10 hover:text-white group"
+                >
+                  <ThumbsDown className="h-4 w-4 mr-2 group-hover:text-red-400" />
+                  Not For Me
+                </Button>
+              </div>
             )}
             
-            {onChangeBottom && (
-              <Button
-                size="sm"
-                variant="secondary"
-                onClick={onChangeBottom}
-                className="flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-500/20 to-blue-500/20 hover:from-indigo-500/30 hover:to-blue-500/30 border border-white/10"
-              >
-                Change Bottom
-              </Button>
-            )}
-            
-            {onMakeWarmer && (
-              <Button
-                size="sm"
-                variant="secondary"
-                onClick={onMakeWarmer}
-                className="flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500/20 to-red-500/20 hover:from-orange-500/30 hover:to-red-500/30 border border-white/10"
-              >
-                <Thermometer className="h-4 w-4" />
-                <span>Make It Warmer</span>
-              </Button>
-            )}
-            
-            {onWear && (
-              <Button 
-                size="sm" 
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 border-0"
-                onClick={() => onWear(outfit.id)}
-              >
-                <Check className="h-4 w-4 mr-1" />
-                Wear This Outfit
-              </Button>
-            )}
-          </div>
+            {/* Outfit Adjustment Buttons */}
+            <div className="grid grid-cols-2 gap-3 pt-1">
+              {onMakeWarmer && (
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={onMakeWarmer}
+                  className="flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500/20 to-red-500/20 hover:from-orange-500/30 hover:to-red-500/30 border border-white/10"
+                >
+                  <Thermometer className="h-4 w-4" />
+                  <span>Make It Warmer</span>
+                </Button>
+              )}
+              
+              {onWear && (
+                <Button 
+                  size="sm" 
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 border-0"
+                  onClick={() => onWear(outfit.id)}
+                >
+                  <Check className="h-4 w-4 mr-1" />
+                  Wear This Outfit
+                </Button>
+              )}
+            </div>
+          </motion.div>
         </div>
       );
     }
