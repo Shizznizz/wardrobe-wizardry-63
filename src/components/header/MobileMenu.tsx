@@ -75,7 +75,7 @@ export const MobileMenu = ({
         animate="visible"
         exit="exit"
       >
-        <div className="flex justify-end mb-6">
+        <div className="flex justify-end mb-2">
           <Button
             variant="ghost"
             size="icon"
@@ -86,7 +86,7 @@ export const MobileMenu = ({
           </Button>
         </div>
 
-        <nav className="flex flex-col items-center mt-2 space-y-4">
+        <nav className="flex flex-col items-center mt-6 space-y-4">
           {navItems.map((item, i) => (
             <motion.div
               key={item.path}
