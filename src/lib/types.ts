@@ -1,4 +1,3 @@
-
 export type ClothingType = 
   | 'shirt'
   | 'jeans'
@@ -124,11 +123,13 @@ export interface WeatherInfo {
   windSpeed?: number;
   humidity?: number;
   feelsLike?: number;
+  unit?: string; // Add the missing unit property
 }
 
 export interface UserPreferences {
   favoriteColors: ClothingColor[];
   favoriteStyles: string[];
+  styles?: string[]; // Add the missing styles property 
   personalityTags?: PersonalityTag[]; // User's preferred style tags
   seasonalPreferences: {
     [key in ClothingSeason]: {

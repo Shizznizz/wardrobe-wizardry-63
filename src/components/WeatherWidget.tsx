@@ -18,6 +18,7 @@ interface WeatherWidgetProps {
   city?: string;
   country?: string;
   savePreferences?: boolean;
+  showError?: boolean; // Add the missing showError prop
 }
 
 const WeatherWidget = ({ 
@@ -25,7 +26,8 @@ const WeatherWidget = ({
   onWeatherChange, 
   city, 
   country, 
-  savePreferences = false 
+  savePreferences = false,
+  showError = true // Set default value
 }: WeatherWidgetProps) => {
   const [weather, setWeather] = useState<WeatherInfo | null>(null);
   const [isLoading, setIsLoading] = useState(true);

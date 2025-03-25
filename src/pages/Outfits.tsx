@@ -622,7 +622,7 @@ const Outfits = () => {
     }
   };
   
-  const userStyles = sampleUserPreferences.styles || [];
+  const userStyles = sampleUserPreferences.favoriteStyles || [];
   
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -642,7 +642,6 @@ const Outfits = () => {
             <h2 className="text-xl font-bold mb-3">Current Weather</h2>
             <WeatherWidget 
               onWeatherChange={handleWeatherChange}
-              showError={false} 
             />
           </div>
           
