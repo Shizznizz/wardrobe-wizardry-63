@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
+
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -11,10 +12,31 @@ import { buttonVariants } from '@/components/ui/button';
 import { WeatherInfo, Outfit, TimeOfDay, Activity } from '@/lib/types';
 import { sampleClothingItems, sampleOutfits, sampleUserPreferences } from '@/lib/wardrobeData';
 import { toast } from 'sonner';
-import { RefreshCw, Camera, MapPin, AlertTriangle, Calendar, AlarmClockCheck, MessageCircle, Sun, CloudRain, CloudSun, Cloud } from 'lucide-react';
+import { 
+  RefreshCw, 
+  Camera, 
+  MapPin, 
+  AlertTriangle, 
+  Calendar, 
+  AlarmClockCheck, 
+  MessageCircle, 
+  Sun, 
+  CloudRain, 
+  CloudSun, 
+  Cloud,
+  Sparkles,
+  Umbrella,
+  ThermometerSnowflake,
+  ThermometerSun,
+  Shirt,
+  PanelBottom,
+  Heart,
+  Shuffle
+} from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from '@/lib/utils';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import {
   Select,
   SelectContent,
@@ -313,6 +335,7 @@ const Outfits = () => {
 
   const selectedCountry = form.watch("country");
   
+  // User preferences loading
   useEffect(() => {
     const loadUserPreferences = async () => {
       if (user && !preferencesLoaded) {
@@ -357,6 +380,7 @@ const Outfits = () => {
     loadUserPreferences();
   }, [user, form, preferencesLoaded]);
   
+  // City selection based on country
   useEffect(() => {
     if (selectedCountry) {
       const cities = citiesByCountry[selectedCountry as keyof typeof citiesByCountry] || [];
@@ -389,6 +413,9 @@ const Outfits = () => {
           : outfit
       )
     );
+    toast.success("Great choice! Outfit has been logged as worn today.", {
+      description: "This helps Olivia learn your preferences better."
+    });
   };
   
   const handleRegenerateOutfit = () => {
@@ -628,7 +655,7 @@ const Outfits = () => {
       
       <main className="container max-w-6xl px-4 pt-20 pb-20">
         <motion.div 
-          className="mb-8 text-center md:text-left"
+          className="mb-6 text-center md:text-left"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -653,15 +680,24 @@ const Outfits = () => {
           >
             Here's your perfect look for today {weather ? `(${weather.temperature}°C ${weather.condition})` : ''}
           </motion.p>
-          <p className="text-purple-200/70 text-sm mt-1">
-            Let's find the ideal outfit based on your style, the weather, and your plans.
-          </p>
+          <motion.p 
+            className="text-purple-200/80 text-sm md:text-base mt-2"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
+            Olivia helps you find the perfect outfit for today's weather and your style preferences.
+          </motion.p>
         </motion.div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-10">
-          <div className="space-y-6">
+          {/* Left Column - Weather and Filters */}
+          <div className="space-y-6 md:order-1">
             <div className="bg-white/10 backdrop-blur-md rounded-xl p-5 border border-white/20">
-              <h2 className="text-lg font-semibold text-white mb-4">Weather Conditions</h2>
+              <h2 className="text-lg font-semibold text-white mb-4 flex items-center">
+                <Umbrella className="h-5 w-5 mr-2 text-blue-300" />
+                Weather Conditions
+              </h2>
               
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mb-6">
@@ -743,7 +779,10 @@ const Outfits = () => {
             </div>
             
             <div className="bg-white/10 backdrop-blur-md rounded-xl p-5 border border-white/20">
-              <h2 className="text-lg font-semibold text-white mb-4">Outfit Filters</h2>
+              <h2 className="text-lg font-semibold text-white mb-4 flex items-center">
+                <Shirt className="h-5 w-5 mr-2 text-purple-300" />
+                Outfit Filters
+              </h2>
               
               <div className="space-y-4">
                 <div>
@@ -799,13 +838,19 @@ const Outfits = () => {
             </div>
           </div>
           
-          <div className="space-y-6">
+          {/* Right Column - Outfit Suggestions */}
+          <div className="space-y-6 md:order-2">
             <div className="bg-white/10 backdrop-blur-md rounded-xl p-5 border border-white/20">
               <div className="flex items-start gap-4">
+                <Avatar className="h-10 w-10 border-2 border-white/70 shadow-md flex-shrink-0">
+                  <AvatarImage src="/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png" alt="Olivia Bloom" />
+                  <AvatarFallback className="bg-gradient-to-r from-purple-600 to-pink-500 text-white">OB</AvatarFallback>
+                </Avatar>
+                
                 <div className="flex-1">
                   <h3 className="text-md font-semibold text-white mb-2 flex items-center">
-                    <MessageCircle className="h-4 w-4 mr-2" />
                     Olivia's Outfit Reasoning
+                    <MessageCircle className="h-4 w-4 ml-2 text-purple-300" />
                   </h3>
                   <div className="text-sm text-purple-100 space-y-2">
                     <p>
@@ -832,14 +877,17 @@ const Outfits = () => {
             
             <div className="bg-white/10 backdrop-blur-md rounded-xl p-5 border border-white/20">
               <div className="mb-4 flex justify-between items-center">
-                <h2 className="text-xl font-semibold text-white">Suggested Outfit</h2>
+                <h2 className="text-xl font-semibold text-white flex items-center">
+                  <Sparkles className="h-5 w-5 mr-2 text-yellow-300" />
+                  Suggested Outfit
+                </h2>
                 <Button 
                   variant="ghost" 
                   size="sm" 
                   onClick={handleRegenerateOutfit} 
                   className="text-purple-200 hover:text-white hover:bg-purple-600/30"
                 >
-                  <RefreshCw className="h-4 w-4 mr-2" />
+                  <Shuffle className="h-4 w-4 mr-2" />
                   Generate New
                 </Button>
               </div>
@@ -850,14 +898,84 @@ const Outfits = () => {
                 weather={weather || undefined}
                 timeOfDay={timeOfDay}
                 activity={activity}
-                onWear={handleWearOutfit}
+                onWear={() => handleWearOutfit(suggestedOutfit.id)}
                 onRefresh={handleRegenerateOutfit}
                 onLike={handleLikeOutfit}
                 onDislike={handleDislikeOutfit}
                 onMakeWarmer={handleMakeWarmer}
                 onChangeTop={handleChangeTop}
                 onChangeBottom={handleChangeBottom}
+                onToggleFavorite={() => handleToggleFavorite(suggestedOutfit.id)}
               />
+              
+              <div className="flex flex-wrap gap-2 mt-4 justify-center">
+                <Button 
+                  onClick={() => handleWearOutfit(suggestedOutfit.id)}
+                  className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white hover:from-emerald-600 hover:to-teal-700"
+                  size="sm"
+                >
+                  <Shirt className="h-4 w-4 mr-1" />
+                  Wear This Outfit
+                </Button>
+                
+                <Button 
+                  onClick={handleMakeWarmer}
+                  variant="outline"
+                  size="sm"
+                  className="border-white/20 text-white bg-white/5 hover:bg-white/10"
+                >
+                  <ThermometerSun className="h-4 w-4 mr-1 text-orange-300" />
+                  Make It Warmer
+                </Button>
+                
+                <Button 
+                  onClick={() => handleToggleFavorite(suggestedOutfit.id)}
+                  variant="outline"
+                  size="sm"
+                  className={cn(
+                    "border-white/20 text-white bg-white/5 hover:bg-white/10",
+                    suggestedOutfit.favorite && "bg-pink-600/30 border-pink-400"
+                  )}
+                >
+                  <Heart className={cn(
+                    "h-4 w-4 mr-1",
+                    suggestedOutfit.favorite ? "text-pink-400 fill-pink-400" : "text-pink-300"
+                  )} />
+                  {suggestedOutfit.favorite ? "Favorited" : "Add to Favorites"}
+                </Button>
+              </div>
+              
+              <div className="flex flex-wrap gap-2 mt-3 justify-center">
+                <Button 
+                  onClick={handleChangeTop}
+                  variant="outline"
+                  size="sm"
+                  className="border-white/20 text-white bg-white/5 hover:bg-white/10"
+                >
+                  <Shirt className="h-4 w-4 mr-1 text-blue-300" />
+                  Change Top
+                </Button>
+                
+                <Button 
+                  onClick={handleChangeBottom}
+                  variant="outline"
+                  size="sm"
+                  className="border-white/20 text-white bg-white/5 hover:bg-white/10"
+                >
+                  <PanelBottom className="h-4 w-4 mr-1 text-indigo-300" />
+                  Change Bottom
+                </Button>
+                
+                <Button 
+                  onClick={handleRegenerateOutfit}
+                  variant="outline"
+                  size="sm"
+                  className="border-white/20 text-white bg-white/5 hover:bg-white/10"
+                >
+                  <RefreshCw className="h-4 w-4 mr-1 text-purple-300" />
+                  New Suggestion
+                </Button>
+              </div>
             </div>
           </div>
         </div>
