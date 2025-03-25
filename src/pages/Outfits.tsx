@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -672,8 +673,8 @@ const Outfits = () => {
         }}></div>
       </div>
       
-      <div className="container px-4 sm:px-6 max-w-6xl mx-auto mt-4">
-        {/* Merged Weather Panel */}
+      <div className="container px-4 sm:px-6 max-w-6xl mx-auto mt-8">
+        {/* Merged Weather Panel with improved spacing */}
         <Card className="mb-8 border border-purple-200/20 shadow-lg overflow-hidden">
           <CardHeader className="bg-gradient-to-r from-purple-900/30 to-indigo-900/30 pb-2">
             <CardTitle className="flex items-center text-xl font-bold">
@@ -754,10 +755,12 @@ const Outfits = () => {
                   />
                 </div>
                 
-                <Button type="submit" className="w-full sm:w-auto">
-                  <MapPin className="mr-2 h-4 w-4" />
-                  Update Location
-                </Button>
+                <div className="flex justify-center my-4">
+                  <Button type="submit" className="w-full sm:w-auto">
+                    <MapPin className="mr-2 h-4 w-4" />
+                    Update Location
+                  </Button>
+                </div>
               </form>
               
               <div className="mt-2">
