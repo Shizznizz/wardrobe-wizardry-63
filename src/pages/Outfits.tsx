@@ -30,7 +30,12 @@ import {
   Shirt,
   PanelBottom,
   Heart,
-  Shuffle
+  Shuffle,
+  Glasses,
+  Crown,
+  Layers,
+  BadgePlus,
+  Scissors
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -322,6 +327,7 @@ const Outfits = () => {
   const [showWelcomeMessage, setShowWelcomeMessage] = useState(true);
   const [timeOfDay, setTimeOfDay] = useState<TimeOfDay | undefined>(undefined);
   const [activity, setActivity] = useState<Activity | undefined>(undefined);
+  const [outfitVariation, setOutfitVariation] = useState<string | null>(null);
   const { user } = useAuth();
   const isMobile = useIsMobile();
   
@@ -638,6 +644,126 @@ const Outfits = () => {
   
   const userName = user?.user_metadata?.full_name || user?.user_metadata?.name || 'there';
   
+  const handleMakeEdgier = () => {
+    const currentOutfit = suggestedOutfit;
+    
+    const edgierOutfit = {
+      ...currentOutfit,
+      name: `${currentOutfit.name} (Edgier)`,
+      description: `${currentOutfit.description || ''} with an edgy twist`,
+      styling: [...(currentOutfit.styling || []), 'edgy']
+    };
+    
+    setSuggestedOutfit(edgierOutfit);
+    setOutfitVariation('edgy');
+    
+    toast.success('Added some edge to your look', {
+      description: 'Incorporating darker tones and statement pieces.'
+    });
+  };
+  
+  const handleAddAccessories = () => {
+    const currentOutfit = suggestedOutfit;
+    
+    const availableAccessories = sampleClothingItems.filter(
+      item => item.type.toLowerCase().includes('accessory') && 
+      !currentOutfit.items.includes(item.id)
+    );
+    
+    if (availableAccessories.length > 0) {
+      const randomAccessory = availableAccessories[Math.floor(Math.random() * availableAccessories.length)];
+      
+      const accessorizedOutfit = {
+        ...currentOutfit,
+        name: `${currentOutfit.name} (Accessorized)`,
+        items: [...currentOutfit.items, randomAccessory.id]
+      };
+      
+      setSuggestedOutfit(accessorizedOutfit);
+      setOutfitVariation('accessorized');
+      
+      toast.success('Added accessories to your outfit', {
+        description: `Enhanced your look with ${randomAccessory.name}.`
+      });
+    } else {
+      toast.info('No additional accessories available', {
+        description: 'Try adding more accessories to your wardrobe.'
+      });
+    }
+  };
+  
+  const handleAddLayers = () => {
+    const currentOutfit = suggestedOutfit;
+    
+    const layerItems = sampleClothingItems.filter(
+      item => (item.type.toLowerCase().includes('jacket') || 
+              item.type.toLowerCase().includes('cardigan') ||
+              item.type.toLowerCase().includes('coat')) && 
+              !currentOutfit.items.includes(item.id)
+    );
+    
+    if (layerItems.length > 0) {
+      const randomLayer = layerItems[Math.floor(Math.random() * layerItems.length)];
+      
+      const layeredOutfit = {
+        ...currentOutfit,
+        name: `${currentOutfit.name} (Layered)`,
+        items: [currentOutfit.items[0], ...currentOutfit.items.slice(1), randomLayer.id]
+      };
+      
+      setSuggestedOutfit(layeredOutfit);
+      setOutfitVariation('layered');
+      
+      toast.success('Added a layer to your outfit', {
+        description: `Added a ${randomLayer.name} for extra warmth and style.`
+      });
+    } else {
+      toast.info('No layering pieces available', {
+        description: 'Try adding jackets or cardigans to your wardrobe.'
+      });
+    }
+  };
+  
+  const handleTryNewLook = () => {
+    const filteredOutfits = outfits.filter(outfit => outfit.id !== suggestedOutfit.id);
+    
+    if (filteredOutfits.length > 0) {
+      const randomIndex = Math.floor(Math.random() * filteredOutfits.length);
+      setSuggestedOutfit(filteredOutfits[randomIndex]);
+      setOutfitVariation('new');
+      
+      toast.success('Here\'s a completely different look', {
+        description: 'Sometimes a fresh perspective is all you need!'
+      });
+    } else {
+      toast.info('No alternative outfits available', {
+        description: 'Try adding more outfits to your wardrobe.'
+      });
+    }
+  };
+  
+  const getOutfitVariationComment = () => {
+    if (!weather) return "Let me help you put the finishing touches on your outfit!";
+    
+    if (outfitVariation === 'edgy') {
+      return `Adding some edge to your look with darker tones and statement pieces, perfect for ${weather.condition} weather.`;
+    } else if (outfitVariation === 'accessorized') {
+      return `The right accessories can elevate your outfit and prepare you for ${weather.temperature}°C ${weather.condition} conditions.`;
+    } else if (outfitVariation === 'layered') {
+      return `Layering is key for ${weather.temperature}°C weather, allowing you to adjust throughout the day as needed.`;
+    } else if (outfitVariation === 'new') {
+      return `Sometimes a completely different direction is best for ${weather.condition} weather. What do you think of this alternative?`;
+    }
+    
+    if (weather.temperature < 10) {
+      return `It's quite cold at ${weather.temperature}°C! Let's add some warm finishing touches to this outfit.`;
+    } else if (weather.temperature > 25) {
+      return `At ${weather.temperature}°C, let's keep your outfit breathable while adding some style!`;
+    } else {
+      return `For today's ${weather.condition} weather at ${weather.temperature}°C, here are some final touches to perfect your look.`;
+    }
+  };
+  
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-900 via-indigo-900 to-blue-900">
       <Header />
@@ -909,6 +1035,70 @@ const Outfits = () => {
             </div>
           </div>
         </div>
+        
+        <motion.div 
+          className="mb-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          <div className="bg-white/10 backdrop-blur-md rounded-xl p-5 border border-white/20">
+            <div className="flex items-start gap-4 mb-4">
+              <Avatar className="h-12 w-12 border-2 border-white/70 shadow-md">
+                <AvatarImage src="/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png" alt="Olivia Bloom" />
+                <AvatarFallback className="bg-gradient-to-r from-purple-600 to-pink-500 text-white">OB</AvatarFallback>
+              </Avatar>
+              
+              <div className="flex-1">
+                <h2 className="text-xl font-semibold text-white mb-2 flex items-center">
+                  <Sparkles className="h-5 w-5 mr-2 text-purple-300" />
+                  Olivia's Final Touches
+                </h2>
+                <div className="text-white/90 text-sm md:text-base relative bg-white/5 p-4 rounded-lg rounded-tl-none border border-white/10">
+                  <p>{getOutfitVariationComment()}</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
+              <Button 
+                onClick={handleMakeEdgier}
+                variant="outline"
+                className="bg-black/40 border border-purple-500/40 hover:bg-purple-900/40 hover:border-purple-400 text-white"
+              >
+                <Scissors className="h-4 w-4 mr-2 text-purple-300" />
+                Make it Edgier
+              </Button>
+              
+              <Button 
+                onClick={handleAddAccessories}
+                variant="outline"
+                className="bg-black/40 border border-blue-500/40 hover:bg-blue-900/40 hover:border-blue-400 text-white"
+              >
+                <Crown className="h-4 w-4 mr-2 text-blue-300" />
+                Add Accessories
+              </Button>
+              
+              <Button 
+                onClick={handleAddLayers}
+                variant="outline"
+                className="bg-black/40 border border-green-500/40 hover:bg-green-900/40 hover:border-green-400 text-white"
+              >
+                <Layers className="h-4 w-4 mr-2 text-green-300" />
+                Go Layered
+              </Button>
+              
+              <Button 
+                onClick={handleTryNewLook}
+                variant="outline"
+                className="bg-black/40 border border-pink-500/40 hover:bg-pink-900/40 hover:border-pink-400 text-white"
+              >
+                <BadgePlus className="h-4 w-4 mr-2 text-pink-300" />
+                Try a New Look
+              </Button>
+            </div>
+          </div>
+        </motion.div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-10">
           <div className="space-y-6">

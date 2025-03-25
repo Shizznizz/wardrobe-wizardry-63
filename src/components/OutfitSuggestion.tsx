@@ -358,7 +358,7 @@ const OutfitSuggestion = ({
                 </HoverCard>
               </motion.div>
             ) : (
-              <div className="hidden sm:block" /> /* Empty placeholder for grid alignment on desktop */
+              <div className="hidden sm:block" /> {/* Empty placeholder for grid alignment on desktop */}
             )}
           </div>
           
