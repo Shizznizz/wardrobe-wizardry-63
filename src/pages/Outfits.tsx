@@ -5,8 +5,8 @@ import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import WeatherWidget from '@/components/WeatherWidget';
 import OutfitSuggestion from '@/components/OutfitSuggestion';
-import OliviaBloomAdvisor from '@/components/OliviaBloomAdvisor';
-import OliviaBloomAssistant from '@/components/OliviaBloomAssistant';
+import StyleTip from '@/components/StyleTip';
+import TrendingItems from '@/components/TrendingItems';
 import { Button } from '@/components/ui/button';
 import { buttonVariants } from '@/components/ui/button';
 import { WeatherInfo, Outfit, TimeOfDay, Activity } from '@/lib/types';
@@ -691,7 +691,7 @@ const Outfits = () => {
         </motion.div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-10">
-          {/* Left Column - Weather and Filters */}
+          {/* Left Column - Weather, Filters, and new components */}
           <div className="space-y-6 md:order-1">
             <div className="bg-white/10 backdrop-blur-md rounded-xl p-5 border border-white/20">
               <h2 className="text-lg font-semibold text-white mb-4 flex items-center">
@@ -836,6 +836,12 @@ const Outfits = () => {
                 </div>
               </div>
             </div>
+            
+            {/* New Style Tip Component */}
+            <StyleTip />
+            
+            {/* New Trending Items Component */}
+            <TrendingItems />
           </div>
           
           {/* Right Column - Outfit Suggestions */}
@@ -852,7 +858,7 @@ const Outfits = () => {
                     Olivia's Outfit Reasoning
                     <MessageCircle className="h-4 w-4 ml-2 text-purple-300" />
                   </h3>
-                  <div className="text-sm text-purple-100 space-y-2">
+                  <div className="text-sm text-purple-100 space-y-2 relative bg-white/5 p-3 rounded-lg rounded-tl-none border border-white/10">
                     <p>
                       {weather ? 
                         `Based on the ${weather.temperature}°C ${weather.condition} weather, and your selected filters, I've chosen a ${weather.temperature < 15 ? 'warm' : 'cool and comfortable'} outfit that's perfect for today.`
