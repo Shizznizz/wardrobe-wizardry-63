@@ -1,6 +1,5 @@
-
 import { motion } from 'framer-motion';
-import { Check, ArrowRight, Sparkles, MessageCircle, Thermometer, RefreshCw } from 'lucide-react';
+import { Check, ArrowRight, Sparkles, MessageCircle, Thermometer, RefreshCw, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { ClothingItem, Outfit, WeatherInfo, TimeOfDay, Activity } from '@/lib/types';
@@ -44,93 +43,6 @@ const OutfitSuggestion = ({
   onChangeBottom
 }: OutfitSuggestionProps) => {
   
-  // Generate a friendly explanation based on weather, time of day, activity and outfit
-  const generateOliviaReasoning = () => {
-    if (!weather) return "";
-    
-    const temp = weather.temperature;
-    const condition = weather.condition.toLowerCase();
-    const location = weather.city ? `in ${weather.city}` : '';
-    const timeContext = timeOfDay ? getTimeOfDayContext(timeOfDay) : '';
-    const activityContext = activity ? getActivityContext(activity) : '';
-    
-    // Different reasonings based on temperature, weather, time of day and activity
-    let basedOnWeather = "";
-    
-    if (temp < 10) {
-      if (condition.includes('rain')) {
-        basedOnWeather = `It's quite cold and rainy ${location} today, so I've selected warm layers that will keep you dry and stylish!`;
-      } else {
-        basedOnWeather = `Since it's pretty chilly ${location} right now, I've chosen cozy pieces that will keep you warm while looking put together.`;
-      }
-    } else if (temp < 18) {
-      if (condition.includes('cloud')) {
-        basedOnWeather = `With the cloudy weather and mild temperatures ${location}, I thought these layers would be perfect for your day!`;
-      } else {
-        basedOnWeather = `The cool but pleasant temperature ${location} calls for light layers that can be adjusted throughout your day.`;
-      }
-    } else if (temp < 25) {
-      if (condition.includes('rain')) {
-        basedOnWeather = `It's mild with some rain ${location}, so I've picked comfortable pieces with a light water-resistant layer.`;
-      } else {
-        basedOnWeather = `The lovely spring-like weather ${location} is perfect for this balanced outfit that's neither too warm nor too cool!`;
-      }
-    } else {
-      if (condition.includes('rain')) {
-        basedOnWeather = `It's warm with a chance of rain ${location}, so I chose breathable fabrics with a light layer for those surprise showers!`;
-      } else {
-        basedOnWeather = `With the warm weather ${location}, I've selected breathable, light fabrics that will keep you comfortable and stylish all day.`;
-      }
-    }
-    
-    // Combine different context elements based on what's available
-    if (timeContext && activityContext) {
-      return `${basedOnWeather} ${timeContext} ${activityContext}`;
-    } else if (timeContext) {
-      return `${basedOnWeather} ${timeContext}`;
-    } else if (activityContext) {
-      return `${basedOnWeather} ${activityContext}`;
-    }
-    
-    return basedOnWeather;
-  };
-  
-  // Get contextual text for time of day
-  const getTimeOfDayContext = (time: TimeOfDay): string => {
-    switch (time) {
-      case 'morning':
-        return "These colors and styles are perfect for starting your day with energy and confidence.";
-      case 'afternoon':
-        return "This outfit offers the right balance of comfort and style for your afternoon activities.";
-      case 'evening':
-        return "I've chosen pieces that transition well into the evening while keeping you comfortable.";
-      case 'night':
-        return "This ensemble has the right amount of style for nighttime events while being appropriate for the weather.";
-      default:
-        return "";
-    }
-  };
-  
-  // Get contextual text for activity
-  const getActivityContext = (activity: Activity): string => {
-    switch (activity) {
-      case 'work':
-        return "The professional silhouette is perfect for your workday while remaining comfortable and weather-appropriate.";
-      case 'casual':
-        return "This relaxed but put-together look is ideal for casual activities without sacrificing style.";
-      case 'sport':
-        return "I've selected performance-focused pieces that will keep you comfortable during physical activity.";
-      case 'party':
-        return "This outfit has the right festive elements while still being suitable for the current conditions.";
-      case 'date':
-        return "These pieces strike the perfect balance between impressive and comfortable for your date.";
-      case 'formal':
-        return "This ensemble offers the elegance you need for formal occasions while adapting to the weather.";
-      default:
-        return "";
-    }
-  };
-
   // Determine what to render based on provided props
   const renderContent = () => {
     // If we have a suggestion object (used in the quiz)
@@ -207,145 +119,112 @@ const OutfitSuggestion = ({
         items.find(item => item.id === itemId)
       ).filter(Boolean);
       
-      // Generate Olivia's reasoning based on weather conditions, time of day and activity
-      const oliviaReasoning = generateOliviaReasoning();
-      
       return (
-        <>
-          {oliviaReasoning && (
-            <div className="mb-4 bg-purple-900/20 backdrop-blur-sm rounded-lg p-3 border border-purple-500/30">
-              <div className="flex items-start gap-2">
-                <MessageCircle className="h-5 w-5 text-purple-300 mt-0.5 flex-shrink-0" />
-                <div>
-                  <h4 className="text-sm font-bold text-purple-200 mb-1">Olivia's Reasoning:</h4>
-                  <p className="text-sm text-white/90 italic">"{oliviaReasoning}"</p>
-                </div>
-              </div>
-            </div>
-          )}
+        <div className="space-y-5">
+          <h3 className="text-xl font-semibold mb-1">{outfit.name}</h3>
           
-          <h3 className="text-lg font-semibold mb-2">{outfit.name}</h3>
-          
-          <div className="grid grid-cols-2 gap-2 mb-4">
+          {/* Items Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-2 gap-3">
             {outfitItems.map((item, index) => item && (
-              <div key={index} className="relative rounded overflow-hidden border border-gray-200">
+              <div key={index} className="relative rounded-lg overflow-hidden border border-white/20 shadow-md group">
                 <img 
                   src={item.imageUrl} 
                   alt={item.name} 
-                  className="w-full aspect-square object-cover"
+                  className="w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-300"
                 />
-                <div className="absolute bottom-0 left-0 right-0 bg-black/60 p-1 text-xs text-white truncate">
+                <div className="absolute bottom-0 left-0 right-0 bg-black/60 p-2 text-sm text-white truncate">
                   {item.name}
                 </div>
               </div>
             ))}
           </div>
           
-          <div className="flex flex-wrap gap-1 mb-3">
+          {/* Tags */}
+          <div className="flex flex-wrap gap-1.5">
             {outfit.seasons.map(season => (
-              <span key={season} className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-800">
+              <span key={season} className="text-xs px-2 py-0.5 rounded-full bg-blue-900/40 text-blue-100 border border-blue-800/30">
                 {season}
               </span>
             ))}
             {outfit.occasions.map(occasion => (
-              <span key={occasion} className="text-xs px-2 py-0.5 rounded-full bg-purple-100 text-purple-800">
+              <span key={occasion} className="text-xs px-2 py-0.5 rounded-full bg-purple-900/40 text-purple-100 border border-purple-800/30">
                 {occasion}
               </span>
             ))}
           </div>
           
-          {weather && (
-            <div className="text-sm text-gray-600 mb-3">
-              <span className="font-medium">Weather: </span>
-              {weather.temperature}°C, {weather.condition}
-            </div>
-          )}
-          
-          {/* Original buttons */}
-          <div className="flex gap-2 mt-2">
-            {onWear && (
-              <Button 
-                size="sm" 
-                className="flex-1"
-                onClick={() => onWear(outfit.id)}
-              >
-                Wear It
-              </Button>
-            )}
-            
-            {onRefresh && (
+          {/* Like/Dislike Buttons */}
+          {onLike && onDislike && (
+            <div className="flex justify-center gap-4 pt-1">
               <Button 
                 size="sm" 
                 variant="outline" 
-                onClick={onRefresh}
+                onClick={onLike} 
+                className="flex-1 bg-white/5 border-white/20 text-white/90 hover:bg-white/10 hover:text-white group"
               >
-                Refresh
+                <ThumbsUp className="h-4 w-4 mr-2 group-hover:text-green-400" />
+                Like This
+              </Button>
+              <Button 
+                size="sm" 
+                variant="outline" 
+                onClick={onDislike} 
+                className="flex-1 bg-white/5 border-white/20 text-white/90 hover:bg-white/10 hover:text-white group"
+              >
+                <ThumbsDown className="h-4 w-4 mr-2 group-hover:text-red-400" />
+                Not For Me
+              </Button>
+            </div>
+          )}
+          
+          {/* Outfit Adjustment Buttons */}
+          <div className="grid grid-cols-2 gap-3 pt-1">
+            {onChangeTop && (
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={onChangeTop}
+                className="flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 hover:from-emerald-500/30 hover:to-teal-500/30 border border-white/10"
+              >
+                Change Top
               </Button>
             )}
             
-            {onLike && onDislike && (
-              <div className="flex gap-1">
-                <Button size="sm" variant="ghost" onClick={onLike} className="text-green-500">
-                  <Check className="h-4 w-4" />
-                </Button>
-                <Button size="sm" variant="ghost" onClick={onDislike} className="text-red-500">
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </div>
+            {onChangeBottom && (
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={onChangeBottom}
+                className="flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-500/20 to-blue-500/20 hover:from-indigo-500/30 hover:to-blue-500/30 border border-white/10"
+              >
+                Change Bottom
+              </Button>
+            )}
+            
+            {onMakeWarmer && (
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={onMakeWarmer}
+                className="flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500/20 to-red-500/20 hover:from-orange-500/30 hover:to-red-500/30 border border-white/10"
+              >
+                <Thermometer className="h-4 w-4" />
+                <span>Make It Warmer</span>
+              </Button>
+            )}
+            
+            {onWear && (
+              <Button 
+                size="sm" 
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 border-0"
+                onClick={() => onWear(outfit.id)}
+              >
+                <Check className="h-4 w-4 mr-1" />
+                Wear This Outfit
+              </Button>
             )}
           </div>
-          
-          {/* New outfit adjustment buttons */}
-          {(onRefresh || onMakeWarmer || onChangeTop || onChangeBottom) && (
-            <div className="grid grid-cols-2 gap-2 mt-3">
-              {onRefresh && (
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  onClick={onRefresh}
-                  className="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500/20 to-purple-500/20 hover:from-blue-500/30 hover:to-purple-500/30 border border-white/10"
-                >
-                  <RefreshCw className="h-4 w-4" />
-                  <span>Suggest Another</span>
-                </Button>
-              )}
-              
-              {onMakeWarmer && (
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  onClick={onMakeWarmer}
-                  className="flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500/20 to-red-500/20 hover:from-orange-500/30 hover:to-red-500/30 border border-white/10"
-                >
-                  <Thermometer className="h-4 w-4" />
-                  <span>Make It Warmer</span>
-                </Button>
-              )}
-              
-              {onChangeTop && (
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  onClick={onChangeTop}
-                  className="flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 hover:from-emerald-500/30 hover:to-teal-500/30 border border-white/10"
-                >
-                  Change Top
-                </Button>
-              )}
-              
-              {onChangeBottom && (
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  onClick={onChangeBottom}
-                  className="flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-500/20 to-blue-500/20 hover:from-indigo-500/30 hover:to-blue-500/30 border border-white/10"
-                >
-                  Change Bottom
-                </Button>
-              )}
-            </div>
-          )}
-        </>
+        </div>
       );
     }
     
@@ -363,7 +242,6 @@ const OutfitSuggestion = ({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.3 }}
-      className="text-center"
     >
       {renderContent()}
     </motion.div>
