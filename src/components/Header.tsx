@@ -66,6 +66,12 @@ const Header = ({ weather }: HeaderProps) => {
     ];
   }
 
+  // Get current page name for mobile display
+  const getCurrentPageName = () => {
+    const currentItem = navItems.find(item => item.path === location.pathname);
+    return currentItem ? currentItem.name : '';
+  };
+
   return (
     <header 
       className={cn(
@@ -76,30 +82,39 @@ const Header = ({ weather }: HeaderProps) => {
       )}
     >
       <div className="container mx-auto px-3 md:px-6 flex items-center justify-between">
-        {/* Empty div to maintain layout balance when page name is removed */}
-        <div className="w-8"></div>
+        {/* Mobile: Current page name */}
+        {isMobile && (
+          <div className="text-white font-medium">{getCurrentPageName()}</div>
+        )}
 
-        <DesktopNavigation 
-          navItems={navItems} 
-          currentPath={location.pathname} 
-          isScrolled={isScrolled}
-        />
+        {/* Desktop Navigation */}
+        {!isMobile && (
+          <DesktopNavigation 
+            navItems={navItems} 
+            currentPath={location.pathname} 
+            isScrolled={isScrolled}
+          />
+        )}
 
         <div className="flex items-center">
           {!isMobile && <WeatherDisplay weather={weather} isScrolled={isScrolled} />}
+          
           <UserMenu isScrolled={isScrolled} />
 
-          <Button
-            variant="ghost"
-            size="icon"
-            className={cn(
-              "md:hidden ml-2",
-              isScrolled ? "text-white hover:text-white/80" : "text-white hover:bg-white/10"
-            )}
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            <Menu className="h-5 w-5" />
-          </Button>
+          {/* Mobile: Menu button */}
+          {isMobile && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className={cn(
+                "ml-2",
+                isScrolled ? "text-white hover:text-white/80" : "text-white hover:bg-white/10"
+              )}
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
+          )}
         </div>
 
         <MobileMenu 
