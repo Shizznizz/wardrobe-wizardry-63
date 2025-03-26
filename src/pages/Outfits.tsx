@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -27,7 +28,8 @@ const Outfits = () => {
     handleAssistantAction,
     handleRefreshOutfit,
     handleShowTips,
-    setShowAssistant
+    setShowAssistant,
+    setIsBuilderOpen
   } = useOutfitState(sampleOutfits, sampleClothingItems);
   
   const containerVariants = {
