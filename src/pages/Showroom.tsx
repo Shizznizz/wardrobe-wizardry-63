@@ -1,12 +1,12 @@
 
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import Header from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Sparkle, Sparkles, Star, TrendingUp, Award, Calendar, Users } from 'lucide-react';
+import { Sparkle, Sparkles, Star, TrendingUp, Award, Calendar, Users, MessageCircle } from 'lucide-react';
 import OliviaBloomAssistant from '@/components/OliviaBloomAssistant';
 import OutfitSlider from '@/components/OutfitSlider';
 import { sampleClothingItems, sampleOutfits, sampleUserPreferences } from '@/lib/wardrobeData';
@@ -37,6 +37,17 @@ const fashionTips = [
 const Showroom = () => {
   const [showWelcome, setShowWelcome] = useState(true);
   const [currentTipIndex, setCurrentTipIndex] = useState(0);
+  const [showAssistant, setShowAssistant] = useState(false);
+  
+  const buttonVariants = {
+    rest: { scale: 1 },
+    hover: { 
+      scale: 1.05, 
+      boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+      transition: { duration: 0.2 }
+    },
+    tap: { scale: 0.95 }
+  };
   
   useEffect(() => {
     // Rotate tips every 15 seconds
@@ -48,6 +59,14 @@ const Showroom = () => {
   }, []);
   
   const currentTip = fashionTips[currentTipIndex];
+
+  const handleShowAssistant = () => {
+    setShowAssistant(true);
+  };
+
+  const handleAssistantAction = () => {
+    setShowAssistant(false);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white">
@@ -67,12 +86,28 @@ const Showroom = () => {
                 Discover your unique style story, curated by Olivia Bloom, your personal style advisor.
               </p>
               <div className="flex flex-wrap gap-4">
-                <Button size="lg" className="bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90">
-                  <Star className="mr-2 h-4 w-4" /> Create New Outfit
-                </Button>
-                <Button size="lg" variant="outline" className="border-purple-400/30 text-white hover:bg-white/10">
-                  <TrendingUp className="mr-2 h-4 w-4" /> Browse Trends
-                </Button>
+                <motion.div
+                  variants={buttonVariants}
+                  initial="rest"
+                  whileHover="hover"
+                  whileTap="tap"
+                  className="w-full sm:w-auto"
+                >
+                  <Button size="lg" className="bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90 w-full sm:w-auto shadow-lg">
+                    <Star className="mr-2 h-4 w-4" /> Create New Outfit
+                  </Button>
+                </motion.div>
+                <motion.div
+                  variants={buttonVariants}
+                  initial="rest"
+                  whileHover="hover"
+                  whileTap="tap"
+                  className="w-full sm:w-auto"
+                >
+                  <Button size="lg" variant="outline" className="border-purple-400/30 text-white hover:bg-white/10 w-full sm:w-auto shadow-md">
+                    <TrendingUp className="mr-2 h-4 w-4" /> Browse Trends
+                  </Button>
+                </motion.div>
               </div>
             </motion.div>
             
@@ -101,7 +136,31 @@ const Showroom = () => {
                         <p className="text-white/70">{currentTip.title}</p>
                       </div>
                     </div>
-                    <p className="text-white/90 italic">"{currentTip.content}"</p>
+                    <AnimatePresence mode="wait">
+                      <motion.p 
+                        key={currentTipIndex}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="text-white/90 italic mb-4"
+                      >
+                        "{currentTip.content}"
+                      </motion.p>
+                    </AnimatePresence>
+                    
+                    <div className="flex justify-end">
+                      {!showAssistant && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={handleShowAssistant}
+                          className="border-purple-400/30 text-white hover:bg-white/10"
+                        >
+                          <MessageCircle className="mr-2 h-4 w-4" />
+                          Ask Olivia
+                        </Button>
+                      )}
+                    </div>
                   </CardContent>
                 </Card>
               </div>
@@ -154,6 +213,17 @@ const Showroom = () => {
           onAction={() => setShowWelcome(false)}
           position="bottom-right"
           autoClose={false}
+        />
+      )}
+      
+      {showAssistant && (
+        <OliviaBloomAssistant
+          message={currentTip.content}
+          type="tip"
+          timing="medium"
+          actionText="Got it!"
+          onAction={handleAssistantAction}
+          position="bottom-right"
         />
       )}
     </div>
