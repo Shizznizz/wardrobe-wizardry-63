@@ -168,7 +168,7 @@ const Index = () => {
             variants={itemVariants} 
             className={`flex flex-col items-center justify-center text-center space-y-4 relative ${isMobile ? 'min-h-[60vh]' : 'min-h-[65vh]'}`}
           >
-            <div className={`${isMobile ? 'mt-8 mb-10' : '-mt-16'} relative inline-block`}>
+            <div className={`${isMobile ? 'mt-8 mb-3' : '-mt-16'} relative inline-block`}>
               <motion.div 
                 className="absolute -inset-6 rounded-3xl bg-gradient-to-r from-purple-600/60 via-blue-500/60 to-purple-600/60 opacity-70 blur-xl"
                 animate={{ 
@@ -193,14 +193,14 @@ const Index = () => {
                 filter: ["brightness(1)", "brightness(1.15)", "brightness(1)"] 
               }}
               transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
-              className="w-28 h-1 bg-gradient-to-r from-blue-500/80 via-purple-500/80 to-pink-500/80 rounded-full mb-2"
+              className={`w-28 h-1 bg-gradient-to-r from-blue-500/80 via-purple-500/80 to-pink-500/80 rounded-full ${isMobile ? 'mb-0' : 'mb-2'}`}
             />
             
-            <p className={`${isMobile ? 'text-base mt-6 px-5 py-6' : 'text-xl mt-16'} text-blue-100/90 max-w-2xl backdrop-blur-sm py-5 px-7 rounded-xl border border-white/10 shadow-xl neo-blur leading-relaxed`}>
+            <p className={`${isMobile ? 'text-base mt-12 px-5 py-6' : 'text-xl mt-16'} text-blue-100/90 max-w-2xl backdrop-blur-sm py-5 px-7 rounded-xl border border-white/10 shadow-xl neo-blur leading-relaxed`}>
               Smarter styling starts here. AI-curated outfits that fit your style, your body, and your weather.
             </p>
             
-            <div className={`flex ${isMobile ? 'flex-col mt-16 w-full space-y-4' : 'flex-wrap mt-20 space-x-5 justify-center'}`}>
+            <div className={`flex ${isMobile ? 'flex-col mt-10 w-full space-y-4' : 'flex-wrap mt-20 space-x-5 justify-center'}`}>
               <motion.div
                 whileHover={{ 
                   scale: 1.03,
@@ -211,7 +211,7 @@ const Index = () => {
                 <Button 
                   size="lg" 
                   onClick={handleWardrobeButtonClick}
-                  className={`group relative overflow-hidden bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded-xl text-base px-4 ${isMobile ? 'py-4 w-full font-medium' : 'py-4 w-full font-semibold'} h-auto transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-purple-500/30 border border-blue-500/20 btn-hover-glow`}
+                  className={`group relative overflow-hidden bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded-xl text-base px-4 ${isMobile ? 'py-3 w-full font-medium' : 'py-4 w-full font-semibold'} h-auto transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-purple-500/30 border border-blue-500/20 btn-hover-glow`}
                 >
                   <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-blue-400/10 to-purple-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   <span className="relative flex items-center justify-center gap-2 text-white">
@@ -241,7 +241,7 @@ const Index = () => {
                 <PreferencesModal 
                   preferences={preferences} 
                   onSave={handleUpdatePreferences} 
-                  buttonClassName={`${isMobile ? 'text-base w-full py-4 px-4 font-medium' : 'text-base w-full py-4 px-5 font-semibold'} h-auto bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-pink-500/30 min-w-[120px] border border-pink-500/20 btn-hover-shine text-white`}
+                  buttonClassName={`${isMobile ? 'text-base w-full py-3 px-4 font-medium' : 'text-base w-full py-4 px-5 font-semibold'} h-auto bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-pink-500/30 min-w-[120px] border border-pink-500/20 btn-hover-shine text-white`}
                 />
               </motion.div>
             </div>

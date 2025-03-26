@@ -211,8 +211,25 @@
   background: linear-gradient(to right, transparent, rgba(168, 85, 247, 0.5), transparent);
 }
 
-/* Mobile specific improvements */
+/* Mobile specific spacing improvements */
 @media (max-width: 768px) {
+  .mobile-title-spacing {
+    margin-bottom: 0.5rem !important;
+  }
+  
+  .mobile-content-spacing {
+    margin-top: 3rem !important;
+  }
+  
+  .mobile-button-compact {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+  }
+  
+  .avatar-content-gap {
+    margin-top: 2.5rem !important;
+  }
+  
   .touch-target {
     min-height: 44px;
     min-width: 44px;
@@ -231,14 +248,12 @@
     margin-bottom: 1.25rem;
   }
   
-  /* Increase touch targets on mobile */
   button, 
   [role="button"],
   a {
     touch-action: manipulation;
   }
   
-  /* Adjust button spacing for mobile */
   .btn-mobile {
     padding-left: 0.75rem !important;
     padding-right: 0.75rem !important;
@@ -246,7 +261,6 @@
     padding-bottom: 0.75rem !important;
   }
   
-  /* Add more spacing between sections on mobile */
   .mobile-section-spacing {
     margin-top: 2.5rem !important;
     margin-bottom: 2.5rem !important;
