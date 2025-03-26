@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -274,7 +273,6 @@ const Wardrobe = () => {
         />
       )}
       
-      {/* Add OliviaTips component to the top-right corner */}
       <OliviaTips position="top-right" />
       
       <OliviaBloomAdvisor 

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageCircle, X, Sparkles, ArrowRight } from 'lucide-react';
@@ -37,10 +36,10 @@ const OliviaTips = ({ position = 'top-right' }: OliviaTipsProps) => {
 
   const getPositionClasses = () => {
     switch(position) {
-      case 'top-left': return 'top-6 left-6';
+      case 'top-left': return 'top-24 left-6';
       case 'bottom-right': return 'bottom-6 right-6';
       case 'bottom-left': return 'bottom-6 left-6';
-      default: return 'top-6 right-6';
+      default: return 'top-24 right-6';
     }
   };
 
@@ -68,7 +67,6 @@ const OliviaTips = ({ position = 'top-right' }: OliviaTipsProps) => {
 
   const handleAvatarClick = () => {
     if (hasCompletedTips) {
-      // Future implementation for additional tips or advice
       return;
     }
     setShowTips(true);
