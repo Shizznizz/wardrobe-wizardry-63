@@ -60,7 +60,7 @@ const Header = ({ weather }: HeaderProps) => {
       ...navItems,
       { name: 'Wardrobe', path: '/wardrobe' },
       { name: 'Outfits', path: '/outfits' },
-      { name: 'Showcase', path: '/try-on' },
+      { name: 'Showroom', path: '/showroom' },
       { name: 'New Clothes', path: '/new-clothes' },
       { name: 'Settings', path: '/settings' },
     ];

@@ -34,7 +34,7 @@ const fashionTips = [
   }
 ];
 
-const Showcase = () => {
+const Showroom = () => {
   const [showWelcome, setShowWelcome] = useState(true);
   const [currentTipIndex, setCurrentTipIndex] = useState(0);
   
@@ -61,7 +61,7 @@ const Showcase = () => {
               className="lg:w-1/2"
             >
               <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
-                Your Fashion Showcase
+                Your Fashion Showroom
               </h1>
               <p className="text-lg text-white/80 mb-6">
                 Discover your unique style story, curated by Olivia Bloom, your personal style advisor.
@@ -147,7 +147,7 @@ const Showcase = () => {
       
       {showWelcome && (
         <OliviaBloomAssistant
-          message="Welcome to your Fashion Showcase! I've curated some seasonal looks and trending styles just for you. Browse through the collections and I'll provide personalized advice based on your style profile."
+          message="Welcome to your Fashion Showroom! I've curated some seasonal looks and trending styles just for you. Browse through the collections and I'll provide personalized advice based on your style profile."
           type="welcome"
           timing="long"
           actionText="Thanks, Olivia!"
@@ -160,4 +160,4 @@ const Showcase = () => {
   );
 };
 
-export default Showcase;
+export default Showroom;

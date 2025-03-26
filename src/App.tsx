@@ -15,7 +15,7 @@ import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import VirtualTryOn from "./pages/VirtualTryOn";
 import NewClothes from "./pages/NewClothes";
-import Showcase from "./pages/Showcase";
+import Showroom from "./pages/Showroom";
 
 const queryClient = new QueryClient();
 
@@ -45,7 +45,7 @@ const AppRoutes = () => {
         <Route path="/outfits" element={<ProtectedRoute><Outfits /></ProtectedRoute>} />
         <Route path="/try-on" element={<ProtectedRoute><VirtualTryOn /></ProtectedRoute>} />
         <Route path="/new-clothes" element={<ProtectedRoute><NewClothes /></ProtectedRoute>} />
-        <Route path="/showcase" element={<ProtectedRoute><Showcase /></ProtectedRoute>} />
+        <Route path="/showroom" element={<ProtectedRoute><Showroom /></ProtectedRoute>} />
         <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
