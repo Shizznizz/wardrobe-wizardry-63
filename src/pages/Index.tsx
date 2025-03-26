@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -168,7 +169,7 @@ const Index = () => {
             variants={itemVariants} 
             className={`flex flex-col items-center justify-center text-center space-y-4 relative ${isMobile ? 'min-h-[60vh]' : 'min-h-[65vh]'}`}
           >
-            <div className={`${isMobile ? 'mt-8 mb-3' : '-mt-16'} relative inline-block`}>
+            <div className={`${isMobile ? 'mt-8 mb-1' : '-mt-16'} relative inline-block`}>
               <motion.div 
                 className="absolute -inset-6 rounded-3xl bg-gradient-to-r from-purple-600/60 via-blue-500/60 to-purple-600/60 opacity-70 blur-xl"
                 animate={{ 
@@ -193,14 +194,14 @@ const Index = () => {
                 filter: ["brightness(1)", "brightness(1.15)", "brightness(1)"] 
               }}
               transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
-              className={`w-28 h-1 bg-gradient-to-r from-blue-500/80 via-purple-500/80 to-pink-500/80 rounded-full ${isMobile ? 'mb-0' : 'mb-2'}`}
+              className={`w-28 h-1 bg-gradient-to-r from-blue-500/80 via-purple-500/80 to-pink-500/80 rounded-full ${isMobile ? 'mb-0' : 'mb-8'}`}
             />
             
-            <p className={`${isMobile ? 'text-base mt-12 px-5 py-6' : 'text-xl mt-16'} text-blue-100/90 max-w-2xl backdrop-blur-sm py-5 px-7 rounded-xl border border-white/10 shadow-xl neo-blur leading-relaxed`}>
+            <p className={`${isMobile ? 'text-base mt-12 px-5 py-6' : 'text-xl mt-8'} text-blue-100/90 max-w-2xl backdrop-blur-sm py-5 px-7 rounded-xl border border-white/10 shadow-xl neo-blur leading-relaxed`}>
               Smarter styling starts here. AI-curated outfits that fit your style, your body, and your weather.
             </p>
             
-            <div className={`flex ${isMobile ? 'flex-col mt-10 w-full space-y-4' : 'flex-wrap mt-20 space-x-5 justify-center'}`}>
+            <div className={`flex ${isMobile ? 'flex-col mt-10 w-full space-y-4' : 'flex-wrap mt-12 space-x-5 justify-center'}`}>
               <motion.div
                 whileHover={{ 
                   scale: 1.03,
