@@ -85,7 +85,7 @@ const Outfits = () => {
         </motion.div>
       </main>
       
-      {/* Add Olivia's Tips in the bottom-right corner */}
+      {/* Olivia's Tips with position matching Wardrobe page */}
       <OliviaTips position="bottom-right" />
       
       {showAssistant && (
