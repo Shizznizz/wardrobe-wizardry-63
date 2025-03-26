@@ -201,20 +201,20 @@ const Index = () => {
               Smarter styling starts here. AI-curated outfits that fit your style, your body, and your weather.
             </p>
             
-            <div className={`flex ${isMobile ? 'flex-col mt-12 w-full space-y-4' : 'flex-wrap mt-16 space-x-6'} justify-center`}>
+            <div className={`flex ${isMobile ? 'flex-col mt-10 w-full space-y-3' : 'flex-wrap mt-14 space-x-5 justify-center'}`}>
               <motion.div
                 whileHover={{ 
-                  scale: 1.05,
+                  scale: 1.03,
                   transition: { duration: 0.2 }
                 }}
-                className={`${isMobile ? 'w-full' : 'min-w-[240px]'}`}
+                className={`${isMobile ? 'w-full' : 'min-w-[220px]'}`}
               >
                 <Button 
                   size="lg" 
                   onClick={handleWardrobeButtonClick}
-                  className={`group relative overflow-hidden bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl text-lg px-6 py-6 h-auto transition-all shadow-xl hover:shadow-purple-500/30 ${isMobile ? 'w-full text-base font-medium' : 'w-full font-semibold'} border border-blue-500/20`}
+                  className={`group relative overflow-hidden bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded-xl text-base px-5 py-5 h-auto transition-all duration-300 shadow-md hover:shadow-xl hover:shadow-purple-500/20 ${isMobile ? 'w-full font-medium' : 'w-full font-semibold'} border border-blue-500/20`}
                 >
-                  <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-blue-400/20 to-purple-400/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-blue-400/10 to-purple-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   <span className="relative flex items-center justify-center gap-2">
                     Start Building My Wardrobe
                     <motion.div
@@ -232,11 +232,17 @@ const Index = () => {
                 </Button>
               </motion.div>
               
-              <motion.div whileHover={{ scale: 1.05 }} className={`${isMobile ? 'w-full' : ''}`}>
+              <motion.div 
+                whileHover={{ 
+                  scale: 1.03,
+                  transition: { duration: 0.2 }
+                }} 
+                className={`${isMobile ? 'w-full' : ''}`}
+              >
                 <PreferencesModal 
                   preferences={preferences} 
                   onSave={handleUpdatePreferences} 
-                  buttonClassName={`${isMobile ? 'text-base w-full py-6 font-medium' : 'text-lg w-full py-6 px-6 font-semibold'} h-auto bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 rounded-xl shadow-xl hover:shadow-pink-500/30 min-w-[120px] border border-pink-500/20`}
+                  buttonClassName={`${isMobile ? 'text-base w-full py-5 font-medium' : 'text-base w-full py-5 px-5 font-semibold'} h-auto bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 rounded-xl transition-all duration-300 shadow-md hover:shadow-xl hover:shadow-pink-500/20 min-w-[120px] border border-pink-500/20`}
                 />
               </motion.div>
             </div>
