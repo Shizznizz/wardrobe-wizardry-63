@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -197,7 +196,7 @@ const Index = () => {
               className={`w-28 h-1 bg-gradient-to-r from-blue-500/80 via-purple-500/80 to-pink-500/80 rounded-full ${isMobile ? 'mb-0' : 'mb-8'}`}
             />
             
-            <p className={`${isMobile ? 'text-base mt-12 px-5 py-6' : 'text-xl mt-8'} text-blue-100/90 max-w-2xl backdrop-blur-sm py-5 px-7 rounded-xl border border-white/10 shadow-xl neo-blur leading-relaxed`}>
+            <p className={`${isMobile ? 'text-base mt-48 px-5 py-6' : 'text-xl mt-8'} text-blue-100/90 max-w-2xl backdrop-blur-sm py-5 px-7 rounded-xl border border-white/10 shadow-xl neo-blur leading-relaxed`}>
               Smarter styling starts here. AI-curated outfits that fit your style, your body, and your weather.
             </p>
             
