@@ -8,7 +8,9 @@ import { ClothingType } from '@/lib/types';
 import { cn } from '@/lib/utils';
 
 // Category icons
-import { Shirt, Pants, ShoppingBag, Footprints, Wind, Glasses } from 'lucide-react';
+import { Shirt, ShoppingBag, Footprints, Wind, Glasses } from 'lucide-react';
+// Import PantsIcon from our icons file where we'll define it
+import { TrousersIcon } from '@/components/ui/icons';
 
 interface CategoryModalProps {
   open: boolean;
@@ -26,7 +28,7 @@ interface CategoryItem {
 
 const categories: CategoryItem[] = [
   { type: 'shirt', label: 'Shirts', icon: <Shirt className="h-8 w-8" />, color: 'from-blue-500 to-indigo-600' },
-  { type: 'pants', label: 'Pants', icon: <Pants className="h-8 w-8" />, color: 'from-purple-500 to-indigo-600' },
+  { type: 'pants', label: 'Pants', icon: <TrousersIcon className="h-8 w-8" />, color: 'from-purple-500 to-indigo-600' },
   { type: 'dress', label: 'Dresses', icon: <Wind className="h-8 w-8" />, color: 'from-pink-500 to-purple-600' },
   { type: 'shoes', label: 'Shoes', icon: <Footprints className="h-8 w-8" />, color: 'from-amber-500 to-orange-600' },
   { type: 'accessories', label: 'Accessories', icon: <Glasses className="h-8 w-8" />, color: 'from-teal-500 to-green-600' },
