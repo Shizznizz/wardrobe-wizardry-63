@@ -52,7 +52,7 @@ const Outfits = () => {
           variants={containerVariants}
         >
           <div className="flex flex-col lg:flex-row items-center gap-6 mb-12">
-            <OutfitHero onCreateOutfit={handleCreateOutfit} />
+            <OutfitHero />
             
             <StyleSituation />
           </div>
