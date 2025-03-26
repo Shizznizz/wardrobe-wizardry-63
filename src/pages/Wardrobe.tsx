@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -171,7 +172,7 @@ const Wardrobe = () => {
           </div>
           
           <motion.div id="upload-section" variants={itemVariants} className="flex flex-col">
-            <div className="flex flex-wrap justify-between items-center mb-6">
+            <div className="flex flex-wrap justify-between items-center mb-10">
               <div className="relative">
                 <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
                   {getPersonalizedGreeting()}
@@ -183,7 +184,7 @@ const Wardrobe = () => {
               </div>
             </div>
             
-            <div className="flex justify-between items-center mt-4 mb-6 flex-wrap gap-3">
+            <div className="flex justify-between items-center mt-4 mb-10 flex-wrap gap-3">
               <div className="flex items-center gap-2 bg-slate-900/50 p-2 rounded-full backdrop-blur-sm border border-white/5 shadow-md">
                 <Badge variant="gradient" className="mr-1">
                   <ArrowUpDown className="h-3.5 w-3.5 mr-1 text-white" />
@@ -235,7 +236,7 @@ const Wardrobe = () => {
           </motion.div>
           
           {items.length <= 2 ? (
-            <motion.div variants={itemVariants} className="mb-6">
+            <motion.div variants={itemVariants} className="mb-10">
               <Card className="bg-gradient-to-r from-indigo-950/60 to-purple-950/60 border border-indigo-500/20">
                 <CardContent className="p-6 flex flex-col md:flex-row gap-4 items-center">
                   <div className="w-16 h-16 rounded-full bg-purple-600/20 flex items-center justify-center">
@@ -251,7 +252,7 @@ const Wardrobe = () => {
             </motion.div>
           ) : null}
           
-          <motion.div variants={itemVariants} className="glass-dark p-6 rounded-xl border border-white/10">
+          <motion.div variants={itemVariants} className="glass-dark p-6 rounded-xl border border-white/10 mt-6">
             <WardrobeGrid 
               items={sortedItems} 
               onToggleFavorite={handleToggleFavorite} 
