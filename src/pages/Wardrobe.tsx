@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -153,7 +154,7 @@ const Wardrobe = () => {
               animate={{ opacity: 1, y: 0 }}
               className="lg:w-1/2"
             >
-              <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
+              <h1 className="text-4xl md:text-5xl font-bold mb-10 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
                 Your Digital Wardrobe
               </h1>
               <p className="text-lg text-white/80 mb-6">
