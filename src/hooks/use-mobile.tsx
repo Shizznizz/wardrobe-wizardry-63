@@ -26,7 +26,9 @@ export function useIsMobile() {
       timeoutId = setTimeout(handleResize, 100);
     };
 
+    // Add listeners for both resize and orientation change for mobile devices
     window.addEventListener('resize', debouncedHandleResize)
+    window.addEventListener('orientationchange', handleResize)
     
     // Set initial value
     handleResize()
@@ -34,6 +36,7 @@ export function useIsMobile() {
     // Clean up
     return () => {
       window.removeEventListener('resize', debouncedHandleResize)
+      window.removeEventListener('orientationchange', handleResize)
       clearTimeout(timeoutId);
     }
   }, [])

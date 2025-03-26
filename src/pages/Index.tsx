@@ -79,7 +79,7 @@ const Index = () => {
       <BackgroundShapes />
       <Header />
       
-      <div className={`fixed ${isMobile ? 'right-4 top-48 z-30' : 'top-52 right-6'} z-50`}>
+      <div className={`fixed ${isMobile ? 'right-5 top-48 z-30' : 'top-52 right-6'} z-50`}>
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -120,15 +120,15 @@ const Index = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className={`absolute ${isMobile ? 'right-0 top-20 max-w-[250px]' : 'top-24 right-0 z-20 w-68 max-w-280'} scale-85 origin-top-right`}
+            className={`absolute ${isMobile ? 'right-0 top-20 max-w-[280px]' : 'top-24 right-0 z-20 w-68 max-w-280'} scale-85 origin-top-right`}
           >
-            <div className="olivia-bubble relative p-4 rounded-xl bg-gradient-to-br from-purple-600/90 to-pink-600/90 text-white backdrop-blur-sm shadow-lg border border-white/20 curved-pointer olivia-glow">
+            <div className="olivia-bubble relative p-5 rounded-xl bg-gradient-to-br from-purple-600/90 to-pink-600/90 text-white backdrop-blur-sm shadow-lg border border-white/20 curved-pointer olivia-glow">
               <button 
                 onClick={() => setExpandOliviaMessage(false)} 
-                className="absolute top-2 right-2 p-1 hover:bg-white/10 rounded-full transition-colors"
+                className="absolute top-2 right-2 p-1.5 hover:bg-white/10 rounded-full transition-colors"
               >
                 <motion.div whileHover={{ rotate: 90 }} transition={{ duration: 0.2 }}>
-                  <ArrowRight className="h-4 w-4 text-white/80" />
+                  <ArrowRight className="h-5 w-5 text-white/80" />
                 </motion.div>
               </button>
               <div className="flex items-center mb-3">
@@ -140,7 +140,7 @@ const Index = () => {
                   Style Advisor
                 </span>
               </div>
-              <p className="text-white/90 text-xs mb-3">
+              <p className="text-white/90 text-xs mb-4">
                 Welcome to Future of Fashion! I'm Olivia, your personal style advisor. I'll help you create outfits that match your style and the weather. What would you like to explore today?
               </p>
               <Button 
@@ -148,7 +148,7 @@ const Index = () => {
                   setShowOliviaWelcome(false);
                   setExpandOliviaMessage(false);
                 }}
-                className="text-xs px-3 py-1 h-auto bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:opacity-90"
+                className="text-xs px-4 py-1.5 h-auto bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:opacity-90"
                 size="sm"
               >
                 Thanks, Olivia!
@@ -158,7 +158,7 @@ const Index = () => {
         )}
       </div>
       
-      <main className={`container mx-auto px-4 ${isMobile ? 'pt-20' : 'pt-40'} pb-16 relative z-10`}>
+      <main className={`container mx-auto px-4 ${isMobile ? 'pt-24' : 'pt-40'} pb-16 relative z-10`}>
         <motion.div 
           className="space-y-12 md:space-y-24"
           initial="hidden"
@@ -167,9 +167,9 @@ const Index = () => {
         >
           <motion.section 
             variants={itemVariants} 
-            className={`flex flex-col items-center justify-center text-center space-y-4 relative ${isMobile ? 'min-h-[55vh]' : 'min-h-[65vh]'}`}
+            className={`flex flex-col items-center justify-center text-center space-y-4 relative ${isMobile ? 'min-h-[60vh]' : 'min-h-[65vh]'}`}
           >
-            <div className={`${isMobile ? 'mt-8 mb-24' : '-mt-16'} relative inline-block`}>
+            <div className={`${isMobile ? 'mt-8 mb-20' : '-mt-16'} relative inline-block`}>
               <motion.div 
                 className="absolute -inset-6 rounded-3xl bg-gradient-to-r from-purple-600/60 via-blue-500/60 to-purple-600/60 opacity-70 blur-xl"
                 animate={{ 
@@ -197,11 +197,11 @@ const Index = () => {
               className="w-28 h-1 bg-gradient-to-r from-blue-500/80 via-purple-500/80 to-pink-500/80 rounded-full mb-6"
             />
             
-            <p className={`${isMobile ? 'text-base mt-6' : 'text-xl mt-14'} text-blue-100/90 max-w-2xl backdrop-blur-sm py-5 px-7 rounded-xl border border-white/10 shadow-xl neo-blur leading-relaxed`}>
+            <p className={`${isMobile ? 'text-base mt-8 px-5 py-6' : 'text-xl mt-14'} text-blue-100/90 max-w-2xl backdrop-blur-sm py-5 px-7 rounded-xl border border-white/10 shadow-xl neo-blur leading-relaxed`}>
               Smarter styling starts here. AI-curated outfits that fit your style, your body, and your weather.
             </p>
             
-            <div className={`flex ${isMobile ? 'flex-col mt-10 w-full space-y-3' : 'flex-wrap mt-14 space-x-5 justify-center'}`}>
+            <div className={`flex ${isMobile ? 'flex-col mt-12 w-full space-y-4' : 'flex-wrap mt-14 space-x-5 justify-center'}`}>
               <motion.div
                 whileHover={{ 
                   scale: 1.03,
@@ -212,7 +212,7 @@ const Index = () => {
                 <Button 
                   size="lg" 
                   onClick={handleWardrobeButtonClick}
-                  className={`group relative overflow-hidden bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded-xl text-base px-5 py-5 h-auto transition-all duration-300 shadow-md hover:shadow-xl hover:shadow-purple-500/20 ${isMobile ? 'w-full font-medium' : 'w-full font-semibold'} border border-blue-500/20`}
+                  className={`group relative overflow-hidden bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded-xl text-base px-5 ${isMobile ? 'py-6 w-full font-medium' : 'py-5 w-full font-semibold'} h-auto transition-all duration-300 shadow-md hover:shadow-xl hover:shadow-purple-500/20 border border-blue-500/20`}
                 >
                   <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-blue-400/10 to-purple-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   <span className="relative flex items-center justify-center gap-2">
@@ -242,13 +242,13 @@ const Index = () => {
                 <PreferencesModal 
                   preferences={preferences} 
                   onSave={handleUpdatePreferences} 
-                  buttonClassName={`${isMobile ? 'text-base w-full py-5 font-medium' : 'text-base w-full py-5 px-5 font-semibold'} h-auto bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 rounded-xl transition-all duration-300 shadow-md hover:shadow-xl hover:shadow-pink-500/20 min-w-[120px] border border-pink-500/20`}
+                  buttonClassName={`${isMobile ? 'text-base w-full py-6 font-medium' : 'text-base w-full py-5 px-5 font-semibold'} h-auto bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 rounded-xl transition-all duration-300 shadow-md hover:shadow-xl hover:shadow-pink-500/20 min-w-[120px] border border-pink-500/20`}
                 />
               </motion.div>
             </div>
           </motion.section>
           
-          <motion.section variants={itemVariants} className="mt-12 relative">
+          <motion.section variants={itemVariants} className="mt-16 relative">
             <StyleDiscoveryQuiz />
           </motion.section>
           

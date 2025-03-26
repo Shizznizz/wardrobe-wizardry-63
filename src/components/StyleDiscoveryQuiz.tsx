@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Coffee, Sparkles, Umbrella, Sunset, Moon, Check, ArrowRight, X } from 'lucide-react';
@@ -128,7 +129,7 @@ const StyleDiscoveryQuiz = ({ onClose }: StyleDiscoveryQuizProps) => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="rounded-xl overflow-hidden shadow-lg border border-purple-500/20 bg-gradient-to-br from-slate-900/80 to-purple-900/40 backdrop-blur-md p-6"
+          className="rounded-xl overflow-hidden shadow-lg border border-purple-500/20 bg-gradient-to-br from-slate-900/80 to-purple-900/40 backdrop-blur-md p-6 md:p-8"
         >
           <div className="flex flex-col md:flex-row items-center gap-6">
             <Avatar className="h-16 w-16 md:h-20 md:w-20 border-2 border-pink-400 shadow-md">
@@ -140,13 +141,13 @@ const StyleDiscoveryQuiz = ({ onClose }: StyleDiscoveryQuizProps) => {
               <h3 className="text-xl md:text-2xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-purple-400">
                 Style Discovery Quiz
               </h3>
-              <p className="text-sm md:text-base text-blue-100 mb-4">
+              <p className="text-sm md:text-base text-blue-100 mb-5">
                 Answer a few fun questions and I'll suggest the perfect outfit for your day!
               </p>
               
               <Button 
                 onClick={toggleQuiz}
-                className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white px-6 py-2 rounded-lg shadow-md hover:shadow-pink-500/20"
+                className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white px-6 py-3 rounded-lg shadow-md hover:shadow-pink-500/20 min-h-[44px]"
               >
                 <Sparkles className="mr-2 h-4 w-4" />
                 Take the Quiz
@@ -161,7 +162,7 @@ const StyleDiscoveryQuiz = ({ onClose }: StyleDiscoveryQuizProps) => {
           exit={{ opacity: 0, scale: 0.95 }}
           className="rounded-xl overflow-hidden shadow-lg border border-purple-500/20 bg-gradient-to-br from-slate-900/80 to-purple-900/40 backdrop-blur-md"
         >
-          <div className="flex justify-between items-center p-4 border-b border-purple-500/20">
+          <div className="flex justify-between items-center p-4 md:p-5 border-b border-purple-500/20">
             <div className="flex items-center gap-3">
               <Avatar className="h-10 w-10 border border-pink-400/50">
                 <AvatarImage src="/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png" alt="Olivia Bloom" />
@@ -187,13 +188,13 @@ const StyleDiscoveryQuiz = ({ onClose }: StyleDiscoveryQuizProps) => {
               variant="ghost" 
               size="icon" 
               onClick={toggleQuiz}
-              className="text-white/70 hover:text-white"
+              className="text-white/70 hover:text-white min-h-[44px] min-w-[44px]"
             >
-              <X className="h-4 w-4" />
+              <X className="h-5 w-5" />
             </Button>
           </div>
           
-          <div className="p-6">
+          <div className="p-5 md:p-6">
             <AnimatePresence mode="wait">
               {!isCompleted ? (
                 <QuizQuestion 

@@ -179,3 +179,31 @@
   opacity: 1;
   transform: rotate(30deg) translate(100%, -100%);
 }
+
+/* Mobile specific improvements */
+@media (max-width: 768px) {
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  .mobile-padding {
+    padding: 1rem !important;
+  }
+  
+  .mobile-text {
+    font-size: 1rem !important;
+    line-height: 1.5 !important;
+  }
+  
+  .mobile-spacing > * {
+    margin-bottom: 1.25rem;
+  }
+  
+  /* Increase touch targets on mobile */
+  button, 
+  [role="button"],
+  a {
+    touch-action: manipulation;
+  }
+}
