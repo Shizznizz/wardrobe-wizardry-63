@@ -120,7 +120,7 @@ export const sampleOutfits: Outfit[] = [
   {
     id: '1',
     name: 'Casual Weekend',
-    items: ['1', '2', '6'],
+    items: ['1', '2', '6'], // These should be IDs of clothing items
     occasions: ['casual', 'weekend', 'shopping', 'brunch'],
     seasons: ['spring', 'summer', 'autumn'],
     favorite: true,

@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Outfit } from '@/lib/types';
+import { Outfit, ClothingItem } from '@/lib/types';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Heart, Edit, Trash2, Sparkles } from 'lucide-react';
@@ -13,10 +13,16 @@ interface OutfitGridProps {
   onEdit: (outfit: Outfit) => void;
   onDelete: (id: string) => void;
   onToggleFavorite: (id: string) => void;
+  clothingItems: ClothingItem[]; // Add this prop to access all clothing items
 }
 
-const OutfitGrid = ({ outfits, onEdit, onDelete, onToggleFavorite }: OutfitGridProps) => {
+const OutfitGrid = ({ outfits, onEdit, onDelete, onToggleFavorite, clothingItems }: OutfitGridProps) => {
   const [expandedOutfit, setExpandedOutfit] = useState<string | null>(null);
+  
+  // Helper function to get clothing item by ID
+  const getClothingItemById = (id: string): ClothingItem | undefined => {
+    return clothingItems.find(item => item.id === id);
+  };
   
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -39,24 +45,27 @@ const OutfitGrid = ({ outfits, onEdit, onDelete, onToggleFavorite }: OutfitGridP
             <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-800/50">
               {outfit.items && outfit.items.length > 0 ? (
                 <div className="absolute inset-0 flex flex-wrap justify-center items-center p-2 gap-1">
-                  {outfit.items.slice(0, 4).map((item, index) => (
-                    <div 
-                      key={index} 
-                      className="w-1/2 h-1/2 p-1.5 overflow-hidden"
-                    >
-                      <div className="bg-slate-800 rounded-md h-full w-full overflow-hidden flex items-center justify-center">
-                        {item.imageUrl ? (
-                          <img 
-                            src={item.imageUrl} 
-                            alt={item.name} 
-                            className="h-full w-full object-cover rounded-md"
-                          />
-                        ) : (
-                          <div className="text-gray-400 text-xs">{item.name}</div>
-                        )}
+                  {outfit.items.slice(0, 4).map((itemId, index) => {
+                    const item = getClothingItemById(itemId);
+                    return (
+                      <div 
+                        key={index} 
+                        className="w-1/2 h-1/2 p-1.5 overflow-hidden"
+                      >
+                        <div className="bg-slate-800 rounded-md h-full w-full overflow-hidden flex items-center justify-center">
+                          {item?.imageUrl ? (
+                            <img 
+                              src={item.imageUrl} 
+                              alt={item.name} 
+                              className="h-full w-full object-cover rounded-md"
+                            />
+                          ) : (
+                            <div className="text-gray-400 text-xs">{item?.name || 'Unknown Item'}</div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center">

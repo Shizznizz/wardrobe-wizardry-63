@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ClothingItem, Outfit } from '@/lib/types';
+import { ClothingItem, Outfit, ClothingSeason, ClothingOccasion } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { Shirt, Plus, CalendarDays, Sun, CloudRain, Trash2 } from 'lucide-react';
 
@@ -17,26 +17,30 @@ interface OutfitBuilderProps {
   initialOutfit?: Outfit | null;
 }
 
-const seasons = ['spring', 'summer', 'autumn', 'winter', 'all'];
-const occasions = ['casual', 'formal', 'work', 'sport', 'special', 'travel'];
+const seasons = ['spring', 'summer', 'autumn', 'winter', 'all'] as ClothingSeason[];
+const occasions = ['casual', 'formal', 'work', 'sport', 'special', 'travel'] as string[];
 
 const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }: OutfitBuilderProps) => {
   const [outfitName, setOutfitName] = useState('');
   const [selectedItems, setSelectedItems] = useState<ClothingItem[]>([]);
-  const [selectedSeasons, setSelectedSeasons] = useState<string[]>([]);
+  const [selectedSeasons, setSelectedSeasons] = useState<ClothingSeason[]>([]);
   const [selectedOccasions, setSelectedOccasions] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState('items');
   
   useEffect(() => {
     if (initialOutfit) {
       setOutfitName(initialOutfit.name);
-      setSelectedItems(initialOutfit.items || []);
+      // Convert item IDs to actual ClothingItem objects
+      const itemObjects = initialOutfit.items
+        .map(itemId => clothingItems.find(item => item.id === itemId))
+        .filter(item => item !== undefined) as ClothingItem[];
+      setSelectedItems(itemObjects);
       setSelectedSeasons(initialOutfit.seasons || []);
       setSelectedOccasions(initialOutfit.occasions || []);
     } else {
       resetForm();
     }
-  }, [initialOutfit, isOpen]);
+  }, [initialOutfit, isOpen, clothingItems]);
   
   const resetForm = () => {
     setOutfitName('');
@@ -50,12 +54,14 @@ const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }
     const newOutfit: Outfit = {
       id: initialOutfit?.id || '',
       name: outfitName,
-      items: selectedItems,
+      // Convert ClothingItem objects to item IDs
+      items: selectedItems.map(item => item.id),
       seasons: selectedSeasons,
       occasions: selectedOccasions,
       favorite: initialOutfit?.favorite || false,
       timesWorn: initialOutfit?.timesWorn || 0,
-      dateAdded: initialOutfit?.dateAdded || new Date()
+      dateAdded: initialOutfit?.dateAdded || new Date(),
+      lastWorn: initialOutfit?.lastWorn
     };
     
     onSave(newOutfit);
@@ -70,7 +76,7 @@ const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }
     }
   };
   
-  const toggleSeason = (season: string) => {
+  const toggleSeason = (season: ClothingSeason) => {
     if (selectedSeasons.includes(season)) {
       setSelectedSeasons(selectedSeasons.filter(s => s !== season));
     } else {
@@ -178,7 +184,7 @@ const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">{item.name}</p>
-                      <p className="text-xs text-white/60 truncate">{item.category}</p>
+                      <p className="text-xs text-white/60 truncate">{item.type}</p>
                     </div>
                   </div>
                 ))}

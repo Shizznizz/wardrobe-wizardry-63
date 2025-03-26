@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, Filter, Sparkles, ArrowRight } from 'lucide-react';
@@ -169,6 +170,7 @@ const Outfits = () => {
               onEdit={handleEditOutfit}
               onDelete={handleDeleteOutfit}
               onToggleFavorite={handleToggleFavorite}
+              clothingItems={clothingItems}
             />
           </motion.section>
           
