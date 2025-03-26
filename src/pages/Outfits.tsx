@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -14,7 +13,7 @@ import { sampleClothingItems, sampleOutfits, sampleUserPreferences } from '@/lib
 import { toast } from 'sonner';
 import { 
   RefreshCw, Camera, MapPin, AlertTriangle, Calendar, AlarmClockCheck, 
-  MessageCircle, Sun, CloudRain, CloudSun, Cloud, Sparkles, Zap
+  MessageCircle, Sun, CloudRain, CloudSun, Cloud, Sparkles, Zap, Filter
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -307,6 +306,7 @@ const Outfits = () => {
   const [showWelcomeMessage, setShowWelcomeMessage] = useState(true);
   const [timeOfDay, setTimeOfDay] = useState<TimeOfDay | undefined>(undefined);
   const [activity, setActivity] = useState<Activity | undefined>(undefined);
+  const [showOliviaMessage, setShowOliviaMessage] = useState(true);
   const { user } = useAuth();
   const isMobile = useIsMobile();
   
@@ -401,7 +401,6 @@ const Outfits = () => {
     const filteredOutfits = filterOutfitsByPreferences(outfits);
     
     if (filteredOutfits.length === 0) {
-      // If no outfits match the filters, use all outfits
       const currentIndex = outfits.findIndex(o => o.id === suggestedOutfit.id);
       const nextIndex = (currentIndex + 1) % outfits.length;
       setSuggestedOutfit(outfits[nextIndex]);
@@ -417,12 +416,14 @@ const Outfits = () => {
         description: 'Based on your preferences and current filters.'
       });
     }
+    
+    setShowOliviaMessage(true);
+    setTimeout(() => setShowOliviaMessage(false), 5000);
   };
   
   const handleTimeOfDayChange = (value: TimeOfDay) => {
     setTimeOfDay(value === timeOfDay ? undefined : value);
     
-    // After changing the filter, update the outfit suggestion
     setTimeout(() => {
       handleRegenerateOutfit();
     }, 100);
@@ -431,7 +432,6 @@ const Outfits = () => {
   const handleActivityChange = (value: Activity) => {
     setActivity(value === activity ? undefined : value);
     
-    // After changing the filter, update the outfit suggestion
     setTimeout(() => {
       handleRegenerateOutfit();
     }, 100);
@@ -440,10 +440,8 @@ const Outfits = () => {
   const filterOutfitsByPreferences = (outfitList: Outfit[]): Outfit[] => {
     let filtered = [...outfitList];
     
-    // Filter by activity
     if (activity) {
       filtered = filtered.filter(outfit => {
-        // Match exact activity or occasion
         return outfit.occasions.some(occasion => 
           occasion.toLowerCase() === activity.toLowerCase() || 
           (activity === 'work' && ['business', 'formal'].includes(occasion.toLowerCase())) ||
@@ -454,15 +452,12 @@ const Outfits = () => {
       });
     }
     
-    // Filter by time of day (using tags or other attributes that might indicate suitability)
     if (timeOfDay) {
       filtered = filtered.filter(outfit => {
-        // Morning/day outfits usually favor brighter colors and casual wear
         if (timeOfDay === 'morning' || timeOfDay === 'afternoon') {
           return !outfit.occasions.includes('party') && !outfit.occasions.includes('formal');
         }
         
-        // Evening/night outfits usually favor darker colors and more formal wear
         if (timeOfDay === 'evening' || timeOfDay === 'night') {
           return outfit.occasions.includes('party') || 
                  outfit.occasions.includes('formal') || 
@@ -591,7 +586,6 @@ const Outfits = () => {
       });
       
       if (user) {
-        // Save user preferences to Supabase
         const savePreferences = async () => {
           try {
             const { error } = await supabase
@@ -629,52 +623,97 @@ const Outfits = () => {
   
   const userStyles = sampleUserPreferences.favoriteStyles || [];
 
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return "Good morning";
-    if (hour < 18) return "Good afternoon";
-    return "Good evening";
+  const messages = [
+    "Let's find your perfect fit for today!",
+    "This would look fabulous on you!",
+    "I've picked something special for today!",
+    "Weather-appropriate and stylish!",
+    "You'll love this combination!"
+  ];
+  
+  const getRandomMessage = () => {
+    return messages[Math.floor(Math.random() * messages.length)];
   };
   
   return (
     <div className="min-h-screen bg-background pb-20">
       <Header />
       
-      {/* Futuristic Title Banner with proper spacing and rounded bottom */}
-      <div className="w-full pt-20 pb-8 bg-gradient-to-r from-violet-800 via-purple-700 to-indigo-800 text-white relative overflow-hidden mt-16">
+      <div className="w-full pt-20 pb-10 bg-gradient-to-br from-indigo-900 via-purple-800 to-violet-900 text-white relative overflow-hidden mt-16">
         <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-0 left-[10%] w-20 h-20 rounded-full bg-purple-300 blur-xl"></div>
-          <div className="absolute top-[30%] right-[5%] w-32 h-32 rounded-full bg-indigo-400 blur-xl"></div>
-          <div className="absolute bottom-0 left-[30%] w-40 h-40 rounded-full bg-violet-300 blur-xl"></div>
+          <div className="absolute top-0 left-[10%] w-28 h-28 rounded-full bg-pink-300 blur-xl"></div>
+          <div className="absolute top-[30%] right-[5%] w-40 h-40 rounded-full bg-blue-400 blur-xl"></div>
+          <div className="absolute bottom-0 left-[30%] w-52 h-52 rounded-full bg-purple-300 blur-xl"></div>
+          <div className="absolute top-[20%] left-[60%] w-24 h-24 rounded-full bg-indigo-300 blur-xl"></div>
         </div>
         
         <div className="container px-4 sm:px-6 max-w-6xl mx-auto relative z-10">
-          <div className="flex items-center justify-center mb-2">
-            <Sparkles className="h-6 w-6 mr-2 text-purple-200" />
-            <h1 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white via-purple-100 to-indigo-200 tracking-tight">
-              {getGreeting()} there
+          <div className="flex flex-col items-center justify-center mb-3 relative">
+            <h1 className="text-3xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-300 via-purple-100 to-blue-200 tracking-tight text-center">
+              Today's Look, Curated by Olivia
             </h1>
-            <Zap className="h-6 w-6 ml-2 text-yellow-300" />
+            <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-pink-500/20 via-purple-500/20 to-blue-500/20 blur-xl -z-10 scale-[1.2] opacity-50"></div>
+            <p className="mt-4 text-base md:text-lg text-center text-white/90 max-w-3xl">
+              {weather ? 
+                `Based on the weather in ${selectedLocation.city || 'your area'} (${weather.temperature}°${weather.unit || 'C'}, ${weather.condition}) and your unique style, here's what I recommend for today.` :
+                "Select your location to get personalized outfit recommendations based on the weather and your style preferences."
+              }
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-3 mt-6">
+              <Button 
+                onClick={handleRegenerateOutfit} 
+                className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 shadow-lg hover:shadow-pink-500/20 transition-all"
+              >
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Refresh Outfit
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                onClick={() => document.getElementById('filters-section')?.scrollIntoView({ behavior: 'smooth' })}
+                className="bg-white/10 border-white/20 hover:bg-white/20 text-white shadow-md"
+              >
+                <Filter className="mr-2 h-4 w-4" />
+                Adjust My Filters
+              </Button>
+            </div>
           </div>
           
-          <p className="text-lg text-center mt-2 text-purple-100">
-            Here's your perfect look for today{weather ? ` (${weather.temperature}°${weather.unit || 'C'} ${weather.condition})` : ''}
-          </p>
-          
-          <p className="text-sm text-center mt-1 text-purple-200/80">
-            Olivia helps you find the perfect outfit for today's weather and your style preferences.
-          </p>
+          <div className="absolute right-4 sm:right-12 lg:right-20 top-8 sm:top-12 lg:top-20 transition-all">
+            {showOliviaMessage && (
+              <motion.div 
+                initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ type: "spring", damping: 12 }}
+                className="absolute right-16 -top-6 sm:-top-10 bg-white text-purple-900 px-4 py-2 rounded-xl rounded-br-none shadow-lg max-w-[180px] sm:max-w-[220px] text-xs sm:text-sm font-medium z-10"
+              >
+                {getRandomMessage()}
+                <div className="absolute bottom-0 right-0 w-4 h-4 bg-white transform translate-y-1/2 rotate-45"></div>
+              </motion.div>
+            )}
+            
+            <motion.div 
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: "spring", damping: 12, delay: 0.2 }}
+              whileHover={{ scale: 1.05 }}
+              className="h-16 w-16 sm:h-20 sm:w-20 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 p-1 shadow-lg ring-4 ring-white/20"
+            >
+              <Avatar className="h-full w-full">
+                <AvatarImage src="/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png" alt="Olivia" />
+                <AvatarFallback className="bg-purple-600">OB</AvatarFallback>
+              </Avatar>
+            </motion.div>
+          </div>
         </div>
         
-        {/* Add decorative bottom edge with curved transition */}
-        <div className="absolute bottom-0 left-0 right-0 h-8 bg-background" style={{ 
+        <div className="absolute bottom-0 left-0 right-0 h-12 bg-background" style={{ 
           borderTopLeftRadius: '50% 100%', 
           borderTopRightRadius: '50% 100%' 
         }}></div>
       </div>
       
       <div className="container px-4 sm:px-6 max-w-6xl mx-auto mt-8">
-        {/* Merged Weather Panel with improved spacing */}
         <Card className="mb-8 border border-purple-200/20 shadow-lg overflow-hidden">
           <CardHeader className="bg-gradient-to-r from-purple-900/30 to-indigo-900/30 pb-2">
             <CardTitle className="flex items-center text-xl font-bold">
@@ -778,7 +817,6 @@ const Outfits = () => {
         </Card>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          {/* Olivia's Advice */}
           <div className="h-full">
             <h2 className="text-xl font-bold mb-3">Olivia's Style Advice</h2>
             <div className="rounded-xl border shadow-sm bg-gradient-to-br from-pink-50 to-purple-50 dark:from-purple-950/20 dark:to-indigo-950/30 p-5 flex flex-col h-[calc(100%-32px)]">
@@ -821,7 +859,6 @@ const Outfits = () => {
             </div>
           </div>
           
-          {/* Outfit Suggestion - Now in half width on larger screens */}
           <div className="h-full">
             <h2 className="text-xl font-bold mb-3">Today's Outfit Suggestion</h2>
             <div className="bg-white dark:bg-gray-950 rounded-xl border shadow-sm p-4 h-[calc(100%-32px)] overflow-auto">
@@ -841,8 +878,7 @@ const Outfits = () => {
           </div>
         </div>
         
-        {/* Activity and Time Filters */}
-        <div className="mt-8">
+        <div id="filters-section" className="mt-8">
           <h2 className="text-xl font-bold mb-4">Outfit Filters</h2>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
