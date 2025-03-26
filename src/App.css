@@ -219,7 +219,7 @@
   }
   
   .mobile-padding {
-    padding: 1rem !important;
+    padding: 0.75rem !important;
   }
   
   .mobile-text {
@@ -236,5 +236,19 @@
   [role="button"],
   a {
     touch-action: manipulation;
+  }
+  
+  /* Adjust button spacing for mobile */
+  .btn-mobile {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+    padding-top: 0.75rem !important;
+    padding-bottom: 0.75rem !important;
+  }
+  
+  /* Add more spacing between sections on mobile */
+  .mobile-section-spacing {
+    margin-top: 2.5rem !important;
+    margin-bottom: 2.5rem !important;
   }
 }
