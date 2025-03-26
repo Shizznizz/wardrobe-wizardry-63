@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -152,7 +151,7 @@ const Wardrobe = () => {
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="lg:w-1/2"
+              className="w-full"
             >
               <h1 className="text-4xl md:text-5xl font-bold mb-10 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
                 Your Digital Wardrobe
@@ -167,39 +166,6 @@ const Wardrobe = () => {
                 <Button size="lg" variant="outline" className="border-purple-400/30 text-white hover:bg-white/10">
                   <ArrowRight className="mr-2 h-4 w-4" /> Browse By Category
                 </Button>
-              </div>
-            </motion.div>
-            
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2 }}
-              className="lg:w-1/2"
-            >
-              <div className="relative">
-                <div className="absolute -top-4 -left-4 bg-gradient-to-r from-purple-600 to-pink-500 rounded-full p-3 shadow-lg">
-                  <Sparkles className="h-5 w-5 text-white" />
-                </div>
-                <Card className="glass-dark border-white/10 overflow-hidden">
-                  <CardContent className="p-6">
-                    <div className="flex items-center gap-4 mb-4">
-                      <Avatar className="h-16 w-16 border-2 border-purple-400/30">
-                        <AvatarImage src="/lovable-uploads/86bf74b8-b311-4e3c-bfd6-53819add3df8.png" alt="Olivia Bloom" />
-                        <AvatarFallback className="bg-gradient-to-r from-purple-600 to-pink-500 text-white">OB</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <h3 className="text-xl font-semibold flex items-center">
-                          Wardrobe Insights
-                          <Sparkles className="h-4 w-4 ml-2 text-yellow-300" />
-                        </h3>
-                        <p className="text-white/70">From Olivia Bloom</p>
-                      </div>
-                    </div>
-                    <p className="text-white/90 italic">
-                      "A well-organized wardrobe is the foundation of great style. Upload your favorite pieces and I'll help you discover countless outfit combinations."
-                    </p>
-                  </CardContent>
-                </Card>
               </div>
             </motion.div>
           </div>
