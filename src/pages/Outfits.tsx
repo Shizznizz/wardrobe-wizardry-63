@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Filter, Sparkles, Sparkle, ArrowRight } from 'lucide-react';
+import { Plus, Filter, Sparkles, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
@@ -54,10 +54,8 @@ const Outfits = () => {
 
   const handleSaveOutfit = (newOutfit: Outfit) => {
     if (selectedOutfit) {
-      // Update existing outfit
       setOutfits(outfits.map(outfit => outfit.id === selectedOutfit.id ? newOutfit : outfit));
     } else {
-      // Add new outfit
       setOutfits([...outfits, { ...newOutfit, id: String(Date.now()) }]);
     }
     setIsBuilderOpen(false);
@@ -133,7 +131,7 @@ const Outfits = () => {
                       <div>
                         <h3 className="text-xl font-semibold flex items-center">
                           Style Suggestion
-                          <Sparkle className="h-4 w-4 ml-2 text-yellow-300" />
+                          <Sparkles className="h-4 w-4 ml-2 text-yellow-300" />
                         </h3>
                         <p className="text-white/70">From Olivia Bloom</p>
                       </div>
@@ -188,7 +186,7 @@ const Outfits = () => {
       {showAssistant && (
         <OliviaBloomAssistant
           message="Welcome to your Outfits page! Here you can create new outfits, browse your collection, and get personalized style suggestions."
-          type="info"
+          type="tip"
           timing="medium"
           actionText="Got it!"
           onAction={handleAssistantAction}

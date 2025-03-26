@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -19,6 +18,7 @@ import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 const Wardrobe = () => {
   const [items, setItems] = useState<ClothingItem[]>(sampleClothingItems);
@@ -100,7 +100,6 @@ const Wardrobe = () => {
     }
   };
 
-  // Sort items based on selected option
   const sortedItems = [...items].sort((a, b) => {
     switch (sortOption) {
       case 'newest':
@@ -112,22 +111,17 @@ const Wardrobe = () => {
       case 'color':
         return a.color.localeCompare(b.color);
       case 'most-matched':
-        // Placeholder for most-matched logic
-        return b.timesWorn - a.timesWorn; // Using timesWorn as a placeholder
+        return b.timesWorn - a.timesWorn;
       case 'weather-fit':
-        // Placeholder for weather-fit logic
-        // Prioritize seasonal items that match current weather
-        const currentSeason: 'winter' | 'spring' | 'summer' | 'autumn' = 'spring'; // This would be dynamically determined
+        const currentSeason: 'winter' | 'spring' | 'summer' | 'autumn' = 'spring';
         return b.seasons.includes(currentSeason) ? -1 : 1;
       case 'not-recent':
-        // Placeholder for not-recently-worn logic
-        return a.timesWorn - b.timesWorn; // Reverse of most-worn
+        return a.timesWorn - b.timesWorn;
       default:
         return 0;
     }
   });
 
-  // Get personalized greeting if user is logged in
   const getPersonalizedGreeting = () => {
     if (user?.user_metadata?.name) {
       return `Hi ${user.user_metadata.name}, here's your wardrobe`;
@@ -167,7 +161,7 @@ const Wardrobe = () => {
               </p>
               <div className="flex flex-wrap gap-4">
                 <div id="upload-button">
-                  <UploadModal buttonVariant="gradient" />
+                  <UploadModal onUpload={handleUpload} />
                 </div>
                 <Button size="lg" variant="outline" className="border-purple-400/30 text-white hover:bg-white/10">
                   <ArrowRight className="mr-2 h-4 w-4" /> Browse By Category
@@ -195,7 +189,7 @@ const Wardrobe = () => {
                       <div>
                         <h3 className="text-xl font-semibold flex items-center">
                           Wardrobe Insights
-                          <Sparkle className="h-4 w-4 ml-2 text-yellow-300" />
+                          <Sparkles className="h-4 w-4 ml-2 text-yellow-300" />
                         </h3>
                         <p className="text-white/70">From Olivia Bloom</p>
                       </div>
@@ -222,7 +216,6 @@ const Wardrobe = () => {
               </div>
             </div>
             
-            {/* Sorting Controls */}
             <div className="flex justify-between items-center mt-4 mb-6 flex-wrap gap-3">
               <div className="flex items-center gap-2 bg-slate-900/50 p-2 rounded-full backdrop-blur-sm border border-white/5 shadow-md">
                 <Badge variant="gradient" className="mr-1">
