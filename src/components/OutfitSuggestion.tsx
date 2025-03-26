@@ -1,3 +1,4 @@
+
 import { motion } from 'framer-motion';
 import { Check, ArrowRight, Sparkles, MessageCircle, Thermometer, RefreshCw, ThumbsUp, ThumbsDown, ArrowDown, ArrowUp, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -308,11 +309,11 @@ const OutfitSuggestion = ({
                 {accessoryItems.map((item, index) => item && (
                   <HoverCard key={index}>
                     <HoverCardTrigger asChild>
-                      <div className="relative rounded-lg overflow-hidden border border-white/20 shadow-md group cursor-pointer">
+                      <div className="relative rounded-lg overflow-hidden border border-white/20 shadow-md group cursor-pointer aspect-square">
                         <motion.img 
                           src={item.imageUrl} 
                           alt={item.name} 
-                          className="w-full aspect-square object-cover transition-all duration-300 group-hover:scale-110"
+                          className="w-full h-full object-cover transition-all duration-300 group-hover:scale-110"
                           whileHover={{ scale: 1.05 }}
                         />
                         <div className="absolute bottom-0 left-0 right-0 bg-black/60 p-2 text-sm text-white truncate">
