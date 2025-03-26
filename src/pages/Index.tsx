@@ -21,6 +21,7 @@ import StyleSituation from '@/components/StyleSituation';
 import OliviaBloomAssistant from '@/components/OliviaBloomAssistant';
 import OliviaStyleAdvice from '@/components/OliviaStyleAdvice';
 import StyleDiscoveryQuiz from '@/components/StyleDiscoveryQuiz';
+import SectionDivider from '@/components/SectionDivider';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 const Index = () => {
@@ -160,7 +161,7 @@ const Index = () => {
       
       <main className={`container mx-auto px-4 ${isMobile ? 'pt-24' : 'pt-40'} pb-16 relative z-10`}>
         <motion.div 
-          className="space-y-12 md:space-y-24"
+          className="space-y-8 md:space-y-18"
           initial="hidden"
           animate="visible"
           variants={containerVariants}
@@ -169,7 +170,7 @@ const Index = () => {
             variants={itemVariants} 
             className={`flex flex-col items-center justify-center text-center space-y-4 relative ${isMobile ? 'min-h-[60vh]' : 'min-h-[65vh]'}`}
           >
-            <div className={`${isMobile ? 'mt-8 mb-20' : '-mt-16'} relative inline-block`}>
+            <div className={`${isMobile ? 'mt-8 mb-16' : '-mt-16'} relative inline-block`}>
               <motion.div 
                 className="absolute -inset-6 rounded-3xl bg-gradient-to-r from-purple-600/60 via-blue-500/60 to-purple-600/60 opacity-70 blur-xl"
                 animate={{ 
@@ -197,25 +198,25 @@ const Index = () => {
               className="w-28 h-1 bg-gradient-to-r from-blue-500/80 via-purple-500/80 to-pink-500/80 rounded-full mb-6"
             />
             
-            <p className={`${isMobile ? 'text-base mt-8 px-5 py-6' : 'text-xl mt-14'} text-blue-100/90 max-w-2xl backdrop-blur-sm py-5 px-7 rounded-xl border border-white/10 shadow-xl neo-blur leading-relaxed`}>
+            <p className={`${isMobile ? 'text-base mt-8 px-5 py-6' : 'text-xl mt-10'} text-blue-100/90 max-w-2xl backdrop-blur-sm py-5 px-7 rounded-xl border border-white/10 shadow-xl neo-blur leading-relaxed`}>
               Smarter styling starts here. AI-curated outfits that fit your style, your body, and your weather.
             </p>
             
-            <div className={`flex ${isMobile ? 'flex-col mt-12 w-full space-y-4' : 'flex-wrap mt-14 space-x-5 justify-center'}`}>
+            <div className={`flex ${isMobile ? 'flex-col mt-12 w-full space-y-4' : 'flex-wrap mt-12 space-x-5 justify-center'}`}>
               <motion.div
                 whileHover={{ 
                   scale: 1.03,
                   transition: { duration: 0.2 }
                 }}
-                className={`${isMobile ? 'w-full' : 'min-w-[220px]'}`}
+                className={`${isMobile ? 'w-full' : 'min-w-[200px]'}`}
               >
                 <Button 
                   size="lg" 
                   onClick={handleWardrobeButtonClick}
-                  className={`group relative overflow-hidden bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded-xl text-base px-5 ${isMobile ? 'py-6 w-full font-medium' : 'py-5 w-full font-semibold'} h-auto transition-all duration-300 shadow-md hover:shadow-xl hover:shadow-purple-500/20 border border-blue-500/20`}
+                  className={`group relative overflow-hidden bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded-xl text-base px-5 ${isMobile ? 'py-5 w-full font-medium' : 'py-4 w-full font-semibold'} h-auto transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-purple-500/30 border border-blue-500/20 btn-hover-glow`}
                 >
                   <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-blue-400/10 to-purple-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <span className="relative flex items-center justify-center gap-2">
+                  <span className="relative flex items-center justify-center gap-2 text-white">
                     Start Building My Wardrobe
                     <motion.div
                       className="inline-block"
@@ -237,72 +238,94 @@ const Index = () => {
                   scale: 1.03,
                   transition: { duration: 0.2 }
                 }} 
-                className={`${isMobile ? 'w-full' : ''}`}
+                className={`${isMobile ? 'w-full' : 'min-w-[180px]'}`}
               >
                 <PreferencesModal 
                   preferences={preferences} 
                   onSave={handleUpdatePreferences} 
-                  buttonClassName={`${isMobile ? 'text-base w-full py-6 font-medium' : 'text-base w-full py-5 px-5 font-semibold'} h-auto bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 rounded-xl transition-all duration-300 shadow-md hover:shadow-xl hover:shadow-pink-500/20 min-w-[120px] border border-pink-500/20`}
+                  buttonClassName={`${isMobile ? 'text-base w-full py-5 font-medium' : 'text-base w-full py-4 px-5 font-semibold'} h-auto bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-pink-500/30 min-w-[120px] border border-pink-500/20 btn-hover-shine text-white`}
                 />
               </motion.div>
             </div>
           </motion.section>
           
-          <motion.section variants={itemVariants} className="mt-16 relative">
+          <SectionDivider variant="gradient" className="my-8" />
+          
+          <motion.section variants={itemVariants} className="relative">
             <StyleDiscoveryQuiz />
           </motion.section>
           
-          <motion.section variants={itemVariants} className="mt-16 relative">
+          <SectionDivider variant="dotted" className="my-8" />
+          
+          <motion.section variants={itemVariants} className="relative">
+            <div className="w-full h-1 bg-gradient-to-r from-transparent via-purple-500/30 to-transparent mb-8"></div>
             <StyleSituation />
           </motion.section>
           
-          <motion.section variants={itemVariants} className="mt-24 relative">
-            <h2 className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-bold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400`}>
-              <span className="flex items-center gap-2">
-                <Palette className={`${isMobile ? 'h-6 w-6' : 'h-7 w-7'}`} />
-                Outfit Inspirations
-              </span>
-            </h2>
+          <SectionDivider variant="default" className="my-10" />
+          
+          <motion.section variants={itemVariants} className="relative">
+            <div className="mb-8 pb-2 border-b border-purple-500/20">
+              <h2 className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 pb-1`}>
+                <span className="flex items-center gap-2">
+                  <Palette className={`${isMobile ? 'h-6 w-6' : 'h-7 w-7'} text-blue-400`} />
+                  Outfit Inspirations
+                </span>
+              </h2>
+            </div>
             <OutfitSlider />
           </motion.section>
           
-          <motion.section variants={itemVariants} className="mt-24 relative">
-            <h2 className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-bold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-purple-400`}>
-              <span className="flex items-center gap-2">
-                <Sparkles className={`${isMobile ? 'h-6 w-6' : 'h-7 w-7'}`} />
-                Showcase Process
-              </span>
-            </h2>
+          <SectionDivider variant="gradient" className="my-10" />
+          
+          <motion.section variants={itemVariants} className="relative">
+            <div className="mb-8 pb-2 border-b border-purple-500/20">
+              <h2 className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-purple-400 pb-1`}>
+                <span className="flex items-center gap-2">
+                  <Sparkles className={`${isMobile ? 'h-6 w-6' : 'h-7 w-7'} text-pink-400`} />
+                  Showcase Process
+                </span>
+              </h2>
+            </div>
             <VerticalStepCards />
           </motion.section>
           
-          <motion.section variants={itemVariants} className="mt-24 relative">
-            <h2 className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-bold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-blue-400`}>
-              <span className="flex items-center gap-2">
-                <Sparkles className={`${isMobile ? 'h-6 w-6' : 'h-7 w-7'}`} />
-                Styling Journey
-              </span>
-            </h2>
+          <SectionDivider variant="dotted" className="my-10" />
+          
+          <motion.section variants={itemVariants} className="relative">
+            <div className="mb-8 pb-2 border-b border-emerald-500/20">
+              <h2 className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-blue-400 pb-1`}>
+                <span className="flex items-center gap-2">
+                  <Sparkles className={`${isMobile ? 'h-6 w-6' : 'h-7 w-7'} text-emerald-400`} />
+                  Styling Journey
+                </span>
+              </h2>
+            </div>
             <StylingTimeline />
           </motion.section>
           
-          <motion.section variants={itemVariants} className="mt-24">
-            <h2 className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-bold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400`}>
-              <span className="flex items-center gap-2">
-                <Sparkles className={`${isMobile ? 'h-6 w-6' : 'h-7 w-7'}`} />
-                Olivia's Style Advice
-              </span>
-            </h2>
-            
+          <SectionDivider variant="gradient" className="my-10" />
+          
+          <motion.section variants={itemVariants} className="relative">
+            <div className="mb-8 pb-2 border-b border-pink-500/20">
+              <h2 className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400 pb-1`}>
+                <span className="flex items-center gap-2">
+                  <Sparkles className={`${isMobile ? 'h-6 w-6' : 'h-7 w-7'} text-pink-400`} />
+                  Olivia's Style Advice
+                </span>
+              </h2>
+            </div>
             <OliviaStyleAdvice />
           </motion.section>
           
-          <motion.section variants={itemVariants} className="mt-24">
+          <SectionDivider variant="dotted" className="my-10" />
+          
+          <motion.section variants={itemVariants} className="relative">
             <div className={`grid grid-cols-1 ${isMobile ? 'gap-8' : 'md:grid-cols-2 lg:grid-cols-4 gap-10'}`}>
               <Link to="/wardrobe" className="block">
                 <motion.div 
                   whileHover={{ y: -8, scale: 1.02 }}
-                  className="glass-dark p-8 rounded-2xl border border-blue-500/20 backdrop-blur-lg bg-slate-900/40 shadow-lg hover:shadow-blue-500/10 transition-all duration-300 h-full flex flex-col justify-between"
+                  className="glass-dark p-8 rounded-2xl border border-blue-500/20 backdrop-blur-lg bg-slate-900/40 shadow-lg hover:shadow-blue-500/10 transition-all duration-300 h-full flex flex-col justify-between pulse-glow"
                 >
                   <div>
                     <div className="h-16 w-16 rounded-2xl flex items-center justify-center mb-6 bg-gradient-to-br from-blue-500/20 to-blue-500/5 border border-blue-400/20">
