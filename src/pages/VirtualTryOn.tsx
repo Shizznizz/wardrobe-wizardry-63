@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import * as tf from '@tensorflow/tfjs';
@@ -14,7 +13,7 @@ import VirtualFittingRoom from '@/components/VirtualFittingRoom';
 import { Card, CardContent } from '@/components/ui/card';
 import BackgroundShapes from '@/components/BackgroundShapes';
 import VerticalStepCards from '@/components/VerticalStepCards';
-import { Lightbulb, Sparkles } from 'lucide-react';
+import { Lightbulb } from 'lucide-react';
 
 const USER_PHOTO_STORAGE_KEY = 'userVirtualTryOnPhoto';
 
@@ -162,12 +161,7 @@ const VirtualTryOn = () => {
                     <Lightbulb className="h-5 w-5 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-medium text-white flex items-center gap-2">
-                      Olivia's Styling Tip
-                      <span className="inline-block">
-                        <Sparkles className="h-4 w-4 text-yellow-400" />
-                      </span>
-                    </h3>
+                    <h3 className="font-medium text-white">Styling Tip</h3>
                     <p className="text-sm text-white/80 mt-1">
                       For the best results, upload a photo with neutral lighting and a simple background. Stand in a natural pose facing the camera.
                     </p>
@@ -270,7 +264,6 @@ const VirtualTryOn = () => {
                 isProcessing={isProcessing}
               />
               
-              {/* How it works section with vertical step cards */}
               <div className="mt-8 space-y-4">
                 <h2 className="text-xl font-semibold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">How It Works</h2>
                 <VerticalStepCards />

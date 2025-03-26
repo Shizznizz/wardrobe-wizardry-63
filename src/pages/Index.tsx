@@ -281,7 +281,7 @@ const Index = () => {
               <h2 className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-purple-400 pb-1`}>
                 <span className="flex items-center gap-2">
                   <Sparkles className={`${isMobile ? 'h-6 w-6' : 'h-7 w-7'} text-pink-400`} />
-                  Showcase Process
+                  Virtual Fitting Room
                 </span>
               </h2>
             </div>
