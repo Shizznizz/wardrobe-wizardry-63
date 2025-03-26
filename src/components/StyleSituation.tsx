@@ -1,11 +1,13 @@
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { SendHorizontal, Sparkles } from 'lucide-react';
+import { SendHorizontal, Sparkles, Calendar, CalendarDays, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 const outfitSuggestions = [
   "Try your beige trench coat with black ankle boots and a white blouse — perfect balance of cozy and chic.",
@@ -18,6 +20,21 @@ const outfitSuggestions = [
   "Layer a turtleneck under a slip dress with chunky boots for an on-trend transitional outfit."
 ];
 
+const eventSuggestions = [
+  { value: 'casual-dinner', label: 'Casual Dinner', temp: '15°C', icon: 'calendar' },
+  { value: 'date-night', label: 'Date Night', temp: '18°C', icon: 'calendar' },
+  { value: 'work-meeting', label: 'Work Meeting', temp: '21°C', icon: 'calendar' },
+  { value: 'coffee-date', label: 'Coffee Date', temp: '16°C', icon: 'calendar' },
+  { value: 'weekend-brunch', label: 'Weekend Brunch', temp: '19°C', icon: 'calendar' },
+  { value: 'formal-event', label: 'Formal Event', temp: '22°C', icon: 'calendar' },
+  { value: 'outdoor-activity', label: 'Outdoor Activity', temp: '14°C', icon: 'calendar' },
+  { value: 'casual-friday', label: 'Casual Friday', temp: '20°C', icon: 'calendar' },
+  { value: 'evening-party', label: 'Evening Party', temp: '17°C', icon: 'calendar' },
+  { value: 'beach-day', label: 'Beach Day', temp: '25°C', icon: 'sun' },
+  { value: 'rainy-day', label: 'Rainy Day', temp: '12°C', icon: 'cloud-rain' },
+  { value: 'shopping-trip', label: 'Shopping Trip', temp: '18°C', icon: 'shirt' }
+];
+
 const getRandomSuggestion = () => {
   const randomIndex = Math.floor(Math.random() * outfitSuggestions.length);
   return outfitSuggestions[randomIndex];
@@ -28,11 +45,14 @@ const StyleSituation = () => {
   const [suggestion, setSuggestion] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [typedText, setTypedText] = useState('');
+  const [open, setOpen] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<string>('');
   const isMobile = useIsMobile();
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!situation.trim()) return;
+    if (!situation.trim() && !selectedEvent) return;
     
     // Reset previous suggestion
     setSuggestion('');
@@ -62,6 +82,26 @@ const StyleSituation = () => {
     }, 30);
   };
 
+  const handleEventSelect = (eventValue: string) => {
+    const event = eventSuggestions.find(e => e.value === eventValue);
+    if (event) {
+      setSituation(`${event.label}, ${event.temp}`);
+      setSelectedEvent(event.label);
+    }
+    setOpen(false);
+    
+    // Focus back on input if user wants to modify
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 100);
+  };
+
+  const clearSelection = () => {
+    setSituation('');
+    setSelectedEvent('');
+    inputRef.current?.focus();
+  };
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
@@ -71,30 +111,87 @@ const StyleSituation = () => {
     >
       <h3 className="text-lg sm:text-xl font-semibold mb-4 text-center bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-purple-400 flex items-center justify-center gap-2">
         <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-pink-400" />
-        Style Situation
+        What are you dressing for today?
       </h3>
       
-      <form onSubmit={handleSubmit} className="flex gap-2 mb-4">
-        <Input
-          value={situation}
-          onChange={(e) => setSituation(e.target.value)}
-          placeholder={isMobile ? "Describe event (e.g., 'Date, 15°C')" : "Describe your event (e.g., 'Date in 15°C')"}
-          className="flex-grow bg-slate-800/60 border-purple-500/30 text-white placeholder:text-slate-400 text-sm sm:text-base"
-        />
-        <Button 
-          type="submit" 
-          className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-          disabled={isTyping || !situation.trim()}
-        >
-          <SendHorizontal className="h-4 w-4 sm:h-5 sm:w-5" />
-        </Button>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="relative">
+          <Popover open={open} onOpenChange={setOpen}>
+            <div className="flex items-center gap-2">
+              <div className="relative flex-grow">
+                <PopoverTrigger asChild>
+                  <div className="w-full cursor-pointer">
+                    <Input
+                      ref={inputRef}
+                      value={situation}
+                      onChange={(e) => setSituation(e.target.value)}
+                      placeholder={isMobile ? "Select or type an event" : "Select or type an event (e.g., 'Date Night, 15°C')"}
+                      className="flex-grow bg-slate-800/60 border-purple-500/30 text-white placeholder:text-slate-400 text-sm sm:text-base pr-10"
+                      onClick={() => setOpen(true)}
+                    />
+                    <CalendarDays className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  </div>
+                </PopoverTrigger>
+                
+                {situation && (
+                  <Button 
+                    type="button" 
+                    variant="ghost" 
+                    size="icon" 
+                    className="absolute right-10 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 hover:text-white hover:bg-transparent"
+                    onClick={clearSelection}
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                )}
+              </div>
+              <Button 
+                type="submit" 
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                disabled={isTyping || (!situation.trim() && !selectedEvent)}
+              >
+                <SendHorizontal className="h-4 w-4 sm:h-5 sm:w-5" />
+              </Button>
+            </div>
+            
+            <PopoverContent className="p-0 bg-slate-900/95 border border-purple-500/30 text-white w-full" align="start">
+              <Command className="bg-transparent">
+                <CommandInput placeholder="Search events..." className="border-b border-purple-500/20 text-white placeholder:text-slate-400 bg-transparent" />
+                <CommandList className="max-h-[300px] overflow-y-auto scrollbar-thin scrollbar-thumb-purple-600/50 scrollbar-track-slate-800/50">
+                  <CommandEmpty className="py-2 px-4 text-slate-400 text-sm">
+                    No events found
+                  </CommandEmpty>
+                  <CommandGroup heading="Popular Events">
+                    {eventSuggestions.map((event) => (
+                      <CommandItem
+                        key={event.value}
+                        value={event.value}
+                        onSelect={handleEventSelect}
+                        className="py-2 hover:bg-purple-600/20 text-white cursor-pointer"
+                      >
+                        <div className="flex items-center gap-2">
+                          {event.icon === 'calendar' && <CalendarDays className="h-4 w-4 text-purple-400" />}
+                          {event.icon === 'sun' && <CalendarDays className="h-4 w-4 text-amber-400" />}
+                          {event.icon === 'cloud-rain' && <CalendarDays className="h-4 w-4 text-blue-400" />}
+                          {event.icon === 'shirt' && <CalendarDays className="h-4 w-4 text-green-400" />}
+                          <span>{event.label}</span>
+                          <span className="ml-auto text-xs text-slate-400">{event.temp}</span>
+                        </div>
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
+        </div>
       </form>
       
       {(suggestion || isTyping) && (
         <motion.div 
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-slate-800/40 backdrop-blur-sm rounded-lg p-3 sm:p-4 border border-purple-500/20"
+          className="bg-slate-800/40 backdrop-blur-sm rounded-lg p-3 sm:p-4 border border-purple-500/20 mt-4"
         >
           <div className="flex gap-2 sm:gap-3">
             <Avatar className="h-7 w-7 sm:h-8 sm:w-8 border border-pink-500/50">
