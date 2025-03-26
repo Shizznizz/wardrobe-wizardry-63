@@ -67,9 +67,7 @@ const Index = () => {
   };
 
   const handleWardrobeButtonClick = () => {
-    if (window.location.pathname === "/") {
-      window.location.href = "/wardrobe#upload";
-    }
+    window.location.href = "/wardrobe";
   };
   
   const [showOliviaWelcome, setShowOliviaWelcome] = useState(true);
@@ -198,11 +196,11 @@ const Index = () => {
               className="w-28 h-1 bg-gradient-to-r from-blue-500/80 via-purple-500/80 to-pink-500/80 rounded-full mb-2"
             />
             
-            <p className={`${isMobile ? 'text-base mt-6 px-5 py-6' : 'text-xl mt-10'} text-blue-100/90 max-w-2xl backdrop-blur-sm py-5 px-7 rounded-xl border border-white/10 shadow-xl neo-blur leading-relaxed`}>
+            <p className={`${isMobile ? 'text-base mt-6 px-5 py-6' : 'text-xl mt-16'} text-blue-100/90 max-w-2xl backdrop-blur-sm py-5 px-7 rounded-xl border border-white/10 shadow-xl neo-blur leading-relaxed`}>
               Smarter styling starts here. AI-curated outfits that fit your style, your body, and your weather.
             </p>
             
-            <div className={`flex ${isMobile ? 'flex-col mt-16 w-full space-y-4' : 'flex-wrap mt-12 space-x-5 justify-center'}`}>
+            <div className={`flex ${isMobile ? 'flex-col mt-16 w-full space-y-4' : 'flex-wrap mt-20 space-x-5 justify-center'}`}>
               <motion.div
                 whileHover={{ 
                   scale: 1.03,
