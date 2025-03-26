@@ -6,10 +6,11 @@ import OutfitBuilder from '@/components/OutfitBuilder';
 import OliviaBloomAssistant from '@/components/OliviaBloomAssistant';
 import { sampleOutfits, sampleClothingItems } from '@/lib/wardrobeData';
 import OutfitHero from '@/components/outfits/OutfitHero';
-import OutfitTips from '@/components/outfits/OutfitTips';
 import RecommendedOutfit from '@/components/outfits/RecommendedOutfit';
 import OutfitCollection from '@/components/outfits/OutfitCollection';
 import { useOutfitState } from '@/hooks/useOutfitState';
+import OliviaTips from '@/components/OliviaTips';
+import StyleSituation from '@/components/StyleSituation';
 
 const Outfits = () => {
   const {
@@ -29,26 +30,6 @@ const Outfits = () => {
     handleShowTips,
     setShowAssistant
   } = useOutfitState(sampleOutfits, sampleClothingItems);
-  
-  const [currentTipIndex, setCurrentTipIndex] = useState(0);
-  
-  const outfitTips = [
-    {
-      id: 1,
-      title: "Color Harmony",
-      content: "For this weather, try combining cool blues with warm accents for a balanced look that matches the day's mood."
-    },
-    {
-      id: 2,
-      title: "Layering Strategy",
-      content: "The temperature will vary today. Layer a light cardigan over your outfit that you can easily remove as it warms up."
-    },
-    {
-      id: 3,
-      title: "Accessory Advice",
-      content: "Complete your look with a statement piece that brightens your outfit - perfect for boosting your mood on this type of day."
-    }
-  ];
   
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -71,11 +52,9 @@ const Outfits = () => {
         >
           <div className="flex flex-col lg:flex-row items-center gap-6 mb-12">
             <OutfitHero onCreateOutfit={handleCreateOutfit} />
-            <OutfitTips 
-              tips={outfitTips} 
-              onShowAssistant={handleShowTips}
-              showAssistant={showAssistant}
-            />
+            
+            {/* Style Situation replaces the large Tips component */}
+            <StyleSituation />
           </div>
       
           {/* Today's Recommended Outfit Section */}
@@ -106,12 +85,15 @@ const Outfits = () => {
         </motion.div>
       </main>
       
+      {/* Add Olivia's Tips in the bottom-right corner */}
+      <OliviaTips position="bottom-right" />
+      
       {showAssistant && (
         <OliviaBloomAssistant
-          message={outfitTips[currentTipIndex].content}
+          message="I've created a style suggestion based on the current weather and your preferences."
           type="tip"
           timing="medium"
-          actionText="Got it!"
+          actionText="Thanks!"
           onAction={handleAssistantAction}
           position="bottom-right"
         />

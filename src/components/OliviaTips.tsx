@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageCircle, X, Sparkles, ArrowRight } from 'lucide-react';
@@ -18,18 +19,18 @@ const OliviaTips = ({ position = 'top-right' }: OliviaTipsProps) => {
   
   const tips = [
     {
-      title: "Welcome to Your Wardrobe!",
-      message: "Upload your clothes by clicking the 'Add to Wardrobe' button. I'll help you organize everything!",
+      title: "Welcome to Your Outfits!",
+      message: "Try creating outfits for different occasions and weather conditions. I'll recommend suitable combinations for you!",
       icon: <Sparkles className="h-4 w-4 text-amber-300" />,
     },
     {
-      title: "Sort Your Collection",
-      message: "Use the sorting options to arrange your wardrobe by newest items, favorites, or most worn pieces.",
+      title: "Style Suggestions",
+      message: "Try combining neutral basics with one statement piece for an effortlessly stylish look.",
       icon: <ArrowRight className="h-4 w-4 text-blue-300" />,
     },
     {
-      title: "Compact View",
-      message: "Toggle 'Compact View' to see more items at once when your wardrobe grows larger.",
+      title: "Weather Adaptability",
+      message: "Consider layering pieces so your outfit can adapt to changing weather throughout the day.",
       icon: <Party className="h-4 w-4 text-emerald-300" />,
     },
   ];
@@ -99,7 +100,7 @@ const OliviaTips = ({ position = 'top-right' }: OliviaTipsProps) => {
                 </button>
               </HoverCardTrigger>
               <HoverCardContent className="w-48 bg-slate-900/90 border-white/10 text-white shadow-lg shadow-purple-500/10 backdrop-blur-md">
-                <p className="text-sm font-medium text-center">Need help or advice?</p>
+                <p className="text-sm font-medium text-center">Need style advice?</p>
               </HoverCardContent>
             </HoverCard>
           </motion.div>
