@@ -53,12 +53,12 @@ const OutfitSelector = ({ outfits, clothingItems, onSelect, selectedOutfitId }: 
                     {outfit.items.slice(0, 3).map(itemId => {
                       const item = clothingItems.find(i => i.id === itemId);
                       return item ? (
-                        <div key={item.id} className="aspect-square rounded-md overflow-hidden border border-white/10">
-                          <AspectRatio ratio={1/1} className="h-full">
+                        <div key={item.id} className="aspect-square w-full rounded-md overflow-hidden border border-white/10">
+                          <AspectRatio ratio={1/1}>
                             <img 
                               src={item.imageUrl} 
                               alt={item.name} 
-                              className="w-full h-full object-cover object-center"
+                              className="w-full h-full object-cover"
                             />
                           </AspectRatio>
                         </div>
