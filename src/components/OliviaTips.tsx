@@ -38,8 +38,9 @@ const OliviaTips = ({ position = 'top-right' }: OliviaTipsProps) => {
   const getPositionClasses = () => {
     switch(position) {
       case 'top-left': return 'top-24 left-6';
-      case 'bottom-right': return 'bottom-20 right-6'; // Updated position to match Wardrobe page
+      case 'bottom-right': return 'bottom-20 right-6';
       case 'bottom-left': return 'bottom-6 left-6';
+      case 'top-right': return 'top-24 right-6'; // Default position, now explicitly defined
       default: return 'top-24 right-6';
     }
   };

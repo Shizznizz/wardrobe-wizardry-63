@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -85,8 +84,8 @@ const Outfits = () => {
         </motion.div>
       </main>
       
-      {/* Olivia's Tips with position matching Wardrobe page */}
-      <OliviaTips position="bottom-right" />
+      {/* Olivia's Tips positioned at the top-right below the header */}
+      <OliviaTips position="top-right" />
       
       {showAssistant && (
         <OliviaBloomAssistant
