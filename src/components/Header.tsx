@@ -75,16 +75,16 @@ const Header = ({ weather }: HeaderProps) => {
   return (
     <header 
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300 py-2 sm:py-4",
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-500 py-2 sm:py-4",
         isScrolled 
-          ? "bg-purple-900 shadow-md border-b border-white/10" 
+          ? "bg-purple-900/95 shadow-lg border-b border-white/10" 
           : "bg-[rgba(50,0,80,0.5)] backdrop-blur-md border-transparent text-white"
       )}
     >
       <div className="container mx-auto px-3 md:px-6 flex items-center justify-between">
         {/* Mobile: Current page name */}
         {isMobile && (
-          <div className="text-white font-medium">{getCurrentPageName()}</div>
+          <div className="text-white font-medium tracking-wide">{getCurrentPageName()}</div>
         )}
 
         {/* Desktop Navigation */}
@@ -107,7 +107,7 @@ const Header = ({ weather }: HeaderProps) => {
               variant="ghost"
               size="icon"
               className={cn(
-                "ml-2",
+                "ml-2 transition-all duration-300",
                 isScrolled ? "text-white hover:text-white/80" : "text-white hover:bg-white/10"
               )}
               onClick={() => setIsMenuOpen(!isMenuOpen)}
