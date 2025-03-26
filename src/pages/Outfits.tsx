@@ -1,965 +1,200 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Plus, Filter, Sparkles, Sparkle, ArrowRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import Header from '@/components/Header';
+import OutfitGrid from '@/components/OutfitGrid';
+import OutfitBuilder from '@/components/OutfitBuilder';
+import OutfitSelector from '@/components/OutfitSelector';
+import OliviaBloomAssistant from '@/components/OliviaBloomAssistant';
+import { ClothingItem, Outfit } from '@/lib/types';
+import { sampleOutfits, sampleClothingItems, sampleUserPreferences } from '@/lib/wardrobeData';
 import WeatherWidget from '@/components/WeatherWidget';
 import OutfitSuggestion from '@/components/OutfitSuggestion';
-import OliviaBloomAdvisor from '@/components/OliviaBloomAdvisor';
-import OliviaBloomAssistant from '@/components/OliviaBloomAssistant';
-import { Button } from '@/components/ui/button';
-import { buttonVariants } from '@/components/ui/button';
-import { WeatherInfo, Outfit, TimeOfDay, Activity } from '@/lib/types';
-import { sampleClothingItems, sampleOutfits, sampleUserPreferences } from '@/lib/wardrobeData';
-import { toast } from 'sonner';
-import { 
-  RefreshCw, Camera, MapPin, AlertTriangle, Calendar, AlarmClockCheck, 
-  MessageCircle, Sun, CloudRain, CloudSun, Cloud, Sparkles, Zap, Filter
-} from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { cn } from '@/lib/utils';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-} from "@/components/ui/form";
-import { useForm } from "react-hook-form";
-import { useAuth } from '@/hooks/useAuth';
-import { supabase } from '@/integrations/supabase/client';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-
-const countries = [
-  { code: "US", name: "United States" },
-  { code: "GB", name: "United Kingdom" },
-  { code: "DE", name: "Germany" },
-  { code: "FR", name: "France" },
-  { code: "IT", name: "Italy" },
-  { code: "ES", name: "Spain" },
-  { code: "CA", name: "Canada" },
-  { code: "AU", name: "Australia" },
-  { code: "JP", name: "Japan" },
-  { code: "CN", name: "China" },
-  { code: "IN", name: "India" },
-  { code: "BR", name: "Brazil" },
-  { code: "NL", name: "Netherlands" },
-  { code: "BE", name: "Belgium" },
-  { code: "SE", name: "Sweden" },
-  { code: "NO", name: "Norway" },
-  { code: "DK", name: "Denmark" },
-  { code: "FI", name: "Finland" },
-  { code: "CH", name: "Switzerland" },
-  { code: "AT", name: "Austria" },
-  { code: "PT", name: "Portugal" },
-  { code: "IE", name: "Ireland" },
-  { code: "NZ", name: "New Zealand" },
-  { code: "SG", name: "Singapore" },
-  { code: "AE", name: "United Arab Emirates" },
-  { code: "ZA", name: "South Africa" },
-  { code: "MX", name: "Mexico" },
-  { code: "AR", name: "Argentina" },
-  { code: "CL", name: "Chile" },
-  { code: "CO", name: "Colombia" }
-];
-
-const citiesByCountry = {
-  US: [
-    "New York", "Los Angeles", "Chicago", "Houston", "Phoenix", "Philadelphia", 
-    "San Antonio", "San Diego", "Dallas", "San Jose", "Austin", "Jacksonville", 
-    "Fort Worth", "Columbus", "Charlotte", "Indianapolis", "San Francisco", 
-    "Seattle", "Denver", "Washington DC", "Boston", "El Paso", "Nashville", 
-    "Detroit", "Portland", "Las Vegas", "Memphis", "Louisville", "Baltimore", 
-    "Milwaukee"
-  ],
-  GB: [
-    "London", "Birmingham", "Manchester", "Glasgow", "Liverpool", "Bristol", 
-    "Sheffield", "Leeds", "Edinburgh", "Leicester", "Cardiff", "Belfast", 
-    "Nottingham", "Newcastle", "Southampton", "Aberdeen", "Oxford", "Cambridge", 
-    "York", "Portsmouth", "Coventry", "Bradford", "Swansea", "Plymouth", 
-    "Reading", "Derby", "Wolverhampton", "Exeter", "Middlesbrough", "Milton Keynes"
-  ],
-  DE: [
-    "Berlin", "Hamburg", "Munich", "Cologne", "Frankfurt", "Stuttgart", 
-    "Düsseldorf", "Leipzig", "Dortmund", "Essen", "Bremen", "Dresden", 
-    "Hannover", "Nuremberg", "Duisburg", "Bochum", "Wuppertal", "Bielefeld", 
-    "Bonn", "Münster", "Karlsruhe", "Mannheim", "Augsburg", "Wiesbaden", 
-    "Gelsenkirchen", "Aachen", "Kiel", "Freiburg", "Heidelberg", "Magdeburg"
-  ],
-  FR: [
-    "Paris", "Marseille", "Lyon", "Toulouse", "Nice", "Nantes", "Strasbourg", 
-    "Montpellier", "Bordeaux", "Lille", "Rennes", "Reims", "Le Havre", 
-    "Saint-Étienne", "Toulon", "Grenoble", "Dijon", "Angers", "Nîmes", 
-    "Villeurbanne", "Le Mans", "Aix-en-Provence", "Clermont-Ferrand", "Brest", 
-    "Tours", "Limoges", "Amiens", "Annecy", "Perpignan", "Besançon"
-  ],
-  IT: [
-    "Rome", "Milan", "Naples", "Turin", "Palermo", "Genoa", "Bologna", 
-    "Florence", "Bari", "Catania", "Venice", "Verona", "Messina", "Padua", 
-    "Trieste", "Brescia", "Parma", "Taranto", "Prato", "Modena", "Reggio Calabria", 
-    "Reggio Emilia", "Perugia", "Livorno", "Ravenna", "Cagliari", "Foggia", 
-    "Rimini", "Salerno", "Ferrara"
-  ],
-  ES: [
-    "Madrid", "Barcelona", "Valencia", "Seville", "Zaragoza", "Málaga", 
-    "Murcia", "Palma", "Las Palmas", "Bilbao", "Alicante", "Córdoba", 
-    "Valladolid", "Vigo", "Gijón", "L'Hospitalet", "La Coruña", "Granada", 
-    "Vitoria", "Elche", "Oviedo", "Badalona", "Cartagena", "Terrassa", 
-    "Jerez de la Frontera", "Sabadell", "Móstoles", "Santa Cruz de Tenerife", 
-    "Pamplona", "Almería"
-  ],
-  CA: [
-    "Toronto", "Montreal", "Vancouver", "Calgary", "Edmonton", "Ottawa", 
-    "Winnipeg", "Quebec City", "Hamilton", "Kitchener", "London", "Victoria", 
-    "Halifax", "Oshawa", "Windsor", "Saskatoon", "Regina", "St. Catharines", 
-    "St. John's", "Barrie", "Kelowna", "Abbotsford", "Sudbury", "Kingston", 
-    "Saguenay", "Trois-Rivières", "Guelph", "Moncton", "Brantford", "Thunder Bay"
-  ],
-  AU: [
-    "Sydney", "Melbourne", "Brisbane", "Perth", "Adelaide", "Gold Coast", 
-    "Canberra", "Newcastle", "Wollongong", "Hobart", "Geelong", "Townsville", 
-    "Cairns", "Darwin", "Toowoomba", "Ballarat", "Bendigo", "Launceston", 
-    "Mackay", "Rockhampton", "Bunbury", "Bundaberg", "Hervey Bay", "Wagga Wagga", 
-    "Coffs Harbour", "Gladstone", "Mildura", "Shepparton", "Albury", "Port Macquarie"
-  ],
-  JP: [
-    "Tokyo", "Yokohama", "Osaka", "Nagoya", "Sapporo", "Fukuoka", "Kawasaki", 
-    "Kobe", "Kyoto", "Saitama", "Hiroshima", "Sendai", "Kitakyushu", "Chiba", 
-    "Sakai", "Kumamoto", "Okayama", "Shizuoka", "Hamamatsu", "Sagamihara", 
-    "Niigata", "Himeji", "Matsudo", "Nishinomiya", "Kurashiki", "Ichikawa", 
-    "Fukuyama", "Fujisawa", "Amagasaki", "Utsunomiya"
-  ],
-  CN: [
-    "Shanghai", "Beijing", "Guangzhou", "Shenzhen", "Chongqing", "Tianjin", 
-    "Wuhan", "Chengdu", "Nanjing", "Xi'an", "Hangzhou", "Shenyang", "Harbin", 
-    "Jinan", "Qingdao", "Dalian", "Changchun", "Fuzhou", "Zhengzhou", "Kunming", 
-    "Changsha", "Xiamen", "Nanchang", "Hefei", "Urumqi", "Guiyang", "Nanning", 
-    "Taiyuan", "Lanzhou", "Xining"
-  ],
-  IN: [
-    "Mumbai", "Delhi", "Bangalore", "Hyderabad", "Chennai", "Kolkata", 
-    "Ahmedabad", "Pune", "Surat", "Jaipur", "Lucknow", "Kanpur", "Nagpur", 
-    "Indore", "Thane", "Bhopal", "Visakhapatnam", "Pimpri-Chinchwad", 
-    "Patna", "Vadodara", "Ludhiana", "Agra", "Nashik", "Faridabad", "Meerut", 
-    "Rajkot", "Kalyan-Dombivli", "Vasai-Virar", "Varanasi", "Srinagar"
-  ],
-  BR: [
-    "São Paulo", "Rio de Janeiro", "Brasília", "Salvador", "Fortaleza", 
-    "Belo Horizonte", "Manaus", "Curitiba", "Recife", "Porto Alegre", "Belém", 
-    "Goiânia", "Guarulhos", "Campinas", "São Luís", "São Gonçalo", "Maceió", 
-    "Duque de Caxias", "Natal", "Teresina", "São Bernardo do Campo", "Campo Grande", 
-    "Osasco", "João Pessoa", "Jaboatão dos Guararapes", "Santo André", "São José dos Campos", 
-    "Ribeirão Preto", "Uberlândia", "Sorocaba"
-  ],
-  NL: [
-    "Amsterdam", "Rotterdam", "The Hague", "Utrecht", "Eindhoven", "Tilburg", 
-    "Groningen", "Almere", "Breda", "Nijmegen", "Enschede", "Haarlem", 
-    "Arnhem", "Zaanstad", "Amersfoort", "Apeldoorn", "Hertogenbosch", 
-    "Hoofddorp", "Maastricht", "Leiden", "Dordrecht", "Zoetermeer", "Zwolle", 
-    "Delft", "Alkmaar", "Heerlen", "Venlo", "Leeuwarden", "Deventer", "Sittard"
-  ],
-  BE: [
-    "Brussels", "Antwerp", "Ghent", "Charleroi", "Liège", "Bruges", "Namur", 
-    "Leuven", "Mons", "Aalst", "Mechelen", "Kortrijk", "Hasselt", "Ostend", 
-    "Genk", "Sint-Niklaas", "Turnhout", "Roeselare", "Seraing", "La Louvière", 
-    "Verviers", "Mouscron", "Herstal", "Dendermonde", "Beringen", "Wevelgem", 
-    "Geel", "Tournai", "Tongeren", "Lokeren"
-  ],
-  SE: [
-    "Stockholm", "Gothenburg", "Malmö", "Uppsala", "Västerås", "Örebro", 
-    "Linköping", "Helsingborg", "Jönköping", "Norrköping", "Lund", "Umeå", 
-    "Gävle", "Borås", "Södertälje", "Eskilstuna", "Karlstad", "Täby", 
-    "Växjö", "Halmstad", "Sundsvall", "Luleå", "Trollhättan", "Östersund", 
-    "Solna", "Borlänge", "Kristianstad", "Kalmar", "Skövde", "Karlskrona"
-  ],
-  NO: [
-    "Oslo", "Bergen", "Trondheim", "Stavanger", "Drammen", "Fredrikstad", 
-    "Kristiansand", "Sandnes", "Tromsø", "Sarpsborg", "Bodø", "Sandefjord", 
-    "Ålesund", "Tønsberg", "Moss", "Haugesund", "Skien", "Arendal", "Hamar", 
-    "Larvik", "Halden", "Lillehammer", "Molde", "Harstad", "Kongsberg", 
-    "Gjøvik", "Steinkjer", "Narvik", "Kristiansund", "Rana"
-  ],
-  DK: [
-    "Copenhagen", "Aarhus", "Odense", "Aalborg", "Frederiksberg", "Esbjerg", 
-    "Randers", "Kolding", "Horsens", "Vejle", "Roskilde", "Herning", 
-    "Silkeborg", "Næstved", "Fredericia", "Viborg", "Køge", "Holstebro", 
-    "Slagelse", "Helsingør", "Hillerød", "Sønderborg", "Svendborg", "Holbæk", 
-    "Hjørring", "Haderslev", "Frederikshavn", "Skive", "Ringsted", "Nyborg"
-  ],
-  FI: [
-    "Helsinki", "Espoo", "Tampere", "Vantaa", "Oulu", "Turku", "Jyväskylä", 
-    "Lahti", "Kuopio", "Pori", "Kouvola", "Joensuu", "Lappeenranta", "Hämeenlinna", 
-    "Vaasa", "Rovaniemi", "Seinäjoki", "Mikkeli", "Kotka", "Salo", 
-    "Porvoo", "Kokkola", "Hyvinkää", "Lohja", "Järvenpää", "Rauma", 
-    "Kajaani", "Tuusula", "Kirkkonummi", "Kerava"
-  ],
-  CH: [
-    "Zurich", "Geneva", "Basel", "Lausanne", "Bern", "Winterthur", "Lucerne", 
-    "St. Gallen", "Lugano", "Biel", "Thun", "Köniz", "La Chaux-de-Fonds", "Fribourg", 
-    "Schaffhausen", "Chur", "Vernier", "Neuchâtel", "Uster", "Sion", 
-    "Lancy", "Emmen", "Yverdon-les-Bains", "Zug", "Kriens", "Rapperswil-Jona", 
-    "Dübendorf", "Montreux", "Dietikon", "Frauenfeld"
-  ],
-  AT: [
-    "Vienna", "Graz", "Linz", "Salzburg", "Innsbruck", "Klagenfurt", "Villach", 
-    "Wels", "Sankt Pölten", "Dornbirn", "Wiener Neustadt", "Steyr", "Feldkirch", 
-    "Bregenz", "Leonding", "Klosterneuburg", "Baden", "Wolfsberg", "Leoben", 
-    "Krems", "Traun", "Amstetten", "Lustenau", "Kapfenberg", "Mödling", 
-    "Hallein", "Kufstein", "Traiskirchen", "Schwechat", "Braunau am Inn"
-  ],
-  PT: [
-    "Lisbon", "Porto", "Amadora", "Braga", "Coimbra", "Funchal", "Setúbal", 
-    "Vila Nova de Gaia", "Almada", "Agualva-Cacém", "Queluz", "Aveiro", "Évora", 
-    "Faro", "Guimarães", "Leiria", "Odivelas", "Rio Tinto", "Viseu", "Barreiro", 
-    "Tomar", "Matosinhos", "Santarém", "Póvoa de Varzim", "Vila Real", 
-    "Viana do Castelo", "Portimão", "Bragança", "Caldas da Rainha", "Penafiel"
-  ],
-  IE: [
-    "Dublin", "Cork", "Limerick", "Galway", "Waterford", "Drogheda", "Dundalk", 
-    "Swords", "Bray", "Navan", "Ennis", "Kilkenny", "Carlow", "Tralee", 
-    "Newbridge", "Portlaoise", "Mullingar", "Wexford", "Letterkenny", "Sligo", 
-    "Athlone", "Celbridge", "Clonmel", "Tullamore", "Athenry", "Naas", 
-    "Maynooth", "Killarney", "Arklow", "Cobh"
-  ],
-  NZ: [
-    "Auckland", "Wellington", "Christchurch", "Hamilton", "Tauranga", "Napier-Hastings", 
-    "Dunedin", "Palmerston North", "Nelson", "Rotorua", "New Plymouth", "Whangarei", 
-    "Invercargill", "Whanganui", "Gisborne", "Blenheim", "Pukekohe", "Timaru", 
-    "Taupo", "Masterton", "Levin", "Ashburton", "Cambridge", "Queenstown", 
-    "Kapiti", "Porirua", "Upper Hutt", "Oamaru", "Tokoroa", "Fielding"
-  ],
-  SG: [
-    "Singapore City", "Woodlands", "Jurong West", "Tampines", "Hougang", "Sengkang", 
-    "Yishun", "Ang Mo Kio", "Bedok", "Bukit Merah", "Choa Chu Kang", "Punggol", 
-    "Toa Payoh", "Bukit Batok", "Geylang", "Serangoon", "Pasir Ris", "Kallang", 
-    "Clementi", "Bukit Panjang", "Queenstown", "Bishan", "Marine Parade", "Jurong East", 
-    "Bukit Timah", "Novena", "Whampoa", "Telok Blangah", "Sembawang", "Outram"
-  ],
-  AE: [
-    "Dubai", "Abu Dhabi", "Sharjah", "Al Ain", "Ajman", "Ras Al Khaimah", 
-    "Fujairah", "Umm Al Quwain", "Khor Fakkan", "Dibba Al-Hisn", "Dibba Al-Fujairah", 
-    "Hatta", "Madinat Zayed", "Ruwais", "Liwa Oasis", "Jebel Ali", "Ghayathi", 
-    "Dhaid", "Ar-Rams", "Masafi", "Khorfakkan", "Sweihan", "Delma", "Sha'am", 
-    "Kalba", "Masfoot", "Al Mirfa", "Al Hayer", "Al Shuwaib", "Al Yahar"
-  ],
-  ZA: [
-    "Johannesburg", "Cape Town", "Durban", "Pretoria", "Port Elizabeth", "Bloemfontein", 
-    "Nelspruit", "Kimberley", "Polokwane", "Rustenburg", "East London", "Pietermaritzburg", 
-    "Vereeniging", "Vanderbijlpark", "Centurion", "Potchefstroom", "Newcastle", 
-    "Kroonstad", "Witbank", "Midrand", "Middelburg", "Welkom", "Klerksdorp", 
-    "George", "Paarl", "Springs", "King Williams Town", "Grahamstown", "Worcester", "Upington"
-  ],
-  MX: [
-    "Mexico City", "Guadalajara", "Monterrey", "Puebla", "Tijuana", "León", 
-    "Juárez", "Torreón", "Querétaro", "Mérida", "Cancún", "Chihuahua", "Acapulco", 
-    "San Luis Potosí", "Aguascalientes", "Morelia", "Veracruz", "Culiacán", 
-    "Hermosillo", "Saltillo", "Mexicali", "Cuernavaca", "Tampico", "Toluca", 
-    "Ciudad Guzmán", "Tuxtla Gutiérrez", "Mazatlán", "Reynosa", "Oaxaca", "Villahermosa"
-  ],
-  AR: [
-    "Buenos Aires", "Córdoba", "Rosario", "Mendoza", "San Miguel de Tucumán", 
-    "La Plata", "Mar del Plata", "Salta", "Santa Fe", "San Juan", "Resistencia", 
-    "Santiago del Estero", "Corrientes", "Neuquén", "Posadas", "San Salvador de Jujuy", 
-    "Bahía Blanca", "Paraná", "Formosa", "Río Cuarto", "Comodoro Rivadavia", 
-    "San Luis", "La Rioja", "Concordia", "San Nicolás de los Arroyos", 
-    "San Rafael", "Santa Rosa", "Tandil", "Villa María", "Río Gallegos"
-  ],
-  CL: [
-    "Santiago", "Valparaíso", "Concepción", "Antofagasta", "Viña del Mar", 
-    "Temuco", "Rancagua", "Talca", "Arica", "Chillán", "Los Ángeles", "Puerto Montt", 
-    "Iquique", "Coquimbo", "Osorno", "La Serena", "Calama", "Valdivia", 
-    "Punta Arenas", "Copiapó", "Curicó", "Ovalle", "Quilpué", "San Antonio", 
-    "Linares", "Los Andes", "Melipilla", "San Felipe", "Angol", "Constitución"
-  ],
-  CO: [
-    "Bogotá", "Medellín", "Cali", "Barranquilla", "Cartagena", "Cúcuta", 
-    "Bucaramanga", "Pereira", "Santa Marta", "Ibagué", "Pasto", "Manizales", 
-    "Neiva", "Soledad", "Villavicencio", "Armenia", "Soacha", "Valledupar", 
-    "Montería", "Sincelejo", "Popayán", "Floridablanca", "Palmira", "Buenaventura", 
-    "Barrancabermeja", "Tuluá", "Dosquebradas", "Envigado", "Tunja", "Cartago"
-  ]
-};
-
-type FormValues = {
-  country: string;
-  city: string;
-};
 
 const Outfits = () => {
   const [outfits, setOutfits] = useState<Outfit[]>(sampleOutfits);
-  const [weather, setWeather] = useState<WeatherInfo | null>(null);
-  const [suggestedOutfit, setSuggestedOutfit] = useState<Outfit>(sampleOutfits[0]);
-  const [isWeatherLoading, setIsLoading] = useState(true);
-  const [availableCities, setAvailableCities] = useState<string[]>([]);
-  const [selectedLocation, setSelectedLocation] = useState<{ city?: string; country?: string }>({});
-  const [showLocationAlert, setShowLocationAlert] = useState(false);
-  const [preferencesLoaded, setPreferencesLoaded] = useState(false);
-  const [showWelcomeMessage, setShowWelcomeMessage] = useState(true);
-  const [timeOfDay, setTimeOfDay] = useState<TimeOfDay | undefined>(undefined);
-  const [activity, setActivity] = useState<Activity | undefined>(undefined);
-  const [showOliviaMessage, setShowOliviaMessage] = useState(true);
-  const { user } = useAuth();
-  const isMobile = useIsMobile();
+  const [clothingItems, setClothingItems] = useState<ClothingItem[]>(sampleClothingItems);
+  const [isBuilderOpen, setIsBuilderOpen] = useState(false);
+  const [selectedOutfit, setSelectedOutfit] = useState<Outfit | null>(null);
+  const [showAssistant, setShowAssistant] = useState(true);
   
-  const form = useForm<FormValues>({
-    defaultValues: {
-      country: "",
-      city: ""
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.05 }
     }
-  });
-
-  const selectedCountry = form.watch("country");
-  
-  useEffect(() => {
-    const loadUserPreferences = async () => {
-      if (user && !preferencesLoaded) {
-        try {
-          const { data, error } = await supabase
-            .from('user_preferences')
-            .select('preferred_country, preferred_city')
-            .eq('user_id', user.id)
-            .maybeSingle();
-          
-          if (error) {
-            console.error('Error loading preferences:', error);
-            return;
-          }
-          
-          if (data && data.preferred_country && data.preferred_city) {
-            form.setValue('country', data.preferred_country);
-            
-            const countryCities = citiesByCountry[data.preferred_country as keyof typeof citiesByCountry] || [];
-            setAvailableCities(countryCities);
-            
-            setTimeout(() => {
-              form.setValue('city', data.preferred_city);
-            }, 0);
-            
-            setSelectedLocation({
-              city: data.preferred_city,
-              country: data.preferred_country
-            });
-            
-            console.log('Loaded user preferences:', data);
-            toast.success('Loaded your saved location preferences');
-          }
-          
-          setPreferencesLoaded(true);
-        } catch (err) {
-          console.error('Failed to load user preferences:', err);
-        }
-      }
-    };
-    
-    loadUserPreferences();
-  }, [user, form, preferencesLoaded]);
-  
-  useEffect(() => {
-    if (selectedCountry) {
-      const cities = citiesByCountry[selectedCountry as keyof typeof citiesByCountry] || [];
-      setAvailableCities(cities);
-      
-      const currentCity = form.getValues("city");
-      if (currentCity && !cities.includes(currentCity)) {
-        form.setValue("city", "");
-      }
-    } else {
-      setAvailableCities([]);
-    }
-  }, [selectedCountry, form]);
-
-  const handleWeatherChange = (weatherData: WeatherInfo) => {
-    setWeather(weatherData);
-    setIsLoading(false);
-    console.log("Weather data processed:", weatherData);
   };
   
-  const handleWearOutfit = (outfitId: string) => {
-    setOutfits(prev => 
-      prev.map(outfit => 
-        outfit.id === outfitId 
-          ? { 
-              ...outfit, 
-              timesWorn: outfit.timesWorn + 1,
-              lastWorn: new Date()
-            } 
-          : outfit
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        type: 'spring',
+        stiffness: 100,
+        damping: 10
+      }
+    }
+  };
+
+  const handleCreateOutfit = () => {
+    setIsBuilderOpen(true);
+    setSelectedOutfit(null);
+  };
+
+  const handleEditOutfit = (outfit: Outfit) => {
+    setIsBuilderOpen(true);
+    setSelectedOutfit(outfit);
+  };
+
+  const handleSaveOutfit = (newOutfit: Outfit) => {
+    if (selectedOutfit) {
+      // Update existing outfit
+      setOutfits(outfits.map(outfit => outfit.id === selectedOutfit.id ? newOutfit : outfit));
+    } else {
+      // Add new outfit
+      setOutfits([...outfits, { ...newOutfit, id: String(Date.now()) }]);
+    }
+    setIsBuilderOpen(false);
+    setSelectedOutfit(null);
+  };
+
+  const handleDeleteOutfit = (id: string) => {
+    setOutfits(outfits.filter(outfit => outfit.id !== id));
+  };
+
+  const handleToggleFavorite = (id: string) => {
+    setOutfits(prev =>
+      prev.map(outfit =>
+        outfit.id === id ? { ...outfit, favorite: !outfit.favorite } : outfit
       )
     );
   };
-  
-  const handleRegenerateOutfit = () => {
-    const filteredOutfits = filterOutfitsByPreferences(outfits);
-    
-    if (filteredOutfits.length === 0) {
-      const currentIndex = outfits.findIndex(o => o.id === suggestedOutfit.id);
-      const nextIndex = (currentIndex + 1) % outfits.length;
-      setSuggestedOutfit(outfits[nextIndex]);
-      
-      toast.info('No outfits match your current filters', {
-        description: 'Showing a general suggestion instead.'
-      });
-    } else {
-      const randomIndex = Math.floor(Math.random() * filteredOutfits.length);
-      setSuggestedOutfit(filteredOutfits[randomIndex]);
-      
-      toast.success('Generated a new outfit suggestion', {
-        description: 'Based on your preferences and current filters.'
-      });
-    }
-    
-    setShowOliviaMessage(true);
-    setTimeout(() => setShowOliviaMessage(false), 5000);
-  };
-  
-  const handleTimeOfDayChange = (value: TimeOfDay) => {
-    setTimeOfDay(value === timeOfDay ? undefined : value);
-    
-    setTimeout(() => {
-      handleRegenerateOutfit();
-    }, 100);
-  };
-  
-  const handleActivityChange = (value: Activity) => {
-    setActivity(value === activity ? undefined : value);
-    
-    setTimeout(() => {
-      handleRegenerateOutfit();
-    }, 100);
-  };
-  
-  const filterOutfitsByPreferences = (outfitList: Outfit[]): Outfit[] => {
-    let filtered = [...outfitList];
-    
-    if (activity) {
-      filtered = filtered.filter(outfit => {
-        return outfit.occasions.some(occasion => 
-          occasion.toLowerCase() === activity.toLowerCase() || 
-          (activity === 'work' && ['business', 'formal'].includes(occasion.toLowerCase())) ||
-          (activity === 'casual' && ['everyday', 'outdoor'].includes(occasion.toLowerCase())) ||
-          (activity === 'sport' && ['sporty', 'outdoor'].includes(occasion.toLowerCase())) ||
-          (activity === 'party' && ['special', 'date'].includes(occasion.toLowerCase()))
-        );
-      });
-    }
-    
-    if (timeOfDay) {
-      filtered = filtered.filter(outfit => {
-        if (timeOfDay === 'morning' || timeOfDay === 'afternoon') {
-          return !outfit.occasions.includes('party') && !outfit.occasions.includes('formal');
-        }
-        
-        if (timeOfDay === 'evening' || timeOfDay === 'night') {
-          return outfit.occasions.includes('party') || 
-                 outfit.occasions.includes('formal') || 
-                 outfit.occasions.includes('date') || 
-                 outfit.occasions.includes('special');
-        }
-        
-        return true;
-      });
-    }
-    
-    return filtered;
-  };
-  
-  const handleLikeOutfit = () => {
-    toast.success('We\'ll suggest more outfits like this!');
-  };
-  
-  const handleDislikeOutfit = () => {
-    toast.success('We\'ll suggest fewer outfits like this.');
-    handleRegenerateOutfit();
-  };
-  
-  const handleMakeWarmer = () => {
-    const warmerOutfits = outfits.filter(outfit => 
-      outfit.seasons.includes('autumn') || outfit.seasons.includes('winter')
-    );
-    
-    if (warmerOutfits.length > 0) {
-      const randomIndex = Math.floor(Math.random() * warmerOutfits.length);
-      setSuggestedOutfit(warmerOutfits[randomIndex]);
-      
-      toast.success('Found a warmer outfit option', {
-        description: 'Added more layers to keep you comfortable.'
-      });
-    } else {
-      toast('No warmer outfits available', {
-        description: 'Try adding more cold-weather items to your wardrobe.'
-      });
-    }
-  };
-  
-  const handleChangeTop = () => {
-    if (outfits.length < 2) return;
-    
-    const currentOutfit = suggestedOutfit;
-    
-    const topItemId = currentOutfit.items[0];
-    
-    const differentTopOutfit = outfits.find(o => 
-      o.id !== currentOutfit.id && o.items[0] !== topItemId
-    );
-    
-    if (differentTopOutfit) {
-      const newOutfit = {
-        ...currentOutfit,
-        items: [differentTopOutfit.items[0], ...currentOutfit.items.slice(1)],
-        name: `${currentOutfit.name} (Modified)`
-      };
-      
-      setSuggestedOutfit(newOutfit);
-      
-      toast.success('Changed the top item', {
-        description: 'Keeping the rest of your outfit the same.'
-      });
-    } else {
-      toast('No alternative tops available', {
-        description: 'Try adding more variety to your wardrobe.'
-      });
-    }
-  };
-  
-  const handleChangeBottom = () => {
-    if (outfits.length < 2) return;
-    
-    const currentOutfit = suggestedOutfit;
-    
-    const bottomItemId = currentOutfit.items[1];
-    
-    const differentBottomOutfit = outfits.find(o => 
-      o.id !== currentOutfit.id && o.items.length > 1 && o.items[1] !== bottomItemId
-    );
-    
-    if (differentBottomOutfit) {
-      const newOutfit = {
-        ...currentOutfit,
-        items: [currentOutfit.items[0], differentBottomOutfit.items[1], ...currentOutfit.items.slice(2)],
-        name: `${currentOutfit.name} (Modified)`
-      };
-      
-      setSuggestedOutfit(newOutfit);
-      
-      toast.success('Changed the bottom item', {
-        description: 'Keeping the rest of your outfit the same.'
-      });
-    } else {
-      toast('No alternative bottoms available', {
-        description: 'Try adding more variety to your wardrobe.'
-      });
-    }
-  };
-  
-  const handleToggleFavorite = (outfitId: string) => {
-    setOutfits(prev => 
-      prev.map(outfit => 
-        outfit.id === outfitId 
-          ? { ...outfit, favorite: !outfit.favorite } 
-          : outfit
-      )
-    );
-    
-    const outfit = outfits.find(outfit => outfit.id === outfitId);
-    if (outfit) {
-      const action = !outfit.favorite ? 'added to' : 'removed from';
-      toast.success(`"${outfit.name}" outfit ${action} favorites`);
-    }
+
+  const handleAssistantAction = () => {
+    setShowAssistant(false);
   };
 
-  const onSubmit = (data: FormValues) => {
-    if (data.country && data.city) {
-      const countryName = countries.find(c => c.code === data.country)?.name || data.country;
-      
-      setSelectedLocation({
-        city: data.city,
-        country: data.country
-      });
-      
-      if (user) {
-        const savePreferences = async () => {
-          try {
-            const { error } = await supabase
-              .from('user_preferences')
-              .upsert({
-                user_id: user.id,
-                preferred_country: data.country,
-                preferred_city: data.city,
-                updated_at: new Date().toISOString()
-              }, {
-                onConflict: 'user_id'
-              });
-            
-            if (error) {
-              console.error('Error saving preferences:', error);
-              toast.error('Failed to save your location preferences');
-              return;
-            }
-            
-            toast.success('Saved your location preferences');
-          } catch (err) {
-            console.error('Failed to save user preferences:', err);
-            toast.error('Something went wrong');
-          }
-        };
-        
-        savePreferences();
-      }
-      
-      setShowLocationAlert(false);
-    } else {
-      setShowLocationAlert(true);
-    }
-  };
-  
-  const userStyles = sampleUserPreferences.favoriteStyles || [];
-
-  const messages = [
-    "Let's find your perfect fit for today!",
-    "This would look fabulous on you!",
-    "I've picked something special for today!",
-    "Weather-appropriate and stylish!",
-    "You'll love this combination!"
-  ];
-  
-  const getRandomMessage = () => {
-    return messages[Math.floor(Math.random() * messages.length)];
-  };
-  
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white">
       <Header />
       
-      <div className="w-full pt-20 pb-10 bg-gradient-to-br from-indigo-900 via-purple-800 to-violet-900 text-white relative overflow-hidden mt-16">
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-0 left-[10%] w-28 h-28 rounded-full bg-pink-300 blur-xl"></div>
-          <div className="absolute top-[30%] right-[5%] w-40 h-40 rounded-full bg-blue-400 blur-xl"></div>
-          <div className="absolute bottom-0 left-[30%] w-52 h-52 rounded-full bg-purple-300 blur-xl"></div>
-          <div className="absolute top-[20%] left-[60%] w-24 h-24 rounded-full bg-indigo-300 blur-xl"></div>
-        </div>
-        
-        <div className="container px-4 sm:px-6 max-w-6xl mx-auto relative z-10">
-          <div className="flex flex-col items-center justify-center mb-3 relative">
-            <h1 className="text-3xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-300 via-purple-100 to-blue-200 tracking-tight text-center">
-              Today's Look, Curated by Olivia
-            </h1>
-            <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-pink-500/20 via-purple-500/20 to-blue-500/20 blur-xl -z-10 scale-[1.2] opacity-50"></div>
-            <p className="mt-4 text-base md:text-lg text-center text-white/90 max-w-3xl">
-              {weather ? 
-                `Based on the weather in ${selectedLocation.city || 'your area'} (${weather.temperature}°${weather.unit || 'C'}, ${weather.condition}) and your unique style, here's what I recommend for today.` :
-                "Select your location to get personalized outfit recommendations based on the weather and your style preferences."
-              }
-            </p>
-            <div className="flex flex-wrap items-center justify-center gap-3 mt-6">
-              <Button 
-                onClick={handleRegenerateOutfit} 
-                className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 shadow-lg hover:shadow-pink-500/20 transition-all"
-              >
-                <RefreshCw className="mr-2 h-4 w-4" />
-                Refresh Outfit
-              </Button>
-              
-              <Button 
-                variant="outline" 
-                onClick={() => document.getElementById('filters-section')?.scrollIntoView({ behavior: 'smooth' })}
-                className="bg-white/10 border-white/20 hover:bg-white/20 text-white shadow-md"
-              >
-                <Filter className="mr-2 h-4 w-4" />
-                Adjust My Filters
-              </Button>
-            </div>
-          </div>
-          
-          <div className="absolute right-4 sm:right-12 lg:right-20 top-8 sm:top-12 lg:top-20 transition-all">
-            {showOliviaMessage && (
-              <motion.div 
-                initial={{ opacity: 0, y: 10, scale: 0.9 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ type: "spring", damping: 12 }}
-                className="absolute right-16 -top-6 sm:-top-10 bg-white text-purple-900 px-4 py-2 rounded-xl rounded-br-none shadow-lg max-w-[180px] sm:max-w-[220px] text-xs sm:text-sm font-medium z-10"
-              >
-                {getRandomMessage()}
-                <div className="absolute bottom-0 right-0 w-4 h-4 bg-white transform translate-y-1/2 rotate-45"></div>
-              </motion.div>
-            )}
+      <main className="container mx-auto px-4 pt-24 pb-16">
+        <motion.div 
+          className="space-y-12"
+          initial="hidden"
+          animate="visible"
+          variants={containerVariants}
+        >
+          <div className="flex flex-col lg:flex-row items-center gap-6 mb-12">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="lg:w-1/2"
+            >
+              <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
+                Your Perfect Outfits
+              </h1>
+              <p className="text-lg text-white/80 mb-6">
+                Discover AI-powered outfit combinations based on your style, occasion, and the weather.
+              </p>
+              <div className="flex flex-wrap gap-4">
+                <Button size="lg" className="bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90">
+                  <Plus className="mr-2 h-4 w-4" /> Create New Outfit
+                </Button>
+                <Button size="lg" variant="outline" className="border-purple-400/30 text-white hover:bg-white/10">
+                  <Filter className="mr-2 h-4 w-4" /> Filter Options
+                </Button>
+              </div>
+            </motion.div>
             
             <motion.div 
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ type: "spring", damping: 12, delay: 0.2 }}
-              whileHover={{ scale: 1.05 }}
-              className="h-16 w-16 sm:h-20 sm:w-20 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 p-1 shadow-lg ring-4 ring-white/20"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2 }}
+              className="lg:w-1/2"
             >
-              <Avatar className="h-full w-full">
-                <AvatarImage src="/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png" alt="Olivia" />
-                <AvatarFallback className="bg-purple-600">OB</AvatarFallback>
-              </Avatar>
+              <div className="relative">
+                <div className="absolute -top-4 -left-4 bg-gradient-to-r from-purple-600 to-pink-500 rounded-full p-3 shadow-lg">
+                  <Sparkles className="h-5 w-5 text-white" />
+                </div>
+                <Card className="glass-dark border-white/10 overflow-hidden">
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-4 mb-4">
+                      <Avatar className="h-16 w-16 border-2 border-purple-400/30">
+                        <AvatarImage src="/lovable-uploads/86bf74b8-b311-4e3c-bfd6-53819add3df8.png" alt="Olivia Bloom" />
+                        <AvatarFallback className="bg-gradient-to-r from-purple-600 to-pink-500 text-white">OB</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <h3 className="text-xl font-semibold flex items-center">
+                          Style Suggestion
+                          <Sparkle className="h-4 w-4 ml-2 text-yellow-300" />
+                        </h3>
+                        <p className="text-white/70">From Olivia Bloom</p>
+                      </div>
+                    </div>
+                    <p className="text-white/90 italic">
+                      "Let your outfit reflect your mood. Today's forecast calls for layers that transition from cool mornings to warmer afternoons. Try pairing comfort with style."
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
             </motion.div>
           </div>
-        </div>
-        
-        <div className="absolute bottom-0 left-0 right-0 h-12 bg-background" style={{ 
-          borderTopLeftRadius: '50% 100%', 
-          borderTopRightRadius: '50% 100%' 
-        }}></div>
-      </div>
       
-      <div className="container px-4 sm:px-6 max-w-6xl mx-auto mt-8">
-        <Card className="mb-8 border border-purple-200/20 shadow-lg overflow-hidden">
-          <CardHeader className="bg-gradient-to-r from-purple-900/30 to-indigo-900/30 pb-2">
-            <CardTitle className="flex items-center text-xl font-bold">
-              <Cloud className="h-5 w-5 mr-2 text-purple-300" />
-              Today's Weather in {selectedLocation.city || 'Your Area'}
-            </CardTitle>
-          </CardHeader>
+          {/* Today's Recommended Outfit Section */}
+          <motion.section variants={itemVariants}>
+            <h2 className="text-2xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-purple-400">
+              Today's Recommended Outfit
+            </h2>
+            <WeatherWidget />
+            <OutfitSuggestion outfit={sampleOutfits[0]} />
+          </motion.section>
           
-          <CardContent className="p-4 md:p-6">
-            {showLocationAlert && (
-              <Alert variant="destructive" className="mb-4">
-                <AlertTriangle className="h-4 w-4" />
-                <AlertTitle>Missing Location</AlertTitle>
-                <AlertDescription>
-                  Please select both a country and city to get accurate weather and outfit recommendations.
-                </AlertDescription>
-              </Alert>
-            )}
-            
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mb-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="country"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Country</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          value={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select a country" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {countries.map((country) => (
-                              <SelectItem key={country.code} value={country.code}>
-                                {country.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={form.control}
-                    name="city"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>City</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          value={field.value}
-                          disabled={!selectedCountry}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder={selectedCountry ? "Select a city" : "Select a country first"} />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {availableCities.map((city) => (
-                              <SelectItem key={city} value={city}>
-                                {city}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                
-                <div className="flex justify-center my-4">
-                  <Button type="submit" className="w-full sm:w-auto">
-                    <MapPin className="mr-2 h-4 w-4" />
-                    Update Location
-                  </Button>
-                </div>
-              </form>
-              
-              <div className="mt-2">
-                <WeatherWidget 
-                  onWeatherChange={handleWeatherChange}
-                  city={selectedLocation.city}
-                  country={selectedLocation.country}
-                  savePreferences={true}
-                  showError={true}
-                  className="rounded-xl shadow-md"
-                />
-              </div>
-            </Form>
-          </CardContent>
-        </Card>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <div className="h-full">
-            <h2 className="text-xl font-bold mb-3">Olivia's Style Advice</h2>
-            <div className="rounded-xl border shadow-sm bg-gradient-to-br from-pink-50 to-purple-50 dark:from-purple-950/20 dark:to-indigo-950/30 p-5 flex flex-col h-[calc(100%-32px)]">
-              <div className="flex items-start gap-3 mb-4">
-                <Avatar className="h-10 w-10 border-2 border-white/30 shadow-sm">
-                  <AvatarImage src="/lovable-uploads/28e5664c-3c8a-4b7e-9c99-065ad489583f.png" alt="Olivia" />
-                  <AvatarFallback className="bg-purple-600">OB</AvatarFallback>
-                </Avatar>
-                <div>
-                  <p className="font-semibold text-sm">Olivia Bloom</p>
-                  <p className="text-xs text-muted-foreground">Style Assistant</p>
-                </div>
-              </div>
-              
-              <div className="flex-1 space-y-4">
-                <div className="bg-white/60 dark:bg-gray-800/40 rounded-lg p-3 shadow-sm border border-white/40 dark:border-gray-700/40 text-sm">
-                  {weather ? (
-                    <p>Based on the current weather in {selectedLocation.city || 'your area'} ({weather.temperature}°{weather.unit || 'C'}, {weather.condition}), I've picked an outfit that's both stylish and practical.</p>
-                  ) : (
-                    <p>I'll help you dress appropriately for the weather once we have your location.</p>
-                  )}
-                </div>
-                
-                <div className="bg-white/60 dark:bg-gray-800/40 rounded-lg p-3 shadow-sm border border-white/40 dark:border-gray-700/40 text-sm">
-                  <p>Your style preferences show you enjoy {userStyles && userStyles.length > 0 ? userStyles.join(', ') : 'versatile'} styles. I've taken this into account for today's recommendation.</p>
-                </div>
-                
-                {suggestedOutfit && (
-                  <div className="bg-white/60 dark:bg-gray-800/40 rounded-lg p-3 shadow-sm border border-white/40 dark:border-gray-700/40 text-sm">
-                    <p>The "{suggestedOutfit.name}" outfit would be perfect for today. It works well for {suggestedOutfit.occasions && suggestedOutfit.occasions.length > 0 ? suggestedOutfit.occasions.join(', ') : 'various'} occasions, making it versatile for your day.</p>
-                  </div>
-                )}
-                
-                {activity && (
-                  <div className="bg-white/60 dark:bg-gray-800/40 rounded-lg p-3 shadow-sm border border-white/40 dark:border-gray-700/40 text-sm">
-                    <p>Since you're planning for {activity} activities today, I've selected items that provide the right balance of comfort and style.</p>
-                  </div>
-                )}
-              </div>
+          {/* User's Outfit Collection */}
+          <motion.section variants={itemVariants}>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+                My Outfit Collection
+              </h2>
+              <Button variant="outline" onClick={handleCreateOutfit}>
+                <Plus className="mr-2 h-4 w-4" /> Create Outfit
+              </Button>
             </div>
-          </div>
+            <OutfitGrid 
+              outfits={outfits} 
+              onEdit={handleEditOutfit}
+              onDelete={handleDeleteOutfit}
+              onToggleFavorite={handleToggleFavorite}
+            />
+          </motion.section>
           
-          <div className="h-full">
-            <h2 className="text-xl font-bold mb-3">Today's Outfit Suggestion</h2>
-            <div className="bg-white dark:bg-gray-950 rounded-xl border shadow-sm p-4 h-[calc(100%-32px)] overflow-auto">
-              <OutfitSuggestion 
-                outfit={suggestedOutfit}
-                onLike={handleLikeOutfit}
-                onDislike={handleDislikeOutfit}
-                onWear={() => handleWearOutfit(suggestedOutfit.id)}
-                onRefresh={handleRegenerateOutfit}
-                onMakeWarmer={handleMakeWarmer}
-                onChangeTop={handleChangeTop}
-                onChangeBottom={handleChangeBottom}
-                weather={weather || undefined}
-                items={sampleClothingItems}
-              />
-            </div>
-          </div>
-        </div>
-        
-        <div id="filters-section" className="mt-8">
-          <h2 className="text-xl font-bold mb-4">Outfit Filters</h2>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-            <div>
-              <h3 className="text-lg font-medium mb-3">Time of Day</h3>
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  variant={timeOfDay === 'morning' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => handleTimeOfDayChange('morning')}
-                  className="flex items-center"
-                >
-                  <Sun className="mr-1 h-4 w-4" />
-                  Morning
-                </Button>
-                <Button
-                  variant={timeOfDay === 'afternoon' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => handleTimeOfDayChange('afternoon')}
-                  className="flex items-center"
-                >
-                  <CloudSun className="mr-1 h-4 w-4" />
-                  Afternoon
-                </Button>
-                <Button
-                  variant={timeOfDay === 'evening' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => handleTimeOfDayChange('evening')}
-                  className="flex items-center"
-                >
-                  <Cloud className="mr-1 h-4 w-4" />
-                  Evening
-                </Button>
-                <Button
-                  variant={timeOfDay === 'night' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => handleTimeOfDayChange('night')}
-                  className="flex items-center"
-                >
-                  <AlarmClockCheck className="mr-1 h-4 w-4" />
-                  Night
-                </Button>
-              </div>
-            </div>
-            
-            <div>
-              <h3 className="text-lg font-medium mb-3">Activity</h3>
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  variant={activity === 'casual' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => handleActivityChange('casual')}
-                >
-                  Casual
-                </Button>
-                <Button
-                  variant={activity === 'work' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => handleActivityChange('work')}
-                >
-                  Work
-                </Button>
-                <Button
-                  variant={activity === 'sport' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => handleActivityChange('sport')}
-                >
-                  Sport
-                </Button>
-                <Button
-                  variant={activity === 'party' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => handleActivityChange('party')}
-                >
-                  Party
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+          {/* Outfit Builder Section */}
+          <OutfitBuilder
+            isOpen={isBuilderOpen}
+            onClose={() => setIsBuilderOpen(false)}
+            onSave={handleSaveOutfit}
+            clothingItems={clothingItems}
+            initialOutfit={selectedOutfit}
+          />
+        </motion.div>
+      </main>
+      
+      {showAssistant && (
+        <OliviaBloomAssistant
+          message="Welcome to your Outfits page! Here you can create new outfits, browse your collection, and get personalized style suggestions."
+          type="info"
+          timing="medium"
+          actionText="Got it!"
+          onAction={handleAssistantAction}
+          position="bottom-right"
+        />
+      )}
     </div>
   );
 };

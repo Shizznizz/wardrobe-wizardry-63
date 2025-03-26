@@ -1,4 +1,3 @@
-
 import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -8,8 +7,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toast } from 'sonner';
-import { Camera, Shirt, Image, Download, Share2, Trash2 } from 'lucide-react';
+import { Camera, Shirt, Image, Download, Share2, Trash2, Sparkles, Sparkle, ArrowRight } from 'lucide-react';
 import VirtualFittingRoom from '@/components/VirtualFittingRoom';
 import { Outfit } from '@/lib/types';
 
@@ -22,7 +22,6 @@ const NewClothes = () => {
   const clothingPhotoInputRef = useRef<HTMLInputElement>(null);
   const [selectedTab, setSelectedTab] = useState<string>('upload');
   
-  // Mock outfit data for the result view
   const mockOutfit: Outfit = {
     id: 'new-clothing',
     name: 'New Clothing Preview',
@@ -67,21 +66,17 @@ const NewClothes = () => {
       video.onloadedmetadata = () => {
         video.play();
         
-        // Create canvas to capture the photo
         const canvas = document.createElement('canvas');
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
         
-        // Wait a moment for camera to initialize
         setTimeout(() => {
           const ctx = canvas.getContext('2d');
           ctx?.drawImage(video, 0, 0);
           
-          // Convert canvas to data URL
           const photoDataUrl = canvas.toDataURL('image/png');
           setUserPhoto(photoDataUrl);
           
-          // Stop all video tracks to release camera
           const tracks = stream.getTracks();
           tracks.forEach(track => track.stop());
           
@@ -104,11 +99,8 @@ const NewClothes = () => {
       setIsProcessing(true);
       toast.info('Processing your virtual try-on. This may take a few moments...');
 
-      // Simulate processing delay
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // In a real implementation, this would use AI to composite the clothing onto the user
-      // For now, we'll just show the user photo as a placeholder result
       setFinalImage(userPhoto);
       
       toast.success('Virtual try-on complete!');
@@ -159,15 +151,62 @@ const NewClothes = () => {
           animate="visible"
           variants={containerVariants}
         >
-          <motion.div variants={itemVariants} className="text-center max-w-3xl mx-auto mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 pb-2">
-              New Clothes Preview
-            </h1>
-            <p className="text-lg text-blue-100 max-w-2xl mx-auto backdrop-blur-sm py-4 px-6 rounded-lg border border-white/10 shadow-lg neo-blur">
-              Upload a clothing item you're considering buying, and see how it looks on you before making a purchase.
-            </p>
-          </motion.div>
-          
+          <div className="flex flex-col lg:flex-row items-center gap-6 mb-12">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="lg:w-1/2"
+            >
+              <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
+                New Clothes Preview
+              </h1>
+              <p className="text-lg text-white/80 mb-6">
+                Visualize how new items will look on you before making any purchase decisions.
+              </p>
+              <div className="flex flex-wrap gap-4">
+                <Button size="lg" className="bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90">
+                  <Camera className="mr-2 h-4 w-4" /> Take a Photo
+                </Button>
+                <Button size="lg" variant="outline" className="border-purple-400/30 text-white hover:bg-white/10">
+                  <Image className="mr-2 h-4 w-4" /> Upload Images
+                </Button>
+              </div>
+            </motion.div>
+            
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2 }}
+              className="lg:w-1/2"
+            >
+              <div className="relative">
+                <div className="absolute -top-4 -left-4 bg-gradient-to-r from-purple-600 to-pink-500 rounded-full p-3 shadow-lg">
+                  <Sparkles className="h-5 w-5 text-white" />
+                </div>
+                <Card className="glass-dark border-white/10 overflow-hidden">
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-4 mb-4">
+                      <Avatar className="h-16 w-16 border-2 border-purple-400/30">
+                        <AvatarImage src="/lovable-uploads/86bf74b8-b311-4e3c-bfd6-53819add3df8.png" alt="Olivia Bloom" />
+                        <AvatarFallback className="bg-gradient-to-r from-purple-600 to-pink-500 text-white">OB</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <h3 className="text-xl font-semibold flex items-center">
+                          Virtual Try-On Tip
+                          <Sparkle className="h-4 w-4 ml-2 text-yellow-300" />
+                        </h3>
+                        <p className="text-white/70">From Olivia Bloom</p>
+                      </div>
+                    </div>
+                    <p className="text-white/90 italic">
+                      "Try before you buy! Upload a photo of yourself and a clothing item you're considering to see how they'll look together before making a purchase."
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            </motion.div>
+          </div>
+
           <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div className="space-y-6">
               <Card className="border-0 shadow-soft bg-slate-900/40 border border-blue-500/20 backdrop-blur-lg">
