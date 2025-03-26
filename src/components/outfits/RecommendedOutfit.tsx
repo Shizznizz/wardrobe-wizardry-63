@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Coffee, Party, Umbrella, Sunset, Moon, TrousersIcon } from '@/components/ui/icons';
 import WeatherWidget from '@/components/WeatherWidget';
 import OutfitSuggestion from '@/components/OutfitSuggestion';
+import LocationSelector from '@/components/weather/LocationSelector';
 import { Outfit, ClothingItem, WeatherInfo } from '@/lib/types';
 
 interface RecommendedOutfitProps {
@@ -18,6 +19,7 @@ const RecommendedOutfit = ({ outfit, clothingItems, onRefreshOutfit }: Recommend
   const [currentWeather, setCurrentWeather] = useState<WeatherInfo | null>(null);
   const [selectedOccasion, setSelectedOccasion] = useState<string | null>(null);
   const [showRotatingView, setShowRotatingView] = useState(false);
+  const [location, setLocation] = useState<{ city?: string; country?: string }>({});
 
   const handleWeatherChange = (weather: WeatherInfo) => {
     setCurrentWeather(weather);
@@ -31,6 +33,10 @@ const RecommendedOutfit = ({ outfit, clothingItems, onRefreshOutfit }: Recommend
     setShowRotatingView(true);
     setTimeout(() => setShowRotatingView(false), 1000);
     onRefreshOutfit();
+  };
+
+  const handleLocationChange = (city: string, country: string) => {
+    setLocation({ city, country });
   };
 
   return (
@@ -55,7 +61,19 @@ const RecommendedOutfit = ({ outfit, clothingItems, onRefreshOutfit }: Recommend
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
         <div className="md:col-span-1">
-          <WeatherWidget onWeatherChange={handleWeatherChange} />
+          <LocationSelector 
+            onLocationChange={handleLocationChange}
+            initialCity={location.city}
+            initialCountry={location.country}
+          />
+          
+          <div className="mt-4">
+            <WeatherWidget 
+              onWeatherChange={handleWeatherChange} 
+              city={location.city}
+              country={location.country}
+            />
+          </div>
           
           <div className="mt-4 bg-white/5 border border-white/10 rounded-lg p-4">
             <h3 className="text-lg font-medium mb-2 flex items-center">
