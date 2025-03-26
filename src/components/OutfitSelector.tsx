@@ -10,6 +10,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { useIsMobile } from '@/hooks/use-mobile';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
 
 interface OutfitSelectorProps {
   outfits: Outfit[];
@@ -53,11 +54,13 @@ const OutfitSelector = ({ outfits, clothingItems, onSelect, selectedOutfitId }: 
                       const item = clothingItems.find(i => i.id === itemId);
                       return item ? (
                         <div key={item.id} className="aspect-square rounded-md overflow-hidden border border-white/10">
-                          <img 
-                            src={item.imageUrl} 
-                            alt={item.name} 
-                            className="w-full h-full object-cover object-center"
-                          />
+                          <AspectRatio ratio={1/1} className="h-full">
+                            <img 
+                              src={item.imageUrl} 
+                              alt={item.name} 
+                              className="w-full h-full object-cover object-center"
+                            />
+                          </AspectRatio>
                         </div>
                       ) : null;
                     })}
