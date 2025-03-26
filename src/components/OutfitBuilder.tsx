@@ -1,13 +1,12 @@
-
 import { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ClothingItem, Outfit, ClothingSeason, ClothingOccasion } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
-import { Shirt, Plus, CalendarDays, Sun, CloudRain, Trash2 } from 'lucide-react';
+import { Shirt, Plus, CalendarDays, Sun, CloudRain, Trash2, X } from 'lucide-react';
 
 interface OutfitBuilderProps {
   isOpen: boolean;
@@ -30,7 +29,6 @@ const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }
   useEffect(() => {
     if (initialOutfit) {
       setOutfitName(initialOutfit.name);
-      // Convert item IDs to actual ClothingItem objects
       const itemObjects = initialOutfit.items
         .map(itemId => clothingItems.find(item => item.id === itemId))
         .filter(item => item !== undefined) as ClothingItem[];
@@ -54,7 +52,6 @@ const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }
     const newOutfit: Outfit = {
       id: initialOutfit?.id || '',
       name: outfitName,
-      // Convert ClothingItem objects to item IDs
       items: selectedItems.map(item => item.id),
       seasons: selectedSeasons,
       occasions: selectedOccasions,
@@ -93,7 +90,6 @@ const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }
   };
   
   const filteredClothingItems = clothingItems.filter(item => {
-    // In a real app, we could filter by category, color, etc.
     return true;
   });
   
@@ -109,6 +105,16 @@ const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }
           <DialogTitle className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
             {initialOutfit ? 'Edit Outfit' : 'Create New Outfit'}
           </DialogTitle>
+          
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="absolute right-4 top-4 rounded-sm opacity-70 hover:opacity-100 hover:bg-slate-800"
+            onClick={onClose}
+          >
+            <X className="h-4 w-4" />
+            <span className="sr-only">Close</span>
+          </Button>
         </DialogHeader>
         
         <div className="space-y-6 py-4">
@@ -236,13 +242,19 @@ const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }
         </div>
         
         <DialogFooter className="flex justify-between">
-          <Button variant="outline" onClick={onClose} className="border-white/10">
+          <Button 
+            variant="outline" 
+            onClick={onClose} 
+            className="border-white/10"
+            type="button"
+          >
             Cancel
           </Button>
           <Button 
             onClick={handleSave} 
             disabled={!isFormValid()}
             className="bg-gradient-to-r from-blue-600 to-indigo-600"
+            type="button"
           >
             <Plus className="h-4 w-4 mr-2" />
             {initialOutfit ? 'Update Outfit' : 'Save Outfit'}

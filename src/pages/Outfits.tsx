@@ -52,18 +52,15 @@ const Outfits = () => {
           <div className="flex flex-col lg:flex-row items-center gap-6 mb-12">
             <OutfitHero onCreateOutfit={handleCreateOutfit} />
             
-            {/* Style Situation replaces the large Tips component */}
             <StyleSituation />
           </div>
       
-          {/* Today's Recommended Outfit Section */}
           <RecommendedOutfit 
             outfit={outfits[0]} 
             clothingItems={clothingItems}
             onRefreshOutfit={handleRefreshOutfit}
           />
           
-          {/* User's Outfit Collection */}
           <OutfitCollection 
             outfits={outfits}
             onCreateOutfit={handleCreateOutfit}
@@ -73,10 +70,9 @@ const Outfits = () => {
             clothingItems={clothingItems}
           />
           
-          {/* Outfit Builder Section */}
           <OutfitBuilder
             isOpen={isBuilderOpen}
-            onClose={() => handleCreateOutfit()}
+            onClose={() => setIsBuilderOpen(false)}
             onSave={handleSaveOutfit}
             clothingItems={clothingItems}
             initialOutfit={selectedOutfit}
@@ -84,7 +80,6 @@ const Outfits = () => {
         </motion.div>
       </main>
       
-      {/* Olivia's Tips positioned at the top-right below the header */}
       <OliviaTips position="top-right" />
       
       {showAssistant && (

@@ -29,13 +29,13 @@ export function useOutfitState(initialOutfits: Outfit[], initialClothingItems: C
   }, [currentWeather]);
 
   const handleCreateOutfit = () => {
-    setIsBuilderOpen(true);
     setSelectedOutfit(null);
+    setIsBuilderOpen(!isBuilderOpen);
   };
 
   const handleEditOutfit = (outfit: Outfit) => {
-    setIsBuilderOpen(true);
     setSelectedOutfit(outfit);
+    setIsBuilderOpen(true);
   };
 
   const handleSaveOutfit = (newOutfit: Outfit) => {
@@ -95,6 +95,7 @@ export function useOutfitState(initialOutfits: Outfit[], initialClothingItems: C
     handleShowTips,
     handleAssistantAction,
     handleRefreshOutfit,
-    setShowAssistant
+    setShowAssistant,
+    setIsBuilderOpen // Export this setter to allow direct control of the builder state
   };
 }
