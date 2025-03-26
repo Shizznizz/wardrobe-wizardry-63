@@ -6,6 +6,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Party } from '@/components/ui/icons';
 import { HoverCard, HoverCardTrigger, HoverCardContent } from '@/components/ui/hover-card';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface OliviaTipsProps {
   position?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';
@@ -16,6 +17,7 @@ const OliviaTips = ({ position = 'top-right' }: OliviaTipsProps) => {
   const [showTips, setShowTips] = useState(false);
   const [currentTipIndex, setCurrentTipIndex] = useState(0);
   const [hasCompletedTips, setHasCompletedTips] = useState(false);
+  const isMobile = useIsMobile();
   
   const tips = [
     {
@@ -36,11 +38,16 @@ const OliviaTips = ({ position = 'top-right' }: OliviaTipsProps) => {
   ];
 
   const getPositionClasses = () => {
+    // Adjust position for mobile devices
+    if (isMobile && position === 'top-right') {
+      return 'top-36 right-6'; // Move avatar lower on mobile
+    }
+    
     switch(position) {
       case 'top-left': return 'top-24 left-6';
       case 'bottom-right': return 'bottom-20 right-6';
       case 'bottom-left': return 'bottom-6 left-6';
-      case 'top-right': return 'top-24 right-6'; // Default position, now explicitly defined
+      case 'top-right': return 'top-24 right-6'; // Default position
       default: return 'top-24 right-6';
     }
   };
