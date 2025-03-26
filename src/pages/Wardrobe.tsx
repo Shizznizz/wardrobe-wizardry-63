@@ -6,11 +6,11 @@ import OliviaBloomAdvisor from '@/components/OliviaBloomAdvisor';
 import OliviaBloomAssistant from '@/components/OliviaBloomAssistant';
 import OliviaTips from '@/components/OliviaTips';
 import UploadModal from '@/components/UploadModal';
-import { ClothingItem } from '@/lib/types';
+import { ClothingItem, ClothingType } from '@/lib/types';
 import { sampleClothingItems, sampleOutfits, sampleUserPreferences } from '@/lib/wardrobeData';
 import { toast } from 'sonner';
 import { Confetti } from '@/components/ui/confetti';
-import { ArrowUpDown, Info, Shirt, Sparkles, LayoutGrid, ArrowRight } from 'lucide-react';
+import { ArrowUpDown, Info, Shirt, Sparkles, LayoutGrid, ArrowRight, X } from 'lucide-react';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -20,6 +20,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import CategoryModal from '@/components/CategoryModal';
 
 const Wardrobe = () => {
   const [items, setItems] = useState<ClothingItem[]>(sampleClothingItems);
@@ -28,6 +29,8 @@ const Wardrobe = () => {
   const [hasAddedItem, setHasAddedItem] = useState(false);
   const [sortOption, setSortOption] = useState<'newest' | 'favorites' | 'most-worn' | 'color' | 'most-matched' | 'weather-fit' | 'not-recent'>('newest');
   const [showCompactView, setShowCompactView] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<ClothingType | null>(null);
+  const [categoryModalOpen, setCategoryModalOpen] = useState(false);
   const { user } = useAuth();
 
   const handleUpload = (newItem: ClothingItem) => {
@@ -55,6 +58,16 @@ const Wardrobe = () => {
       const action = !item.favorite ? 'added to' : 'removed from';
       toast.success(`${item.name} ${action} favorites`);
     }
+  };
+
+  const handleCategorySelect = (category: ClothingType | null) => {
+    setSelectedCategory(category);
+    if (category) {
+      toast.success(`Showing ${category} items`);
+    } else {
+      toast.success('Showing all items');
+    }
+    setCategoryModalOpen(false);
   };
 
   const containerVariants = {
@@ -101,7 +114,11 @@ const Wardrobe = () => {
     }
   };
 
-  const sortedItems = [...items].sort((a, b) => {
+  const filteredItems = selectedCategory 
+    ? items.filter(item => item.type === selectedCategory) 
+    : items;
+
+  const sortedItems = [...filteredItems].sort((a, b) => {
     switch (sortOption) {
       case 'newest':
         return new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime();
@@ -164,7 +181,12 @@ const Wardrobe = () => {
                 <div id="upload-button">
                   <UploadModal onUpload={handleUpload} />
                 </div>
-                <Button size="lg" variant="outline" className="border-purple-400/30 text-white hover:bg-white/10">
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="border-purple-400/30 text-white hover:bg-white/10"
+                  onClick={() => setCategoryModalOpen(true)}
+                >
                   <ArrowRight className="mr-2 h-4 w-4" /> Browse By Category
                 </Button>
               </div>
@@ -176,12 +198,28 @@ const Wardrobe = () => {
               <div className="relative">
                 <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
                   {getPersonalizedGreeting()}
+                  {selectedCategory && (
+                    <span className="ml-2 text-xl text-white/90">
+                      (<span className="capitalize">{selectedCategory}</span>)
+                    </span>
+                  )}
                 </h2>
                 <div className="h-1 w-3/4 mt-2 bg-gradient-to-r from-blue-400/70 via-purple-400/70 to-pink-400/70 rounded-full shadow-[0_0_10px_rgba(168,85,247,0.5)]"></div>
                 <p className="mt-3 text-gray-400 text-sm md:text-base font-light">
                   Your digital closet, always in style
                 </p>
               </div>
+              
+              {selectedCategory && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSelectedCategory(null)}
+                  className="border-indigo-400/30 text-white hover:bg-white/10 mr-2"
+                >
+                  <X className="h-4 w-4 mr-1" /> Clear Filter
+                </Button>
+              )}
             </div>
             
             <div className="flex justify-between items-center mt-4 mb-10 flex-wrap gap-3">
@@ -235,7 +273,7 @@ const Wardrobe = () => {
             </div>
           </motion.div>
           
-          {items.length <= 2 ? (
+          {(items.length <= 2 || (selectedCategory && sortedItems.length === 0)) ? (
             <motion.div variants={itemVariants} className="mb-10">
               <Card className="bg-gradient-to-r from-indigo-950/60 to-purple-950/60 border border-indigo-500/20">
                 <CardContent className="p-6 flex flex-col md:flex-row gap-4 items-center">
@@ -243,9 +281,28 @@ const Wardrobe = () => {
                     <Sparkles className="h-8 w-8 text-purple-300" />
                   </div>
                   <div className="text-center md:text-left">
-                    <h3 className="text-xl font-semibold mb-2">Let's start building your dream wardrobe!</h3>
-                    <p className="text-gray-300 mb-4">Upload your favorite pieces to create fabulous outfit combinations.</p>
-                    <UploadModal buttonText="Add Your First Item" onUpload={handleUpload} />
+                    {selectedCategory && sortedItems.length === 0 ? (
+                      <>
+                        <h3 className="text-xl font-semibold mb-2">No {selectedCategory} items found</h3>
+                        <p className="text-gray-300 mb-4">Upload some {selectedCategory} items or choose a different category.</p>
+                        <div className="flex flex-wrap gap-3 justify-center md:justify-start">
+                          <UploadModal buttonText={`Add ${selectedCategory}`} onUpload={handleUpload} />
+                          <Button 
+                            variant="outline" 
+                            className="border-purple-400/30 text-white hover:bg-white/10"
+                            onClick={() => setSelectedCategory(null)}
+                          >
+                            Show All Items
+                          </Button>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <h3 className="text-xl font-semibold mb-2">Let's start building your dream wardrobe!</h3>
+                        <p className="text-gray-300 mb-4">Upload your favorite pieces to create fabulous outfit combinations.</p>
+                        <UploadModal buttonText="Add Your First Item" onUpload={handleUpload} />
+                      </>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -282,6 +339,13 @@ const Wardrobe = () => {
           favoriteStyles: sampleUserPreferences.favoriteStyles
         }}
         showChatButton={false}
+      />
+      
+      <CategoryModal 
+        open={categoryModalOpen} 
+        onOpenChange={setCategoryModalOpen}
+        onSelectCategory={handleCategorySelect}
+        selectedCategory={selectedCategory}
       />
     </div>
   );
