@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -168,36 +167,37 @@ const Index = () => {
         >
           <motion.section 
             variants={itemVariants} 
-            className={`flex flex-col items-center justify-center text-center space-y-4 relative ${isMobile ? 'min-h-[55vh]' : 'min-h-[70vh]'}`}
+            className={`flex flex-col items-center justify-center text-center space-y-4 relative ${isMobile ? 'min-h-[55vh]' : 'min-h-[65vh]'}`}
           >
-            <div className={`${isMobile ? 'mt-8 mb-28' : '-mt-20'} relative inline-block`}>
+            <div className={`${isMobile ? 'mt-8 mb-24' : '-mt-16'} relative inline-block`}>
               <motion.div 
-                className="absolute -inset-4 rounded-2xl bg-gradient-to-r from-purple-600 via-blue-500 to-purple-600 opacity-75 blur-xl"
+                className="absolute -inset-6 rounded-3xl bg-gradient-to-r from-purple-600/60 via-blue-500/60 to-purple-600/60 opacity-70 blur-xl"
                 animate={{ 
-                  opacity: [0.5, 0.8, 0.5],
-                  scale: [0.98, 1.02, 0.98]
+                  opacity: [0.4, 0.7, 0.4],
+                  scale: [0.98, 1.01, 0.98]
                 }}
                 transition={{ 
-                  duration: 3, 
+                  duration: 4, 
                   repeat: Infinity,
-                  repeatType: "mirror"
+                  repeatType: "mirror",
+                  ease: "easeInOut"
                 }}
               />
-              <h1 className={`relative ${isMobile ? 'text-5xl font-extrabold' : 'text-6xl md:text-7xl lg:text-8xl font-black'} tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 pb-2 whitespace-nowrap`}>
+              <h1 className={`relative ${isMobile ? 'text-4xl font-bold' : 'text-5xl md:text-6xl lg:text-7xl font-extrabold'} tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 pb-2 whitespace-nowrap`}>
                 Future of Fashion
               </h1>
             </div>
             
             <motion.div
               animate={{ 
-                scale: [1, 1.03, 1],
-                filter: ["brightness(1)", "brightness(1.2)", "brightness(1)"] 
+                scale: [1, 1.02, 1],
+                filter: ["brightness(1)", "brightness(1.15)", "brightness(1)"] 
               }}
-              transition={{ duration: 3, repeat: Infinity }}
-              className="w-32 h-1.5 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full mb-6"
+              transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+              className="w-28 h-1 bg-gradient-to-r from-blue-500/80 via-purple-500/80 to-pink-500/80 rounded-full mb-6"
             />
             
-            <p className={`${isMobile ? 'text-base mt-6' : 'text-xl mt-16'} text-blue-100 max-w-2xl backdrop-blur-sm py-6 px-8 rounded-xl border border-white/10 shadow-xl neo-blur leading-relaxed`}>
+            <p className={`${isMobile ? 'text-base mt-6' : 'text-xl mt-14'} text-blue-100/90 max-w-2xl backdrop-blur-sm py-5 px-7 rounded-xl border border-white/10 shadow-xl neo-blur leading-relaxed`}>
               Smarter styling starts here. AI-curated outfits that fit your style, your body, and your weather.
             </p>
             
