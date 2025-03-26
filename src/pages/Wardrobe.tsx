@@ -5,6 +5,7 @@ import Header from '@/components/Header';
 import WardrobeGrid from '@/components/WardrobeGrid';
 import OliviaBloomAdvisor from '@/components/OliviaBloomAdvisor';
 import OliviaBloomAssistant from '@/components/OliviaBloomAssistant';
+import OliviaTips from '@/components/OliviaTips';
 import UploadModal from '@/components/UploadModal';
 import { ClothingItem } from '@/lib/types';
 import { sampleClothingItems, sampleOutfits, sampleUserPreferences } from '@/lib/wardrobeData';
@@ -272,6 +273,9 @@ const Wardrobe = () => {
           position="bottom-right"
         />
       )}
+      
+      {/* Add OliviaTips component to the top-right corner */}
+      <OliviaTips position="top-right" />
       
       <OliviaBloomAdvisor 
         items={sampleClothingItems}
