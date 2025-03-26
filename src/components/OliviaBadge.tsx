@@ -59,42 +59,61 @@ const OliviaBadge = ({
             initial={{ opacity: 0, scale: 0.8, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, y: 10 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
             className={cn(
-              "rounded-lg p-3 max-w-xs shadow-lg backdrop-blur-sm",
-              "bg-gradient-to-r bg-opacity-80 border border-white/10",
-              getVariantClasses(variant)
+              "relative rounded-xl p-4 max-w-[250px] shadow-lg backdrop-blur-sm",
+              "bg-gradient-to-r bg-opacity-90 border border-white/20",
+              getVariantClasses(variant),
+              // Add tooltip pointer based on position
+              position.includes('right') ? "after:content-[''] after:absolute after:top-1/2 after:-right-2 after:w-3 after:h-3 after:rotate-45 after:-translate-y-1/2" : "",
+              position.includes('left') ? "after:content-[''] after:absolute after:top-1/2 after:-left-2 after:w-3 after:h-3 after:rotate-45 after:-translate-y-1/2" : "",
+              position.includes('top') ? "after:content-[''] after:absolute after:left-1/2 after:-top-2 after:w-3 after:h-3 after:rotate-45 after:-translate-x-1/2" : "",
+              position.includes('bottom') ? "after:content-[''] after:absolute after:left-1/2 after:-bottom-2 after:w-3 after:h-3 after:rotate-45 after:-translate-x-1/2" : "",
+              // Add variant-specific styling to the pointer
+              position.includes('right') && variant === 'tip' ? "after:bg-pink-500" : "",
+              position.includes('left') && variant === 'tip' ? "after:bg-pink-500" : "",
+              position.includes('top') && variant === 'tip' ? "after:bg-pink-500" : "",
+              position.includes('bottom') && variant === 'tip' ? "after:bg-pink-500" : "",
+              position.includes('right') && variant === 'question' ? "after:bg-purple-600" : "",
+              position.includes('left') && variant === 'question' ? "after:bg-purple-600" : "",
+              position.includes('top') && variant === 'question' ? "after:bg-purple-600" : "",
+              position.includes('bottom') && variant === 'question' ? "after:bg-purple-600" : "",
+              position.includes('right') && variant === 'fact' ? "after:bg-emerald-500" : "",
+              position.includes('left') && variant === 'fact' ? "after:bg-emerald-500" : "",
+              position.includes('top') && variant === 'fact' ? "after:bg-emerald-500" : "",
+              position.includes('bottom') && variant === 'fact' ? "after:bg-emerald-500" : ""
             )}
           >
             <button 
               onClick={() => setIsVisible(false)}
-              className="absolute -right-2 -top-2 bg-black/20 rounded-full p-1"
+              className="absolute -right-2 -top-2 bg-black/30 rounded-full p-1 shadow-md hover:bg-black/40 transition-colors z-10"
             >
               <X className="h-3 w-3 text-white" />
             </button>
             
-            <div className="flex items-start gap-2">
-              <Avatar className="h-8 w-8 border border-white/20">
+            <div className="flex items-start gap-3">
+              <Avatar className="h-9 w-9 border border-white/30 shadow-sm flex-shrink-0">
                 <AvatarImage src="/lovable-uploads/28e5664c-3c8a-4b7e-9c99-065ad489583f.png" alt="Olivia" />
                 <AvatarFallback className="bg-purple-600 text-xs">OB</AvatarFallback>
               </Avatar>
               
               <div className="flex-1">
-                <div className="flex items-center gap-1 mb-1">
-                  <p className="text-xs font-medium text-white">Olivia</p>
+                <div className="flex items-center gap-1 mb-1.5">
+                  <p className="text-sm font-semibold text-white">Olivia</p>
                   {variant === 'tip' && (
-                    <span className="text-[10px] bg-white/20 px-1.5 py-0.5 rounded-full text-white/90">Tip</span>
+                    <span className="text-[10px] bg-white/20 px-1.5 py-0.5 rounded-full text-white/90 font-medium">Tip</span>
                   )}
                   {variant === 'question' && (
-                    <span className="text-[10px] bg-white/20 px-1.5 py-0.5 rounded-full text-white/90">Question</span>
+                    <span className="text-[10px] bg-white/20 px-1.5 py-0.5 rounded-full text-white/90 font-medium">Question</span>
                   )}
                   {variant === 'fact' && (
-                    <span className="text-[10px] bg-white/20 px-1.5 py-0.5 rounded-full text-white/90">Fun Fact</span>
+                    <span className="text-[10px] bg-white/20 px-1.5 py-0.5 rounded-full text-white/90 font-medium">Fun Fact</span>
                   )}
                 </div>
-                <p className="text-xs text-white/90">{message}</p>
+                <p className="text-sm text-white/95 leading-relaxed">{message}</p>
                 
                 {section && (
-                  <div className="mt-2 text-[10px] text-white/70">
+                  <div className="mt-2 text-[10px] text-white/80 font-medium">
                     About: {section}
                   </div>
                 )}
@@ -107,10 +126,13 @@ const OliviaBadge = ({
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
             whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 400, damping: 17 }}
             onClick={() => setIsOpen(true)}
             className={cn(
               "h-10 w-10 rounded-full flex items-center justify-center shadow-md",
-              "bg-gradient-to-r",
+              "bg-gradient-to-r border border-white/20",
+              "hover:shadow-lg transition-all duration-300",
               getVariantClasses(variant)
             )}
           >
