@@ -1,10 +1,8 @@
 
 import { useRef } from 'react';
-import { X, Upload, User } from 'lucide-react';
+import { X, Upload } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import OliviaImageBadge from '@/components/outfits/OliviaImageBadge';
 
 interface ImageUploaderProps {
   imagePreview: string | null;
@@ -14,7 +12,6 @@ interface ImageUploaderProps {
   className?: string; // Add className prop for custom styling
   label?: string; // Optional label prop
   isOliviaImage?: boolean; // New prop to indicate if the image is of Olivia
-  onOliviaImageClick?: () => void; // Add callback for Olivia image button
 }
 
 const ImageUploader = ({ 
@@ -24,8 +21,7 @@ const ImageUploader = ({
   persistentDisplay = false,
   className,
   label = "Upload an image",
-  isOliviaImage = false,
-  onOliviaImageClick
+  isOliviaImage = false
 }: ImageUploaderProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -80,7 +76,11 @@ const ImageUploader = ({
                 Click to change
               </div>
             )}
-            <OliviaImageBadge isVisible={isOliviaImage} />
+            {isOliviaImage && (
+              <div className="absolute top-2 left-2 bg-purple-600/80 rounded-full py-0.5 px-2 text-xs text-white flex items-center">
+                Olivia's Image
+              </div>
+            )}
           </>
         ) : (
           <div className="flex flex-col items-center space-y-2 p-4 text-center">
@@ -94,19 +94,6 @@ const ImageUploader = ({
           </div>
         )}
       </motion.div>
-      
-      {/* Olivia Image Button - Only show if the callback is provided */}
-      {onOliviaImageClick && !imagePreview && (
-        <Button
-          variant="outline"
-          onClick={onOliviaImageClick}
-          className="w-full mt-2 text-sm border-purple-500/30 text-purple-300 hover:bg-white/5 hover:text-purple-100 hover:border-purple-500/50"
-        >
-          <User className="h-4 w-4 mr-2" />
-          Use Image of Olivia Bloom
-        </Button>
-      )}
-      
       <input
         ref={fileInputRef}
         type="file"
