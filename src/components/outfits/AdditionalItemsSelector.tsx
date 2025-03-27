@@ -5,15 +5,16 @@ import {
   ShoppingBag, 
   Plus,
   Shirt,
-  Tshirt,
-  Shoe,
   Crown,
-  WatchIcon,
-  Lock
+  Watch,
+  Lock,
+  Footprints,
+  Sparkles
 } from 'lucide-react';
 import { ClothingItem } from '@/lib/types';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { toast } from 'sonner';
+import { TrousersIcon } from '@/components/ui/icons';
 
 interface ClothingCategory {
   id: string;
@@ -30,35 +31,35 @@ const sampleCategories: ClothingCategory[] = [
     name: 'Tops',
     icon: <Shirt className="h-5 w-5" />,
     items: [
-      { id: 'top1', name: 'White Blouse', type: 'top', imageUrl: '/placeholder.svg', occasions: ['casual', 'work'], seasons: ['spring', 'summer'] },
-      { id: 'top2', name: 'Black T-Shirt', type: 'top', imageUrl: '/placeholder.svg', occasions: ['casual'], seasons: ['all'] },
+      { id: 'top1', name: 'White Blouse', type: 'shirt', imageUrl: '/placeholder.svg', occasions: ['casual', 'business'], seasons: ['spring', 'summer'], color: 'white', material: 'cotton', favorite: false, timesWorn: 0, dateAdded: new Date() },
+      { id: 'top2', name: 'Black T-Shirt', type: 'shirt', imageUrl: '/placeholder.svg', occasions: ['casual'], seasons: ['all'], color: 'black', material: 'cotton', favorite: false, timesWorn: 0, dateAdded: new Date() },
     ]
   },
   {
     id: 'bottoms',
     name: 'Bottoms',
-    icon: <Tshirt className="h-5 w-5" />,
+    icon: <TrousersIcon className="h-5 w-5" />,
     items: [
-      { id: 'bottom1', name: 'Blue Jeans', type: 'bottom', imageUrl: '/placeholder.svg', occasions: ['casual'], seasons: ['all'] },
-      { id: 'bottom2', name: 'Black Pants', type: 'bottom', imageUrl: '/placeholder.svg', occasions: ['work'], seasons: ['fall', 'winter'] },
+      { id: 'bottom1', name: 'Blue Jeans', type: 'jeans', imageUrl: '/placeholder.svg', occasions: ['casual'], seasons: ['all'], color: 'blue', material: 'denim', favorite: false, timesWorn: 0, dateAdded: new Date() },
+      { id: 'bottom2', name: 'Black Pants', type: 'pants', imageUrl: '/placeholder.svg', occasions: ['business'], seasons: ['autumn', 'winter'], color: 'black', material: 'cotton', favorite: false, timesWorn: 0, dateAdded: new Date() },
     ]
   },
   {
     id: 'shoes',
     name: 'Shoes',
-    icon: <Shoe className="h-5 w-5" />,
+    icon: <Footprints className="h-5 w-5" />,
     items: [
-      { id: 'shoe1', name: 'Sneakers', type: 'shoe', imageUrl: '/placeholder.svg', occasions: ['casual'], seasons: ['all'] },
-      { id: 'shoe2', name: 'Boots', type: 'shoe', imageUrl: '/placeholder.svg', occasions: ['casual', 'going out'], seasons: ['fall', 'winter'] },
+      { id: 'shoe1', name: 'Sneakers', type: 'sneakers', imageUrl: '/placeholder.svg', occasions: ['casual'], seasons: ['all'], color: 'white', material: 'other', favorite: false, timesWorn: 0, dateAdded: new Date() },
+      { id: 'shoe2', name: 'Boots', type: 'boots', imageUrl: '/placeholder.svg', occasions: ['casual', 'party'], seasons: ['autumn', 'winter'], color: 'brown', material: 'leather', favorite: false, timesWorn: 0, dateAdded: new Date() },
     ]
   },
   {
     id: 'accessories',
     name: 'Accessories',
-    icon: <WatchIcon className="h-5 w-5" />,
+    icon: <Watch className="h-5 w-5" />,
     items: [
-      { id: 'acc1', name: 'Silver Necklace', type: 'accessory', imageUrl: '/placeholder.svg', occasions: ['casual', 'going out'], seasons: ['all'] },
-      { id: 'acc2', name: 'Watch', type: 'accessory', imageUrl: '/placeholder.svg', occasions: ['work'], seasons: ['all'] },
+      { id: 'acc1', name: 'Silver Necklace', type: 'accessories', imageUrl: '/placeholder.svg', occasions: ['casual', 'party'], seasons: ['all'], color: 'gray', material: 'other', favorite: false, timesWorn: 0, dateAdded: new Date() },
+      { id: 'acc2', name: 'Watch', type: 'accessories', imageUrl: '/placeholder.svg', occasions: ['business'], seasons: ['all'], color: 'black', material: 'other', favorite: false, timesWorn: 0, dateAdded: new Date() },
     ],
     isPremium: true
   },
@@ -67,8 +68,8 @@ const sampleCategories: ClothingCategory[] = [
     name: 'Premium Items',
     icon: <Crown className="h-5 w-5 text-yellow-400" />,
     items: [
-      { id: 'premium1', name: 'Designer Jacket', type: 'top', imageUrl: '/placeholder.svg', occasions: ['going out'], seasons: ['fall', 'winter'] },
-      { id: 'premium2', name: 'Luxury Bag', type: 'accessory', imageUrl: '/placeholder.svg', occasions: ['going out'], seasons: ['all'] },
+      { id: 'premium1', name: 'Designer Jacket', type: 'jacket', imageUrl: '/placeholder.svg', occasions: ['party'], seasons: ['autumn', 'winter'], color: 'black', material: 'leather', favorite: false, timesWorn: 0, dateAdded: new Date() },
+      { id: 'premium2', name: 'Luxury Bag', type: 'accessories', imageUrl: '/placeholder.svg', occasions: ['party'], seasons: ['all'], color: 'brown', material: 'leather', favorite: false, timesWorn: 0, dateAdded: new Date() },
     ],
     isPremium: true
   }

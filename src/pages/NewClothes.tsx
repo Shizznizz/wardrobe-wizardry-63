@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -52,7 +51,7 @@ const NewClothes = () => {
   const mockOutfit: Outfit = {
     id: 'new-clothing',
     name: 'New Clothing Preview',
-    items: selectedItems,
+    items: selectedItems.map(item => item.id),
     occasions: ['shopping'],
     seasons: ['all'],
     favorite: false,
@@ -60,7 +59,6 @@ const NewClothes = () => {
     dateAdded: new Date()
   };
 
-  // Show subscription popup after first outfit is tried on
   useEffect(() => {
     if (finalImage && !isPremiumUser) {
       const hasSeenPopup = sessionStorage.getItem('hasSeenOutfitSubscriptionPopup');
@@ -147,10 +145,15 @@ const NewClothes = () => {
       setSelectedItems([{
         id: 'main-item',
         name: 'Uploaded Item',
-        type: 'top',
+        type: 'shirt',
         imageUrl: clothingPhoto,
         occasions: ['casual'],
-        seasons: ['all']
+        seasons: ['all'],
+        color: 'white',
+        material: 'cotton',
+        favorite: false,
+        timesWorn: 0,
+        dateAdded: new Date()
       }]);
       
       toast.success('Virtual try-on complete!');
@@ -164,7 +167,6 @@ const NewClothes = () => {
 
   const handleAddItem = (item: ClothingItem) => {
     setSelectedItems(prev => [...prev, item]);
-    // In a real app, this would trigger a re-render of the outfit preview
     toast.success(`Added ${item.name} to your outfit!`);
   };
 
