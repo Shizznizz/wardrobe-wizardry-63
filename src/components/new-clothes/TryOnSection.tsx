@@ -16,7 +16,7 @@ interface TryOnSectionProps {
   isUsingOliviaImage: boolean;
   onUserPhotoUpload: (file: File) => void;
   onClearUserPhoto: () => void;
-  onClothingPhotoUpload: (file: File) => void;
+  onClothingPhotoUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onClearPhotos: () => void;
   onTryOn: () => void;
   onShowOliviaImageGallery: () => void;
@@ -103,7 +103,7 @@ const TryOnSection = ({
                   id="clothingPhoto"
                   type="file"
                   accept="image/*"
-                  onChange={(e) => onClothingPhotoUpload(e)}
+                  onChange={onClothingPhotoUpload}
                   className="hidden"
                 />
               </div>

@@ -15,6 +15,7 @@ import PreviewResultSection from '@/components/new-clothes/PreviewResultSection'
 import RelatedContentSection from '@/components/new-clothes/RelatedContentSection';
 import PremiumFeaturesSection from '@/components/new-clothes/PremiumFeaturesSection';
 import HelpTipsSection from '@/components/new-clothes/HelpTipsSection';
+import { defaultOutfitTips } from '@/components/outfits/OutfitTips'; // Import defaultOutfitTips
 
 const NewClothes = () => {
   const [userPhoto, setUserPhoto] = useState<string | null>(null);
