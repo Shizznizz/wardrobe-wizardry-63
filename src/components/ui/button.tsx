@@ -21,6 +21,9 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
         pill: "rounded-full bg-slate-800/70 text-white hover:bg-slate-700/90 border border-white/5 shadow-sm transition-all duration-300 hover:border-purple-500/30",
         gradient: "bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:from-indigo-600 hover:to-purple-700 shadow-md",
+        "olivia-primary": "bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90 text-white shadow-sm",
+        "olivia-outline": "border border-white/20 text-white hover:bg-white/10 transition-colors",
+        "olivia-accent": "border border-purple-500/30 text-purple-300 hover:bg-purple-500/20 hover:text-purple-100 hover:border-purple-500/50 transition-colors",
       },
       size: {
         default: "h-10 px-4 py-2",

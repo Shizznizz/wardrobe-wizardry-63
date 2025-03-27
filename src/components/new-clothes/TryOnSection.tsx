@@ -1,6 +1,6 @@
 
 import { useState, useRef } from 'react';
-import { Shirt, Trash2, Upload, User } from 'lucide-react';
+import { Shirt, Trash2, Upload, User, Camera } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -122,23 +122,33 @@ const TryOnSection = ({
                       <p className="text-muted-foreground text-center mb-6">
                         Upload a full-body photo of yourself
                       </p>
-                      <Button 
-                        variant="outline"
-                        className="border-blue-500/30 text-blue-300 hover:text-blue-100 mb-4 w-full"
-                        onClick={() => userPhotoInputRef.current?.click()}
-                      >
-                        <Upload className="h-4 w-4 mr-2" />
-                        Upload Your Photo
-                      </Button>
-                      
-                      <Button
-                        variant="outline"
-                        onClick={onShowOliviaImageGallery}
-                        className="w-full text-sm border-purple-500/30 text-purple-300 hover:bg-purple-500/20 hover:text-purple-100 hover:border-purple-500/50 transition-colors"
-                      >
-                        <User className="h-4 w-4 mr-2" />
-                        Choose an Image of Olivia Bloom
-                      </Button>
+                      <div className="flex flex-col gap-3 w-full max-w-xs mx-auto">
+                        <Button 
+                          className="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90"
+                          onClick={() => userPhotoInputRef.current?.click()}
+                        >
+                          <Upload className="mr-2 h-4 w-4" />
+                          Choose Photo
+                        </Button>
+                        
+                        <Button
+                          variant="outline"
+                          className="w-full border-white/20 text-white hover:bg-white/10"
+                          onClick={() => alert("Camera functionality would open here")}
+                        >
+                          <Camera className="mr-2 h-4 w-4" />
+                          Take a Photo
+                        </Button>
+                        
+                        <Button
+                          variant="outline"
+                          onClick={onShowOliviaImageGallery}
+                          className="w-full text-purple-300 hover:bg-purple-500/20 hover:text-purple-100 hover:border-purple-500/50 transition-colors"
+                        >
+                          <User className="mr-2 h-4 w-4" />
+                          Choose an Image of Olivia Bloom
+                        </Button>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -216,7 +226,7 @@ const TryOnSection = ({
               <Button 
                 onClick={onTryOn} 
                 disabled={!userPhoto || !clothingPhoto || isProcessing}
-                className="w-full md:w-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 h-12 text-lg font-medium shadow-md px-8 transition-all duration-300 hover:shadow-purple-500/20 hover:shadow-lg"
+                className="w-full md:w-auto bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90 h-12 text-lg font-medium shadow-md px-8 transition-all duration-300"
               >
                 {isProcessing ? 'Processing...' : 'Preview on Me'}
               </Button>
@@ -233,7 +243,7 @@ const TryOnSection = ({
               <Button
                 variant="outline"
                 onClick={onClearPhotos}
-                className="w-full md:w-auto border-red-500/30 text-red-300 hover:text-red-100 h-12 text-lg font-medium transition-all duration-300 hover:border-red-500/50"
+                className="w-full md:w-auto border-white/20 text-white hover:bg-white/10 h-12 text-lg font-medium transition-all duration-300"
               >
                 <Trash2 className="h-5 w-5 mr-2" />
                 Clear Photos
