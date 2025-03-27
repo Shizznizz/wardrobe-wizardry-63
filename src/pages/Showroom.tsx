@@ -30,7 +30,7 @@ import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
 import RecommendedOutfit from '@/components/outfits/RecommendedOutfit';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuItem } from '@/components/ui/dropdown-menu';
-import { useOutfitState } from '@/hooks/use-outfit-state';
+import { useOutfitState } from '@/hooks/useOutfitState';
 
 const fashionCollections = [
   {
