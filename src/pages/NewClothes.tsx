@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -82,29 +81,23 @@ const NewClothes = () => {
     }
   }, [finalImage, isPremiumUser]);
 
-  const handleUserPhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        setUserPhoto(event.target?.result as string);
-        setFinalImage(null);
-        setIsUsingOliviaImage(false);
-      };
-      reader.readAsDataURL(file);
-    }
+  const handleUserPhotoUpload = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setUserPhoto(event.target?.result as string);
+      setFinalImage(null);
+      setIsUsingOliviaImage(false);
+    };
+    reader.readAsDataURL(file);
   };
 
-  const handleClothingPhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        setClothingPhoto(event.target?.result as string);
-        setFinalImage(null);
-      };
-      reader.readAsDataURL(file);
-    }
+  const handleClothingPhotoUpload = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setClothingPhoto(event.target?.result as string);
+      setFinalImage(null);
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSelectOliviaImage = (imageSrc: string) => {
@@ -287,115 +280,34 @@ const NewClothes = () => {
                     <TabsContent value="upload" className="mt-4 space-y-6">
                       <div className="space-y-3">
                         <Label htmlFor="userPhoto" className="text-lg font-medium text-blue-100">Your Photo</Label>
-                        <div 
-                          className="relative overflow-hidden group cursor-pointer hover:shadow-lg transition-all duration-300 rounded-lg border border-blue-500/20"
-                          onClick={() => userPhotoInputRef.current?.click()}
-                        >
-                          {userPhoto ? (
-                            <div className="relative">
-                              <img 
-                                src={userPhoto} 
-                                alt="Your uploaded photo" 
-                                className="w-full h-auto rounded-lg transition-transform duration-300 group-hover:scale-105" 
-                              />
-                              {isUsingOliviaImage && (
-                                <div className="absolute top-2 left-2 bg-purple-600/80 rounded-full py-0.5 px-2 text-xs text-white flex items-center">
-                                  <User className="h-3 w-3 mr-1" />
-                                  Olivia's Image
-                                </div>
-                              )}
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                              <Button 
-                                variant="secondary" 
-                                className="absolute bottom-4 right-4 shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
-                              >
-                                Change Photo
-                              </Button>
-                            </div>
-                          ) : (
-                            <div className="bg-gradient-to-br from-slate-800 to-slate-900 p-10 rounded-lg text-center">
-                              <div className="mb-6 mx-auto w-16 h-16 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center justify-center">
-                                <Image className="h-8 w-8 text-white" />
-                              </div>
-                              <p className="text-muted-foreground text-center mb-6">
-                                Upload a full-body photo of yourself
-                              </p>
-                              <Button 
-                                variant="outline"
-                                className="border-blue-500/30 text-blue-300 hover:text-blue-100"
-                              >
-                                Select Your Photo
-                              </Button>
-                            </div>
-                          )}
-                        </div>
-                        <Input
-                          ref={userPhotoInputRef}
-                          id="userPhoto"
-                          type="file"
-                          accept="image/*"
-                          onChange={handleUserPhotoUpload}
-                          className="hidden"
+                        
+                        <ImageUploader
+                          imagePreview={userPhoto}
+                          onImageChange={handleUserPhotoUpload}
+                          onClearImage={() => {
+                            setUserPhoto(null);
+                            setFinalImage(null);
+                            setIsUsingOliviaImage(false);
+                          }}
+                          label="Upload a full-body photo of yourself"
+                          isOliviaImage={isUsingOliviaImage}
+                          onOliviaImageClick={() => setShowOliviaImageGallery(true)}
+                          className="border border-blue-500/20 rounded-lg"
                         />
-
-                        {/* Use Olivia's Image Button */}
-                        <div className="flex justify-center mt-2">
-                          <Button
-                            variant="outline"
-                            onClick={() => setShowOliviaImageGallery(true)}
-                            className="w-full text-sm border-purple-500/30 text-purple-300 hover:bg-white/5 hover:text-purple-100 hover:border-purple-500/50"
-                          >
-                            <User className="h-4 w-4 mr-2" />
-                            Use Image of Olivia Bloom
-                          </Button>
-                        </div>
                       </div>
                       
                       <div className="space-y-3">
                         <Label htmlFor="clothingPhoto" className="text-lg font-medium text-blue-100">Clothing Item</Label>
-                        <div 
-                          className="relative overflow-hidden group cursor-pointer hover:shadow-lg transition-all duration-300 rounded-lg border border-purple-500/20"
-                          onClick={() => clothingPhotoInputRef.current?.click()}
-                        >
-                          {clothingPhoto ? (
-                            <div className="relative">
-                              <img 
-                                src={clothingPhoto} 
-                                alt="Clothing item" 
-                                className="w-full h-auto rounded-lg transition-transform duration-300 group-hover:scale-105" 
-                              />
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                              <Button 
-                                variant="secondary" 
-                                className="absolute bottom-4 right-4 shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
-                              >
-                                Change Photo
-                              </Button>
-                            </div>
-                          ) : (
-                            <div className="bg-gradient-to-br from-slate-800 to-slate-900 p-10 rounded-lg text-center">
-                              <div className="mb-6 mx-auto w-16 h-16 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
-                                <Shirt className="h-8 w-8 text-white" />
-                              </div>
-                              <p className="text-muted-foreground text-center mb-6">
-                                Upload a photo of the clothing item you want to try on
-                              </p>
-                              <Button 
-                                variant="outline"
-                                className="border-purple-500/30 text-purple-300 hover:text-purple-100"
-                              >
-                                Select Clothing
-                              </Button>
-                            </div>
-                          )}
-                        </div>
-                        <Input
-                          ref={clothingPhotoInputRef}
-                          id="clothingPhoto"
-                          type="file"
-                          accept="image/*"
-                          onChange={handleClothingPhotoUpload}
-                          className="hidden"
+                        
+                        <ImageUploader
+                          imagePreview={clothingPhoto}
+                          onImageChange={handleClothingPhotoUpload}
+                          onClearImage={() => {
+                            setClothingPhoto(null);
+                            setFinalImage(null);
+                          }}
+                          label="Upload a photo of the clothing item you want to try on"
+                          className="border border-purple-500/20 rounded-lg"
                         />
                       </div>
                     </TabsContent>
