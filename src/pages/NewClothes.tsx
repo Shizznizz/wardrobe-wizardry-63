@@ -1,4 +1,5 @@
-import { useState, useRef } from 'react';
+
+import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import { Card, CardContent } from '@/components/ui/card';
@@ -6,32 +7,73 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toast } from 'sonner';
-import { Camera, Shirt, Image, Download, Share2, Trash2, Sparkles, Sparkle, ArrowRight } from 'lucide-react';
+import { 
+  Camera, 
+  Shirt, 
+  Image, 
+  Download, 
+  Share2, 
+  Trash2, 
+  Sparkles, 
+  Sparkle, 
+  Plus,
+  ShoppingBag,
+  Heart,
+  ArrowRight,
+  Lightbulb,
+  Star,
+  Unlock,
+} from 'lucide-react';
 import VirtualFittingRoom from '@/components/VirtualFittingRoom';
-import { Outfit } from '@/lib/types';
+import ImageUploader from '@/components/wardrobe/ImageUploader';
+import { Outfit, ClothingItem } from '@/lib/types';
+import { useIsMobile } from '@/hooks/use-mobile';
+import OutfitSubscriptionPopup from '@/components/OutfitSubscriptionPopup';
+import AdditionalItemsSelector from '@/components/outfits/AdditionalItemsSelector';
+import AffiliateProducts from '@/components/outfits/AffiliateProducts';
+import RecommendedOutfits from '@/components/outfits/RecommendedOutfits';
+import OutfitStylingTips from '@/components/outfits/OutfitStylingTips';
 
 const NewClothes = () => {
   const [userPhoto, setUserPhoto] = useState<string | null>(null);
   const [clothingPhoto, setClothingPhoto] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [finalImage, setFinalImage] = useState<string | null>(null);
+  const [selectedTab, setSelectedTab] = useState<string>('upload');
+  const [isPremiumUser] = useState(false);
+  const [showSubscriptionPopup, setShowSubscriptionPopup] = useState(false);
+  const [selectedItems, setSelectedItems] = useState<ClothingItem[]>([]);
   const userPhotoInputRef = useRef<HTMLInputElement>(null);
   const clothingPhotoInputRef = useRef<HTMLInputElement>(null);
-  const [selectedTab, setSelectedTab] = useState<string>('upload');
+  const isMobile = useIsMobile();
   
   const mockOutfit: Outfit = {
     id: 'new-clothing',
     name: 'New Clothing Preview',
-    items: [],
+    items: selectedItems,
     occasions: ['shopping'],
     seasons: ['all'],
     favorite: false,
     timesWorn: 0,
     dateAdded: new Date()
   };
+
+  // Show subscription popup after first outfit is tried on
+  useEffect(() => {
+    if (finalImage && !isPremiumUser) {
+      const hasSeenPopup = sessionStorage.getItem('hasSeenOutfitSubscriptionPopup');
+      if (!hasSeenPopup) {
+        const timer = setTimeout(() => {
+          setShowSubscriptionPopup(true);
+          sessionStorage.setItem('hasSeenOutfitSubscriptionPopup', 'true');
+        }, 2000);
+        
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [finalImage, isPremiumUser]);
 
   const handleUserPhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -102,6 +144,14 @@ const NewClothes = () => {
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       setFinalImage(userPhoto);
+      setSelectedItems([{
+        id: 'main-item',
+        name: 'Uploaded Item',
+        type: 'top',
+        imageUrl: clothingPhoto,
+        occasions: ['casual'],
+        seasons: ['all']
+      }]);
       
       toast.success('Virtual try-on complete!');
     } catch (error) {
@@ -112,11 +162,36 @@ const NewClothes = () => {
     }
   };
 
+  const handleAddItem = (item: ClothingItem) => {
+    setSelectedItems(prev => [...prev, item]);
+    // In a real app, this would trigger a re-render of the outfit preview
+    toast.success(`Added ${item.name} to your outfit!`);
+  };
+
+  const handleUpgradeToPremium = () => {
+    toast.success('Redirecting to premium subscription page');
+    setShowSubscriptionPopup(false);
+  };
+
+  const handleShowPremiumPopup = () => {
+    setShowSubscriptionPopup(true);
+  };
+
   const clearPhotos = () => {
     setUserPhoto(null);
     setClothingPhoto(null);
     setFinalImage(null);
+    setSelectedItems([]);
     toast.success('Photos cleared');
+  };
+
+  const handleSaveLook = () => {
+    if (!finalImage) {
+      toast.error('Create a look first!');
+      return;
+    }
+    
+    toast.success('Look saved to your wardrobe!');
   };
 
   const containerVariants = {
@@ -164,10 +239,19 @@ const NewClothes = () => {
                 Visualize how new items will look on you before making any purchase decisions.
               </p>
               <div className="flex flex-wrap gap-4">
-                <Button size="lg" className="bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90">
+                <Button 
+                  size="lg" 
+                  className="bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90"
+                  onClick={handleCapturePhoto}
+                >
                   <Camera className="mr-2 h-4 w-4" /> Take a Photo
                 </Button>
-                <Button size="lg" variant="outline" className="border-purple-400/30 text-white hover:bg-white/10">
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="border-purple-400/30 text-white hover:bg-white/10"
+                  onClick={() => userPhotoInputRef.current?.click()}
+                >
                   <Image className="mr-2 h-4 w-4" /> Upload Images
                 </Button>
               </div>
@@ -416,48 +500,99 @@ const NewClothes = () => {
               <VirtualFittingRoom 
                 finalImage={finalImage}
                 outfit={finalImage ? mockOutfit : null}
-                clothingItems={[]}
+                clothingItems={selectedItems}
                 isProcessing={isProcessing}
+                userPhoto={userPhoto}
+                onSaveLook={handleSaveLook}
               />
+              
+              {finalImage && (
+                <AdditionalItemsSelector 
+                  onAddItem={handleAddItem}
+                  onPremiumClick={handleShowPremiumPopup}
+                  isPremium={isPremiumUser}
+                  className="mt-6"
+                />
+              )}
             </div>
           </motion.div>
           
-          <motion.div variants={itemVariants} className="mt-16 bg-slate-900/40 border border-white/10 rounded-xl p-8 backdrop-blur-lg">
-            <h2 className="text-2xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-300 to-purple-300">How It Works</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="space-y-4">
-                <div className="h-12 w-12 rounded-full flex items-center justify-center bg-gradient-to-br from-blue-500/20 to-blue-500/5 border border-blue-400/20">
-                  <span className="text-xl font-bold text-blue-400">1</span>
+          {finalImage && (
+            <motion.div 
+              variants={itemVariants}
+              className="grid grid-cols-1 md:grid-cols-2 gap-8"
+            >
+              <AffiliateProducts />
+              <OutfitStylingTips />
+            </motion.div>
+          )}
+          
+          {finalImage && (
+            <motion.div variants={itemVariants}>
+              <RecommendedOutfits />
+            </motion.div>
+          )}
+          
+          {!isPremiumUser && (
+            <motion.div 
+              variants={itemVariants} 
+              className="mt-16 bg-slate-900/40 border border-white/10 rounded-xl p-8 backdrop-blur-lg"
+            >
+              <h2 className="text-2xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-300 to-purple-300 flex items-center">
+                <Star className="mr-2 h-6 w-6 text-yellow-400" />
+                Unlock Premium Features
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="space-y-4">
+                  <div className="h-12 w-12 rounded-full flex items-center justify-center bg-gradient-to-br from-blue-500/20 to-blue-500/5 border border-blue-400/20">
+                    <Image className="h-6 w-6 text-blue-400" />
+                  </div>
+                  <h3 className="text-xl font-medium text-blue-200">Multiple Photos</h3>
+                  <p className="text-blue-100/80">
+                    Upload and try on outfits for multiple photos and occasions. See how different clothing looks in various settings.
+                  </p>
                 </div>
-                <h3 className="text-xl font-medium text-blue-200">Upload Photos</h3>
-                <p className="text-blue-100/80">
-                  Upload a full-body photo of yourself and a picture of the clothing item you want to try on.
-                </p>
+                
+                <div className="space-y-4">
+                  <div className="h-12 w-12 rounded-full flex items-center justify-center bg-gradient-to-br from-purple-500/20 to-purple-500/5 border border-purple-400/20">
+                    <ShoppingBag className="h-6 w-6 text-purple-400" />
+                  </div>
+                  <h3 className="text-xl font-medium text-purple-200">Exclusive Collections</h3>
+                  <p className="text-purple-100/80">
+                    Access premium outfit collections curated by expert stylists, featuring the latest trends and timeless classics.
+                  </p>
+                </div>
+                
+                <div className="space-y-4">
+                  <div className="h-12 w-12 rounded-full flex items-center justify-center bg-gradient-to-br from-pink-500/20 to-pink-500/5 border border-pink-400/20">
+                    <Sparkles className="h-6 w-6 text-pink-400" />
+                  </div>
+                  <h3 className="text-xl font-medium text-pink-200">Advanced Styling</h3>
+                  <p className="text-pink-100/80">
+                    Customize outfits with detailed editing tools. Resize, reposition, and adjust colors for a perfect virtual try-on.
+                  </p>
+                </div>
               </div>
               
-              <div className="space-y-4">
-                <div className="h-12 w-12 rounded-full flex items-center justify-center bg-gradient-to-br from-purple-500/20 to-purple-500/5 border border-purple-400/20">
-                  <span className="text-xl font-bold text-purple-400">2</span>
-                </div>
-                <h3 className="text-xl font-medium text-purple-200">AI Processing</h3>
-                <p className="text-purple-100/80">
-                  Our advanced AI analyzes both images and creates a realistic composite showing how the item would look on you.
-                </p>
+              <div className="flex justify-center mt-8">
+                <Button 
+                  size="lg"
+                  onClick={handleUpgradeToPremium}
+                  className="bg-gradient-to-r from-yellow-500 to-amber-600 hover:opacity-90 shadow-lg"
+                >
+                  <Unlock className="mr-2 h-5 w-5" /> Upgrade to Premium
+                </Button>
               </div>
-              
-              <div className="space-y-4">
-                <div className="h-12 w-12 rounded-full flex items-center justify-center bg-gradient-to-br from-pink-500/20 to-pink-500/5 border border-pink-400/20">
-                  <span className="text-xl font-bold text-pink-400">3</span>
-                </div>
-                <h3 className="text-xl font-medium text-pink-200">Make Better Decisions</h3>
-                <p className="text-pink-100/80">
-                  See exactly how the clothing will look on you before purchasing, saving time and reducing returns.
-                </p>
-              </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          )}
         </motion.div>
       </main>
+      
+      <OutfitSubscriptionPopup 
+        isOpen={showSubscriptionPopup}
+        onClose={() => setShowSubscriptionPopup(false)}
+        onUpgrade={handleUpgradeToPremium}
+      />
     </div>
   );
 };
