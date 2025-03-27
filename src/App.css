@@ -265,4 +265,48 @@
     margin-top: 2.5rem !important;
     margin-bottom: 2.5rem !important;
   }
+  
+  /* Added responsive button width for better mobile experience */
+  .preference-button-mobile {
+    width: 100% !important;
+  }
+}
+
+/* Added new classes for improved responsiveness */
+@media (max-width: 480px) {
+  .xs-text-center {
+    text-align: center !important;
+  }
+  
+  .xs-button-full {
+    width: 100% !important;
+    margin-bottom: 0.75rem !important;
+  }
+  
+  .xs-small-text {
+    font-size: 0.875rem !important;
+  }
+  
+  .xs-p-4 {
+    padding: 1rem !important;
+  }
+  
+  .xs-flex-col {
+    flex-direction: column !important;
+  }
+}
+
+/* Improved tablet responsiveness */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .md-flex-row {
+    flex-direction: row !important;
+  }
+  
+  .md-gap-4 {
+    gap: 1rem !important;
+  }
+  
+  .md-w-auto {
+    width: auto !important;
+  }
 }

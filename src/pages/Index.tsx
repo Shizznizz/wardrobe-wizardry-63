@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -220,55 +219,41 @@ const Index = () => {
               </motion.p>
               
               <motion.div 
-                className={`flex ${isMobile ? 'flex-col' : 'flex-col sm:flex-row'} gap-4 pt-4`}
+                className={`flex ${isMobile ? 'flex-col' : 'flex-row'} gap-4 pt-4`}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5, duration: 0.6 }}
               >
-                <motion.div
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="w-full sm:w-auto"
+                <motion.div 
+                  className="flex flex-col sm:flex-row gap-4 w-full"
                 >
-                  <Button 
-                    size="lg" 
-                    onClick={handleWardrobeButtonClick}
-                    variant="fashion-primary"
-                    className="rounded-xl text-base px-6 py-6 h-auto w-full sm:w-auto"
-                  >
-                    <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-purple-400/10 to-pink-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    <span className="relative flex items-center justify-center gap-2 text-white font-medium">
-                      Start Your Fashion Journey
-                      <motion.div
-                        className="inline-block"
-                        animate={{ x: [0, 5, 0] }}
-                        transition={{ 
-                          duration: 1.5, 
-                          repeat: Infinity,
-                          ease: "easeInOut" 
-                        }}
-                      >
-                        <ArrowRight className="h-5 w-5" />
-                      </motion.div>
-                    </span>
-                  </Button>
-                </motion.div>
-                
-                <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} gap-3 w-full sm:w-auto`}>
-                  <motion.div 
+                  <motion.div
                     whileHover={{ scale: 1.03 }}
                     whileTap={{ scale: 0.98 }}
                     className="w-full sm:w-auto"
                   >
-                    <Link to="/quiz" className="w-full sm:w-auto">
-                      <Button 
-                        size="lg" 
-                        variant="fashion-secondary"
-                        className="rounded-xl text-base px-6 py-6 h-auto w-full"
-                      >
-                        Take the Quiz
-                      </Button>
-                    </Link>
+                    <Button 
+                      size="lg" 
+                      onClick={handleWardrobeButtonClick}
+                      variant="fashion-primary"
+                      className="rounded-xl text-base px-6 py-6 h-auto w-full sm:w-auto"
+                    >
+                      <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-purple-400/10 to-pink-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      <span className="relative flex items-center justify-center gap-2 text-white font-medium">
+                        Start Your Fashion Journey
+                        <motion.div
+                          className="inline-block"
+                          animate={{ x: [0, 5, 0] }}
+                          transition={{ 
+                            duration: 1.5, 
+                            repeat: Infinity,
+                            ease: "easeInOut" 
+                          }}
+                        >
+                          <ArrowRight className="h-5 w-5" />
+                        </motion.div>
+                      </span>
+                    </Button>
                   </motion.div>
                   
                   <motion.div 
@@ -283,7 +268,7 @@ const Index = () => {
                       buttonVariant="fashion-tertiary"
                     />
                   </motion.div>
-                </div>
+                </motion.div>
               </motion.div>
               
               <motion.div 
@@ -385,7 +370,7 @@ const Index = () => {
           <SectionDivider variant="gradient" className="my-10" />
           
           <motion.section variants={itemVariants} className="relative">
-            <div className="mb-8 pb-2 border-b border-purple-500/20">
+            <div className="mb-8 pb-2 border-b border-pink-500/20">
               <h2 className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-purple-400 pb-1`}>
                 <span className="flex items-center gap-2">
                   <Sparkles className={`${isMobile ? 'h-6 w-6' : 'h-7 w-7'} text-pink-400`} />

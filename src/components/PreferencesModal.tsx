@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
@@ -16,7 +15,7 @@ interface PreferencesModalProps {
   preferences: UserPreferences;
   onSave: (preferences: UserPreferences) => void;
   buttonClassName?: string;
-  buttonVariant?: string; // Added this prop to fix the error
+  buttonVariant?: string;
 }
 
 const PreferencesModal = ({ preferences, onSave, buttonClassName, buttonVariant = "outline" }: PreferencesModalProps) => {
@@ -130,10 +129,11 @@ const PreferencesModal = ({ preferences, onSave, buttonClassName, buttonVariant 
             scale: 1.05,
             transition: { duration: 0.2 }
           }}
+          className="w-full sm:w-auto"
         >
           <Button 
             variant={buttonVariant as any} 
-            className={`space-x-2 ${buttonClassName || ''}`}
+            className={`space-x-2 ${buttonClassName || ''} w-full`}
           >
             <Settings className="h-4 w-4" />
             <span>Preferences</span>
