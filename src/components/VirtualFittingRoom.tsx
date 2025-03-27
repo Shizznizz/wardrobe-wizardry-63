@@ -6,15 +6,17 @@ import { Download, Share2, Heart } from 'lucide-react';
 import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { motion, AnimatePresence } from 'framer-motion';
+import OliviaImageBadge from '@/components/outfits/OliviaImageBadge';
 
 interface VirtualFittingRoomProps {
   finalImage: string | null;
   outfit: Outfit | null;
   clothingItems: ClothingItem[];
   isProcessing: boolean;
-  userPhoto?: string | null; // Add support for displaying the user's photo
-  className?: string; // Add className prop
-  onSaveLook?: () => void; // Add callback for saving look
+  userPhoto?: string | null;
+  className?: string;
+  onSaveLook?: () => void;
+  isOliviaImage?: boolean; // New prop to indicate if using Olivia's image
 }
 
 const VirtualFittingRoom = ({ 
@@ -24,7 +26,8 @@ const VirtualFittingRoom = ({
   isProcessing,
   userPhoto,
   className,
-  onSaveLook
+  onSaveLook,
+  isOliviaImage = false
 }: VirtualFittingRoomProps) => {
   const isMobile = useIsMobile();
   
@@ -81,6 +84,7 @@ const VirtualFittingRoom = ({
     return (
       <div className={`neo-blur border border-white/10 rounded-lg p-3 sm:p-4 h-full ${className}`}>
         <div className="relative h-full flex flex-col">
+          <OliviaImageBadge isVisible={isOliviaImage} />
           <div className="flex-grow relative overflow-hidden rounded-lg">
             <AnimatePresence>
               <motion.img 
@@ -140,6 +144,7 @@ const VirtualFittingRoom = ({
               transition={{ duration: 0.5 }}
               className="relative"
             >
+              <OliviaImageBadge isVisible={isOliviaImage} />
               <img 
                 src={finalImage} 
                 alt="Virtual try-on result" 

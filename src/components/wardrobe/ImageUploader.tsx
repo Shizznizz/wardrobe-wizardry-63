@@ -11,6 +11,7 @@ interface ImageUploaderProps {
   persistentDisplay?: boolean; // Prop to control persistent display behavior
   className?: string; // Add className prop for custom styling
   label?: string; // Optional label prop
+  isOliviaImage?: boolean; // New prop to indicate if the image is of Olivia
 }
 
 const ImageUploader = ({ 
@@ -19,7 +20,8 @@ const ImageUploader = ({
   onClearImage, 
   persistentDisplay = false,
   className,
-  label = "Upload an image"
+  label = "Upload an image",
+  isOliviaImage = false
 }: ImageUploaderProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -70,8 +72,13 @@ const ImageUploader = ({
               <X className="h-4 w-4" />
             </button>
             {persistentDisplay && (
-              <div className="absolute bottom-0 left-0 right-0 bg-black/70 py-1 px-2 text-white text-xs text-center">
+              <div className="absolute bottom-0 left-0 right-0 bg-black/70 py-1 px-2 text-xs text-center">
                 Click to change
+              </div>
+            )}
+            {isOliviaImage && (
+              <div className="absolute top-2 left-2 bg-purple-600/80 rounded-full py-0.5 px-2 text-xs text-white flex items-center">
+                Olivia's Image
               </div>
             )}
           </>

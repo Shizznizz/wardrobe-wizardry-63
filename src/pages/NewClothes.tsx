@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -9,14 +10,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toast } from 'sonner';
 import { 
-  Camera, 
   Shirt, 
   Image, 
   Download, 
   Share2, 
   Trash2, 
   Sparkles, 
-  Sparkle, 
   Plus,
   ShoppingBag,
   Heart,
@@ -24,7 +23,8 @@ import {
   Lightbulb,
   Star,
   Unlock,
-  HelpCircle
+  HelpCircle,
+  User
 } from 'lucide-react';
 import VirtualFittingRoom from '@/components/VirtualFittingRoom';
 import ImageUploader from '@/components/wardrobe/ImageUploader';
@@ -37,6 +37,8 @@ import RecommendedOutfits from '@/components/outfits/RecommendedOutfits';
 import OutfitStylingTips from '@/components/outfits/OutfitStylingTips';
 import OliviaHelpAvatar from '@/components/OliviaHelpAvatar';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import OutfitTips, { defaultOutfitTips } from '@/components/outfits/OutfitTips';
+import OliviaImageGallery from '@/components/outfits/OliviaImageGallery';
 
 const NewClothes = () => {
   const [userPhoto, setUserPhoto] = useState<string | null>(null);
@@ -47,6 +49,10 @@ const NewClothes = () => {
   const [isPremiumUser] = useState(false);
   const [showSubscriptionPopup, setShowSubscriptionPopup] = useState(false);
   const [selectedItems, setSelectedItems] = useState<ClothingItem[]>([]);
+  const [showOliviaImageGallery, setShowOliviaImageGallery] = useState(false);
+  const [isUsingOliviaImage, setIsUsingOliviaImage] = useState(false);
+  const [showHelpTips, setShowHelpTips] = useState(false);
+  const [currentTipIndex, setCurrentTipIndex] = useState(0);
   const userPhotoInputRef = useRef<HTMLInputElement>(null);
   const clothingPhotoInputRef = useRef<HTMLInputElement>(null);
   const isMobile = useIsMobile();
@@ -83,6 +89,7 @@ const NewClothes = () => {
       reader.onload = (event) => {
         setUserPhoto(event.target?.result as string);
         setFinalImage(null);
+        setIsUsingOliviaImage(false);
       };
       reader.readAsDataURL(file);
     }
@@ -100,36 +107,10 @@ const NewClothes = () => {
     }
   };
 
-  const handleCapturePhoto = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      const video = document.createElement('video');
-      video.srcObject = stream;
-      
-      video.onloadedmetadata = () => {
-        video.play();
-        
-        const canvas = document.createElement('canvas');
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        
-        setTimeout(() => {
-          const ctx = canvas.getContext('2d');
-          ctx?.drawImage(video, 0, 0);
-          
-          const photoDataUrl = canvas.toDataURL('image/png');
-          setUserPhoto(photoDataUrl);
-          
-          const tracks = stream.getTracks();
-          tracks.forEach(track => track.stop());
-          
-          toast.success("Photo captured successfully!");
-        }, 500);
-      };
-    } catch (error) {
-      console.error('Error accessing camera:', error);
-      toast.error('Could not access camera. Please check permissions and try again.');
-    }
+  const handleSelectOliviaImage = (imageSrc: string) => {
+    setUserPhoto(imageSrc);
+    setFinalImage(null);
+    setIsUsingOliviaImage(true);
   };
 
   const handleTryOn = async () => {
@@ -187,6 +168,7 @@ const NewClothes = () => {
     setClothingPhoto(null);
     setFinalImage(null);
     setSelectedItems([]);
+    setIsUsingOliviaImage(false);
     toast.success('Photos cleared');
   };
 
@@ -197,6 +179,15 @@ const NewClothes = () => {
     }
     
     toast.success('Look saved to your wardrobe!');
+  };
+
+  const handleNextTip = () => {
+    if (currentTipIndex < defaultOutfitTips.length - 1) {
+      setCurrentTipIndex(prevIndex => prevIndex + 1);
+    } else {
+      setShowHelpTips(false);
+      setCurrentTipIndex(0);
+    }
   };
 
   const containerVariants = {
@@ -223,7 +214,44 @@ const NewClothes = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white">
       <Header />
-      <OliviaHelpAvatar position="top-right" />
+      
+      {/* Help Avatar in top right corner */}
+      <div className="fixed top-20 right-4 z-50">
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="cursor-pointer"
+          onClick={() => setShowHelpTips(true)}
+        >
+          <div className="relative">
+            <Avatar className="h-12 w-12 border-2 border-purple-400/30 shadow-lg hover:border-purple-400/60 transition-all duration-300">
+              <AvatarImage src="/lovable-uploads/86bf74b8-b311-4e3c-bfd6-53819add3df8.png" alt="Olivia Bloom" />
+              <AvatarFallback className="bg-gradient-to-r from-purple-600 to-pink-500 text-white">OB</AvatarFallback>
+            </Avatar>
+            <div className="absolute -bottom-1 -right-1 bg-purple-600 text-white text-[10px] rounded-full px-1.5 py-0.5 border border-white">
+              ?
+            </div>
+          </div>
+          <p className="text-xs text-center mt-1 text-white/70">Need help?</p>
+        </motion.div>
+      </div>
+      
+      {/* Help Tips Popup */}
+      {showHelpTips && (
+        <div className="fixed top-36 right-4 z-40">
+          <OutfitTips 
+            tips={defaultOutfitTips}
+            onShowAssistant={() => {}}
+            showAssistant={false}
+            onClose={() => {
+              setShowHelpTips(false);
+              setCurrentTipIndex(0);
+            }}
+            currentTipIndex={currentTipIndex}
+            onNextTip={handleNextTip}
+          />
+        </div>
+      )}
       
       <main className="container mx-auto px-4 pt-24 pb-16">
         <motion.div 
@@ -252,9 +280,8 @@ const NewClothes = () => {
               <Card className="border-0 shadow-soft bg-slate-900/40 border border-blue-500/20 backdrop-blur-lg">
                 <CardContent className="p-6 space-y-6">
                   <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
-                    <TabsList className="grid grid-cols-2 w-full bg-slate-800/50">
-                      <TabsTrigger value="upload" className="data-[state=active]:bg-indigo-600">Upload Photos</TabsTrigger>
-                      <TabsTrigger value="capture" className="data-[state=active]:bg-indigo-600">Capture Photo</TabsTrigger>
+                    <TabsList className="grid grid-cols-1 w-full bg-slate-800/50">
+                      <TabsTrigger value="upload" className="data-[state=active]:bg-indigo-600">Photo Upload</TabsTrigger>
                     </TabsList>
                     
                     <TabsContent value="upload" className="mt-4 space-y-6">
@@ -271,6 +298,12 @@ const NewClothes = () => {
                                 alt="Your uploaded photo" 
                                 className="w-full h-auto rounded-lg transition-transform duration-300 group-hover:scale-105" 
                               />
+                              {isUsingOliviaImage && (
+                                <div className="absolute top-2 left-2 bg-purple-600/80 rounded-full py-0.5 px-2 text-xs text-white flex items-center">
+                                  <User className="h-3 w-3 mr-1" />
+                                  Olivia's Image
+                                </div>
+                              )}
                               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                               <Button 
                                 variant="secondary" 
@@ -304,6 +337,18 @@ const NewClothes = () => {
                           onChange={handleUserPhotoUpload}
                           className="hidden"
                         />
+
+                        {/* Use Olivia's Image Button */}
+                        <div className="flex justify-center mt-2">
+                          <Button
+                            variant="outline"
+                            onClick={() => setShowOliviaImageGallery(true)}
+                            className="w-full text-sm border-purple-500/30 text-purple-300 hover:bg-white/5 hover:text-purple-100 hover:border-purple-500/50"
+                          >
+                            <User className="h-4 w-4 mr-2" />
+                            Use Image of Olivia Bloom
+                          </Button>
+                        </div>
                       </div>
                       
                       <div className="space-y-3">
@@ -352,80 +397,6 @@ const NewClothes = () => {
                           onChange={handleClothingPhotoUpload}
                           className="hidden"
                         />
-                      </div>
-                    </TabsContent>
-                    
-                    <TabsContent value="capture" className="mt-4">
-                      <div className="space-y-6">
-                        <div className="rounded-lg overflow-hidden border border-blue-500/20 bg-gradient-to-br from-slate-800 to-slate-900 p-10 text-center">
-                          <div className="mb-6 mx-auto w-16 h-16 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center justify-center">
-                            <Camera className="h-8 w-8 text-white" />
-                          </div>
-                          <p className="text-muted-foreground text-center mb-6">
-                            Take a photo using your device's camera
-                          </p>
-                          <Button 
-                            variant="default"
-                            className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
-                            onClick={handleCapturePhoto}
-                          >
-                            <Camera className="h-4 w-4 mr-2" />
-                            Capture Photo
-                          </Button>
-                        </div>
-                        
-                        {userPhoto && (
-                          <div className="mt-4">
-                            <Label className="text-lg font-medium text-blue-100 mb-2 block">Preview</Label>
-                            <div className="relative rounded-lg overflow-hidden">
-                              <img 
-                                src={userPhoto} 
-                                alt="Captured photo" 
-                                className="w-full h-auto rounded-lg" 
-                              />
-                            </div>
-                          </div>
-                        )}
-                        
-                        <div className="space-y-3">
-                          <Label htmlFor="clothingPhotoCapture" className="text-lg font-medium text-blue-100">Clothing Item</Label>
-                          <div 
-                            className="relative overflow-hidden group cursor-pointer hover:shadow-lg transition-all duration-300 rounded-lg border border-purple-500/20"
-                            onClick={() => clothingPhotoInputRef.current?.click()}
-                          >
-                            {clothingPhoto ? (
-                              <div className="relative">
-                                <img 
-                                  src={clothingPhoto} 
-                                  alt="Clothing item" 
-                                  className="w-full h-auto rounded-lg transition-transform duration-300 group-hover:scale-105" 
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                <Button 
-                                  variant="secondary" 
-                                  className="absolute bottom-4 right-4 shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
-                                >
-                                  Change Photo
-                                </Button>
-                              </div>
-                            ) : (
-                              <div className="bg-gradient-to-br from-slate-800 to-slate-900 p-10 rounded-lg text-center">
-                                <div className="mb-6 mx-auto w-16 h-16 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
-                                  <Shirt className="h-8 w-8 text-white" />
-                                </div>
-                                <p className="text-muted-foreground text-center mb-6">
-                                  Upload a photo of the clothing item you want to try on
-                                </p>
-                                <Button 
-                                  variant="outline"
-                                  className="border-purple-500/30 text-purple-300 hover:text-purple-100"
-                                >
-                                  Select Clothing
-                                </Button>
-                              </div>
-                            )}
-                          </div>
-                        </div>
                       </div>
                     </TabsContent>
                   </Tabs>
@@ -479,6 +450,7 @@ const NewClothes = () => {
                 isProcessing={isProcessing}
                 userPhoto={userPhoto}
                 onSaveLook={handleSaveLook}
+                isOliviaImage={isUsingOliviaImage}
               />
               
               {finalImage && (
@@ -572,6 +544,13 @@ const NewClothes = () => {
           )}
         </motion.div>
       </main>
+      
+      {/* Olivia Image Gallery Dialog */}
+      <OliviaImageGallery 
+        isOpen={showOliviaImageGallery}
+        onClose={() => setShowOliviaImageGallery(false)}
+        onSelectImage={handleSelectOliviaImage}
+      />
       
       <OutfitSubscriptionPopup 
         isOpen={showSubscriptionPopup}

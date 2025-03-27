@@ -21,6 +21,35 @@ interface OutfitTipsProps {
   onNextTip: () => void;
 }
 
+// Default tips we'll use for the Olivia help avatar
+export const defaultOutfitTips: OutfitTip[] = [
+  {
+    id: 1,
+    title: "Welcome to Virtual Try-On!",
+    content: "Upload your photo or use one of mine to see how different clothing items will look on you before making a purchase."
+  },
+  {
+    id: 2,
+    title: "Using Olivia's Images",
+    content: "Click the 'Use Image of Olivia Bloom' button to select from my professional model photos if you don't want to upload your own."
+  },
+  {
+    id: 3,
+    title: "Try Different Outfits",
+    content: "After selecting a model image, choose clothing items to visualize how they'd look. Mix and match to create perfect outfits!"
+  },
+  {
+    id: 4,
+    title: "Save Your Favorites",
+    content: "Like what you see? Save your favorite virtual try-on looks to reference later or share with friends."
+  },
+  {
+    id: 5,
+    title: "Upgrade for More",
+    content: "Premium users can access exclusive clothing collections and advanced styling tools for the perfect virtual try-on experience."
+  }
+];
+
 const OutfitTips = ({ 
   tips, 
   onShowAssistant, 
