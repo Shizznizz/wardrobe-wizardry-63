@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 import ImageUploader from '@/components/wardrobe/ImageUploader';
+import { motion } from 'framer-motion';
 
 interface TryOnSectionProps {
   userPhoto: string | null;
@@ -42,12 +43,35 @@ const TryOnSection = ({
       <Card className="border-0 shadow-soft bg-slate-900/40 border border-blue-500/20 backdrop-blur-lg">
         <CardContent className="p-6 space-y-6">
           <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
-            <TabsList className="grid grid-cols-1 w-full bg-slate-800/50">
-              <TabsTrigger value="upload" className="data-[state=active]:bg-indigo-600">Photo Upload</TabsTrigger>
+            <TabsList className="grid grid-cols-1 w-full bg-slate-800/50 overflow-hidden relative group">
+              <motion.div 
+                className="absolute inset-0 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: [0, 0.5, 0.3] }}
+                transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}
+              />
+              <TabsTrigger 
+                value="upload" 
+                className="data-[state=active]:bg-indigo-600 relative z-10"
+              >
+                <motion.span
+                  initial={{ opacity: 0, y: 5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, ease: "easeOut" }}
+                  className="text-sm sm:text-base"
+                >
+                  Time to Shine – Upload Your Photo and See the Magic Happen
+                </motion.span>
+              </TabsTrigger>
             </TabsList>
             
             <TabsContent value="upload" className="mt-4 space-y-6">
-              <div className="space-y-3">
+              <motion.div 
+                className="space-y-3"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.2 }}
+              >
                 <Label htmlFor="userPhoto" className="text-lg font-medium text-blue-100">Your Photo</Label>
                 <ImageUploader
                   imagePreview={userPhoto}
@@ -58,9 +82,14 @@ const TryOnSection = ({
                   showOliviaButton={true}
                   onOliviaButtonClick={onShowOliviaImageGallery}
                 />
-              </div>
+              </motion.div>
               
-              <div className="space-y-3">
+              <motion.div 
+                className="space-y-3"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.4 }}
+              >
                 <Label htmlFor="clothingPhoto" className="text-lg font-medium text-blue-100">Clothing Item</Label>
                 <div 
                   className="relative overflow-hidden group cursor-pointer hover:shadow-lg transition-all duration-300 rounded-lg border border-purple-500/20"
@@ -106,7 +135,7 @@ const TryOnSection = ({
                   onChange={onClothingPhotoUpload}
                   className="hidden"
                 />
-              </div>
+              </motion.div>
             </TabsContent>
           </Tabs>
         </CardContent>
