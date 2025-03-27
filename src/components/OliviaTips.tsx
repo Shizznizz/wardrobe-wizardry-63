@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageCircle, X, Sparkles, ArrowRight } from 'lucide-react';
@@ -40,15 +39,15 @@ const OliviaTips = ({ position = 'top-right' }: OliviaTipsProps) => {
   const getPositionClasses = () => {
     // Adjust position for mobile devices
     if (isMobile && position === 'top-right') {
-      return 'top-36 right-6'; // Move avatar lower on mobile
+      return 'top-52 right-6'; // Move avatar lower on mobile to prevent overlapping
     }
     
     switch(position) {
       case 'top-left': return 'top-24 left-6';
       case 'bottom-right': return 'bottom-20 right-6';
       case 'bottom-left': return 'bottom-6 left-6';
-      case 'top-right': return 'top-24 right-6'; // Default position
-      default: return 'top-24 right-6';
+      case 'top-right': return 'top-36 right-6'; // Adjusted position for desktop
+      default: return 'top-36 right-6';
     }
   };
 

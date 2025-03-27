@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -78,7 +79,7 @@ const Index = () => {
       <BackgroundShapes />
       <Header />
       
-      <div className={`fixed ${isMobile ? 'right-5 top-48 z-30' : 'top-52 right-6'} z-50`}>
+      <div className={`fixed ${isMobile ? 'right-5 top-64 z-30' : 'top-80 right-6'} z-50`}>
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -196,7 +197,7 @@ const Index = () => {
               className={`w-28 h-1 bg-gradient-to-r from-blue-500/80 via-purple-500/80 to-pink-500/80 rounded-full ${isMobile ? 'mb-0' : 'mb-8'}`}
             />
             
-            <p className={`${isMobile ? 'text-base mt-48 px-5 py-6' : 'text-xl mt-8'} text-blue-100/90 max-w-2xl backdrop-blur-sm py-5 px-7 rounded-xl border border-white/10 shadow-xl neo-blur leading-relaxed`}>
+            <p className={`${isMobile ? 'text-base mt-78 px-5 py-6' : 'text-xl mt-38'} text-blue-100/90 max-w-2xl backdrop-blur-sm py-5 px-7 rounded-xl border border-white/10 shadow-xl neo-blur leading-relaxed`}>
               Smarter styling starts here. AI-curated outfits that fit your style, your body, and your weather.
             </p>
             
