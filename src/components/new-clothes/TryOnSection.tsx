@@ -1,6 +1,6 @@
 
 import { useState, useRef } from 'react';
-import { Shirt, Trash2 } from 'lucide-react';
+import { Shirt, Trash2, Upload, User } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -37,6 +37,14 @@ const TryOnSection = ({
 }: TryOnSectionProps) => {
   const [selectedTab, setSelectedTab] = useState<string>('upload');
   const clothingPhotoInputRef = useRef<HTMLInputElement>(null);
+  const userPhotoInputRef = useRef<HTMLInputElement>(null);
+
+  const handleUserPhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      onUserPhotoUpload(file);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -73,14 +81,66 @@ const TryOnSection = ({
                 transition={{ duration: 0.7, delay: 0.2 }}
               >
                 <Label htmlFor="userPhoto" className="text-lg font-medium text-blue-100">Your Photo</Label>
-                <ImageUploader
-                  imagePreview={userPhoto}
-                  onImageChange={onUserPhotoUpload}
-                  onClearImage={onClearUserPhoto}
-                  label="Upload a full-body photo of yourself"
-                  isOliviaImage={isUsingOliviaImage}
-                  showOliviaButton={true}
-                  onOliviaButtonClick={onShowOliviaImageGallery}
+                <div 
+                  className="relative overflow-hidden group cursor-pointer hover:shadow-lg transition-all duration-300 rounded-lg border border-purple-500/20"
+                >
+                  {userPhoto ? (
+                    <div className="relative">
+                      <img 
+                        src={userPhoto} 
+                        alt="Your photo" 
+                        className="w-full h-auto rounded-lg transition-transform duration-300 group-hover:scale-105" 
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                      <Button 
+                        variant="secondary" 
+                        className="absolute bottom-4 right-4 shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={() => userPhotoInputRef.current?.click()}
+                      >
+                        Change Photo
+                      </Button>
+                      {isUsingOliviaImage && (
+                        <div className="absolute top-2 left-2 bg-purple-600/80 rounded-full py-0.5 px-2 text-xs text-white flex items-center">
+                          <User className="h-3 w-3 mr-1" />
+                          Olivia's Image
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="bg-gradient-to-br from-slate-800 to-slate-900 p-10 rounded-lg text-center">
+                      <div className="mb-6 mx-auto w-16 h-16 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center justify-center">
+                        <User className="h-8 w-8 text-white" />
+                      </div>
+                      <p className="text-muted-foreground text-center mb-6">
+                        Upload a full-body photo of yourself
+                      </p>
+                      <Button 
+                        variant="outline"
+                        className="border-blue-500/30 text-blue-300 hover:text-blue-100 mb-4 w-full"
+                        onClick={() => userPhotoInputRef.current?.click()}
+                      >
+                        <Upload className="h-4 w-4 mr-2" />
+                        Upload Your Photo
+                      </Button>
+                      
+                      <Button
+                        variant="outline"
+                        onClick={onShowOliviaImageGallery}
+                        className="w-full text-sm border-purple-500/30 text-purple-300 hover:bg-white/5 hover:text-purple-100 hover:border-purple-500/50"
+                      >
+                        <User className="h-4 w-4 mr-2" />
+                        Choose an Image of Olivia Bloom
+                      </Button>
+                    </div>
+                  )}
+                </div>
+                <Input
+                  ref={userPhotoInputRef}
+                  id="userPhoto"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleUserPhotoUpload}
+                  className="hidden"
                 />
               </motion.div>
               
