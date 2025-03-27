@@ -15,6 +15,7 @@ import {
   Upload as UploadIcon,
   ShoppingBag,
   Heart,
+  User,
 } from 'lucide-react';
 import OliviaTips from '@/components/OliviaTips';
 import OutfitSelector from '@/components/OutfitSelector';
@@ -26,6 +27,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { useOutfitState } from '@/hooks/useOutfitState';
 import SubscriptionPopup from '@/components/SubscriptionPopup';
+import OliviaImageGallery from '@/components/outfits/OliviaImageGallery';
 
 const fashionCollections = [
   {
@@ -68,6 +70,8 @@ const Showroom = () => {
   const [showTips, setShowTips] = useState(true);
   const [activeTab, setActiveTab] = useState<'olivia-pick' | 'your-outfits'>('olivia-pick');
   const [showSubscriptionPopup, setShowSubscriptionPopup] = useState(false);
+  const [showOliviaImageGallery, setShowOliviaImageGallery] = useState(false);
+  const [isUsingOliviaImage, setIsUsingOliviaImage] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const isMobile = useIsMobile();
 
@@ -105,11 +109,18 @@ const Showroom = () => {
       reader.onload = (e) => {
         if (e.target?.result) {
           handleUserPhotoChange(e.target.result as string);
+          setIsUsingOliviaImage(false);
           toast.success('Photo uploaded successfully!');
         }
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleSelectOliviaImage = (imageSrc: string) => {
+    handleUserPhotoChange(imageSrc);
+    setIsUsingOliviaImage(true);
+    toast.success('Selected Olivia\'s image successfully!');
   };
 
   const triggerFileUpload = () => {
@@ -199,7 +210,7 @@ const Showroom = () => {
                         <p className="text-white/70 mb-6 text-center max-w-sm">
                           See how outfits look on you with our virtual try-on feature
                         </p>
-                        <div className="flex flex-col sm:flex-row gap-3 w-full max-w-xs">
+                        <div className="flex flex-col gap-3 w-full max-w-xs">
                           <Button 
                             onClick={triggerFileUpload}
                             className="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90"
@@ -220,6 +231,14 @@ const Showroom = () => {
                           >
                             <Camera className="mr-2 h-5 w-5" /> Take a Photo
                           </Button>
+                          <Button
+                            variant="outline"
+                            onClick={() => setShowOliviaImageGallery(true)}
+                            className="w-full text-sm border-purple-500/30 text-purple-300 hover:bg-purple-500/20 hover:text-purple-100 hover:border-purple-500/50 transition-colors"
+                          >
+                            <User className="mr-2 h-4 w-4" />
+                            Choose an Image of Olivia Bloom
+                          </Button>
                         </div>
                       </div>
                     ) : (
@@ -230,6 +249,12 @@ const Showroom = () => {
                             alt="Your uploaded photo" 
                             className="w-full h-full object-contain"
                           />
+                          {isUsingOliviaImage && (
+                            <div className="absolute top-2 left-2 bg-purple-600/80 rounded-full py-0.5 px-2 text-xs text-white flex items-center">
+                              <User className="h-3 w-3 mr-1" />
+                              Olivia's Image
+                            </div>
+                          )}
                         </div>
                         <div className="flex justify-center mt-4 gap-3">
                           <Button 
@@ -409,6 +434,12 @@ const Showroom = () => {
           )}
         </div>
       </main>
+      
+      <OliviaImageGallery 
+        isOpen={showOliviaImageGallery}
+        onClose={() => setShowOliviaImageGallery(false)}
+        onSelectImage={handleSelectOliviaImage}
+      />
       
       <SubscriptionPopup 
         isOpen={showSubscriptionPopup}
