@@ -21,18 +21,18 @@ const OliviaTips = ({ position = 'top-right' }: OliviaTipsProps) => {
   
   const tips = [
     {
-      title: "Welcome to Your Outfits!",
-      message: "Try creating outfits for different occasions and weather conditions. I'll recommend suitable combinations for you!",
+      title: "Welcome to Your Fashion Showroom!",
+      message: "Try uploading a photo of yourself and see how our recommended outfits look on you. It's like having your own personal fitting room!",
       icon: <Sparkles className="h-4 w-4 text-amber-300" />,
     },
     {
-      title: "Style Suggestions",
-      message: "Try combining neutral basics with one statement piece for an effortlessly stylish look.",
+      title: "Try Outfit Swapping",
+      message: "Select different collections to explore a variety of looks. Each collection features outfits perfect for different occasions and seasons.",
       icon: <ArrowRight className="h-4 w-4 text-blue-300" />,
     },
     {
-      title: "Weather Adaptability",
-      message: "Consider layering pieces so your outfit can adapt to changing weather throughout the day.",
+      title: "Share Your Looks",
+      message: "Once you find an outfit you love, download or share it with friends to get their opinion before adding it to your wardrobe.",
       icon: <Party className="h-4 w-4 text-emerald-300" />,
     },
   ];
