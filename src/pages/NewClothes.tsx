@@ -34,6 +34,7 @@ import AdditionalItemsSelector from '@/components/outfits/AdditionalItemsSelecto
 import AffiliateProducts from '@/components/outfits/AffiliateProducts';
 import RecommendedOutfits from '@/components/outfits/RecommendedOutfits';
 import OutfitStylingTips from '@/components/outfits/OutfitStylingTips';
+import OliviaHelpAvatar from '@/components/OliviaHelpAvatar';
 
 const NewClothes = () => {
   const [userPhoto, setUserPhoto] = useState<string | null>(null);
@@ -220,6 +221,7 @@ const NewClothes = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white">
       <Header />
+      <OliviaHelpAvatar position="top-right" />
       
       <main className="container mx-auto px-4 pt-24 pb-16">
         <motion.div 
@@ -240,56 +242,6 @@ const NewClothes = () => {
               <p className="text-lg text-white/80 mb-6">
                 Visualize how new items will look on you before making any purchase decisions.
               </p>
-              <div className="flex flex-wrap gap-4">
-                <Button 
-                  size="lg" 
-                  className="bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90"
-                  onClick={handleCapturePhoto}
-                >
-                  <Camera className="mr-2 h-4 w-4" /> Take a Photo
-                </Button>
-                <Button 
-                  size="lg" 
-                  variant="outline" 
-                  className="border-purple-400/30 text-white hover:bg-white/10"
-                  onClick={() => userPhotoInputRef.current?.click()}
-                >
-                  <Image className="mr-2 h-4 w-4" /> Upload Images
-                </Button>
-              </div>
-            </motion.div>
-            
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2 }}
-              className="lg:w-1/2"
-            >
-              <div className="relative">
-                <div className="absolute -top-4 -left-4 bg-gradient-to-r from-purple-600 to-pink-500 rounded-full p-3 shadow-lg">
-                  <Sparkles className="h-5 w-5 text-white" />
-                </div>
-                <Card className="glass-dark border-white/10 overflow-hidden">
-                  <CardContent className="p-6">
-                    <div className="flex items-center gap-4 mb-4">
-                      <Avatar className="h-16 w-16 border-2 border-purple-400/30">
-                        <AvatarImage src="/lovable-uploads/86bf74b8-b311-4e3c-bfd6-53819add3df8.png" alt="Olivia Bloom" />
-                        <AvatarFallback className="bg-gradient-to-r from-purple-600 to-pink-500 text-white">OB</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <h3 className="text-xl font-semibold flex items-center">
-                          Virtual Try-On Tip
-                          <Sparkle className="h-4 w-4 ml-2 text-yellow-300" />
-                        </h3>
-                        <p className="text-white/70">From Olivia Bloom</p>
-                      </div>
-                    </div>
-                    <p className="text-white/90 italic">
-                      "Try before you buy! Upload a photo of yourself and a clothing item you're considering to see how they'll look together before making a purchase."
-                    </p>
-                  </CardContent>
-                </Card>
-              </div>
             </motion.div>
           </div>
 
@@ -302,6 +254,7 @@ const NewClothes = () => {
                       <TabsTrigger value="upload" className="data-[state=active]:bg-indigo-600">Upload Photos</TabsTrigger>
                       <TabsTrigger value="capture" className="data-[state=active]:bg-indigo-600">Capture Photo</TabsTrigger>
                     </TabsList>
+                    
                     <TabsContent value="upload" className="mt-4 space-y-6">
                       <div className="space-y-3">
                         <Label htmlFor="userPhoto" className="text-lg font-medium text-blue-100">Your Photo</Label>
