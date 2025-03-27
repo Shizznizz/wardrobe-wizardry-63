@@ -1,8 +1,9 @@
 
 import { useRef } from 'react';
-import { X, Upload } from 'lucide-react';
+import { X, Upload, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
 
 interface ImageUploaderProps {
   imagePreview: string | null;
@@ -12,6 +13,8 @@ interface ImageUploaderProps {
   className?: string; // Add className prop for custom styling
   label?: string; // Optional label prop
   isOliviaImage?: boolean; // New prop to indicate if the image is of Olivia
+  showOliviaButton?: boolean; // New prop to show the Olivia button
+  onOliviaButtonClick?: () => void; // New prop for handling Olivia button click
 }
 
 const ImageUploader = ({ 
@@ -21,7 +24,9 @@ const ImageUploader = ({
   persistentDisplay = false,
   className,
   label = "Upload an image",
-  isOliviaImage = false
+  isOliviaImage = false,
+  showOliviaButton = false,
+  onOliviaButtonClick
 }: ImageUploaderProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -78,6 +83,7 @@ const ImageUploader = ({
             )}
             {isOliviaImage && (
               <div className="absolute top-2 left-2 bg-purple-600/80 rounded-full py-0.5 px-2 text-xs text-white flex items-center">
+                <User className="h-3 w-3 mr-1" />
                 Olivia's Image
               </div>
             )}
@@ -101,6 +107,18 @@ const ImageUploader = ({
         onChange={handleFileChange}
         className="hidden"
       />
+      
+      {/* Olivia Button */}
+      {showOliviaButton && (
+        <Button
+          variant="outline"
+          onClick={onOliviaButtonClick}
+          className="w-full mt-2 text-sm border-purple-500/30 text-purple-300 hover:bg-white/5 hover:text-purple-100 hover:border-purple-500/50"
+        >
+          <User className="h-4 w-4 mr-2" />
+          Use Image of Olivia Bloom
+        </Button>
+      )}
     </div>
   );
 };
