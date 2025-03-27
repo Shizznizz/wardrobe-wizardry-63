@@ -7,9 +7,15 @@ interface ImageUploaderProps {
   imagePreview: string | null;
   onImageChange: (file: File) => void;
   onClearImage: () => void;
+  persistentDisplay?: boolean; // New prop to control persistent display behavior
 }
 
-const ImageUploader = ({ imagePreview, onImageChange, onClearImage }: ImageUploaderProps) => {
+const ImageUploader = ({ 
+  imagePreview, 
+  onImageChange, 
+  onClearImage, 
+  persistentDisplay = false 
+}: ImageUploaderProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,7 +40,8 @@ const ImageUploader = ({ imagePreview, onImageChange, onClearImage }: ImageUploa
         onClick={triggerFileInput}
         className={cn(
           "relative w-full max-w-[200px] h-[200px] rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center cursor-pointer overflow-hidden transition-all duration-200",
-          !imagePreview && "hover:border-primary hover:bg-primary/5"
+          !imagePreview && "hover:border-primary hover:bg-primary/5",
+          persistentDisplay && imagePreview && "border-solid border-purple-500"
         )}
       >
         {imagePreview ? (
@@ -51,6 +58,11 @@ const ImageUploader = ({ imagePreview, onImageChange, onClearImage }: ImageUploa
             >
               <X className="h-4 w-4" />
             </button>
+            {persistentDisplay && (
+              <div className="absolute bottom-0 left-0 right-0 bg-black/70 py-1 px-2 text-white text-xs text-center">
+                Click to change
+              </div>
+            )}
           </>
         ) : (
           <div className="flex flex-col items-center space-y-2 p-4 text-center">

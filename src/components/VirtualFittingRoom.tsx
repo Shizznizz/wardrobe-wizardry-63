@@ -12,13 +12,15 @@ interface VirtualFittingRoomProps {
   outfit: Outfit | null;
   clothingItems: ClothingItem[];
   isProcessing: boolean;
+  userPhoto?: string | null; // Add support for displaying the user's photo
 }
 
 const VirtualFittingRoom = ({ 
   finalImage, 
   outfit, 
   clothingItems,
-  isProcessing 
+  isProcessing,
+  userPhoto
 }: VirtualFittingRoomProps) => {
   const isMobile = useIsMobile();
   
@@ -70,6 +72,28 @@ const VirtualFittingRoom = ({
   // Get a subset of clothing items to show as miniatures
   const previewItems = clothingItems.slice(0, isMobile ? 3 : 4);
 
+  // Display user photo if provided, otherwise show the usual content
+  if (userPhoto && !finalImage && !isProcessing) {
+    return (
+      <div className="neo-blur border border-white/10 rounded-lg p-3 sm:p-4 h-full">
+        <div className="relative h-full flex flex-col">
+          <div className="flex-grow relative overflow-hidden rounded-lg">
+            <img 
+              src={userPhoto} 
+              alt="Your uploaded photo" 
+              className="w-full h-full object-contain"
+            />
+            <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+              <p className="text-white text-center px-4 py-2 rounded-lg bg-black/50 max-w-xs">
+                Select an outfit to see how it looks on your photo
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
   if (!finalImage && !isProcessing) {
     return (
       <div className="neo-blur border border-white/10 rounded-lg p-3 sm:p-6 h-full flex flex-col items-center justify-center text-center">

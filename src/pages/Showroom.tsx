@@ -105,6 +105,7 @@ const Showroom = () => {
     }
     
     setIsProcessing(true);
+    setFinalImage(null); // Clear the final image while processing
     
     // Simulate processing delay
     setTimeout(() => {
@@ -211,6 +212,7 @@ const Showroom = () => {
                         outfit={selectedOutfit}
                         clothingItems={sampleClothingItems}
                         isProcessing={isProcessing}
+                        userPhoto={userPhoto} // Pass the user photo to display when no final image is available
                       />
                       
                       <div className="flex flex-wrap gap-3 mt-5 justify-center sm:justify-start">
