@@ -231,17 +231,11 @@ const Showroom = () => {
                         clothingItems={sampleClothingItems}
                         isProcessing={isProcessingTryOn}
                         userPhoto={userPhoto}
+                        onSaveLook={handleSaveLook}
                         className="flex-grow"
                       />
                       
                       <div className="flex flex-wrap gap-3 mt-5 justify-center sm:justify-start">
-                        <Button 
-                          onClick={handleSaveLook}
-                          disabled={!finalImage || isProcessingTryOn}
-                          className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
-                        >
-                          <Heart className="mr-2 h-4 w-4" /> Save Look
-                        </Button>
                         <Button 
                           variant="outline"
                           onClick={triggerFileUpload}

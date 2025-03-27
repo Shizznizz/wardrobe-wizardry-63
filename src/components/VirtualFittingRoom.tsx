@@ -2,7 +2,7 @@
 import { ClothingItem, Outfit } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { Download, Share2 } from 'lucide-react';
+import { Download, Share2, Heart } from 'lucide-react';
 import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -14,6 +14,7 @@ interface VirtualFittingRoomProps {
   isProcessing: boolean;
   userPhoto?: string | null; // Add support for displaying the user's photo
   className?: string; // Add className prop
+  onSaveLook?: () => void; // Add callback for saving look
 }
 
 const VirtualFittingRoom = ({ 
@@ -22,7 +23,8 @@ const VirtualFittingRoom = ({
   clothingItems,
   isProcessing,
   userPhoto,
-  className
+  className,
+  onSaveLook
 }: VirtualFittingRoomProps) => {
   const isMobile = useIsMobile();
   
@@ -191,7 +193,20 @@ const VirtualFittingRoom = ({
             </div>
           )}
           
-          <div className={`flex gap-2 ${isMobile ? 'flex-col' : 'justify-end'}`}>
+          {/* Action buttons */}
+          <div className={`flex flex-wrap gap-2 ${isMobile ? 'flex-col' : 'justify-end'}`}>
+            {/* Save Look button */}
+            <Button 
+              variant="default" 
+              size={isMobile ? "default" : "sm"}
+              onClick={onSaveLook}
+              className={`${isMobile ? 'w-full text-sm h-9' : ''} bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white`}
+            >
+              <Heart className="h-4 w-4 mr-2" />
+              Save Look
+            </Button>
+            
+            {/* Share button - only show if Web Share API is supported */}
             {navigator.share && (
               <Button 
                 variant="outline" 
@@ -203,11 +218,13 @@ const VirtualFittingRoom = ({
                 Share
               </Button>
             )}
+            
+            {/* Download button */}
             <Button 
-              variant="default" 
+              variant="outline" 
               size={isMobile ? "default" : "sm"}
               onClick={handleDownload}
-              className={`${isMobile ? 'w-full text-sm h-9' : ''} bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white`}
+              className={`${isMobile ? 'w-full text-sm h-9' : ''} bg-white/5 border-white/20 text-white hover:bg-white/10`}
             >
               <Download className="h-4 w-4 mr-2" />
               Download
