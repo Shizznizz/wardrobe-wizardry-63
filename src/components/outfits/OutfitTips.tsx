@@ -79,15 +79,20 @@ const OutfitTips = ({
             <span className="text-xs text-white/60">
               Tip {currentTipIndex + 1}/{tips.length}
             </span>
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={onNextTip}
-              className="text-xs border-purple-400/30 text-white hover:bg-white/10"
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
-              {isLastTip ? "Close" : "Next Tip"}
-              {!isLastTip && <ArrowRight className="ml-1 h-3 w-3" />}
-            </Button>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={onNextTip}
+                className="text-xs border-purple-400/30 text-white hover:bg-white/10 transition-all duration-300 hover:border-purple-400/50"
+              >
+                {isLastTip ? "Close" : "Next Tip"}
+                {!isLastTip && <ArrowRight className="ml-1 h-3 w-3" />}
+              </Button>
+            </motion.div>
           </div>
         </CardContent>
       </Card>

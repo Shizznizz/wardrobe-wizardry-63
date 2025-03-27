@@ -24,6 +24,7 @@ import {
   Lightbulb,
   Star,
   Unlock,
+  HelpCircle
 } from 'lucide-react';
 import VirtualFittingRoom from '@/components/VirtualFittingRoom';
 import ImageUploader from '@/components/wardrobe/ImageUploader';
@@ -35,6 +36,7 @@ import AffiliateProducts from '@/components/outfits/AffiliateProducts';
 import RecommendedOutfits from '@/components/outfits/RecommendedOutfits';
 import OutfitStylingTips from '@/components/outfits/OutfitStylingTips';
 import OliviaHelpAvatar from '@/components/OliviaHelpAvatar';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const NewClothes = () => {
   const [userPhoto, setUserPhoto] = useState<string | null>(null);
@@ -431,22 +433,40 @@ const NewClothes = () => {
               </Card>
               
               <div className="flex flex-wrap gap-4 justify-center mt-6">
-                <Button 
-                  onClick={handleTryOn} 
-                  disabled={!userPhoto || !clothingPhoto || isProcessing}
-                  className="w-full md:w-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 h-12 text-lg font-medium shadow-md px-8"
-                >
-                  {isProcessing ? 'Processing...' : 'Preview on Me'}
-                </Button>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button 
+                        onClick={handleTryOn} 
+                        disabled={!userPhoto || !clothingPhoto || isProcessing}
+                        className="w-full md:w-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 h-12 text-lg font-medium shadow-md px-8 transition-all duration-300 hover:shadow-purple-500/20 hover:shadow-lg"
+                      >
+                        {isProcessing ? 'Processing...' : 'Preview on Me'}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" className="bg-slate-900 text-white border-purple-400/30">
+                      <p>Click to place the selected clothing item on your uploaded photo and preview the look.</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 
-                <Button
-                  variant="outline"
-                  onClick={clearPhotos}
-                  className="w-full md:w-auto border-red-500/30 text-red-300 hover:text-red-100 h-12 text-lg font-medium"
-                >
-                  <Trash2 className="h-5 w-5 mr-2" />
-                  Clear Photos
-                </Button>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="outline"
+                        onClick={clearPhotos}
+                        className="w-full md:w-auto border-red-500/30 text-red-300 hover:text-red-100 h-12 text-lg font-medium transition-all duration-300 hover:border-red-500/50"
+                      >
+                        <Trash2 className="h-5 w-5 mr-2" />
+                        Clear Photos
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" className="bg-slate-900 text-white border-red-400/30">
+                      <p>Click to remove the photos and start over.</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
             </div>
             
@@ -530,14 +550,24 @@ const NewClothes = () => {
               </div>
               
               <div className="flex justify-center mt-8">
-                <Button 
-                  size="lg"
-                  onClick={handleUpgradeToPremium}
-                  className="bg-gradient-to-r from-yellow-500 to-amber-600 hover:opacity-90 shadow-lg"
+                <motion.div 
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="relative group"
                 >
-                  <Unlock className="mr-2 h-5 w-5" /> Upgrade to Premium
-                </Button>
+                  <Button 
+                    size="lg"
+                    onClick={handleUpgradeToPremium}
+                    className="bg-gradient-to-r from-yellow-500 to-amber-600 hover:opacity-90 shadow-lg h-14 px-8 text-lg relative z-10 transition-all duration-300 hover:shadow-amber-500/30 hover:shadow-xl"
+                  >
+                    <Unlock className="mr-2 h-5 w-5" /> Upgrade to Premium
+                  </Button>
+                  <div className="absolute inset-0 bg-white/20 blur-lg rounded-full opacity-0 group-hover:opacity-70 transition-opacity duration-300 animate-pulse"></div>
+                </motion.div>
               </div>
+              <p className="text-center text-white/70 mt-4 max-w-md mx-auto">
+                Unlock advanced styling and multiple photos with Premium!
+              </p>
             </motion.div>
           )}
         </motion.div>

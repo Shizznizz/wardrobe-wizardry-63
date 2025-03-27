@@ -16,6 +16,7 @@ import {
   ShoppingBag,
   Settings2,
   X,
+  Sparkles
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -51,9 +52,14 @@ const OutfitSubscriptionPopup = ({ isOpen, onClose, onUpgrade }: OutfitSubscript
     <Dialog open={showLocalDialog} onOpenChange={setShowLocalDialog}>
       <DialogContent className="sm:max-w-md bg-gradient-to-b from-slate-900 to-purple-950 border-purple-500/20 text-white">
         <DialogHeader className="relative">
-          <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-yellow-500 to-amber-500 p-3 rounded-full shadow-lg">
+          <motion.div 
+            className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-yellow-500 to-amber-500 p-3 rounded-full shadow-lg"
+            initial={{ y: -10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.3, delay: 0.1 }}
+          >
             <Star className="h-6 w-6 text-white" />
-          </div>
+          </motion.div>
           <DialogTitle className="text-2xl text-center mt-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
             Unlock Premium Outfit Features
           </DialogTitle>
@@ -109,7 +115,7 @@ const OutfitSubscriptionPopup = ({ isOpen, onClose, onUpgrade }: OutfitSubscript
           </motion.div>
         </div>
         
-        <DialogFooter className="flex-col sm:flex-row gap-3">
+        <DialogFooter className="flex-col sm:flex-row gap-3 mt-4">
           <Button 
             variant="ghost" 
             onClick={handleClose}
@@ -117,13 +123,24 @@ const OutfitSubscriptionPopup = ({ isOpen, onClose, onUpgrade }: OutfitSubscript
           >
             Maybe Later
           </Button>
-          <Button 
-            onClick={handleUpgrade}
-            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.98 }}
+            className="relative"
           >
-            Upgrade to Premium
-          </Button>
+            <div className="absolute inset-0 rounded-md opacity-40 blur-md bg-gradient-to-r from-purple-600/40 to-pink-600/40 animate-pulse"></div>
+            <Button 
+              onClick={handleUpgrade}
+              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white relative py-6 px-8 text-lg font-medium shadow-lg shadow-purple-500/20 border border-purple-500/30 transition-all duration-300"
+            >
+              <Sparkles className="mr-2 h-5 w-5 text-yellow-200" /> Upgrade to Premium
+            </Button>
+          </motion.div>
         </DialogFooter>
+        
+        <p className="text-center text-white/60 text-sm mt-2">
+          Unlock advanced styling and multiple photos with Premium!
+        </p>
       </DialogContent>
     </Dialog>
   );
