@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
@@ -15,9 +16,10 @@ interface PreferencesModalProps {
   preferences: UserPreferences;
   onSave: (preferences: UserPreferences) => void;
   buttonClassName?: string;
+  buttonVariant?: string; // Added this prop to fix the error
 }
 
-const PreferencesModal = ({ preferences, onSave, buttonClassName }: PreferencesModalProps) => {
+const PreferencesModal = ({ preferences, onSave, buttonClassName, buttonVariant = "outline" }: PreferencesModalProps) => {
   const [open, setOpen] = useState(false);
   const [localPreferences, setLocalPreferences] = useState<UserPreferences>(preferences);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -130,7 +132,7 @@ const PreferencesModal = ({ preferences, onSave, buttonClassName }: PreferencesM
           }}
         >
           <Button 
-            variant="outline" 
+            variant={buttonVariant as any} 
             className={`space-x-2 ${buttonClassName || ''}`}
           >
             <Settings className="h-4 w-4" />
