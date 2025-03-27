@@ -46,6 +46,11 @@ const TryOnSection = ({
     }
   };
 
+  const handleTabClick = () => {
+    // When the tab is clicked, open the file upload dialog
+    userPhotoInputRef.current?.click();
+  };
+
   return (
     <div className="space-y-6">
       <Card className="border-0 shadow-soft bg-slate-900/40 border border-blue-500/20 backdrop-blur-lg">
@@ -53,7 +58,7 @@ const TryOnSection = ({
           <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
             <TabsList 
               className="grid grid-cols-1 w-full bg-gradient-to-r from-pink-500 to-purple-600 overflow-hidden relative group cursor-pointer"
-              onClick={onShowOliviaImageGallery}
+              onClick={handleTabClick}
             >
               <motion.div 
                 className="absolute inset-0 bg-gradient-to-r from-pink-400/20 to-purple-500/20 opacity-0 group-hover:opacity-100"
@@ -129,7 +134,7 @@ const TryOnSection = ({
                       <Button
                         variant="outline"
                         onClick={onShowOliviaImageGallery}
-                        className="w-full text-sm border-purple-500/30 text-purple-300 hover:bg-white/5 hover:text-purple-100 hover:border-purple-500/50"
+                        className="w-full text-sm border-purple-500/30 text-purple-300 hover:bg-purple-500/20 hover:text-purple-100 hover:border-purple-500/50 transition-colors"
                       >
                         <User className="h-4 w-4 mr-2" />
                         Choose an Image of Olivia Bloom
