@@ -212,6 +212,7 @@ const Showroom = () => {
           actionText="Thanks, Olivia!"
           onAction={() => setShowWelcome(false)}
           position="bottom-right"
+          initialDelay={1.5}
           autoClose={false}
         />
       )}

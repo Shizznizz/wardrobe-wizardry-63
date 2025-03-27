@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageCircle, X, Sparkles, MinusCircle, PlusCircle } from 'lucide-react';
@@ -25,11 +26,11 @@ interface OliviaBloomAssistantProps {
 
 const getPositionClasses = (position: string) => {
   switch(position) {
-    case 'bottom-left': return 'bottom-6 left-6';
-    case 'top-right': return 'top-6 right-6';
-    case 'top-left': return 'top-6 left-6';
-    case 'center': return 'bottom-24 left-1/2 -translate-x-1/2';
-    default: return 'bottom-6 right-6';
+    case 'bottom-left': return 'bottom-10 left-10';
+    case 'top-right': return 'top-10 right-10';
+    case 'top-left': return 'top-10 left-10';
+    case 'center': return 'bottom-28 left-1/2 -translate-x-1/2';
+    default: return 'bottom-10 right-10'; // Changed from bottom-6 to bottom-10 for more space
   }
 };
 
@@ -128,11 +129,11 @@ const OliviaBloomAssistant = ({
               <div className={cn(
                 "flex-1 rounded-t-xl rounded-bl-xl rounded-br-2xl shadow-lg p-4 relative",
                 minimized ? "max-h-16 overflow-hidden" : "",
-                "bg-gradient-to-br from-purple-800/90 to-pink-800/90 text-white backdrop-blur-sm",
+                "bg-slate-900/90 text-white backdrop-blur-sm",
                 "shadow-[0_4px_15px_rgba(0,0,0,0.2)]",
                 "border border-white/20"
               )}>
-                <div className="absolute -right-3 -bottom-3 w-6 h-6 bg-gradient-to-br from-purple-800/90 to-pink-800/90 transform rotate-45 shadow-md border-r border-b border-white/20" />
+                <div className="absolute -right-3 -bottom-3 w-6 h-6 bg-slate-900/90 transform rotate-45 shadow-md border-r border-b border-white/20" />
                 
                 <div className="absolute top-2 right-2 flex gap-1.5">
                   <button 
@@ -158,7 +159,7 @@ const OliviaBloomAssistant = ({
                     Olivia Bloom
                     <Sparkles className="h-3.5 w-3.5 ml-1 text-yellow-300" />
                   </h4>
-                  <span className="ml-2 text-xs bg-gradient-to-r from-purple-600/80 to-pink-500/80 text-white px-2 py-0.5 rounded-full text-[10px]">
+                  <span className="ml-2 text-xs bg-slate-800/80 text-white px-2 py-0.5 rounded-full text-[10px]">
                     Style Advisor
                   </span>
                 </div>

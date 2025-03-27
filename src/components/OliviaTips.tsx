@@ -45,10 +45,10 @@ const OliviaTips = ({ position = 'top-right' }: OliviaTipsProps) => {
     
     switch(position) {
       case 'top-left': return 'top-24 left-6';
-      case 'bottom-right': return 'bottom-20 right-6';
-      case 'bottom-left': return 'bottom-6 left-6';
-      case 'top-right': return 'top-24 right-6'; // Default position
-      default: return 'top-24 right-6';
+      case 'bottom-right': return 'bottom-24 right-6';
+      case 'bottom-left': return 'bottom-16 left-6';
+      case 'top-right': return 'top-28 right-6'; // Default position - moved down slightly
+      default: return 'top-28 right-6';
     }
   };
 
@@ -120,7 +120,7 @@ const OliviaTips = ({ position = 'top-right' }: OliviaTipsProps) => {
             transition={{ type: "spring", stiffness: 500, damping: 30 }}
             className="max-w-xs"
           >
-            <div className="relative p-5 rounded-xl bg-gradient-to-br from-purple-800/90 to-pink-800/90 text-white backdrop-blur-sm shadow-lg border border-white/20">
+            <div className="relative p-5 rounded-xl bg-slate-900/90 text-white backdrop-blur-sm shadow-lg border border-white/20">
               <button 
                 onClick={handleClose} 
                 className="absolute top-2 right-2 p-1 rounded-full hover:bg-white/10 transition-colors"
