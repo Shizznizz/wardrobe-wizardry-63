@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { Outfit, ClothingItem, WeatherInfo } from '@/lib/types';
+import { Outfit, ClothingItem, WeatherInfo, TimeOfDay, Activity } from '@/lib/types';
 
 export function useOutfitState(initialOutfits: Outfit[], initialClothingItems: ClothingItem[]) {
   const [outfits, setOutfits] = useState<Outfit[]>(initialOutfits);
@@ -11,6 +11,9 @@ export function useOutfitState(initialOutfits: Outfit[], initialClothingItems: C
   const [currentWeather, setCurrentWeather] = useState<WeatherInfo | null>(null);
   const [showRotatingView, setShowRotatingView] = useState(false);
   const [weatherBackground, setWeatherBackground] = useState("from-slate-950 to-purple-950");
+  const [userPhoto, setUserPhoto] = useState<string | null>(null);
+  const [finalImage, setFinalImage] = useState<string | null>(null);
+  const [isProcessingTryOn, setIsProcessingTryOn] = useState(false);
 
   useEffect(() => {
     // Update background based on weather
@@ -78,6 +81,31 @@ export function useOutfitState(initialOutfits: Outfit[], initialClothingItems: C
     setTimeout(() => setShowRotatingView(false), 1000);
   };
 
+  const handleUserPhotoChange = (photoUrl: string) => {
+    setUserPhoto(photoUrl);
+    setFinalImage(null); // Clear any existing try-on result
+  };
+
+  const handleClearUserPhoto = () => {
+    setUserPhoto(null);
+    setFinalImage(null);
+  };
+
+  const handleTryOnOutfit = (outfit: Outfit) => {
+    if (!userPhoto) return;
+    
+    setIsProcessingTryOn(true);
+    setFinalImage(null);
+    
+    // Simulate processing - in a real app, this would be an API call to a service
+    // that would composite the outfit onto the user's photo
+    setTimeout(() => {
+      setFinalImage(userPhoto); // For demo, just show the user photo
+      setIsProcessingTryOn(false);
+      setSelectedOutfit(outfit);
+    }, 1500);
+  };
+
   return {
     outfits,
     clothingItems,
@@ -86,6 +114,9 @@ export function useOutfitState(initialOutfits: Outfit[], initialClothingItems: C
     showAssistant,
     weatherBackground,
     showRotatingView,
+    userPhoto,
+    finalImage,
+    isProcessingTryOn,
     handleCreateOutfit,
     handleEditOutfit,
     handleSaveOutfit,
@@ -95,6 +126,9 @@ export function useOutfitState(initialOutfits: Outfit[], initialClothingItems: C
     handleShowTips,
     handleAssistantAction,
     handleRefreshOutfit,
+    handleUserPhotoChange,
+    handleClearUserPhoto,
+    handleTryOnOutfit,
     setShowAssistant,
     setIsBuilderOpen // Export this setter to allow direct control of the builder state
   };

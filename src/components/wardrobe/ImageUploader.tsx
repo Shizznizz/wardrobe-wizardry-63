@@ -2,19 +2,24 @@
 import { useRef } from 'react';
 import { X, Upload } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
 
 interface ImageUploaderProps {
   imagePreview: string | null;
   onImageChange: (file: File) => void;
   onClearImage: () => void;
-  persistentDisplay?: boolean; // New prop to control persistent display behavior
+  persistentDisplay?: boolean; // Prop to control persistent display behavior
+  className?: string; // Add className prop for custom styling
+  label?: string; // Optional label prop
 }
 
 const ImageUploader = ({ 
   imagePreview, 
   onImageChange, 
   onClearImage, 
-  persistentDisplay = false 
+  persistentDisplay = false,
+  className,
+  label = "Upload an image"
 }: ImageUploaderProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -35,21 +40,27 @@ const ImageUploader = ({
   };
 
   return (
-    <div className="flex flex-col items-center justify-center">
-      <div 
+    <div className={cn("flex flex-col items-center justify-center", className)}>
+      <motion.div 
         onClick={triggerFileInput}
         className={cn(
           "relative w-full max-w-[200px] h-[200px] rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center cursor-pointer overflow-hidden transition-all duration-200",
           !imagePreview && "hover:border-primary hover:bg-primary/5",
           persistentDisplay && imagePreview && "border-solid border-purple-500"
         )}
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3 }}
       >
         {imagePreview ? (
           <>
-            <img 
+            <motion.img 
               src={imagePreview} 
               alt="Preview" 
               className="w-full h-full object-cover"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
             />
             <button 
               type="button"
@@ -68,14 +79,14 @@ const ImageUploader = ({
           <div className="flex flex-col items-center space-y-2 p-4 text-center">
             <Upload className="h-10 w-10 text-gray-400" />
             <p className="text-sm font-medium text-gray-600">
-              Click to upload
+              {label}
             </p>
             <p className="text-xs text-gray-500">
               JPG, PNG or GIF
             </p>
           </div>
         )}
-      </div>
+      </motion.div>
       <input
         ref={fileInputRef}
         type="file"

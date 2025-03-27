@@ -30,6 +30,7 @@ import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
 import RecommendedOutfit from '@/components/outfits/RecommendedOutfit';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuItem } from '@/components/ui/dropdown-menu';
+import { useOutfitState } from '@/hooks/use-outfit-state';
 
 const fashionCollections = [
   {
@@ -66,34 +67,42 @@ const fashionCollections = [
 ];
 
 const Showroom = () => {
-  const [userPhoto, setUserPhoto] = useState<string | null>(null);
-  const [selectedOutfit, setSelectedOutfit] = useState<Outfit | null>(null);
   const [selectedCollection, setSelectedCollection] = useState('recommended');
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [finalImage, setFinalImage] = useState<string | null>(null);
   const [isPremiumUser] = useState(false);
   const [showTips, setShowTips] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const isMobile = useIsMobile();
   const [afterUploadView, setAfterUploadView] = useState<'olivia-pick' | 'user-outfits' | null>(null);
 
+  const {
+    outfits,
+    clothingItems, 
+    selectedOutfit,
+    userPhoto,
+    finalImage,
+    isProcessingTryOn,
+    handleUserPhotoChange,
+    handleClearUserPhoto,
+    handleTryOnOutfit
+  } = useOutfitState(sampleOutfits, sampleClothingItems);
+
   const handleCollectionChange = (collectionId: string) => {
     setSelectedCollection(collectionId);
     const collection = fashionCollections.find(c => c.id === collectionId);
     if (collection && collection.outfits.length > 0) {
-      setSelectedOutfit(collection.outfits[0]);
-    } else {
-      setSelectedOutfit(null);
+      // Don't auto-select the outfit here anymore, just change the collection
+      // setSelectedOutfit(collection.outfits[0]);
     }
   };
 
   const handleAfterPhotoUpload = (photoUrl: string) => {
-    setUserPhoto(photoUrl);
+    handleUserPhotoChange(photoUrl);
     toast.success('Photo uploaded successfully!');
     
     const recommendedCollection = fashionCollections.find(c => c.id === 'recommended');
     if (recommendedCollection && recommendedCollection.outfits.length > 0) {
-      setSelectedOutfit(recommendedCollection.outfits[0]);
+      // We don't auto try-on anymore, just set the afterUploadView
+      // setSelectedOutfit(recommendedCollection.outfits[0]);
     }
     
     setAfterUploadView('olivia-pick');
@@ -117,25 +126,8 @@ const Showroom = () => {
   };
 
   const handleSelectOutfit = (outfit: Outfit) => {
-    setSelectedOutfit(outfit);
-    if (userPhoto) {
-      processVirtualTryOn(outfit);
-    }
-  };
-
-  const processVirtualTryOn = (outfit: Outfit) => {
-    if (!userPhoto) {
-      toast.error('Please upload your photo first!');
-      return;
-    }
-    
-    setIsProcessing(true);
-    setFinalImage(null);
-    
-    setTimeout(() => {
-      setFinalImage(userPhoto);
-      setIsProcessing(false);
-    }, 2000);
+    // When an outfit is selected, try it on
+    handleTryOnOutfit(outfit);
   };
 
   const handleSaveLook = () => {
@@ -165,12 +157,6 @@ const Showroom = () => {
 
   const userOutfits = sampleOutfits.slice(0, 3);
   const oliviasRecommendedOutfit = fashionCollections[0].outfits[0];
-
-  useEffect(() => {
-    if (selectedOutfit && userPhoto) {
-      processVirtualTryOn(selectedOutfit);
-    }
-  }, [selectedOutfit]);
 
   const currentCollection = fashionCollections.find(c => c.id === selectedCollection) || fashionCollections[0];
   const isCurrentCollectionPremium = currentCollection?.premium && !isPremiumUser;
@@ -243,14 +229,15 @@ const Showroom = () => {
                         finalImage={finalImage}
                         outfit={selectedOutfit}
                         clothingItems={sampleClothingItems}
-                        isProcessing={isProcessing}
+                        isProcessing={isProcessingTryOn}
                         userPhoto={userPhoto}
+                        className="flex-grow"
                       />
                       
                       <div className="flex flex-wrap gap-3 mt-5 justify-center sm:justify-start">
                         <Button 
                           onClick={handleSaveLook}
-                          disabled={!finalImage || isProcessing}
+                          disabled={!finalImage || isProcessingTryOn}
                           className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
                         >
                           <Heart className="mr-2 h-4 w-4" /> Save Look
@@ -388,11 +375,25 @@ const Showroom = () => {
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div className="md:col-span-1 bg-slate-800/50 rounded-lg p-4 border border-white/10">
                               <h4 className="font-medium mb-2">{oliviasRecommendedOutfit.name}</h4>
-                              <div className="aspect-square rounded-lg overflow-hidden bg-black/20 mb-3">
+                              <motion.div 
+                                className="aspect-square rounded-lg overflow-hidden bg-black/20 mb-3 relative group"
+                                whileHover={{ scale: 1.03 }}
+                                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                              >
                                 <div className="h-full flex items-center justify-center bg-gradient-to-br from-purple-900/50 to-indigo-900/50">
                                   <ShoppingBag className="h-16 w-16 text-white/30" />
                                 </div>
-                              </div>
+                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm" 
+                                    className="bg-black/40 text-white border-white/30 hover:bg-black/60 hover:border-white/50"
+                                    onClick={() => handleSelectOutfit(oliviasRecommendedOutfit)}
+                                  >
+                                    Preview On Me
+                                  </Button>
+                                </div>
+                              </motion.div>
                               <div className="flex flex-wrap gap-2 mb-4">
                                 {oliviasRecommendedOutfit.seasons.map((season) => (
                                   <span key={season} className="text-xs px-2 py-1 bg-white/10 rounded-full capitalize">
@@ -429,15 +430,17 @@ const Showroom = () => {
                                 <h5 className="text-sm font-medium mb-2">Other outfits you might like:</h5>
                                 <div className="flex overflow-x-auto gap-3 pb-2 scrollbar-none">
                                   {fashionCollections[0].outfits.slice(1, 4).map((outfit) => (
-                                    <div 
+                                    <motion.div 
                                       key={outfit.id}
                                       className="flex-shrink-0 w-20 aspect-square bg-black/20 rounded-md cursor-pointer hover:ring-2 hover:ring-purple-500 transition-all duration-200"
                                       onClick={() => handleSelectOutfit(outfit)}
+                                      whileHover={{ scale: 1.05 }}
+                                      whileTap={{ scale: 0.98 }}
                                     >
                                       <div className="h-full w-full flex items-center justify-center">
                                         <ShoppingBag className="h-8 w-8 text-white/30" />
                                       </div>
-                                    </div>
+                                    </motion.div>
                                   ))}
                                 </div>
                               </div>
@@ -478,14 +481,25 @@ const Showroom = () => {
                         {userOutfits.length > 0 ? (
                           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                             {userOutfits.map((outfit) => (
-                              <div 
+                              <motion.div 
                                 key={outfit.id} 
                                 className="bg-slate-800/50 rounded-lg overflow-hidden border border-white/10 hover:border-purple-500/50 transition-colors cursor-pointer"
                                 onClick={() => handleSelectOutfit(outfit)}
+                                whileHover={{ y: -5, boxShadow: "0 10px 25px -5px rgba(124, 58, 237, 0.1)" }}
+                                transition={{ type: "spring", stiffness: 300, damping: 20 }}
                               >
                                 <div className="aspect-square relative bg-gradient-to-br from-slate-900 to-slate-800">
                                   <div className="absolute inset-0 flex items-center justify-center">
                                     <ShoppingBag className="h-16 w-16 text-white/30" />
+                                  </div>
+                                  <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
+                                    <Button 
+                                      variant="outline" 
+                                      size="sm" 
+                                      className="bg-black/40 text-white border-white/30 hover:bg-black/60 hover:border-white/50"
+                                    >
+                                      Try On Now
+                                    </Button>
                                   </div>
                                 </div>
                                 <div className="p-3">
@@ -503,7 +517,7 @@ const Showroom = () => {
                                     )}
                                   </div>
                                 </div>
-                              </div>
+                              </motion.div>
                             ))}
                             
                             {isPremiumUser ? (
