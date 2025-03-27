@@ -168,55 +168,77 @@ const Index = () => {
           {/* Redesigned Hero Section */}
           <motion.section 
             variants={itemVariants} 
-            className={`flex flex-col md:flex-row items-center justify-between gap-8 ${isMobile ? 'min-h-[70vh] pb-12' : 'min-h-[80vh] pb-20'} pt-10`}
+            className={`flex flex-col ${isMobile ? 'min-h-[70vh] pb-12' : 'md:flex-row min-h-[80vh] pb-20'} pt-10 items-center justify-between gap-8`}
           >
-            {/* Left Content Column */}
-            <div className={`${isMobile ? 'w-full order-2' : 'w-1/2'} space-y-8`}>
-              <div className="relative">
+            {/* Hero Content */}
+            <div className={`${isMobile ? 'w-full order-2 mt-8' : 'w-1/2'} space-y-8`}>
+              <motion.div 
+                className="relative"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.8 }}
+              >
                 <motion.div 
-                  className="absolute -inset-4 rounded-3xl bg-gradient-to-r from-purple-600/60 via-pink-500/60 to-purple-600/60 opacity-70 blur-xl"
+                  className="absolute -inset-8 rounded-full bg-gradient-to-r from-purple-600/30 via-pink-500/30 to-purple-600/30 opacity-70 blur-xl"
                   animate={{ 
                     opacity: [0.4, 0.7, 0.4],
-                    scale: [0.98, 1.01, 0.98]
+                    scale: [0.98, 1.02, 0.98]
                   }}
                   transition={{ 
-                    duration: 4, 
+                    duration: 5, 
                     repeat: Infinity,
                     repeatType: "mirror",
                     ease: "easeInOut"
                   }}
                 />
                 <motion.h1 
-                  className={`relative ${isMobile ? 'text-4xl font-bold' : 'text-5xl md:text-6xl lg:text-7xl font-extrabold'} tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 pb-2`}
+                  className={`relative ${isMobile ? 'text-4xl font-bold text-center' : 'text-5xl md:text-6xl lg:text-7xl font-extrabold'} tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 pb-3 leading-tight`}
                   animate={{ 
-                    filter: ["brightness(1)", "brightness(1.2)", "brightness(1)"] 
+                    filter: ["brightness(1)", "brightness(1.3)", "brightness(1)"] 
                   }}
-                  transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  The Future of Fashion
+                </motion.h1>
+                <motion.h2 
+                  className={`text-xl ${isMobile ? 'text-center' : ''} text-blue-100 mt-4 font-light`}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3, duration: 0.6 }}
                 >
                   Transform Your Style with AI
-                </motion.h1>
-              </div>
+                </motion.h2>
+              </motion.div>
               
-              <p className="text-xl text-blue-100/90 leading-relaxed max-w-xl backdrop-blur-sm rounded-xl border border-white/10 shadow-xl neo-blur p-5">
-                Start building your perfect wardrobe now with AI-curated outfits that match your style, body type, and local weather.
-              </p>
+              <motion.p 
+                className={`text-xl text-blue-100/90 leading-relaxed max-w-xl backdrop-blur-sm rounded-xl border border-white/10 shadow-xl neo-blur p-5 ${isMobile ? 'text-center mx-auto' : ''}`}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4, duration: 0.6 }}
+              >
+                Start building your perfect wardrobe with AI-curated outfits that match your style, body type, and local weather.
+              </motion.p>
               
-              <div className="flex flex-col sm:flex-row gap-4 pt-4">
+              <motion.div 
+                className={`flex ${isMobile ? 'flex-col' : 'flex-col sm:flex-row'} gap-4 pt-4`}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5, duration: 0.6 }}
+              >
                 <motion.div
-                  whileHover={{ 
-                    scale: 1.03,
-                    transition: { duration: 0.2 }
-                  }}
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.98 }}
                   className="w-full sm:w-auto"
                 >
                   <Button 
                     size="lg" 
                     onClick={handleWardrobeButtonClick}
-                    className="group relative overflow-hidden bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded-xl text-base px-6 py-4 h-auto w-full sm:w-auto transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-purple-500/30 border border-blue-500/20 btn-hover-glow"
+                    variant="fashion-primary"
+                    className="rounded-xl text-base px-6 py-6 h-auto w-full sm:w-auto"
                   >
-                    <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-blue-400/10 to-purple-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-purple-400/10 to-pink-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     <span className="relative flex items-center justify-center gap-2 text-white font-medium">
-                      Start Building My Wardrobe
+                      Start Your Fashion Journey
                       <motion.div
                         className="inline-block"
                         animate={{ x: [0, 5, 0] }}
@@ -232,22 +254,44 @@ const Index = () => {
                   </Button>
                 </motion.div>
                 
-                <motion.div 
-                  whileHover={{ 
-                    scale: 1.03,
-                    transition: { duration: 0.2 }
-                  }} 
-                  className="w-full sm:w-auto"
-                >
-                  <PreferencesModal 
-                    preferences={preferences} 
-                    onSave={handleUpdatePreferences} 
-                    buttonClassName="text-base w-full sm:w-auto py-4 px-6 h-auto bg-transparent hover:bg-white/10 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl border-2 border-pink-500/30 hover:border-pink-500/50 min-w-[120px] text-pink-100"
-                  />
-                </motion.div>
-              </div>
+                <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} gap-3 w-full sm:w-auto`}>
+                  <motion.div 
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="w-full sm:w-auto"
+                  >
+                    <Link to="/quiz" className="w-full sm:w-auto">
+                      <Button 
+                        size="lg" 
+                        variant="fashion-secondary"
+                        className="rounded-xl text-base px-6 py-6 h-auto w-full"
+                      >
+                        Take the Quiz
+                      </Button>
+                    </Link>
+                  </motion.div>
+                  
+                  <motion.div 
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="w-full sm:w-auto"
+                  >
+                    <PreferencesModal 
+                      preferences={preferences} 
+                      onSave={handleUpdatePreferences} 
+                      buttonClassName="text-base w-full px-6 py-6 h-auto rounded-xl transition-all duration-300"
+                      buttonVariant="fashion-tertiary"
+                    />
+                  </motion.div>
+                </div>
+              </motion.div>
               
-              <div className="flex flex-wrap gap-6 pt-4">
+              <motion.div 
+                className="flex flex-wrap gap-6 pt-4"
+                initial={{ opacity: 0, y: 25 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6, duration: 0.6 }}
+              >
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-br from-purple-500/20 to-purple-500/5 border border-purple-400/20">
                     <Wand2 className="h-5 w-5 text-purple-300" />
@@ -268,19 +312,31 @@ const Index = () => {
                   </div>
                   <span className="text-sm text-blue-200">Digital Wardrobe</span>
                 </div>
-              </div>
+              </motion.div>
             </div>
             
-            {/* Right Image Column */}
-            <div className={`${isMobile ? 'w-full order-1' : 'w-1/2'} flex justify-center items-center`}>
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                className="relative"
-              >
-                <div className="absolute -inset-4 rounded-full bg-gradient-to-r from-purple-600/30 via-pink-500/30 to-blue-600/30 filter blur-xl opacity-60"></div>
-                <div className="relative z-10 bg-gradient-to-r from-purple-900/50 to-pink-900/50 p-1 rounded-2xl border border-white/20 overflow-hidden shadow-2xl">
+            {/* Hero Image */}
+            <motion.div 
+              className={`${isMobile ? 'w-full order-1' : 'w-1/2'} flex justify-center items-center`}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8 }}
+            >
+              <div className="relative">
+                <motion.div 
+                  className="absolute -inset-4 rounded-full bg-gradient-to-r from-purple-600/40 via-pink-500/40 to-blue-600/40 filter blur-xl opacity-70"
+                  animate={{ 
+                    opacity: [0.4, 0.7, 0.4],
+                    scale: [0.98, 1.02, 0.98]
+                  }}
+                  transition={{ 
+                    duration: 4, 
+                    repeat: Infinity,
+                    repeatType: "mirror",
+                    ease: "easeInOut"
+                  }}
+                />
+                <div className="relative z-10 bg-gradient-to-r from-purple-900/50 to-pink-900/50 p-2 rounded-2xl border border-white/20 overflow-hidden shadow-2xl">
                   <img 
                     src="/lovable-uploads/c26c0c8c-7ff3-432a-b79b-1d22494daba6.png" 
                     alt="Fashion App Demo" 
@@ -295,8 +351,8 @@ const Index = () => {
                     <span>AI-Powered Style</span>
                   </motion.div>
                 </div>
-              </motion.div>
-            </div>
+              </div>
+            </motion.div>
           </motion.section>
           
           <SectionDivider variant="gradient" className="my-8" />
