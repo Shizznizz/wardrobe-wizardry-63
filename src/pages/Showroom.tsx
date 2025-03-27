@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Header from '@/components/Header';
@@ -6,7 +5,22 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Upload, Camera, Heart, Download, Share2, Star, ShoppingBag, CircleChevronLeft, CircleChevronRight, Lock, Unlock } from 'lucide-react';
+import { 
+  Upload, 
+  Camera, 
+  Heart, 
+  Download, 
+  Share2, 
+  Star, 
+  ShoppingBag, 
+  CircleChevronLeft, 
+  CircleChevronRight, 
+  Lock, 
+  Unlock,
+  ChevronDown,
+  GalleryVertical,
+  Plus
+} from 'lucide-react';
 import OliviaTips from '@/components/OliviaTips';
 import OutfitSelector from '@/components/OutfitSelector';
 import VirtualFittingRoom from '@/components/VirtualFittingRoom';
@@ -14,6 +28,8 @@ import { sampleClothingItems, sampleOutfits } from '@/lib/wardrobeData';
 import { ClothingItem, Outfit } from '@/lib/types';
 import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
+import RecommendedOutfit from '@/components/outfits/RecommendedOutfit';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 
 const fashionCollections = [
   {
@@ -55,11 +71,12 @@ const Showroom = () => {
   const [selectedCollection, setSelectedCollection] = useState('recommended');
   const [isProcessing, setIsProcessing] = useState(false);
   const [finalImage, setFinalImage] = useState<string | null>(null);
-  const [isPremiumUser] = useState(false); // In a real app, this would come from user state
+  const [isPremiumUser] = useState(false);
   const [showTips, setShowTips] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const isMobile = useIsMobile();
-  
+  const [afterUploadView, setAfterUploadView] = useState<'olivia-pick' | 'user-outfits' | null>(null);
+
   const handleCollectionChange = (collectionId: string) => {
     setSelectedCollection(collectionId);
     const collection = fashionCollections.find(c => c.id === collectionId);
@@ -69,35 +86,43 @@ const Showroom = () => {
       setSelectedOutfit(null);
     }
   };
-  
+
+  const handleAfterPhotoUpload = (photoUrl: string) => {
+    setUserPhoto(photoUrl);
+    toast.success('Photo uploaded successfully!');
+    
+    const recommendedCollection = fashionCollections.find(c => c.id === 'recommended');
+    if (recommendedCollection && recommendedCollection.outfits.length > 0) {
+      setSelectedOutfit(recommendedCollection.outfits[0]);
+    }
+    
+    setAfterUploadView('olivia-pick');
+  };
+
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        setUserPhoto(e.target?.result as string);
-        toast.success('Photo uploaded successfully!');
-        
-        // Auto-select first outfit if none selected
-        if (!selectedOutfit && fashionCollections[0].outfits.length > 0) {
-          setSelectedOutfit(fashionCollections[0].outfits[0]);
+        if (e.target?.result) {
+          handleAfterPhotoUpload(e.target.result as string);
         }
       };
       reader.readAsDataURL(file);
     }
   };
-  
+
   const triggerFileUpload = () => {
     fileInputRef.current?.click();
   };
-  
+
   const handleSelectOutfit = (outfit: Outfit) => {
     setSelectedOutfit(outfit);
     if (userPhoto) {
       processVirtualTryOn(outfit);
     }
   };
-  
+
   const processVirtualTryOn = (outfit: Outfit) => {
     if (!userPhoto) {
       toast.error('Please upload your photo first!');
@@ -105,15 +130,14 @@ const Showroom = () => {
     }
     
     setIsProcessing(true);
-    setFinalImage(null); // Clear the final image while processing
+    setFinalImage(null);
     
-    // Simulate processing delay
     setTimeout(() => {
-      setFinalImage(userPhoto); // In a real app, this would be the processed image with the outfit
+      setFinalImage(userPhoto);
       setIsProcessing(false);
     }, 2000);
   };
-  
+
   const handleSaveLook = () => {
     if (!finalImage) {
       toast.error('Create a look first!');
@@ -122,31 +146,41 @@ const Showroom = () => {
     
     toast.success('Look saved to your wardrobe!');
   };
-  
+
   const handleUpgradeToPremium = () => {
     toast('This would navigate to the premium subscription page', {
       description: 'Unlock unlimited outfit swaps, priority styling, and more!'
     });
   };
-  
-  // If user selects an outfit and has uploaded a photo, process the virtual try-on
+
+  const handleViewChange = (view: 'olivia-pick' | 'user-outfits') => {
+    setAfterUploadView(view);
+    
+    if (view === 'olivia-pick') {
+      handleCollectionChange('recommended');
+    } else if (view === 'user-outfits') {
+      handleCollectionChange('wardrobe');
+    }
+  };
+
+  const userOutfits = sampleOutfits.slice(0, 3);
+  const oliviasRecommendedOutfit = fashionCollections[0].outfits[0];
+
   useEffect(() => {
     if (selectedOutfit && userPhoto) {
       processVirtualTryOn(selectedOutfit);
     }
   }, [selectedOutfit]);
-  
-  // Find the current collection
+
   const currentCollection = fashionCollections.find(c => c.id === selectedCollection) || fashionCollections[0];
   const isCurrentCollectionPremium = currentCollection?.premium && !isPremiumUser;
-  
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white">
       <Header />
       
       <main className="container mx-auto px-4 pt-24 pb-32">
         <div className="max-w-6xl mx-auto">
-          {/* Header Section */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -160,7 +194,6 @@ const Showroom = () => {
             </p>
           </motion.div>
           
-          {/* Upload Photo Section */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -204,7 +237,6 @@ const Showroom = () => {
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    {/* Virtual Try-On Section */}
                     <div className="flex flex-col">
                       <h2 className="text-2xl font-semibold mb-4">Virtual Try-On</h2>
                       <VirtualFittingRoom 
@@ -212,7 +244,7 @@ const Showroom = () => {
                         outfit={selectedOutfit}
                         clothingItems={sampleClothingItems}
                         isProcessing={isProcessing}
-                        userPhoto={userPhoto} // Pass the user photo to display when no final image is available
+                        userPhoto={userPhoto}
                       />
                       
                       <div className="flex flex-wrap gap-3 mt-5 justify-center sm:justify-start">
@@ -233,7 +265,6 @@ const Showroom = () => {
                       </div>
                     </div>
                     
-                    {/* Outfit Selection Section */}
                     <div className="flex flex-col">
                       <div className="flex justify-between items-center mb-4">
                         <h2 className="text-2xl font-semibold">Choose an Outfit</h2>
@@ -313,7 +344,208 @@ const Showroom = () => {
             </Card>
           </motion.div>
           
-          {/* Premium Features Section */}
+          {userPhoto && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="mb-12"
+            >
+              <Card className="glass-dark border-white/10 overflow-hidden">
+                <CardContent className="p-6">
+                  <Tabs defaultValue={afterUploadView || 'olivia-pick'} className="mb-6">
+                    <TabsList className="grid grid-cols-2 w-full max-w-md mx-auto bg-slate-800/50">
+                      <TabsTrigger 
+                        value="olivia-pick" 
+                        onClick={() => handleViewChange('olivia-pick')}
+                        className="data-[state=active]:bg-gradient-to-r from-purple-600 to-pink-500"
+                      >
+                        Olivia's Pick
+                      </TabsTrigger>
+                      <TabsTrigger 
+                        value="user-outfits" 
+                        onClick={() => handleViewChange('user-outfits')}
+                        className="data-[state=active]:bg-gradient-to-r from-purple-600 to-pink-500"
+                      >
+                        Your Outfits
+                      </TabsTrigger>
+                    </TabsList>
+                    
+                    <TabsContent value="olivia-pick" className="mt-6">
+                      <div className="space-y-6">
+                        <div className="flex items-center gap-4 mb-2">
+                          <Avatar className="h-12 w-12 border-2 border-purple-400/30">
+                            <AvatarImage src="/lovable-uploads/86bf74b8-b311-4e3c-bfd6-53819add3df8.png" alt="Olivia Bloom" />
+                            <AvatarFallback className="bg-gradient-to-r from-purple-600 to-pink-500 text-white">OB</AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <h3 className="text-xl font-semibold">Olivia's Pick For You</h3>
+                            <p className="text-white/70 text-sm">Based on today's weather and your style preferences</p>
+                          </div>
+                        </div>
+                        
+                        {oliviasRecommendedOutfit && (
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className="md:col-span-1 bg-slate-800/50 rounded-lg p-4 border border-white/10">
+                              <h4 className="font-medium mb-2">{oliviasRecommendedOutfit.name}</h4>
+                              <div className="aspect-square rounded-lg overflow-hidden bg-black/20 mb-3">
+                                <div className="h-full flex items-center justify-center bg-gradient-to-br from-purple-900/50 to-indigo-900/50">
+                                  <ShoppingBag className="h-16 w-16 text-white/30" />
+                                </div>
+                              </div>
+                              <div className="flex flex-wrap gap-2 mb-4">
+                                {oliviasRecommendedOutfit.seasons.map((season) => (
+                                  <span key={season} className="text-xs px-2 py-1 bg-white/10 rounded-full capitalize">
+                                    {season}
+                                  </span>
+                                ))}
+                              </div>
+                              <Button 
+                                onClick={() => handleSelectOutfit(oliviasRecommendedOutfit)}
+                                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+                              >
+                                Try This On
+                              </Button>
+                            </div>
+                            
+                            <div className="md:col-span-2 bg-slate-800/50 rounded-lg p-4 border border-white/10">
+                              <h4 className="font-medium mb-3">Why This Look Works For You</h4>
+                              <p className="text-white/80 mb-4">
+                                This outfit is perfect for today's weather and complements your style profile. 
+                                The colors harmonize with your preferred palette, and the pieces work well together 
+                                for both comfort and style.
+                              </p>
+                              
+                              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                {oliviasRecommendedOutfit.occasions?.map((occasion, index) => (
+                                  <div key={index} className="bg-white/5 rounded p-3 text-center">
+                                    <p className="text-sm font-medium capitalize">{occasion}</p>
+                                    <p className="text-xs text-white/60">Perfect For</p>
+                                  </div>
+                                ))}
+                              </div>
+                              
+                              <div className="mt-4 pt-4 border-t border-white/10">
+                                <h5 className="text-sm font-medium mb-2">Other outfits you might like:</h5>
+                                <div className="flex overflow-x-auto gap-3 pb-2 scrollbar-none">
+                                  {fashionCollections[0].outfits.slice(1, 4).map((outfit) => (
+                                    <div 
+                                      key={outfit.id}
+                                      className="flex-shrink-0 w-20 aspect-square bg-black/20 rounded-md cursor-pointer hover:ring-2 hover:ring-purple-500 transition-all duration-200"
+                                      onClick={() => handleSelectOutfit(outfit)}
+                                    >
+                                      <div className="h-full w-full flex items-center justify-center">
+                                        <ShoppingBag className="h-8 w-8 text-white/30" />
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </TabsContent>
+                    
+                    <TabsContent value="user-outfits" className="mt-6">
+                      <div className="space-y-6">
+                        <div className="flex items-center justify-between mb-2">
+                          <h3 className="text-xl font-semibold">Your Created Outfits</h3>
+                          
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                className="border-white/20 text-white hover:bg-white/10"
+                              >
+                                <GalleryVertical className="h-4 w-4 mr-2" />
+                                View As
+                                <ChevronDown className="h-4 w-4 ml-2" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="bg-slate-800 border-slate-700 text-white">
+                              <DropdownMenuItem className="hover:bg-slate-700 cursor-pointer">
+                                Grid View
+                              </DropdownMenuItem>
+                              <DropdownMenuItem className="hover:bg-slate-700 cursor-pointer">
+                                List View
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                        
+                        {userOutfits.length > 0 ? (
+                          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                            {userOutfits.map((outfit) => (
+                              <div 
+                                key={outfit.id} 
+                                className="bg-slate-800/50 rounded-lg overflow-hidden border border-white/10 hover:border-purple-500/50 transition-colors cursor-pointer"
+                                onClick={() => handleSelectOutfit(outfit)}
+                              >
+                                <div className="aspect-square relative bg-gradient-to-br from-slate-900 to-slate-800">
+                                  <div className="absolute inset-0 flex items-center justify-center">
+                                    <ShoppingBag className="h-16 w-16 text-white/30" />
+                                  </div>
+                                </div>
+                                <div className="p-3">
+                                  <h4 className="font-medium truncate">{outfit.name}</h4>
+                                  <div className="flex flex-wrap gap-1 mt-1">
+                                    {outfit.seasons.slice(0, 2).map((season, idx) => (
+                                      <span key={idx} className="text-xs px-2 py-0.5 bg-white/10 rounded-full capitalize">
+                                        {season}
+                                      </span>
+                                    ))}
+                                    {outfit.seasons.length > 2 && (
+                                      <span className="text-xs px-2 py-0.5 bg-white/10 rounded-full">
+                                        +{outfit.seasons.length - 2}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                            
+                            {isPremiumUser ? (
+                              <div className="flex items-center justify-center bg-white/5 rounded-lg border border-dashed border-white/20 aspect-square cursor-pointer hover:bg-white/10 transition-colors">
+                                <div className="text-center p-4">
+                                  <Plus className="h-10 w-10 text-purple-400 mx-auto mb-2" />
+                                  <p className="text-white/70">Create New Outfit</p>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="flex items-center justify-center bg-slate-800/50 rounded-lg border border-white/10 aspect-square relative overflow-hidden">
+                                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/70"></div>
+                                <div className="text-center p-4 relative z-10">
+                                  <Lock className="h-10 w-10 text-yellow-500 mx-auto mb-2" />
+                                  <p className="text-white font-medium">Premium Feature</p>
+                                  <Button 
+                                    size="sm" 
+                                    onClick={handleUpgradeToPremium}
+                                    className="mt-3 bg-gradient-to-r from-yellow-500 to-amber-600 hover:opacity-90 text-white"
+                                  >
+                                    Unlock
+                                  </Button>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="text-center py-10 bg-slate-800/30 rounded-lg border border-white/10">
+                            <p className="text-white/70 mb-4">You haven't created any outfits yet</p>
+                            <Button className="bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90">
+                              Create Your First Outfit
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    </TabsContent>
+                  </Tabs>
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
+          
           {!isPremiumUser && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -370,7 +602,6 @@ const Showroom = () => {
         </div>
       </main>
       
-      {/* Olivia Tips Component */}
       {showTips && (
         <OliviaTips position="bottom-right" />
       )}
