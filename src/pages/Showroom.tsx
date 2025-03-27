@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Header from '@/components/Header';
@@ -26,6 +25,7 @@ import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { useOutfitState } from '@/hooks/useOutfitState';
+import SubscriptionPopup from '@/components/SubscriptionPopup';
 
 const fashionCollections = [
   {
@@ -67,6 +67,7 @@ const Showroom = () => {
   const [isPremiumUser] = useState(false);
   const [showTips, setShowTips] = useState(true);
   const [activeTab, setActiveTab] = useState<'olivia-pick' | 'your-outfits'>('olivia-pick');
+  const [showSubscriptionPopup, setShowSubscriptionPopup] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const isMobile = useIsMobile();
 
@@ -82,6 +83,20 @@ const Showroom = () => {
     handleTryOnOutfit,
     handleSaveOutfit
   } = useOutfitState(sampleOutfits, sampleClothingItems);
+
+  useEffect(() => {
+    if (userPhoto && finalImage && !isPremiumUser) {
+      const hasSeenPopup = sessionStorage.getItem('hasSeenSubscriptionPopup');
+      if (!hasSeenPopup) {
+        const timer = setTimeout(() => {
+          setShowSubscriptionPopup(true);
+          sessionStorage.setItem('hasSeenSubscriptionPopup', 'true');
+        }, 1500);
+        
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [userPhoto, finalImage, isPremiumUser]);
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -102,7 +117,6 @@ const Showroom = () => {
   };
 
   const handleTakePhoto = () => {
-    // In a real implementation, this would access the device camera
     toast('Camera functionality would open here', {
       description: 'This feature would access your device camera in a real implementation.'
     });
@@ -123,13 +137,11 @@ const Showroom = () => {
 
   const handleTabChange = (value: 'olivia-pick' | 'your-outfits') => {
     setActiveTab(value);
-    // Select the first outfit from the appropriate collection when tab changes
     const collection = value === 'olivia-pick' 
       ? fashionCollections.find(c => c.id === 'recommended') 
       : fashionCollections.find(c => c.id === 'wardrobe');
       
     if (collection && collection.outfits.length > 0) {
-      // Don't automatically try on the outfit, just make it available for selection
     }
   };
 
@@ -137,6 +149,10 @@ const Showroom = () => {
     toast('This would navigate to the premium subscription page', {
       description: 'Unlock unlimited outfit swaps, priority styling, and more!'
     });
+  };
+
+  const handleCloseSubscriptionPopup = () => {
+    setShowSubscriptionPopup(false);
   };
 
   const oliviasRecommendedOutfits = fashionCollections.find(c => c.id === 'recommended')?.outfits || [];
@@ -169,10 +185,8 @@ const Showroom = () => {
           >
             <Card className="glass-dark border-white/10 overflow-hidden">
               <CardContent className="p-0">
-                {/* Two-column layout for desktop, vertical for mobile */}
                 <div className={`${isMobile ? 'flex flex-col' : 'grid grid-cols-2'} gap-6`}>
                   
-                  {/* Left column - Photo upload section */}
                   <div className="p-6 flex flex-col h-full">
                     <h2 className="text-xl font-semibold mb-4">Your Photo</h2>
                     
@@ -230,7 +244,6 @@ const Showroom = () => {
                     )}
                   </div>
                   
-                  {/* Right column - Try-on result */}
                   <div className="p-6 flex flex-col h-full bg-black/10">
                     <h2 className="text-xl font-semibold mb-4">Outfit Preview</h2>
                     
@@ -249,104 +262,99 @@ const Showroom = () => {
             </Card>
           </motion.div>
           
-          {/* Outfit Selection Section */}
-          {userPhoto && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="mb-8"
-            >
-              <Card className="glass-dark border-white/10 overflow-hidden">
-                <CardContent className="p-6">
-                  <h2 className="text-xl font-semibold mb-4">Choose an Outfit</h2>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="mb-8"
+          >
+            <Card className="glass-dark border-white/10 overflow-hidden">
+              <CardContent className="p-6">
+                <h2 className="text-xl font-semibold mb-4">Choose an Outfit</h2>
+                
+                <Tabs value={activeTab} onValueChange={(val) => handleTabChange(val as any)}>
+                  <TabsList className="grid grid-cols-2 w-full max-w-md mb-6 bg-slate-800/50">
+                    <TabsTrigger 
+                      value="olivia-pick" 
+                      className="data-[state=active]:bg-gradient-to-r from-purple-600 to-pink-500"
+                    >
+                      Olivia's Picks
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="your-outfits" 
+                      className="data-[state=active]:bg-gradient-to-r from-purple-600 to-pink-500"
+                    >
+                      Your Outfits
+                    </TabsTrigger>
+                  </TabsList>
                   
-                  <Tabs value={activeTab} onValueChange={(val) => handleTabChange(val as any)}>
-                    <TabsList className="grid grid-cols-2 w-full max-w-md mb-6 bg-slate-800/50">
-                      <TabsTrigger 
-                        value="olivia-pick" 
-                        className="data-[state=active]:bg-gradient-to-r from-purple-600 to-pink-500"
-                      >
-                        Olivia's Picks
-                      </TabsTrigger>
-                      <TabsTrigger 
-                        value="your-outfits" 
-                        className="data-[state=active]:bg-gradient-to-r from-purple-600 to-pink-500"
-                      >
-                        Your Outfits
-                      </TabsTrigger>
-                    </TabsList>
+                  <TabsContent value="olivia-pick" className="mt-0 space-y-4">
+                    <p className="text-white/80">
+                      Olivia has selected these outfits based on your style preferences and the current weather.
+                    </p>
                     
-                    <TabsContent value="olivia-pick" className="mt-0 space-y-4">
-                      <p className="text-white/80">
-                        Olivia has selected these outfits based on your style preferences and the current weather.
-                      </p>
-                      
+                    <OutfitSelector
+                      outfits={oliviasRecommendedOutfits}
+                      clothingItems={clothingItems}
+                      onSelect={handleSelectOutfit}
+                      selectedOutfitId={selectedOutfit?.id}
+                    />
+                  </TabsContent>
+                  
+                  <TabsContent value="your-outfits" className="mt-0 space-y-4">
+                    <p className="text-white/80">
+                      Try on outfits you've created in your personal wardrobe.
+                    </p>
+                    
+                    {yourOutfits.length > 0 ? (
                       <OutfitSelector
-                        outfits={oliviasRecommendedOutfits}
+                        outfits={yourOutfits}
                         clothingItems={clothingItems}
                         onSelect={handleSelectOutfit}
                         selectedOutfitId={selectedOutfit?.id}
                       />
-                    </TabsContent>
-                    
-                    <TabsContent value="your-outfits" className="mt-0 space-y-4">
-                      <p className="text-white/80">
-                        Try on outfits you've created in your personal wardrobe.
-                      </p>
-                      
-                      {yourOutfits.length > 0 ? (
-                        <OutfitSelector
-                          outfits={yourOutfits}
-                          clothingItems={clothingItems}
-                          onSelect={handleSelectOutfit}
-                          selectedOutfitId={selectedOutfit?.id}
-                        />
-                      ) : (
-                        <div className="text-center py-10 bg-slate-800/30 rounded-lg border border-white/10">
-                          <p className="text-white/70 mb-4">You haven't created any outfits yet</p>
-                          <Button className="bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90">
-                            Create Your First Outfit
-                          </Button>
-                        </div>
-                      )}
-                    </TabsContent>
-                  </Tabs>
+                    ) : (
+                      <div className="text-center py-10 bg-slate-800/30 rounded-lg border border-white/10">
+                        <p className="text-white/70 mb-4">You haven't created any outfits yet</p>
+                        <Button className="bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90">
+                          Create Your First Outfit
+                        </Button>
+                      </div>
+                    )}
+                  </TabsContent>
+                </Tabs>
+                
+                <div className="mt-8">
+                  <h3 className="text-lg font-medium mb-3 flex items-center gap-2">
+                    <Star className="h-5 w-5 text-yellow-400" />
+                    Premium Collections
+                  </h3>
                   
-                  {/* Premium collection teasers */}
-                  <div className="mt-8">
-                    <h3 className="text-lg font-medium mb-3 flex items-center gap-2">
-                      <Star className="h-5 w-5 text-yellow-400" />
-                      Premium Collections
-                    </h3>
-                    
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {fashionCollections.filter(c => c.premium).map((collection) => (
-                        <div 
-                          key={collection.id}
-                          className="bg-slate-800/50 rounded-lg p-4 border border-white/10 relative overflow-hidden group"
-                        >
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-80"></div>
-                          <div className="relative z-10">
-                            <h4 className="font-medium mb-1">{collection.name}</h4>
-                            <p className="text-sm text-white/70 mb-3">{collection.description}</p>
-                            
-                            {!isPremiumUser && (
-                              <div className="absolute bottom-3 right-3">
-                                <Lock className="h-5 w-5 text-yellow-400" />
-                              </div>
-                            )}
-                          </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {fashionCollections.filter(c => c.premium).map((collection) => (
+                      <div 
+                        key={collection.id}
+                        className="bg-slate-800/50 rounded-lg p-4 border border-white/10 relative overflow-hidden group"
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-80"></div>
+                        <div className="relative z-10">
+                          <h4 className="font-medium mb-1">{collection.name}</h4>
+                          <p className="text-sm text-white/70 mb-3">{collection.description}</p>
+                          
+                          {!isPremiumUser && (
+                            <div className="absolute bottom-3 right-3">
+                              <Lock className="h-5 w-5 text-yellow-400" />
+                            </div>
+                          )}
                         </div>
-                      ))}
-                    </div>
+                      </div>
+                    ))}
                   </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          )}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
           
-          {/* Premium Features Section */}
           {!isPremiumUser && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -401,6 +409,12 @@ const Showroom = () => {
           )}
         </div>
       </main>
+      
+      <SubscriptionPopup 
+        isOpen={showSubscriptionPopup}
+        onClose={handleCloseSubscriptionPopup}
+        onUpgrade={handleUpgradeToPremium}
+      />
       
       {showTips && (
         <OliviaTips position="bottom-right" />
