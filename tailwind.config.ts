@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -53,6 +52,32 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				coral: {
+					50: '#fff1f1',
+					100: '#ffe1e1',
+					200: '#ffc7c7',
+					300: '#ffa0a0',
+					400: '#ff7a7a',
+					500: '#ff5757',
+					600: '#ff3a3a',
+					700: '#e71d1d',
+					800: '#be1919',
+					900: '#9c1a1a',
+					950: '#520808',
+				},
+				mint: {
+					50: '#eefff7',
+					100: '#d7ffee',
+					200: '#b2fee0',
+					300: '#68facd',
+					400: '#37f0bd',
+					500: '#12e5ad',
+					600: '#04bd8d',
+					700: '#079576',
+					800: '#0a7662',
+					900: '#0b6051',
+					950: '#003b30',
+				},
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -99,6 +124,10 @@ export default {
 				'pulse-subtle': {
 					'0%, 100%': { opacity: '1' },
 					'50%': { opacity: '0.85' }
+				},
+				'subtle-pattern': {
+					'0%': { backgroundPosition: '0% 0%' },
+					'100%': { backgroundPosition: '100% 100%' }
 				}
 			},
 			animation: {
@@ -109,7 +138,18 @@ export default {
 				'slide-up': 'slide-up 0.3s ease-out',
 				'slide-down': 'slide-down 0.3s ease-out',
 				'scale-in': 'scale-in 0.2s ease-out',
-				'pulse-subtle': 'pulse-subtle 2s ease-in-out infinite'
+				'pulse-subtle': 'pulse-subtle 2s ease-in-out infinite',
+				'subtle-pattern': 'subtle-pattern 20s ease-in-out infinite'
+			},
+			backgroundImage: {
+				'subtle-dots': 'radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px)',
+				'subtle-lines': 'linear-gradient(45deg, rgba(255, 255, 255, 0.05) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.05) 50%, rgba(255, 255, 255, 0.05) 75%, transparent 75%, transparent)',
+				'coral-gradient': 'linear-gradient(to right, rgba(255, 126, 126, 0.7), rgba(255, 90, 90, 0.7))',
+				'purple-pink-gradient': 'linear-gradient(to right, rgba(168, 85, 247, 0.7), rgba(236, 72, 153, 0.7))'
+			},
+			backgroundSize: {
+				'dot-pattern': '20px 20px',
+				'line-pattern': '20px 20px'
 			},
 			fontFamily: {
 				sans: ['Inter var', 'Inter', 'sans-serif'],
@@ -118,7 +158,9 @@ export default {
 			boxShadow: {
 				'soft': '0 4px 20px rgba(0, 0, 0, 0.04)',
 				'glass': '0 8px 32px rgba(0, 0, 0, 0.06)',
-				'hover': '0 10px 40px rgba(0, 0, 0, 0.08)'
+				'hover': '0 10px 40px rgba(0, 0, 0, 0.08)',
+				'coral': '0 5px 15px rgba(255, 87, 87, 0.3)',
+				'coral-intense': '0 6px 18px rgba(255, 87, 87, 0.5)'
 			},
 			backdropBlur: {
 				'glass': '10px'

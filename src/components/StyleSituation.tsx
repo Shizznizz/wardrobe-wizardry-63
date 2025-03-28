@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { SendHorizontal, Sparkles, Calendar, CalendarDays, X, Wand2 } from 'lucide-react';
@@ -102,10 +103,10 @@ const StyleSituation = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="w-full max-w-3xl mx-auto bg-slate-900/60 backdrop-blur-sm border border-purple-500/20 rounded-xl p-3 sm:p-6 shadow-xl"
+      className="w-full max-w-3xl mx-auto bg-slate-900/60 backdrop-blur-sm border border-coral-500/20 rounded-xl p-3 sm:p-6 shadow-xl bg-subtle-pattern"
     >
-      <h3 className="text-lg sm:text-xl font-semibold mb-4 text-center bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-purple-400 flex items-center justify-center gap-2">
-        <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-pink-400" />
+      <h3 className="text-lg sm:text-xl font-semibold mb-4 text-center bg-clip-text text-transparent bg-gradient-to-r from-coral-400 to-coral-300 flex items-center justify-center gap-2">
+        <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-coral-400" />
         What are you dressing for today?
       </h3>
       
@@ -121,10 +122,10 @@ const StyleSituation = () => {
                       value={situation}
                       onChange={(e) => setSituation(e.target.value)}
                       placeholder={isMobile ? "Select or type an event" : "Select or type an event (e.g., 'Date Night, 15°C')"}
-                      className="flex-grow bg-slate-800/60 border-purple-500/30 text-white placeholder:text-slate-400 text-sm sm:text-base pr-10"
+                      className="flex-grow bg-slate-800/60 border-coral-500/30 text-white placeholder:text-slate-400 text-sm sm:text-base pr-10"
                       onClick={() => setOpen(true)}
                     />
-                    <CalendarDays className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <CalendarDays className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-coral-400" />
                   </div>
                 </PopoverTrigger>
                 
@@ -142,7 +143,7 @@ const StyleSituation = () => {
               </div>
               <Button 
                 type="submit" 
-                className="bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 shadow-lg hover:shadow-pink-500/20 px-4 py-2 text-sm sm:text-base sm:py-2.5 h-auto min-w-[150px] rounded-xl transform hover:scale-105 transition-all duration-300"
+                className="bg-gradient-to-r from-coral-500 to-coral-400 hover:from-coral-400 hover:to-coral-300 shadow-lg hover:shadow-coral px-4 py-2 text-sm sm:text-base sm:py-2.5 h-auto min-w-[150px] rounded-xl transform hover:scale-105 transition-all duration-300"
                 disabled={isTyping || (!situation.trim() && !selectedEvent)}
               >
                 <Wand2 className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
@@ -150,14 +151,14 @@ const StyleSituation = () => {
               </Button>
             </div>
             
-            <p className="text-[13px] text-slate-400 mt-2 ml-1 italic">
+            <p className="text-[13px] text-coral-200 mt-2 ml-1 italic">
               e.g. Date Night, 15°C – and let the AI style you!
             </p>
             
-            <PopoverContent className="p-0 bg-slate-900/95 border border-purple-500/30 text-white w-full" align="start">
+            <PopoverContent className="p-0 bg-slate-900/95 border border-coral-500/30 text-white w-full" align="start">
               <Command className="bg-transparent">
-                <CommandInput placeholder="Search events..." className="border-b border-purple-500/20 text-white placeholder:text-slate-400 bg-transparent" />
-                <CommandList className="max-h-[300px] overflow-y-auto scrollbar-thin scrollbar-thumb-purple-600/50 scrollbar-track-slate-800/50">
+                <CommandInput placeholder="Search events..." className="border-b border-coral-500/20 text-white placeholder:text-slate-400 bg-transparent" />
+                <CommandList className="max-h-[300px] overflow-y-auto scrollbar-thin scrollbar-thumb-coral-600/50 scrollbar-track-slate-800/50">
                   <CommandEmpty className="py-2 px-4 text-slate-400 text-sm">
                     No events found
                   </CommandEmpty>
@@ -167,10 +168,10 @@ const StyleSituation = () => {
                         key={event.value}
                         value={event.value}
                         onSelect={handleEventSelect}
-                        className="py-2 hover:bg-purple-600/20 text-white cursor-pointer"
+                        className="py-2 hover:bg-coral-600/20 text-white cursor-pointer"
                       >
                         <div className="flex items-center gap-2">
-                          {event.icon === 'calendar' && <CalendarDays className="h-4 w-4 text-purple-400" />}
+                          {event.icon === 'calendar' && <CalendarDays className="h-4 w-4 text-coral-400" />}
                           {event.icon === 'sun' && <CalendarDays className="h-4 w-4 text-amber-400" />}
                           {event.icon === 'cloud-rain' && <CalendarDays className="h-4 w-4 text-blue-400" />}
                           {event.icon === 'shirt' && <CalendarDays className="h-4 w-4 text-green-400" />}
@@ -191,20 +192,20 @@ const StyleSituation = () => {
         <motion.div 
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-slate-800/40 backdrop-blur-sm rounded-lg p-3 sm:p-4 border border-purple-500/20 mt-4"
+          className="bg-slate-800/40 backdrop-blur-sm rounded-lg p-3 sm:p-4 border border-coral-500/20 mt-4"
         >
           <div className="flex gap-2 sm:gap-3">
-            <Avatar className="h-7 w-7 sm:h-8 sm:w-8 border border-pink-500/50">
+            <Avatar className="h-7 w-7 sm:h-8 sm:w-8 border border-coral-500/50">
               <AvatarImage src="/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png" alt="Olivia Bloom" />
-              <AvatarFallback className="bg-gradient-to-r from-purple-600 to-pink-500">OB</AvatarFallback>
+              <AvatarFallback className="bg-gradient-to-r from-coral-500 to-coral-400">OB</AvatarFallback>
             </Avatar>
             
             <div className="flex-1">
-              <div className="text-[10px] sm:text-xs text-purple-300 mb-1">Olivia's suggestion:</div>
+              <div className="text-[10px] sm:text-xs text-coral-300 mb-1">Olivia's suggestion:</div>
               <p className="text-white text-xs sm:text-sm">
                 {typedText}
                 {isTyping && (
-                  <span className="inline-block w-2 h-4 bg-purple-400 ml-1 animate-pulse"></span>
+                  <span className="inline-block w-2 h-4 bg-coral-400 ml-1 animate-pulse"></span>
                 )}
               </p>
             </div>
