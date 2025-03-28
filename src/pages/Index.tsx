@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -22,6 +23,7 @@ import OliviaBloomAssistant from '@/components/OliviaBloomAssistant';
 import OliviaStyleAdvice from '@/components/OliviaStyleAdvice';
 import StyleDiscoveryQuiz from '@/components/StyleDiscoveryQuiz';
 import SectionDivider from '@/components/SectionDivider';
+import HowItWorks from '@/components/HowItWorks';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 const Index = () => {
@@ -368,6 +370,12 @@ const Index = () => {
           </motion.section>
           
           <SectionDivider variant="gradient" className="my-10" />
+          
+          <motion.section variants={itemVariants} className="relative">
+            <HowItWorks />
+          </motion.section>
+          
+          <SectionDivider variant="dotted" className="my-10" />
           
           <motion.section variants={itemVariants} className="relative">
             <div className="mb-8 pb-2 border-b border-pink-500/20">
