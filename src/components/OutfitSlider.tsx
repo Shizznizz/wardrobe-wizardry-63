@@ -17,7 +17,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { PlusCircle } from "lucide-react";
+import { PlusCircle, Briefcase, Shirt, Sunset, Leaf, FlowerIcon } from "lucide-react";
 import { 
   Tooltip,
   TooltipContent,
@@ -33,7 +33,8 @@ const outfitItems = [
     quote: "Effortless professionalism with comfort in mind",
     colors: ["blue", "gray", "white"],
     season: "All year",
-    gradient: "from-blue-400/70 to-gray-400/70"
+    gradient: "from-blue-400/70 to-gray-400/70",
+    icon: Briefcase
   },
   {
     id: 2,
@@ -42,7 +43,8 @@ const outfitItems = [
     quote: "Cozy layers with elegant sophistication",
     colors: ["black", "burgundy", "silver"],
     season: "Winter",
-    gradient: "from-purple-800/70 to-gray-800/70"
+    gradient: "from-purple-800/70 to-gray-800/70",
+    icon: Shirt
   },
   {
     id: 3,
@@ -51,7 +53,8 @@ const outfitItems = [
     quote: "Light fabrics that flow with every step",
     colors: ["teal", "white", "beige"],
     season: "Summer",
-    gradient: "from-teal-400/70 to-blue-200/70"
+    gradient: "from-teal-400/70 to-blue-200/70",
+    icon: Sunset
   },
   {
     id: 4,
@@ -60,7 +63,8 @@ const outfitItems = [
     quote: "Rich textures that embrace the changing leaves",
     colors: ["brown", "orange", "cream"],
     season: "Autumn",
-    gradient: "from-amber-600/70 to-orange-300/70"
+    gradient: "from-amber-600/70 to-orange-300/70",
+    icon: Leaf
   },
   {
     id: 5,
@@ -69,7 +73,8 @@ const outfitItems = [
     quote: "Soft hues that bloom with the season",
     colors: ["lavender", "mint", "pink"],
     season: "Spring",
-    gradient: "from-purple-300/70 to-green-200/70"
+    gradient: "from-purple-300/70 to-green-200/70",
+    icon: FlowerIcon
   }
 ];
 
