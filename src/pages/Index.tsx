@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -79,99 +78,6 @@ const Index = () => {
       <BackgroundShapes />
       <Header />
       
-      {/* Value Proposition Section - New Addition */}
-      <section className="relative z-10 pt-24 md:pt-28 lg:pt-32 px-4">
-        <div className="container mx-auto">
-          <motion.div 
-            className={`flex ${isMobile ? 'flex-col gap-8' : 'flex-row gap-12'} items-center justify-between bg-gradient-to-br from-purple-900/40 to-pink-900/40 backdrop-blur-md rounded-2xl border border-white/10 p-6 md:p-8 lg:p-10 shadow-xl`}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <div className={`${isMobile ? 'w-full text-center' : 'w-1/2'} space-y-4`}>
-              <motion.h1 
-                className={`${isMobile ? 'text-3xl' : 'text-4xl md:text-5xl'} font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-purple-300 to-pink-300 leading-tight`}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.2, duration: 0.5 }}
-              >
-                Your Personal AI Stylist and Wardrobe Assistant
-              </motion.h1>
-              
-              <motion.p 
-                className="text-lg text-blue-100/90 leading-relaxed"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.4, duration: 0.5 }}
-              >
-                Organize your wardrobe, get daily outfit suggestions, and try on clothes virtually with our AI-powered app. Start styling today!
-              </motion.p>
-              
-              <motion.div 
-                className="pt-4"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.6, duration: 0.5 }}
-              >
-                <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
-                  <Button 
-                    onClick={handleWardrobeButtonClick}
-                    variant="fashion-primary" 
-                    size="lg"
-                    className="rounded-xl px-8 py-6 h-auto text-lg font-medium shadow-lg shadow-purple-500/20"
-                  >
-                    <span className="flex items-center gap-2">
-                      Get Started
-                      <motion.div
-                        animate={{ x: [0, 5, 0] }}
-                        transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                      >
-                        <ArrowRight className="h-5 w-5" />
-                      </motion.div>
-                    </span>
-                  </Button>
-                </motion.div>
-              </motion.div>
-            </div>
-            
-            <motion.div 
-              className={`${isMobile ? 'w-full' : 'w-1/2'} flex justify-center`}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.3, duration: 0.5 }}
-            >
-              <div className="relative">
-                <motion.div 
-                  className="absolute -inset-4 rounded-full bg-gradient-to-r from-purple-600/30 via-pink-500/30 to-blue-600/30 filter blur-lg opacity-60"
-                  animate={{ 
-                    opacity: [0.4, 0.7, 0.4],
-                    scale: [0.98, 1.02, 0.98]
-                  }}
-                  transition={{ 
-                    duration: 4, 
-                    repeat: Infinity,
-                    repeatType: "mirror",
-                    ease: "easeInOut"
-                  }}
-                />
-                <div className="relative overflow-hidden rounded-xl border border-white/20 shadow-lg pulse-glow">
-                  <img 
-                    src="/lovable-uploads/075a98ab-d879-4919-8898-87590f8f919a.png" 
-                    alt="Person using the fashion app" 
-                    className={`${isMobile ? 'max-w-[280px]' : 'max-w-[420px]'} rounded-xl object-cover transform hover:scale-[1.01] transition-transform duration-500`}
-                  />
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-      
-      {/* Small divider between sections */}
-      <div className="container mx-auto px-4 py-8">
-        <div className="w-full h-px bg-gradient-to-r from-transparent via-purple-500/30 to-transparent"></div>
-      </div>
-      
       <div className={`fixed ${isMobile ? 'right-5 top-48 z-30' : 'top-52 right-6'} z-50`}>
         <TooltipProvider>
           <Tooltip>
@@ -251,7 +157,7 @@ const Index = () => {
         )}
       </div>
       
-      <main className={`container mx-auto px-4 ${isMobile ? 'pt-0' : 'pt-0'} pb-16 relative z-10`}>
+      <main className={`container mx-auto px-4 ${isMobile ? 'pt-24' : 'pt-32'} pb-16 relative z-10`}>
         <motion.div 
           className="space-y-8 md:space-y-18"
           initial="hidden"
