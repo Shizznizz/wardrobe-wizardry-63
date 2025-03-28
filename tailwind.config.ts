@@ -128,6 +128,18 @@ export default {
 				'subtle-pattern': {
 					'0%': { backgroundPosition: '0% 0%' },
 					'100%': { backgroundPosition: '100% 100%' }
+				},
+				'pulse-glow': {
+					'0%, 100%': { 
+						boxShadow: '0 0 0 0 rgba(255, 121, 121, 0.4)' 
+					},
+					'50%': { 
+						boxShadow: '0 0 20px 5px rgba(255, 121, 121, 0.2)' 
+					}
+				},
+				'float': {
+					'0%, 100%': { transform: 'translateY(0)' },
+					'50%': { transform: 'translateY(-10px)' }
 				}
 			},
 			animation: {
@@ -139,7 +151,9 @@ export default {
 				'slide-down': 'slide-down 0.3s ease-out',
 				'scale-in': 'scale-in 0.2s ease-out',
 				'pulse-subtle': 'pulse-subtle 2s ease-in-out infinite',
-				'subtle-pattern': 'subtle-pattern 20s ease-in-out infinite'
+				'subtle-pattern': 'subtle-pattern 20s ease-in-out infinite',
+				'pulse-glow': 'pulse-glow 2s infinite',
+				'float': 'float 3s ease-in-out infinite'
 			},
 			backgroundImage: {
 				'subtle-dots': 'radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px)',

@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -24,6 +23,8 @@ import OliviaStyleAdvice from '@/components/OliviaStyleAdvice';
 import StyleDiscoveryQuiz from '@/components/StyleDiscoveryQuiz';
 import SectionDivider from '@/components/SectionDivider';
 import HowItWorks from '@/components/HowItWorks';
+import TestimonialsCarousel from '@/components/TestimonialsCarousel';
+import OliviaChat from '@/components/OliviaChat';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 const Index = () => {
@@ -166,12 +167,10 @@ const Index = () => {
           animate="visible"
           variants={containerVariants}
         >
-          {/* Redesigned Hero Section */}
           <motion.section 
             variants={itemVariants} 
             className={`flex flex-col ${isMobile ? 'min-h-[70vh] pb-12' : 'md:flex-row min-h-[80vh] pb-20'} pt-10 items-center justify-between gap-8`}
           >
-            {/* Hero Content */}
             <div className={`${isMobile ? 'w-full order-2 mt-8' : 'w-1/2'} space-y-8`}>
               <motion.div 
                 className="relative"
@@ -302,7 +301,6 @@ const Index = () => {
               </motion.div>
             </div>
             
-            {/* Hero Image */}
             <motion.div 
               className={`${isMobile ? 'w-full order-1' : 'w-1/2'} flex justify-center items-center`}
               initial={{ opacity: 0, scale: 0.95 }}
@@ -502,8 +500,16 @@ const Index = () => {
               </Link>
             </div>
           </motion.section>
+          
+          <SectionDivider variant="gradient" className="my-10" />
+          
+          <motion.section variants={itemVariants} className="relative">
+            <TestimonialsCarousel />
+          </motion.section>
         </motion.div>
       </main>
+      
+      <OliviaChat />
     </div>
   );
 };
