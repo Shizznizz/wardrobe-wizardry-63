@@ -1,7 +1,6 @@
-
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { SendHorizontal, Sparkles, Calendar, CalendarDays, X } from 'lucide-react';
+import { SendHorizontal, Sparkles, Calendar, CalendarDays, X, Wand2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -54,15 +53,12 @@ const StyleSituation = () => {
     e.preventDefault();
     if (!situation.trim() && !selectedEvent) return;
     
-    // Reset previous suggestion
     setSuggestion('');
     setTypedText('');
     
-    // Get a new suggestion
     const newSuggestion = getRandomSuggestion();
     setSuggestion(newSuggestion);
     
-    // Start typing effect
     setIsTyping(true);
     typeText(newSuggestion);
   };
@@ -90,7 +86,6 @@ const StyleSituation = () => {
     }
     setOpen(false);
     
-    // Focus back on input if user wants to modify
     setTimeout(() => {
       inputRef.current?.focus();
     }, 100);
@@ -114,10 +109,10 @@ const StyleSituation = () => {
         What are you dressing for today?
       </h3>
       
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-1.5">
         <div className="relative">
           <Popover open={open} onOpenChange={setOpen}>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <div className="relative flex-grow">
                 <PopoverTrigger asChild>
                   <div className="w-full cursor-pointer">
@@ -147,12 +142,17 @@ const StyleSituation = () => {
               </div>
               <Button 
                 type="submit" 
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                className="bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 shadow-lg hover:shadow-pink-500/20 px-4 py-2 text-sm sm:text-base sm:py-2.5 h-auto min-w-[150px] rounded-xl transform hover:scale-105 transition-all duration-300"
                 disabled={isTyping || (!situation.trim() && !selectedEvent)}
               >
-                <SendHorizontal className="h-4 w-4 sm:h-5 sm:w-5" />
+                <Wand2 className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                Generate Outfit
               </Button>
             </div>
+            
+            <p className="text-[13px] text-slate-400 mt-2 ml-1 italic">
+              e.g. Date Night, 15°C – and let the AI style you!
+            </p>
             
             <PopoverContent className="p-0 bg-slate-900/95 border border-purple-500/30 text-white w-full" align="start">
               <Command className="bg-transparent">
