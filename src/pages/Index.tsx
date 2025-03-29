@@ -141,7 +141,7 @@ const Index = () => {
             variants={itemVariants} 
             className={`flex flex-col ${isMobile ? 'min-h-[70vh] pb-12' : 'md:flex-row min-h-[80vh] pb-20'} pt-10 items-center justify-between gap-8`}
           >
-            <div className={`${isMobile ? 'w-full order-2 mt-8' : 'w-1/2'} space-y-8`}>
+            <div className={`${isMobile ? 'w-full order-1' : 'w-1/2'} space-y-8`}>
               <motion.div 
                 className="relative"
                 initial={{ opacity: 0 }}
@@ -272,7 +272,7 @@ const Index = () => {
             </div>
             
             <motion.div 
-              className={`${isMobile ? 'w-full order-1' : 'w-1/2'} flex justify-center items-center`}
+              className={`${isMobile ? 'w-full order-2' : 'w-1/2'} flex justify-center items-center`}
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8 }}
