@@ -1,4 +1,5 @@
-import { useState } from 'react';
+
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { format, isSameDay, endOfMonth, startOfMonth, eachDayOfInterval, isToday, addMonths, subMonths } from 'date-fns';
 import { 
@@ -13,7 +14,9 @@ import {
   Thermometer, 
   Cloud, 
   Droplets,
-  Tag
+  Tag,
+  Filter,
+  Search
 } from 'lucide-react';
 import { 
   Popover, 
@@ -68,11 +71,13 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Outfit, ClothingItem, ClothingSeason } from '@/lib/types';
 import OutfitLogChart from './OutfitLogChart';
-import OutfitLogItem from './OutfitLogItem';
+import OutfitLogItem, { OutfitLog } from './OutfitLogItem';
+import { useOutfitState } from '@/hooks/useOutfitState';
 
 interface OutfitCalendarProps {
   outfits: Outfit[];
   clothingItems: ClothingItem[];
+  onAddLog?: (log: Omit<OutfitLog, 'id'>) => void;
 }
 
 // Schema for outfit logging form
@@ -91,23 +96,16 @@ const OutfitLogSchema = z.object({
   temperature: z.string().optional(),
 });
 
-type OutfitLog = {
-  id: string;
-  outfitId: string;
-  date: Date;
-  timeOfDay: string;
-  notes?: string;
-  weatherCondition?: string;
-  temperature?: string;
-};
-
-const OutfitCalendar = ({ outfits, clothingItems }: OutfitCalendarProps) => {
+const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProps) => {
+  // States
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [selectedTab, setSelectedTab] = useState('calendar');
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
   const [isLogDialogOpen, setIsLogDialogOpen] = useState(false);
   const [outfitLogs, setOutfitLogs] = useState<OutfitLog[]>([]);
   const [selectedLog, setSelectedLog] = useState<OutfitLog | null>(null);
+  const [filterCategory, setFilterCategory] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
   
   // Initialize form with useForm hook
   const form = useForm<z.infer<typeof OutfitLogSchema>>({
@@ -132,13 +130,26 @@ const OutfitCalendar = ({ outfits, clothingItems }: OutfitCalendarProps) => {
     };
     
     setOutfitLogs((prev) => [...prev, newLog]);
+    
+    // If parent component provided an onAddLog callback, call it
+    if (onAddLog) {
+      onAddLog({
+        outfitId: values.outfitId,
+        date: values.date,
+        timeOfDay: values.timeOfDay,
+        notes: values.notes,
+        weatherCondition: values.weatherCondition,
+        temperature: values.temperature,
+      });
+    }
+    
     setIsLogDialogOpen(false);
     form.reset();
   };
   
   // Get outfits worn on the selected date
   const outfitLogsOnDate = outfitLogs.filter(
-    log => log.date && selectedDate && isSameDay(log.date, selectedDate)
+    log => log.date && selectedDate && isSameDay(new Date(log.date), selectedDate)
   );
   
   // Calculate rarely worn outfits (not logged in the last 30 days)
@@ -147,12 +158,12 @@ const OutfitCalendar = ({ outfits, clothingItems }: OutfitCalendarProps) => {
     if (logs.length === 0) return true;
     
     const lastWornLog = logs.reduce((latest, current) => 
-      latest.date > current.date ? latest : current
+      new Date(latest.date) > new Date(current.date) ? latest : current
     );
     
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    return lastWornLog.date < thirtyDaysAgo;
+    return new Date(lastWornLog.date) < thirtyDaysAgo;
   });
   
   // Calculate frequently worn outfits (logged more than 5 times)
@@ -171,7 +182,7 @@ const OutfitCalendar = ({ outfits, clothingItems }: OutfitCalendarProps) => {
     
     return daysInMonth.map(day => {
       const logsOnDay = outfitLogs.filter(
-        log => log.date && isSameDay(log.date, day)
+        log => log.date && isSameDay(new Date(log.date), day)
       );
       
       return {
@@ -251,6 +262,57 @@ const OutfitCalendar = ({ outfits, clothingItems }: OutfitCalendarProps) => {
   
   const seasonalStats = getSeasonalStats();
   
+  // Get outfit occasions stats
+  const getOccasionStats = () => {
+    const occasions: { [key: string]: number } = {};
+    
+    outfitLogs.forEach(log => {
+      const outfit = outfits.find(o => o.id === log.outfitId);
+      if (outfit) {
+        outfit.occasions.forEach(occasion => {
+          occasions[occasion] = (occasions[occasion] || 0) + 1;
+        });
+      }
+    });
+    
+    const total = Object.values(occasions).reduce((sum, count) => sum + count, 0);
+    
+    return Object.entries(occasions).map(([occasion, count]) => ({
+      occasion,
+      count,
+      percentage: total > 0 ? Math.round((count / total) * 100) : 0
+    })).sort((a, b) => b.count - a.count);
+  };
+  
+  const occasionStats = getOccasionStats();
+  
+  // Get color stats
+  const getColorStats = () => {
+    const colors: { [key: string]: number } = {};
+    
+    outfitLogs.forEach(log => {
+      const outfit = outfits.find(o => o.id === log.outfitId);
+      if (outfit) {
+        outfit.items.forEach(itemId => {
+          const item = getClothingItemById(itemId);
+          if (item) {
+            colors[item.color] = (colors[item.color] || 0) + 1;
+          }
+        });
+      }
+    });
+    
+    const total = Object.values(colors).reduce((sum, count) => sum + count, 0);
+    
+    return Object.entries(colors).map(([color, count]) => ({
+      color,
+      count,
+      percentage: total > 0 ? Math.round((count / total) * 100) : 0
+    })).sort((a, b) => b.count - a.count);
+  };
+  
+  const colorStats = getColorStats();
+  
   // Navigate to previous month
   const handlePreviousMonth = () => {
     setCurrentMonth(prevMonth => subMonths(prevMonth, 1));
@@ -272,6 +334,52 @@ const OutfitCalendar = ({ outfits, clothingItems }: OutfitCalendarProps) => {
   // View log details
   const handleViewLog = (log: OutfitLog) => {
     setSelectedLog(log);
+  };
+  
+  // Get filtered outfits based on search term and category
+  const getFilteredOutfits = () => {
+    let filtered = outfits;
+    
+    if (searchTerm) {
+      filtered = filtered.filter(outfit => 
+        outfit.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    
+    if (filterCategory) {
+      filtered = filtered.filter(outfit => 
+        outfit.occasions.includes(filterCategory)
+      );
+    }
+    
+    return filtered;
+  };
+  
+  // Get logs for a specific day in the month view
+  const getLogsForDay = (day: Date) => {
+    return outfitLogs.filter(log => 
+      log.date && isSameDay(new Date(log.date), day)
+    );
+  };
+  
+  // Render calendar day with outfit indicators
+  const renderCalendarDay = (day: Date) => {
+    const logs = getLogsForDay(day);
+    if (logs.length === 0) return null;
+    
+    return (
+      <div className="absolute bottom-0 left-0 right-0 flex justify-center">
+        {logs.length > 0 && (
+          <div className="h-1.5 w-1.5 rounded-full bg-purple-500 mb-1 mr-0.5" />
+        )}
+        {logs.length > 1 && (
+          <div className="h-1.5 w-1.5 rounded-full bg-blue-500 mb-1 mr-0.5" />
+        )}
+        {logs.length > 2 && (
+          <div className="h-1.5 w-1.5 rounded-full bg-pink-500 mb-1" />
+        )}
+      </div>
+    );
   };
   
   return (
@@ -297,276 +405,423 @@ const OutfitCalendar = ({ outfits, clothingItems }: OutfitCalendarProps) => {
               Statistics
             </TabsTrigger>
           </TabsList>
-        
-          <TabsContent value="calendar">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-2">
-              <div className="col-span-1">
-                <div className="bg-slate-800/50 rounded-lg p-4 border border-purple-500/20">
-                  <div className="flex justify-between items-center mb-4">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="border-purple-500/30 bg-slate-800/70"
-                      onClick={handlePreviousMonth}
-                    >
-                      <ChevronLeft className="h-4 w-4" />
-                    </Button>
+        </Tabs>
+      </div>
+      
+      <TabsContent value="calendar">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-2">
+          <div className="col-span-1">
+            <div className="bg-slate-800/50 rounded-lg p-4 border border-purple-500/20">
+              <div className="flex justify-between items-center mb-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-purple-500/30 bg-slate-800/70"
+                  onClick={handlePreviousMonth}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                
+                <span className="font-medium text-purple-200">
+                  {format(currentMonth, 'MMMM yyyy')}
+                </span>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-purple-500/30 bg-slate-800/70"
+                  onClick={handleNextMonth}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+              
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-left font-normal border-purple-500/30 bg-slate-800/70"
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0 bg-slate-900 border border-purple-500/30" align="start">
+                  <CalendarComponent
+                    mode="single"
+                    selected={selectedDate}
+                    onSelect={setSelectedDate}
+                    initialFocus
+                    className="p-3 pointer-events-auto"
+                    components={{
+                      DayContent: ({ day, ...props }) => (
+                        <div className="relative w-full h-full flex items-center justify-center">
+                          <div {...props} />
+                          {renderCalendarDay(day)}
+                        </div>
+                      ),
+                    }}
+                    modifiers={{
+                      highlighted: datesWithOutfits.map(d => d.date)
+                    }}
+                    modifiersClassNames={{
+                      highlighted: "bg-purple-700/30 text-white rounded-md"
+                    }}
+                  />
+                </PopoverContent>
+              </Popover>
+              
+              <div className="flex justify-between items-center mt-4 mb-3">
+                <h3 className="text-lg font-medium text-purple-300">Logged outfits</h3>
+                <Button 
+                  size="sm" 
+                  className="bg-purple-600 hover:bg-purple-700"
+                  onClick={() => handleOpenLogDialog(selectedDate)}
+                >
+                  <Plus className="h-3.5 w-3.5 mr-1" />
+                  Log Outfit
+                </Button>
+              </div>
+              
+              {outfitLogsOnDate.length > 0 ? (
+                <div className="space-y-3">
+                  {outfitLogsOnDate.map(log => {
+                    const outfit = getOutfitById(log.outfitId);
+                    if (!outfit) return null;
                     
-                    <span className="font-medium text-purple-200">
-                      {format(currentMonth, 'MMMM yyyy')}
-                    </span>
-                    
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="border-purple-500/30 bg-slate-800/70"
-                      onClick={handleNextMonth}
-                    >
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="w-full justify-start text-left font-normal border-purple-500/30 bg-slate-800/70"
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0 bg-slate-900 border border-purple-500/30" align="start">
-                      <CalendarComponent
-                        mode="single"
-                        selected={selectedDate}
-                        onSelect={setSelectedDate}
-                        initialFocus
-                        className="p-3 pointer-events-auto"
-                        modifiers={{
-                          highlighted: datesWithOutfits.map(d => d.date)
-                        }}
-                        modifiersClassNames={{
-                          highlighted: "bg-purple-700/30 text-white rounded-md"
-                        }}
+                    return (
+                      <OutfitLogItem 
+                        key={log.id}
+                        log={log}
+                        outfit={outfit}
+                        onClick={() => handleViewLog(log)}
                       />
-                    </PopoverContent>
-                  </Popover>
-                  
-                  <div className="flex justify-between items-center mt-4 mb-3">
-                    <h3 className="text-lg font-medium text-purple-300">Logged outfits</h3>
-                    <Button 
-                      size="sm" 
-                      className="bg-purple-600 hover:bg-purple-700"
-                      onClick={() => handleOpenLogDialog(selectedDate)}
-                    >
-                      <Plus className="h-3.5 w-3.5 mr-1" />
-                      Log Outfit
-                    </Button>
-                  </div>
-                  
-                  {outfitLogsOnDate.length > 0 ? (
-                    <div className="space-y-3">
-                      {outfitLogsOnDate.map(log => {
-                        const outfit = getOutfitById(log.outfitId);
-                        if (!outfit) return null;
-                        
-                        return (
-                          <OutfitLogItem 
-                            key={log.id}
-                            log={log}
-                            outfit={outfit}
-                            onClick={() => handleViewLog(log)}
-                          />
-                        );
-                      })}
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="text-slate-400 italic mt-2">No outfits logged on this date</p>
+              )}
+            </div>
+          </div>
+          
+          <div className="col-span-1 md:col-span-2">
+            <div className="bg-slate-800/50 rounded-lg p-4 border border-purple-500/20 h-full">
+              <h3 className="text-lg font-medium mb-3 text-purple-300">Wardrobe Recommendations</h3>
+              
+              <div className="space-y-4">
+                <div className="bg-purple-900/30 p-3 rounded-md border border-purple-500/30">
+                  <h4 className="font-medium text-purple-200 mb-2">Rarely Worn Items</h4>
+                  <p className="text-sm text-slate-300 mb-3">
+                    Consider wearing these outfits that haven't been worn in the last 30 days:
+                  </p>
+                  {rarelyWornOutfits.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {rarelyWornOutfits.slice(0, 3).map(outfit => (
+                        <Badge 
+                          key={outfit.id} 
+                          className="bg-purple-800/50 hover:bg-purple-700/70 cursor-pointer transition-colors"
+                          onClick={() => {
+                            handleOpenLogDialog(selectedDate);
+                            form.setValue('outfitId', outfit.id);
+                          }}
+                        >
+                          {outfit.name}
+                        </Badge>
+                      ))}
+                      {rarelyWornOutfits.length > 3 && (
+                        <Badge className="bg-slate-700/70">+{rarelyWornOutfits.length - 3} more</Badge>
+                      )}
                     </div>
                   ) : (
-                    <p className="text-slate-400 italic mt-2">No outfits logged on this date</p>
+                    <p className="text-slate-400 italic">All outfits have been worn recently</p>
+                  )}
+                </div>
+                
+                <div className="bg-amber-900/20 p-3 rounded-md border border-amber-500/30">
+                  <h4 className="font-medium text-amber-200 mb-2">Frequently Worn Items</h4>
+                  <p className="text-sm text-slate-300 mb-3">
+                    Consider giving these frequently worn outfits a break:
+                  </p>
+                  {frequentlyWornOutfits.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {frequentlyWornOutfits.slice(0, 3).map(outfit => (
+                        <Badge 
+                          key={outfit.id}
+
+                          className="bg-amber-800/50 hover:bg-amber-700/70 cursor-pointer transition-colors"
+                        >
+                          {outfit.name} (worn {outfit.timesWorn} times)
+                        </Badge>
+                      ))}
+                      {frequentlyWornOutfits.length > 3 && (
+                        <Badge className="bg-slate-700/70">+{frequentlyWornOutfits.length - 3} more</Badge>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="text-slate-400 italic">No outfits have been worn frequently</p>
+                  )}
+                </div>
+                
+                <div className="bg-blue-900/20 p-3 rounded-md border border-blue-500/30">
+                  <h4 className="font-medium text-blue-200 mb-2">Seasonal Suggestions</h4>
+                  <p className="text-sm text-slate-300">
+                    Based on the current season and your wardrobe history, consider trying these combinations:
+                  </p>
+                  <ul className="mt-2 space-y-1 text-sm text-slate-300">
+                    <li>• Mix your rarely worn blue jeans with your favorite white top</li>
+                    <li>• Try pairing your black dress with a colorful accessory for variation</li>
+                    <li>• Your summer collection hasn't been used much - perfect time to try it</li>
+                  </ul>
+                </div>
+                
+                <div className="bg-green-900/20 p-3 rounded-md border border-green-500/30">
+                  <h4 className="font-medium text-green-200 mb-2">Monthly Calendar View</h4>
+                  <div className="grid grid-cols-7 gap-1 text-center">
+                    {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                      <div key={day} className="text-xs font-medium text-slate-400 mb-1">{day}</div>
+                    ))}
+                    
+                    {/* Generate days of month */}
+                    {eachDayOfInterval({
+                      start: startOfMonth(currentMonth),
+                      end: endOfMonth(currentMonth)
+                    }).map(day => {
+                      const dayLogs = getLogsForDay(day);
+                      const isSelected = selectedDate && isSameDay(day, selectedDate);
+                      const isCurrentMonth = day.getMonth() === currentMonth.getMonth();
+                      
+                      return (
+                        <div 
+                          key={day.toString()}
+                          onClick={() => setSelectedDate(day)}
+                          className={`
+                            p-1 rounded-sm text-xs cursor-pointer relative
+                            ${isCurrentMonth ? 'hover:bg-slate-700/50' : 'opacity-40'}
+                            ${isSelected ? 'bg-purple-700/50 text-white' : ''}
+                            ${isToday(day) ? 'border border-purple-500' : ''}
+                            ${dayLogs.length > 0 ? 'bg-slate-800' : ''}
+                          `}
+                        >
+                          <div className="mb-2">{format(day, 'd')}</div>
+                          {dayLogs.length > 0 && (
+                            <div className="flex justify-center gap-0.5">
+                              {dayLogs.slice(0, 3).map((log, i) => {
+                                const outfit = getOutfitById(log.outfitId);
+                                if (!outfit) return null;
+                                
+                                return (
+                                  <div 
+                                    key={log.id}
+                                    className={`
+                                      h-1 w-1 rounded-full
+                                      ${i === 0 ? 'bg-purple-500' : i === 1 ? 'bg-blue-500' : 'bg-pink-500'}
+                                    `}
+                                    title={outfit.name}
+                                  />
+                                );
+                              })}
+                              {dayLogs.length > 3 && (
+                                <div className="text-[8px] text-slate-400">+{dayLogs.length - 3}</div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </TabsContent>
+      
+      <TabsContent value="stats">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-2">
+          <div className="bg-slate-800/50 rounded-lg p-4 border border-purple-500/20">
+            <h3 className="text-lg font-medium mb-3 text-purple-300">Most Worn Items</h3>
+            <Table>
+              <TableHeader>
+                <TableRow className="hover:bg-transparent">
+                  <TableHead className="text-purple-300">Item</TableHead>
+                  <TableHead className="text-purple-300">Type</TableHead>
+                  <TableHead className="text-right text-purple-300">Times Worn</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {mostWornItems.map(({ item, count }) => item && (
+                  <TableRow key={item.id} className="hover:bg-slate-800/50 border-b-purple-500/10">
+                    <TableCell className="font-medium">{item.name}</TableCell>
+                    <TableCell>{item.type}</TableCell>
+                    <TableCell className="text-right">{count}</TableCell>
+                  </TableRow>
+                ))}
+                {mostWornItems.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={3} className="text-center text-slate-400 italic">
+                      No data available
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+          
+          <div className="bg-slate-800/50 rounded-lg p-4 border border-purple-500/20">
+            <h3 className="text-lg font-medium mb-3 text-purple-300">Wardrobe Usage Statistics</h3>
+            <div className="space-y-4">
+              <div>
+                <h4 className="text-sm font-medium text-slate-300 mb-2">Occasion Distribution</h4>
+                <div className="flex items-center gap-2 flex-wrap">
+                  {occasionStats.map(({ occasion, percentage }) => (
+                    percentage > 0 && (
+                      <Badge
+                        key={occasion}
+                        className={`
+                          ${occasion === 'casual' ? 'bg-blue-600/40 hover:bg-blue-600/50' : 
+                            occasion === 'business' ? 'bg-purple-600/40 hover:bg-purple-600/50' : 
+                            occasion === 'formal' ? 'bg-pink-600/40 hover:bg-pink-600/50' : 
+                            occasion === 'party' ? 'bg-amber-600/40 hover:bg-amber-600/50' : 
+                            'bg-emerald-600/40 hover:bg-emerald-600/50'
+                          }
+                        `}
+                      >
+                        {occasion.charAt(0).toUpperCase() + occasion.slice(1)}: {percentage}%
+                      </Badge>
+                    )
+                  ))}
+                </div>
+              </div>
+              
+              <div>
+                <h4 className="text-sm font-medium text-slate-300 mb-2">Seasonal Wear</h4>
+                <div className="flex items-center gap-2 flex-wrap">
+                  {seasonalStats.map(({ season, percentage }) => (
+                    percentage > 0 && season !== 'all' && (
+                      <Badge 
+                        key={season} 
+                        className={`
+                          ${season === 'spring' ? 'bg-green-600/40 hover:bg-green-600/50' : 
+                            season === 'summer' ? 'bg-amber-600/40 hover:bg-amber-600/50' : 
+                            season === 'autumn' ? 'bg-orange-600/40 hover:bg-orange-600/50' : 
+                            'bg-blue-600/40 hover:bg-blue-600/50'
+                          }
+                        `}
+                      >
+                        {season.charAt(0).toUpperCase() + season.slice(1)}: {percentage}%
+                      </Badge>
+                    )
+                  ))}
+                </div>
+              </div>
+              
+              <div>
+                <h4 className="text-sm font-medium text-slate-300 mb-2">Color Preferences</h4>
+                <div className="flex items-center gap-2 flex-wrap">
+                  {colorStats.slice(0, 6).map(({ color, percentage }) => (
+                    <Badge 
+                      key={color} 
+                      className={`
+                        ${color === 'black' ? 'bg-slate-800 hover:bg-slate-700' : 
+                          color === 'white' ? 'bg-white text-slate-900 hover:bg-slate-200' : 
+                          color === 'blue' ? 'bg-blue-600 hover:bg-blue-500' : 
+                          color === 'red' ? 'bg-red-600 hover:bg-red-500' : 
+                          color === 'green' ? 'bg-green-600 hover:bg-green-500' : 
+                          color === 'pink' ? 'bg-pink-600 hover:bg-pink-500' : 
+                          color === 'purple' ? 'bg-purple-600 hover:bg-purple-500' : 
+                          color === 'yellow' ? 'bg-yellow-600 hover:bg-yellow-500' : 
+                          color === 'orange' ? 'bg-orange-600 hover:bg-orange-500' : 
+                          color === 'brown' ? 'bg-amber-800 hover:bg-amber-700' : 
+                          color === 'gray' ? 'bg-slate-500 hover:bg-slate-400' : 
+                          'bg-violet-600 hover:bg-violet-500'
+                        }
+                      `}
+                    >
+                      {color.charAt(0).toUpperCase() + color.slice(1)}: {percentage}%
+                    </Badge>
+                  ))}
+                  {colorStats.length > 6 && (
+                    <Badge className="bg-slate-500 hover:bg-slate-400">
+                      Others: {colorStats.slice(6).reduce((acc, { percentage }) => acc + percentage, 0)}%
+                    </Badge>
                   )}
                 </div>
               </div>
               
-              <div className="col-span-1 md:col-span-2">
-                <div className="bg-slate-800/50 rounded-lg p-4 border border-purple-500/20 h-full">
-                  <h3 className="text-lg font-medium mb-3 text-purple-300">Wardrobe Recommendations</h3>
-                  
-                  <div className="space-y-4">
-                    <div className="bg-purple-900/30 p-3 rounded-md border border-purple-500/30">
-                      <h4 className="font-medium text-purple-200 mb-2">Rarely Worn Items</h4>
-                      <p className="text-sm text-slate-300 mb-3">
-                        Consider wearing these outfits that haven't been worn in the last 30 days:
-                      </p>
-                      {rarelyWornOutfits.length > 0 ? (
-                        <div className="flex flex-wrap gap-2">
-                          {rarelyWornOutfits.slice(0, 3).map(outfit => (
-                            <Badge 
-                              key={outfit.id} 
-                              className="bg-purple-800/50 hover:bg-purple-700/70 cursor-pointer transition-colors"
-                            >
-                              {outfit.name}
-                            </Badge>
-                          ))}
-                          {rarelyWornOutfits.length > 3 && (
-                            <Badge className="bg-slate-700/70">+{rarelyWornOutfits.length - 3} more</Badge>
-                          )}
-                        </div>
-                      ) : (
-                        <p className="text-slate-400 italic">All outfits have been worn recently</p>
-                      )}
-                    </div>
-                    
-                    <div className="bg-amber-900/20 p-3 rounded-md border border-amber-500/30">
-                      <h4 className="font-medium text-amber-200 mb-2">Frequently Worn Items</h4>
-                      <p className="text-sm text-slate-300 mb-3">
-                        Consider giving these frequently worn outfits a break:
-                      </p>
-                      {frequentlyWornOutfits.length > 0 ? (
-                        <div className="flex flex-wrap gap-2">
-                          {frequentlyWornOutfits.slice(0, 3).map(outfit => (
-                            <Badge 
-                              key={outfit.id} 
-                              className="bg-amber-800/50 hover:bg-amber-700/70 cursor-pointer transition-colors"
-                            >
-                              {outfit.name} (worn {outfit.timesWorn} times)
-                            </Badge>
-                          ))}
-                          {frequentlyWornOutfits.length > 3 && (
-                            <Badge className="bg-slate-700/70">+{frequentlyWornOutfits.length - 3} more</Badge>
-                          )}
-                        </div>
-                      ) : (
-                        <p className="text-slate-400 italic">No outfits have been worn frequently</p>
-                      )}
-                    </div>
-                    
-                    <div className="bg-blue-900/20 p-3 rounded-md border border-blue-500/30">
-                      <h4 className="font-medium text-blue-200 mb-2">Seasonal Suggestions</h4>
-                      <p className="text-sm text-slate-300">
-                        Based on the current season and your wardrobe history, consider trying these combinations:
-                      </p>
-                      <ul className="mt-2 space-y-1 text-sm text-slate-300">
-                        <li>• Mix your rarely worn blue jeans with your favorite white top</li>
-                        <li>• Try pairing your black dress with a colorful accessory for variation</li>
-                        <li>• Your summer collection hasn't been used much - perfect time to try it</li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
+              <div className="pt-2">
+                <h4 className="text-sm font-medium text-slate-300 mb-2">Outfit Insights</h4>
+                <ul className="space-y-2">
+                  <li className="text-sm text-slate-300">
+                    • You tend to wear the same 5 outfits 60% of the time
+                  </li>
+                  <li className="text-sm text-slate-300">
+                    • 30% of your wardrobe hasn't been worn in the last 3 months
+                  </li>
+                  <li className="text-sm text-slate-300">
+                    • Your most active outfit day is Wednesday
+                  </li>
+                  <li className="text-sm text-slate-300">
+                    • You have a strong preference for casual outfits during weekends
+                  </li>
+                </ul>
               </div>
             </div>
-          </TabsContent>
+          </div>
           
-          <TabsContent value="stats">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-2">
-              <div className="bg-slate-800/50 rounded-lg p-4 border border-purple-500/20">
-                <h3 className="text-lg font-medium mb-3 text-purple-300">Most Worn Items</h3>
-                <Table>
-                  <TableHeader>
-                    <TableRow className="hover:bg-transparent">
-                      <TableHead className="text-purple-300">Item</TableHead>
-                      <TableHead className="text-purple-300">Type</TableHead>
-                      <TableHead className="text-right text-purple-300">Times Worn</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {mostWornItems.map(({ item, count }) => item && (
-                      <TableRow key={item.id} className="hover:bg-slate-800/50 border-b-purple-500/10">
-                        <TableCell className="font-medium">{item.name}</TableCell>
-                        <TableCell>{item.type}</TableCell>
-                        <TableCell className="text-right">{count}</TableCell>
-                      </TableRow>
-                    ))}
-                    {mostWornItems.length === 0 && (
-                      <TableRow>
-                        <TableCell colSpan={3} className="text-center text-slate-400 italic">
-                          No data available
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-              
-              <div className="bg-slate-800/50 rounded-lg p-4 border border-purple-500/20">
-                <h3 className="text-lg font-medium mb-3 text-purple-300">Wardrobe Usage Statistics</h3>
-                <div className="space-y-4">
-                  <div>
-                    <h4 className="text-sm font-medium text-slate-300 mb-2">Occasion Distribution</h4>
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <Badge className="bg-blue-600/40 hover:bg-blue-600/50">Casual: 45%</Badge>
-                      <Badge className="bg-purple-600/40 hover:bg-purple-600/50">Work: 30%</Badge>
-                      <Badge className="bg-pink-600/40 hover:bg-pink-600/50">Party: 15%</Badge>
-                      <Badge className="bg-amber-600/40 hover:bg-amber-600/50">Formal: 10%</Badge>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <h4 className="text-sm font-medium text-slate-300 mb-2">Seasonal Wear</h4>
-                    <div className="flex items-center gap-2 flex-wrap">
-                      {seasonalStats.map(({ season, percentage }) => (
-                        percentage > 0 && season !== 'all' && (
+          <div className="md:col-span-2 bg-slate-800/50 rounded-lg p-4 border border-purple-500/20">
+            <div className="flex justify-between items-center mb-3">
+              <h3 className="text-lg font-medium text-purple-300">Outfit Usage Trends</h3>
+              <div className="flex items-center gap-2">
+                <div className="relative">
+                  <Search className="h-4 w-4 absolute left-2.5 top-2.5 text-slate-400" />
+                  <Input 
+                    placeholder="Search outfits..." 
+                    className="pl-9 bg-slate-900/50 border-purple-500/30 h-9"
+                    value={searchTerm}
+                    onChange={e => setSearchTerm(e.target.value)}
+                  />
+                </div>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className="h-9 border-purple-500/30 bg-slate-900/50">
+                      <Filter className="h-4 w-4 mr-2" />
+                      Filter
+                      {filterCategory && <Badge className="ml-2 bg-purple-600">{filterCategory}</Badge>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-56 bg-slate-900 border-purple-500/30">
+                    <div className="space-y-2">
+                      <h4 className="font-medium text-sm">Filter by occasion</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {['casual', 'business', 'formal', 'party', 'sporty'].map(occasion => (
                           <Badge 
-                            key={season} 
-                            className={`bg-${
-                              season === 'spring' ? 'green' : 
-                              season === 'summer' ? 'amber' : 
-                              season === 'autumn' ? 'orange' : 'blue'
-                            }-600/40 hover:bg-${
-                              season === 'spring' ? 'green' : 
-                              season === 'summer' ? 'amber' : 
-                              season === 'autumn' ? 'orange' : 'blue'
-                            }-600/50`}
+                            key={occasion}
+                            onClick={() => setFilterCategory(filterCategory === occasion ? null : occasion)}
+                            className={`cursor-pointer ${filterCategory === occasion ? 'bg-purple-600' : 'bg-slate-700'}`}
                           >
-                            {season.charAt(0).toUpperCase() + season.slice(1)}: {percentage}%
+                            {occasion}
                           </Badge>
-                        )
-                      ))}
+                        ))}
+                      </div>
+                      <Button 
+                        variant="ghost" 
+                        className="w-full mt-2 text-xs h-8"
+                        onClick={() => setFilterCategory(null)}
+                      >
+                        Clear filters
+                      </Button>
                     </div>
-                  </div>
-                  
-                  <div>
-                    <h4 className="text-sm font-medium text-slate-300 mb-2">Color Preferences</h4>
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <Badge className="bg-slate-700 hover:bg-slate-600">Black: 30%</Badge>
-                      <Badge className="bg-white text-slate-900 hover:bg-slate-100">White: 20%</Badge>
-                      <Badge className="bg-blue-600 hover:bg-blue-500">Blue: 15%</Badge>
-                      <Badge className="bg-red-600 hover:bg-red-500">Red: 10%</Badge>
-                      <Badge className="bg-green-600 hover:bg-green-500">Green: 5%</Badge>
-                      <Badge className="bg-slate-500 hover:bg-slate-400">Others: 20%</Badge>
-                    </div>
-                  </div>
-                  
-                  <div className="pt-2">
-                    <h4 className="text-sm font-medium text-slate-300 mb-2">Outfit Insights</h4>
-                    <ul className="space-y-2">
-                      <li className="text-sm text-slate-300">
-                        • You tend to wear the same 5 outfits 60% of the time
-                      </li>
-                      <li className="text-sm text-slate-300">
-                        • 30% of your wardrobe hasn't been worn in the last 3 months
-                      </li>
-                      <li className="text-sm text-slate-300">
-                        • Your most active outfit day is Wednesday
-                      </li>
-                      <li className="text-sm text-slate-300">
-                        • You have a strong preference for casual outfits during weekends
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="md:col-span-2 bg-slate-800/50 rounded-lg p-4 border border-purple-500/20">
-                <h3 className="text-lg font-medium mb-3 text-purple-300">Outfit Usage Trends</h3>
-                <div className="h-64">
-                  <OutfitLogChart outfitLogs={outfitLogs} outfits={outfits} />
-                </div>
+                  </PopoverContent>
+                </Popover>
               </div>
             </div>
-          </TabsContent>
-        </Tabs>
-      </div>
+            <div className="h-64">
+              <OutfitLogChart outfitLogs={outfitLogs} outfits={outfits} />
+            </div>
+          </div>
+        </div>
+      </TabsContent>
       
       {/* Outfit Logging Dialog */}
       <Dialog open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
@@ -596,7 +851,7 @@ const OutfitCalendar = ({ outfits, clothingItems }: OutfitCalendarProps) => {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent className="bg-slate-900 border-purple-500/30">
-                        {outfits.map(outfit => (
+                        {getFilteredOutfits().map(outfit => (
                           <SelectItem key={outfit.id} value={outfit.id}>
                             {outfit.name}
                           </SelectItem>
@@ -730,7 +985,7 @@ const OutfitCalendar = ({ outfits, clothingItems }: OutfitCalendarProps) => {
                 {getOutfitById(selectedLog.outfitId)?.name || "Outfit Details"}
               </DialogTitle>
               <DialogDescription className="text-slate-400">
-                Logged on {format(selectedLog.date, "PPP")}
+                Logged on {format(new Date(selectedLog.date), "PPP")}
               </DialogDescription>
             </DialogHeader>
             

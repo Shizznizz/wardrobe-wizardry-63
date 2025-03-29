@@ -1,5 +1,5 @@
 
-import { Clock, Cloud, Droplets, Sun, Wind, Snowflake } from 'lucide-react';
+import { Clock, Cloud, Droplets, Sun, Wind, Snowflake, Calendar } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Outfit } from '@/lib/types';
 
@@ -18,9 +18,10 @@ interface OutfitLogItemProps {
   log: OutfitLog;
   outfit: Outfit;
   onClick: () => void;
+  compact?: boolean; // New prop for compact display in calendar view
 }
 
-const OutfitLogItem = ({ log, outfit, onClick }: OutfitLogItemProps) => {
+const OutfitLogItem = ({ log, outfit, onClick, compact = false }: OutfitLogItemProps) => {
   // Get weather icon based on condition
   const getWeatherIcon = () => {
     switch (log.weatherCondition) {
@@ -38,6 +39,20 @@ const OutfitLogItem = ({ log, outfit, onClick }: OutfitLogItemProps) => {
         return null;
     }
   };
+  
+  // For calendar view, we want a more compact representation
+  if (compact) {
+    return (
+      <div 
+        className="bg-slate-800/80 p-2 rounded-md border border-purple-500/20 hover:bg-slate-800 cursor-pointer transition-colors mb-1 flex items-center gap-1"
+        onClick={onClick}
+      >
+        <div className={`w-2 h-2 rounded-full ${outfit.occasions.includes('formal') ? 'bg-pink-500' : outfit.occasions.includes('business') ? 'bg-purple-500' : 'bg-blue-500'}`} />
+        <p className="font-medium text-white text-xs truncate">{outfit.name}</p>
+        {log.weatherCondition && <div className="ml-auto">{getWeatherIcon()}</div>}
+      </div>
+    );
+  }
   
   return (
     <div 

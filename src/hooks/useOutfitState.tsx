@@ -1,17 +1,6 @@
-
 import { useState, useEffect } from 'react';
 import { Outfit, ClothingItem, WeatherInfo, TimeOfDay, Activity } from '@/lib/types';
-
-// Type for outfit log
-export type OutfitLog = {
-  id: string;
-  outfitId: string;
-  date: Date;
-  timeOfDay: string;
-  notes?: string;
-  weatherCondition?: string;
-  temperature?: string;
-};
+import { OutfitLog } from '@/components/outfits/OutfitLogItem';
 
 export function useOutfitState(initialOutfits: Outfit[], initialClothingItems: ClothingItem[]) {
   const [outfits, setOutfits] = useState<Outfit[]>(initialOutfits);
@@ -65,7 +54,6 @@ export function useOutfitState(initialOutfits: Outfit[], initialClothingItems: C
 
   const handleDeleteOutfit = (id: string) => {
     setOutfits(outfits.filter(outfit => outfit.id !== id));
-    // Also delete any logs associated with this outfit
     setOutfitLogs(outfitLogs.filter(log => log.outfitId !== id));
   };
 
@@ -90,14 +78,13 @@ export function useOutfitState(initialOutfits: Outfit[], initialClothingItems: C
   };
 
   const handleRefreshOutfit = () => {
-    // Animation effect for refreshing
     setShowRotatingView(true);
     setTimeout(() => setShowRotatingView(false), 1000);
   };
 
   const handleUserPhotoChange = (photoUrl: string) => {
     setUserPhoto(photoUrl);
-    setFinalImage(null); // Clear any existing try-on result
+    setFinalImage(null);
   };
 
   const handleClearUserPhoto = () => {
@@ -111,16 +98,13 @@ export function useOutfitState(initialOutfits: Outfit[], initialClothingItems: C
     setIsProcessingTryOn(true);
     setFinalImage(null);
     
-    // Simulate processing - in a real app, this would be an API call to a service
-    // that would composite the outfit onto the user's photo
     setTimeout(() => {
-      setFinalImage(userPhoto); // For demo, just show the user photo
+      setFinalImage(userPhoto);
       setIsProcessingTryOn(false);
       setSelectedOutfit(outfit);
     }, 1500);
   };
 
-  // New outfit logging functions
   const addOutfitLog = (log: Omit<OutfitLog, 'id'>) => {
     const newLog: OutfitLog = {
       id: Date.now().toString(),
@@ -128,7 +112,6 @@ export function useOutfitState(initialOutfits: Outfit[], initialClothingItems: C
     };
     setOutfitLogs(prev => [...prev, newLog]);
     
-    // Also update the outfit's timesWorn and lastWorn properties
     setOutfits(prev =>
       prev.map(outfit => {
         if (outfit.id === log.outfitId) {
@@ -142,7 +125,7 @@ export function useOutfitState(initialOutfits: Outfit[], initialClothingItems: C
       })
     );
   };
-  
+
   const updateOutfitLog = (id: string, updates: Partial<OutfitLog>) => {
     setOutfitLogs(prev =>
       prev.map(log => {
@@ -153,12 +136,11 @@ export function useOutfitState(initialOutfits: Outfit[], initialClothingItems: C
       })
     );
   };
-  
+
   const deleteOutfitLog = (id: string) => {
     setOutfitLogs(prev => prev.filter(log => log.id !== id));
   };
-  
-  // Get logs for a specific date
+
   const getLogsForDate = (date: Date) => {
     return outfitLogs.filter(log => 
       log.date instanceof Date && 
@@ -167,23 +149,19 @@ export function useOutfitState(initialOutfits: Outfit[], initialClothingItems: C
       log.date.getFullYear() === date.getFullYear()
     );
   };
-  
-  // Get logs for a specific outfit
+
   const getLogsForOutfit = (outfitId: string) => {
     return outfitLogs.filter(log => log.outfitId === outfitId);
   };
-  
-  // Get outfits not worn recently (in the last N days)
+
   const getRarelyWornOutfits = (days: number = 30) => {
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - days);
     
     return outfits.filter(outfit => {
-      // Check logs for this outfit
       const logs = outfitLogs.filter(log => log.outfitId === outfit.id);
-      if (logs.length === 0) return true; // Never worn
+      if (logs.length === 0) return true;
       
-      // Find the most recent log
       const lastWorn = logs.reduce((latest, current) => 
         new Date(latest.date) > new Date(current.date) ? latest : current
       );
@@ -191,8 +169,7 @@ export function useOutfitState(initialOutfits: Outfit[], initialClothingItems: C
       return new Date(lastWorn.date) < cutoffDate;
     });
   };
-  
-  // Get the most frequently worn outfits
+
   const getFrequentlyWornOutfits = (threshold: number = 5) => {
     return outfits.map(outfit => ({
       ...outfit,
@@ -201,8 +178,7 @@ export function useOutfitState(initialOutfits: Outfit[], initialClothingItems: C
     .filter(outfit => outfit.logCount > threshold)
     .sort((a, b) => b.logCount - a.logCount);
   };
-  
-  // Get the most worn items from logs
+
   const getMostWornItems = () => {
     const itemCounts: { [key: string]: number } = {};
     
@@ -221,13 +197,11 @@ export function useOutfitState(initialOutfits: Outfit[], initialClothingItems: C
         item: clothingItems.find(item => item.id === itemId),
         count
       }))
-      .filter(entry => entry.item) // Filter out any undefined items
+      .filter(entry => entry.item)
       .sort((a, b) => b.count - a.count);
   };
-  
-  // Get seasonal insights
+
   const getSeasonalInsights = () => {
-    // Group logs by season
     const seasonalLogs: { [key: string]: OutfitLog[] } = {};
     
     outfitLogs.forEach(log => {
@@ -250,6 +224,49 @@ export function useOutfitState(initialOutfits: Outfit[], initialClothingItems: C
         return outfit ? outfit.items : [];
       })
     }));
+  };
+
+  const getWeatherBasedRecommendations = () => {
+    if (!currentWeather) return [];
+    
+    const temp = currentWeather.temperature;
+    let recommendedSeason = 'all';
+    
+    if (temp < 5) recommendedSeason = 'winter';
+    else if (temp < 15) recommendedSeason = 'autumn';
+    else if (temp < 25) recommendedSeason = 'spring';
+    else recommendedSeason = 'summer';
+    
+    return outfits
+      .filter(outfit => 
+        outfit.seasons.includes(recommendedSeason) || 
+        outfit.seasons.includes('all')
+      )
+      .map(outfit => {
+        const suitabilityScore = outfitLogs
+          .filter(log => 
+            log.outfitId === outfit.id && 
+            log.weatherCondition === currentWeather.condition.toLowerCase()
+          )
+          .length;
+        
+        return {
+          outfit,
+          suitabilityScore,
+          lastWorn: outfit.lastWorn
+        };
+      })
+      .sort((a, b) => {
+        if (b.suitabilityScore !== a.suitabilityScore) {
+          return b.suitabilityScore - a.suitabilityScore;
+        }
+        
+        if (!a.lastWorn) return -1;
+        if (!b.lastWorn) return 1;
+        
+        return new Date(a.lastWorn).getTime() - new Date(b.lastWorn).getTime();
+      })
+      .slice(0, 5);
   };
 
   return {
@@ -276,7 +293,6 @@ export function useOutfitState(initialOutfits: Outfit[], initialClothingItems: C
     handleUserPhotoChange,
     handleClearUserPhoto,
     handleTryOnOutfit,
-    // New outfit logging functions
     addOutfitLog,
     updateOutfitLog,
     deleteOutfitLog,
@@ -286,6 +302,7 @@ export function useOutfitState(initialOutfits: Outfit[], initialClothingItems: C
     getFrequentlyWornOutfits,
     getMostWornItems,
     getSeasonalInsights,
+    getWeatherBasedRecommendations,
     setShowAssistant,
     setIsBuilderOpen
   };

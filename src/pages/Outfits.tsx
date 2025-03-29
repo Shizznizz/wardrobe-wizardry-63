@@ -29,6 +29,8 @@ const Outfits = () => {
     handleAssistantAction,
     handleRefreshOutfit,
     handleShowTips,
+    outfitLogs,
+    addOutfitLog,
     setShowAssistant,
     setIsBuilderOpen
   } = useOutfitState(sampleOutfits, sampleClothingItems);
@@ -73,10 +75,11 @@ const Outfits = () => {
             clothingItems={clothingItems}
           />
           
-          {/* Add the new OutfitCalendar component here */}
+          {/* Enhanced OutfitCalendar component */}
           <OutfitCalendar 
             outfits={outfits}
             clothingItems={clothingItems}
+            onAddLog={addOutfitLog}
           />
           
           <OutfitBuilder
