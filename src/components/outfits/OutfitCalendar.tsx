@@ -79,7 +79,6 @@ interface OutfitCalendarProps {
   onAddLog?: (log: Omit<OutfitLog, 'id'>) => void;
 }
 
-// Schema for outfit logging form
 const OutfitLogSchema = z.object({
   outfitId: z.string({
     required_error: "Please select an outfit",
@@ -96,7 +95,6 @@ const OutfitLogSchema = z.object({
 });
 
 const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProps) => {
-  // States
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [selectedTab, setSelectedTab] = useState('calendar');
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
@@ -105,8 +103,7 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
   const [selectedLog, setSelectedLog] = useState<OutfitLog | null>(null);
   const [filterCategory, setFilterCategory] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  
-  // Initialize form with useForm hook
+
   const form = useForm<z.infer<typeof OutfitLogSchema>>({
     resolver: zodResolver(OutfitLogSchema),
     defaultValues: {
@@ -115,9 +112,7 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
     },
   });
 
-  // Function to log a new outfit
   const onSubmitLog = (values: z.infer<typeof OutfitLogSchema>) => {
-    // Create a new log with required fields ensuring they're not undefined
     const newLog: OutfitLog = {
       id: Date.now().toString(),
       outfitId: values.outfitId,
@@ -130,7 +125,6 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
     
     setOutfitLogs((prev) => [...prev, newLog]);
     
-    // If parent component provided an onAddLog callback, call it
     if (onAddLog) {
       onAddLog({
         outfitId: values.outfitId,
@@ -145,13 +139,11 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
     setIsLogDialogOpen(false);
     form.reset();
   };
-  
-  // Get outfits worn on the selected date
+
   const outfitLogsOnDate = outfitLogs.filter(
     log => log.date && selectedDate && isSameDay(new Date(log.date), selectedDate)
   );
-  
-  // Calculate rarely worn outfits (not logged in the last 30 days)
+
   const rarelyWornOutfits = outfits.filter(outfit => {
     const logs = outfitLogs.filter(log => log.outfitId === outfit.id);
     if (logs.length === 0) return true;
@@ -164,14 +156,12 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
     return new Date(lastWornLog.date) < thirtyDaysAgo;
   });
-  
-  // Calculate frequently worn outfits (logged more than 5 times)
+
   const frequentlyWornOutfits = outfits.filter(outfit => {
     const logs = outfitLogs.filter(log => log.outfitId === outfit.id);
     return logs.length > 5;
   });
-  
-  // Generate dates with outfits for calendar highlighting
+
   const getDatesWithOutfits = () => {
     if (!currentMonth) return [];
     
@@ -191,22 +181,18 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
       };
     }).filter(day => day.hasLogs);
   };
-  
+
   const datesWithOutfits = getDatesWithOutfits();
-  
-  // Get clothing item details by ID
+
   const getClothingItemById = (id: string) => {
     return clothingItems.find(item => item.id === id);
   };
-  
-  // Get outfit details by ID
+
   const getOutfitById = (id: string) => {
     return outfits.find(outfit => outfit.id === id);
   };
-  
-  // Get most worn clothing items
+
   const getMostWornItems = () => {
-    // Create a map to count item occurrences in logs
     const itemCounts: { [key: string]: number } = {};
     
     outfitLogs.forEach(log => {
@@ -218,20 +204,18 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
       }
     });
     
-    // Convert to array and sort by count
     return Object.entries(itemCounts)
       .map(([itemId, count]) => ({
         item: getClothingItemById(itemId),
         count
       }))
-      .filter(entry => entry.item) // Filter out any undefined items
+      .filter(entry => entry.item)
       .sort((a, b) => b.count - a.count)
-      .slice(0, 5); // Top 5 most worn items
+      .slice(0, 5);
   };
-  
+
   const mostWornItems = getMostWornItems();
-  
-  // Get seasonal stats
+
   const getSeasonalStats = () => {
     const seasons: { [key in ClothingSeason]: number } = {
       spring: 0,
@@ -258,10 +242,9 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
       percentage: total > 0 ? Math.round((count / total) * 100) : 0
     }));
   };
-  
+
   const seasonalStats = getSeasonalStats();
-  
-  // Get outfit occasions stats
+
   const getOccasionStats = () => {
     const occasions: { [key: string]: number } = {};
     
@@ -282,10 +265,9 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
       percentage: total > 0 ? Math.round((count / total) * 100) : 0
     })).sort((a, b) => b.count - a.count);
   };
-  
+
   const occasionStats = getOccasionStats();
-  
-  // Get color stats
+
   const getColorStats = () => {
     const colors: { [key: string]: number } = {};
     
@@ -309,33 +291,28 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
       percentage: total > 0 ? Math.round((count / total) * 100) : 0
     })).sort((a, b) => b.count - a.count);
   };
-  
+
   const colorStats = getColorStats();
-  
-  // Navigate to previous month
+
   const handlePreviousMonth = () => {
     setCurrentMonth(prevMonth => subMonths(prevMonth, 1));
   };
-  
-  // Navigate to next month
+
   const handleNextMonth = () => {
     setCurrentMonth(prevMonth => addMonths(prevMonth, 1));
   };
-  
-  // Open log dialog with a specific date
+
   const handleOpenLogDialog = (date?: Date) => {
     if (date) {
       form.setValue('date', date);
     }
     setIsLogDialogOpen(true);
   };
-  
-  // View log details
+
   const handleViewLog = (log: OutfitLog) => {
     setSelectedLog(log);
   };
-  
-  // Get filtered outfits based on search term and category
+
   const getFilteredOutfits = () => {
     let filtered = outfits;
     
@@ -353,16 +330,14 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
     
     return filtered;
   };
-  
-  // Get logs for a specific day in the month view
+
   const getLogsForDay = (day: Date) => {
     return outfitLogs.filter(log => 
       log.date && isSameDay(new Date(log.date), day)
     );
   };
-  
-  // Render calendar day with outfit indicators
-  const renderCalendarDay = (date: Date, _cellProps: any) => {
+
+  const renderCalendarDay = (date: Date) => {
     const logs = getLogsForDay(date);
     if (logs.length === 0) return null;
     
@@ -380,7 +355,7 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
       </div>
     );
   };
-  
+
   return (
     <motion.section
       initial={{ opacity: 0, y: 20 }}
@@ -453,10 +428,10 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
                     initialFocus
                     className="p-3 pointer-events-auto"
                     components={{
-                      DayContent: ({ date, ...props }) => (
+                      DayContent: ({ date }) => (
                         <div className="relative w-full h-full flex items-center justify-center">
-                          <div {...props} />
-                          {renderCalendarDay(date, props)}
+                          <div></div>
+                          {renderCalendarDay(date)}
                         </div>
                       ),
                     }}
@@ -547,7 +522,6 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
                       {frequentlyWornOutfits.slice(0, 3).map(outfit => (
                         <Badge 
                           key={outfit.id}
-
                           className="bg-amber-800/50 hover:bg-amber-700/70 cursor-pointer transition-colors"
                         >
                           {outfit.name} (worn {outfit.timesWorn} times)
@@ -581,7 +555,6 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
                       <div key={day} className="text-xs font-medium text-slate-400 mb-1">{day}</div>
                     ))}
                     
-                    {/* Generate days of month */}
                     {eachDayOfInterval({
                       start: startOfMonth(currentMonth),
                       end: endOfMonth(currentMonth)
@@ -822,7 +795,6 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
         </div>
       </TabsContent>
       
-      {/* Outfit Logging Dialog */}
       <Dialog open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
         <DialogContent className="bg-slate-900 border border-purple-500/30 text-white">
           <DialogHeader>
@@ -975,7 +947,6 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
         </DialogContent>
       </Dialog>
       
-      {/* Outfit Log Details Dialog */}
       {selectedLog && (
         <Dialog open={!!selectedLog} onOpenChange={() => setSelectedLog(null)}>
           <DialogContent className="bg-slate-900 border border-purple-500/30 text-white">
@@ -1047,7 +1018,6 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
                 </div>
               )}
               
-              {/* Outfit items */}
               <div className="bg-slate-800/70 rounded-md p-3">
                 <div className="flex items-start gap-3">
                   <div className="bg-green-900/30 p-2 rounded-md">
