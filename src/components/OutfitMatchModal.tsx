@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -5,12 +6,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ClothingItem, Outfit, ClothingType } from '@/lib/types';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { v4 as uuidv4 } from '@/lib/utils';
-import { Shirt, Pants, Footprint, Sparkles, ArrowRight, Check, Save } from 'lucide-react';
+import { Shirt, Footprints, Sparkles, ArrowRight, Check, Save } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import WardrobeGrid from '@/components/WardrobeGrid';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { TrousersIcon } from '@/components/ui/icons';
 
 interface OutfitMatchModalProps {
   open: boolean;
@@ -195,7 +197,7 @@ const OutfitMatchModal = ({ open, onOpenChange, item, allItems }: OutfitMatchMod
                 disabled={getItemCategory(item.type) === "bottoms"}
                 className="data-[state=active]:bg-indigo-700"
               >
-                <Pants className="h-4 w-4 mr-1" />
+                <TrousersIcon className="h-4 w-4 mr-1" />
                 Bottoms
               </TabsTrigger>
               <TabsTrigger 
@@ -204,7 +206,7 @@ const OutfitMatchModal = ({ open, onOpenChange, item, allItems }: OutfitMatchMod
                 disabled={getItemCategory(item.type) === "shoes"}
                 className="data-[state=active]:bg-indigo-700"
               >
-                <Footprint className="h-4 w-4 mr-1" />
+                <Footprints className="h-4 w-4 mr-1" />
                 Shoes
               </TabsTrigger>
               <TabsTrigger 
