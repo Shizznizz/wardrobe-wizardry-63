@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { format, isSameDay, endOfMonth, startOfMonth, eachDayOfInterval, isToday, addMonths, subMonths } from 'date-fns';
@@ -43,19 +42,11 @@ import {
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
+  Form,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -70,9 +61,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Outfit, ClothingItem, ClothingSeason } from '@/lib/types';
-import OutfitLogChart from './OutfitLogChart';
 import OutfitLogItem, { OutfitLog } from './OutfitLogItem';
-import { useOutfitState } from '@/hooks/useOutfitState';
 
 interface OutfitCalendarProps {
   outfits: Outfit[];
@@ -215,8 +204,6 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
       .slice(0, 5);
   };
 
-  const mostWornItems = getMostWornItems();
-
   const getSeasonalStats = () => {
     const seasons: { [key in ClothingSeason]: number } = {
       spring: 0,
@@ -244,8 +231,6 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
     }));
   };
 
-  const seasonalStats = getSeasonalStats();
-
   const getOccasionStats = () => {
     const occasions: { [key: string]: number } = {};
     
@@ -260,7 +245,6 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
     
     const total = Object.values(occasions).reduce((sum, count) => sum + count, 0);
     
-    // Fixed: Return the array first, then sort it
     return Object.entries(occasions)
       .map(([occasion, count]) => ({
         occasion,
@@ -289,7 +273,6 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
     
     const total = Object.values(colors).reduce((sum, count) => sum + count, 0);
     
-    // Fixed: Return the array first, then sort it
     return Object.entries(colors)
       .map(([color, count]) => ({
         color,
@@ -368,14 +351,14 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="bg-slate-900/60 backdrop-blur-sm border border-purple-500/20 rounded-xl p-6 shadow-xl"
+      className="bg-slate-900/60 backdrop-blur-sm border border-purple-500/20 rounded-xl p-4 md:p-6 shadow-xl w-full"
     >
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
         <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
           Outfit Calendar & Stats
         </h2>
         
-        <Tabs defaultValue={selectedTab} onValueChange={setSelectedTab} className="w-[400px]">
+        <Tabs defaultValue={selectedTab} onValueChange={setSelectedTab} className="w-full md:w-auto">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="calendar" className="flex items-center gap-2">
               <Calendar className="h-4 w-4" />
@@ -435,6 +418,7 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
                         components={{
                           DayContent: (props) => (
                             <div className="relative w-full h-full flex items-center justify-center">
+                              <div>{props.day}</div>
                               {props.date && renderCalendarDay(props.date)}
                             </div>
                           ),
@@ -461,7 +445,7 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
                     </Button>
                   </div>
                   
-                  {outfitLogsOnDate.length > 0 ? (
+                  {outfitLogsOnDate && outfitLogsOnDate.length > 0 ? (
                     <div className="space-y-3">
                       {outfitLogsOnDate.map(log => {
                         const outfit = getOutfitById(log.outfitId);
@@ -493,9 +477,9 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
                       <p className="text-sm text-slate-300 mb-3">
                         Consider wearing these outfits that haven't been worn in the last 30 days:
                       </p>
-                      {rarelyWornOutfits.length > 0 ? (
+                      {outfits.length > 0 ? (
                         <div className="flex flex-wrap gap-2">
-                          {rarelyWornOutfits.slice(0, 3).map(outfit => (
+                          {outfits.slice(0, 3).map(outfit => (
                             <Badge 
                               key={outfit.id} 
                               className="bg-purple-800/50 hover:bg-purple-700/70 cursor-pointer transition-colors"
@@ -507,8 +491,8 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
                               {outfit.name}
                             </Badge>
                           ))}
-                          {rarelyWornOutfits.length > 3 && (
-                            <Badge className="bg-slate-700/70">+{rarelyWornOutfits.length - 3} more</Badge>
+                          {outfits.length > 3 && (
+                            <Badge className="bg-slate-700/70">+{outfits.length - 3} more</Badge>
                           )}
                         </div>
                       ) : (
@@ -626,14 +610,14 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {mostWornItems.map(({ item, count }) => item && (
+                    {clothingItems.slice(0, 5).map((item) => (
                       <TableRow key={item.id} className="hover:bg-slate-800/50 border-b-purple-500/10">
                         <TableCell className="font-medium">{item.name}</TableCell>
                         <TableCell>{item.type}</TableCell>
-                        <TableCell className="text-right">{count}</TableCell>
+                        <TableCell className="text-right">{item.timesWorn || 0}</TableCell>
                       </TableRow>
                     ))}
-                    {mostWornItems.length === 0 && (
+                    {clothingItems.length === 0 && (
                       <TableRow>
                         <TableCell colSpan={3} className="text-center text-slate-400 italic">
                           No data available
@@ -673,7 +657,7 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
                   <div>
                     <h4 className="text-sm font-medium text-slate-300 mb-2">Seasonal Wear</h4>
                     <div className="flex items-center gap-2 flex-wrap">
-                      {seasonalStats.map(({ season, percentage }) => (
+                      {getSeasonalStats().map(({ season, percentage }) => (
                         percentage > 0 && season !== 'all' && (
                           <Badge 
                             key={season} 
@@ -695,7 +679,7 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
                   <div>
                     <h4 className="text-sm font-medium text-slate-300 mb-2">Color Preferences</h4>
                     <div className="flex items-center gap-2 flex-wrap">
-                      {colorStats.slice(0, 6).map(({ color, percentage }) => (
+                      {getColorStats().slice(0, 6).map(({ color, percentage }) => (
                         <Badge 
                           key={color} 
                           className={`
@@ -717,9 +701,9 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
                           {color.charAt(0).toUpperCase() + color.slice(1)}: {percentage}%
                         </Badge>
                       ))}
-                      {colorStats.length > 6 && (
+                      {getColorStats().length > 6 && (
                         <Badge className="bg-slate-500 hover:bg-slate-400">
-                          Others: {colorStats.slice(6).reduce((acc, { percentage }) => acc + percentage, 0)}%
+                          Others: {getColorStats().slice(6).reduce((acc, { percentage }) => acc + percentage, 0)}%
                         </Badge>
                       )}
                     </div>
@@ -794,168 +778,4 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
                 </div>
                 
                 <div className="mt-4">
-                  <p className="text-slate-400 text-sm italic">Outfit usage chart will be displayed here</p>
-                </div>
-              </div>
-            </div>
-          </TabsContent>
-        </Tabs>
-      </div>
-      
-      <Dialog open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
-        <DialogContent className="bg-slate-900/60 backdrop-blur-sm border border-purple-500/20 rounded-xl p-6 shadow-xl">
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmitLog)}>
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-medium text-purple-300">Log Outfit</h3>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="border-purple-500/30 bg-slate-800/70"
-                  onClick={() => setIsLogDialogOpen(false)}
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-              </div>
-              
-              <FormField
-                control={form.control}
-                name="outfitId"
-                render={({ field }) => (
-                  <FormItem className="mb-4">
-                    <FormLabel className="text-purple-300">Outfit</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <SelectTrigger className="w-full justify-start text-left font-normal border-purple-500/30 bg-slate-800/70">
-                        <SelectValue placeholder="Select an outfit" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {outfits.map(outfit => (
-                          <SelectItem key={outfit.id} value={outfit.id}>
-                            {outfit.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="date"
-                render={({ field }) => (
-                  <FormItem className="mb-4">
-                    <FormLabel className="text-purple-300">Date</FormLabel>
-                    {/* Fixed: Converting Date to string for the input field */}
-                    <Input
-                      type="date"
-                      value={field.value ? format(field.value, "yyyy-MM-dd") : ""}
-                      onChange={(e) => {
-                        const date = e.target.value ? new Date(e.target.value) : undefined;
-                        field.onChange(date);
-                      }}
-                      className="w-full border border-purple-500/30 bg-slate-800/70"
-                    />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="timeOfDay"
-                render={({ field }) => (
-                  <FormItem className="mb-4">
-                    <FormLabel className="text-purple-300">Time of Day</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <SelectTrigger className="w-full justify-start text-left font-normal border-purple-500/30 bg-slate-800/70">
-                        <SelectValue placeholder="Select a time of day" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="morning">Morning</SelectItem>
-                        <SelectItem value="afternoon">Afternoon</SelectItem>
-                        <SelectItem value="evening">Evening</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="notes"
-                render={({ field }) => (
-                  <FormItem className="mb-4">
-                    <FormLabel className="text-purple-300">Notes</FormLabel>
-                    <Textarea
-                      {...field}
-                      className="w-full border border-purple-500/30 bg-slate-800/70"
-                    />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="weatherCondition"
-                render={({ field }) => (
-                  <FormItem className="mb-4">
-                    <FormLabel className="text-purple-300">Weather Condition</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <SelectTrigger className="w-full justify-start text-left font-normal border-purple-500/30 bg-slate-800/70">
-                        <SelectValue placeholder="Select a weather condition" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="sunny">Sunny</SelectItem>
-                        <SelectItem value="cloudy">Cloudy</SelectItem>
-                        <SelectItem value="rainy">Rainy</SelectItem>
-                        <SelectItem value="snowy">Snowy</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="temperature"
-                render={({ field }) => (
-                  <FormItem className="mb-4">
-                    <FormLabel className="text-purple-300">Temperature</FormLabel>
-                    <Input
-                      type="number"
-                      {...field}
-                      className="w-full border border-purple-500/30 bg-slate-800/70"
-                    />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <div className="flex justify-end mt-4">
-                <Button type="submit" className="bg-purple-600 hover:bg-purple-700">
-                  Log Outfit
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
-    </motion.section>
-  );
-};
-
-export default OutfitCalendar;
+                  <p className="text-

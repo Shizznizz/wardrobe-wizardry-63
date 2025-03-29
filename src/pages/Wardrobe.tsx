@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -6,6 +7,7 @@ import OliviaBloomAdvisor from '@/components/OliviaBloomAdvisor';
 import OliviaBloomAssistant from '@/components/OliviaBloomAssistant';
 import OliviaTips from '@/components/OliviaTips';
 import UploadModal from '@/components/UploadModal';
+import OutfitCalendar from '@/components/outfits/OutfitCalendar';
 import { ClothingItem, ClothingType } from '@/lib/types';
 import { sampleClothingItems, sampleOutfits, sampleUserPreferences } from '@/lib/wardrobeData';
 import { toast } from 'sonner';
@@ -314,6 +316,20 @@ const Wardrobe = () => {
               items={sortedItems} 
               onToggleFavorite={handleToggleFavorite} 
               compactView={showCompactView}
+            />
+          </motion.div>
+          
+          {/* Added OutfitCalendar component to use full width */}
+          <motion.div 
+            variants={itemVariants} 
+            className="w-full mt-10"
+          >
+            <OutfitCalendar 
+              outfits={sampleOutfits}
+              clothingItems={items}
+              onAddLog={(log) => {
+                toast.success(`Outfit logged for ${format(log.date, 'MMMM d, yyyy')}`);
+              }}
             />
           </motion.div>
         </motion.div>

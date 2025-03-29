@@ -11,7 +11,6 @@ import OutfitCollection from '@/components/outfits/OutfitCollection';
 import { useOutfitState } from '@/hooks/useOutfitState';
 import OliviaTips from '@/components/OliviaTips';
 import StyleSituation from '@/components/StyleSituation';
-import OutfitCalendar from '@/components/outfits/OutfitCalendar';
 
 const Outfits = () => {
   const {
@@ -73,13 +72,6 @@ const Outfits = () => {
             onDeleteOutfit={handleDeleteOutfit}
             onToggleFavorite={handleToggleFavorite}
             clothingItems={clothingItems}
-          />
-          
-          {/* Enhanced OutfitCalendar component */}
-          <OutfitCalendar 
-            outfits={outfits}
-            clothingItems={clothingItems}
-            onAddLog={addOutfitLog}
           />
           
           <OutfitBuilder
