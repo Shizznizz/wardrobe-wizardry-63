@@ -151,6 +151,15 @@
   .coral-bg {
     @apply bg-coral-500;
   }
+
+  .hide-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari and Opera */
+  }
 }
 
 @layer base {
@@ -159,12 +168,13 @@
   }
   
   html, body {
-    @apply antialiased scroll-smooth;
+    @apply antialiased scroll-smooth overflow-x-hidden;
   }
   
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "ss01", "ss02", "cv01", "cv03";
+    max-width: 100vw;
   }
   
   body {

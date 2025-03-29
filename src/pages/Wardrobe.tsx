@@ -1,6 +1,8 @@
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
+import { useIsMobile } from '@/hooks/use-mobile';
 import Header from '@/components/Header';
 import WardrobeGrid from '@/components/WardrobeGrid';
 import OliviaBloomAdvisor from '@/components/OliviaBloomAdvisor';
@@ -150,7 +152,7 @@ const Wardrobe = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white">
+    <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white overflow-x-hidden">
       <Header />
       
       {showConfetti && (
@@ -160,26 +162,26 @@ const Wardrobe = () => {
         />
       )}
       
-      <main className="container mx-auto px-4 pt-24 pb-16">
+      <main className="w-full px-3 sm:px-4 pt-24 pb-16 max-w-full overflow-hidden">
         <motion.div 
-          className="space-y-8"
+          className="space-y-8 max-w-full"
           initial="hidden"
           animate="visible"
           variants={containerVariants}
         >
-          <div className="flex flex-col lg:flex-row items-center gap-6 mb-12">
+          <div className="flex flex-col lg:flex-row items-center gap-6 mb-12 w-full">
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className="w-full"
             >
-              <h1 className="text-4xl md:text-5xl font-bold mb-10 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
+              <h1 className="text-3xl md:text-5xl font-bold mb-6 md:mb-10 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
                 Your Digital Wardrobe
               </h1>
-              <p className="text-lg text-white/80 mb-6">
+              <p className="text-base md:text-lg text-white/80 mb-6">
                 Browse, organize, and visualize your clothes collection with powerful AI-driven insights.
               </p>
-              <div className="flex flex-wrap gap-4">
+              <div className="flex flex-wrap gap-3">
                 <div id="upload-button">
                   <UploadModal onUpload={handleUpload} />
                 </div>
@@ -189,19 +191,19 @@ const Wardrobe = () => {
                   className="border-purple-400/30 text-white hover:bg-white/10"
                   onClick={() => setCategoryModalOpen(true)}
                 >
-                  <ArrowRight className="mr-2 h-4 w-4" /> Browse By Category
+                  <ArrowRight className="mr-2 h-4 w-4" /> Browse Categories
                 </Button>
               </div>
             </motion.div>
           </div>
           
-          <motion.div id="upload-section" variants={itemVariants} className="flex flex-col">
-            <div className="flex flex-wrap justify-between items-center mb-10">
+          <motion.div id="upload-section" variants={itemVariants} className="flex flex-col w-full">
+            <div className="flex flex-wrap justify-between items-center mb-6 md:mb-10 w-full">
               <div className="relative">
-                <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
+                <h2 className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
                   {getPersonalizedGreeting()}
                   {selectedCategory && (
-                    <span className="ml-2 text-xl text-white/90">
+                    <span className="ml-2 text-lg md:text-xl text-white/90">
                       (<span className="capitalize">{selectedCategory}</span>)
                     </span>
                   )}
@@ -217,16 +219,16 @@ const Wardrobe = () => {
                   variant="outline"
                   size="sm"
                   onClick={() => setSelectedCategory(null)}
-                  className="border-indigo-400/30 text-white hover:bg-white/10 mr-2"
+                  className="border-indigo-400/30 text-white hover:bg-white/10 mr-2 mt-2 md:mt-0"
                 >
                   <X className="h-4 w-4 mr-1" /> Clear Filter
                 </Button>
               )}
             </div>
             
-            <div className="flex justify-between items-center mt-4 mb-10 flex-wrap gap-3">
-              <div className="flex items-center gap-2 bg-slate-900/50 p-2 rounded-full backdrop-blur-sm border border-white/5 shadow-md">
-                <Badge variant="gradient" className="mr-1">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-4 mb-6 md:mb-10 gap-3 w-full">
+              <div className="flex items-center gap-2 bg-slate-900/50 p-2 rounded-full backdrop-blur-sm border border-white/5 shadow-md overflow-x-auto max-w-full hide-scrollbar">
+                <Badge variant="gradient" className="mr-1 whitespace-nowrap flex-shrink-0">
                   <ArrowUpDown className="h-3.5 w-3.5 mr-1 text-white" />
                   <span>Sort</span>
                 </Badge>
@@ -234,15 +236,15 @@ const Wardrobe = () => {
                   type="single" 
                   value={sortOption} 
                   onValueChange={(value) => value && setSortOption(value as any)}
-                  className="bg-slate-800/40 rounded-full p-1"
+                  className="bg-slate-800/40 rounded-full p-1 flex flex-nowrap overflow-x-auto hide-scrollbar"
                 >
-                  <ToggleGroupItem value="newest" size="sm" className="text-xs h-8 rounded-full data-[state=on]:bg-gradient-to-r from-blue-500/80 to-purple-500/80 data-[state=on]:text-white transition-all duration-200">Newest</ToggleGroupItem>
-                  <ToggleGroupItem value="favorites" size="sm" className="text-xs h-8 rounded-full data-[state=on]:bg-gradient-to-r from-blue-500/80 to-purple-500/80 data-[state=on]:text-white transition-all duration-200">Favorites</ToggleGroupItem>
-                  <ToggleGroupItem value="most-worn" size="sm" className="text-xs h-8 rounded-full data-[state=on]:bg-gradient-to-r from-blue-500/80 to-purple-500/80 data-[state=on]:text-white transition-all duration-200">Most Worn</ToggleGroupItem>
-                  <ToggleGroupItem value="color" size="sm" className="text-xs h-8 rounded-full data-[state=on]:bg-gradient-to-r from-blue-500/80 to-purple-500/80 data-[state=on]:text-white transition-all duration-200">By Color</ToggleGroupItem>
-                  <ToggleGroupItem value="most-matched" size="sm" className="text-xs h-8 rounded-full data-[state=on]:bg-gradient-to-r from-blue-500/80 to-purple-500/80 data-[state=on]:text-white transition-all duration-200">Most Matched</ToggleGroupItem>
-                  <ToggleGroupItem value="weather-fit" size="sm" className="text-xs h-8 rounded-full data-[state=on]:bg-gradient-to-r from-blue-500/80 to-purple-500/80 data-[state=on]:text-white transition-all duration-200">Weather Fit</ToggleGroupItem>
-                  <ToggleGroupItem value="not-recent" size="sm" className="text-xs h-8 rounded-full data-[state=on]:bg-gradient-to-r from-blue-500/80 to-purple-500/80 data-[state=on]:text-white transition-all duration-200">Not Recent</ToggleGroupItem>
+                  <ToggleGroupItem value="newest" size="sm" className="text-xs h-8 rounded-full data-[state=on]:bg-gradient-to-r from-blue-500/80 to-purple-500/80 data-[state=on]:text-white transition-all duration-200 whitespace-nowrap">Newest</ToggleGroupItem>
+                  <ToggleGroupItem value="favorites" size="sm" className="text-xs h-8 rounded-full data-[state=on]:bg-gradient-to-r from-blue-500/80 to-purple-500/80 data-[state=on]:text-white transition-all duration-200 whitespace-nowrap">Favorites</ToggleGroupItem>
+                  <ToggleGroupItem value="most-worn" size="sm" className="text-xs h-8 rounded-full data-[state=on]:bg-gradient-to-r from-blue-500/80 to-purple-500/80 data-[state=on]:text-white transition-all duration-200 whitespace-nowrap">Most Worn</ToggleGroupItem>
+                  <ToggleGroupItem value="color" size="sm" className="text-xs h-8 rounded-full data-[state=on]:bg-gradient-to-r from-blue-500/80 to-purple-500/80 data-[state=on]:text-white transition-all duration-200 whitespace-nowrap">By Color</ToggleGroupItem>
+                  <ToggleGroupItem value="most-matched" size="sm" className="text-xs h-8 rounded-full data-[state=on]:bg-gradient-to-r from-blue-500/80 to-purple-500/80 data-[state=on]:text-white transition-all duration-200 whitespace-nowrap">Most Matched</ToggleGroupItem>
+                  <ToggleGroupItem value="weather-fit" size="sm" className="text-xs h-8 rounded-full data-[state=on]:bg-gradient-to-r from-blue-500/80 to-purple-500/80 data-[state=on]:text-white transition-all duration-200 whitespace-nowrap">Weather Fit</ToggleGroupItem>
+                  <ToggleGroupItem value="not-recent" size="sm" className="text-xs h-8 rounded-full data-[state=on]:bg-gradient-to-r from-blue-500/80 to-purple-500/80 data-[state=on]:text-white transition-all duration-200 whitespace-nowrap">Not Recent</ToggleGroupItem>
                 </ToggleGroup>
               </div>
               
@@ -276,10 +278,10 @@ const Wardrobe = () => {
           </motion.div>
           
           {(items.length <= 2 || (selectedCategory && sortedItems.length === 0)) ? (
-            <motion.div variants={itemVariants} className="mb-10">
+            <motion.div variants={itemVariants} className="mb-10 w-full">
               <Card className="bg-gradient-to-r from-indigo-950/60 to-purple-950/60 border border-indigo-500/20">
-                <CardContent className="p-6 flex flex-col md:flex-row gap-4 items-center">
-                  <div className="w-16 h-16 rounded-full bg-purple-600/20 flex items-center justify-center">
+                <CardContent className="p-4 sm:p-6 flex flex-col md:flex-row gap-4 items-center">
+                  <div className="w-16 h-16 rounded-full bg-purple-600/20 flex items-center justify-center flex-shrink-0">
                     <Sparkles className="h-8 w-8 text-purple-300" />
                   </div>
                   <div className="text-center md:text-left">
@@ -311,7 +313,7 @@ const Wardrobe = () => {
             </motion.div>
           ) : null}
           
-          <motion.div variants={itemVariants} className="glass-dark p-6 rounded-xl border border-white/10 mt-6">
+          <motion.div variants={itemVariants} className="glass-dark p-3 sm:p-6 rounded-xl border border-white/10 mt-6 w-full overflow-hidden">
             <WardrobeGrid 
               items={sortedItems} 
               onToggleFavorite={handleToggleFavorite} 
@@ -319,7 +321,7 @@ const Wardrobe = () => {
             />
           </motion.div>
           
-          <motion.div variants={itemVariants} className="w-full mt-10">
+          <motion.div variants={itemVariants} className="w-full mt-10 overflow-hidden">
             <OutfitCalendar 
               outfits={sampleOutfits}
               clothingItems={items}
