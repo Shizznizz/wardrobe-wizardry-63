@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Header from '@/components/Header';
@@ -189,6 +188,7 @@ const Showroom = () => {
             </p>
           </motion.div>
           
+          {/* 1. Your Photo Section - Now First */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -196,98 +196,80 @@ const Showroom = () => {
             className="mb-8"
           >
             <Card className="glass-dark border-white/10 overflow-hidden">
-              <CardContent className="p-0">
-                <div className={`${isMobile ? 'flex flex-col' : 'grid grid-cols-2'} gap-6`}>
-                  
-                  <div className="p-6 flex flex-col h-full">
-                    <h2 className="text-xl font-semibold mb-4">Your Photo</h2>
-                    
-                    {!userPhoto ? (
-                      <div className="flex flex-col items-center justify-center py-8 flex-grow bg-black/20 rounded-lg border border-white/10">
-                        <div className="mb-6 bg-slate-800/50 p-6 rounded-full">
-                          <Camera className="h-12 w-12 text-purple-400" />
-                        </div>
-                        <h3 className="text-xl font-medium mb-2">Upload Your Photo</h3>
-                        <p className="text-white/70 mb-6 text-center max-w-sm px-2">
-                          See how outfits look on you with our virtual try-on feature
-                        </p>
-                        <div className="flex flex-col gap-3 w-full max-w-xs px-4">
-                          <Button 
-                            onClick={triggerFileUpload}
-                            className="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90"
-                          >
-                            <Upload className="mr-2 h-5 w-5" /> Choose Photo
-                          </Button>
-                          <input
-                            type="file"
-                            ref={fileInputRef}
-                            className="hidden"
-                            accept="image/*"
-                            onChange={handlePhotoUpload}
-                          />
-                          <Button
-                            variant="outline"
-                            className="w-full border-purple-400/30 text-white hover:bg-white/10"
-                            onClick={handleTakePhoto}
-                          >
-                            <Camera className="mr-2 h-5 w-5" /> Take a Photo
-                          </Button>
-                          <Button
-                            variant="outline"
-                            onClick={() => setShowOliviaImageGallery(true)}
-                            className="w-full text-sm border-purple-500/30 text-purple-300 hover:bg-purple-500/20 hover:text-purple-100 hover:border-purple-500/50 transition-colors"
-                          >
-                            <User className="mr-2 h-4 w-4" />
-                            Choose an Image of Olivia Bloom
-                          </Button>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="flex flex-col h-full">
-                        <div className="relative flex-grow bg-black/20 rounded-lg border border-white/10 overflow-hidden">
-                          <img 
-                            src={userPhoto} 
-                            alt="Your uploaded photo" 
-                            className="w-full h-full object-contain"
-                          />
-                          {isUsingOliviaImage && (
-                            <div className="absolute top-2 left-2 bg-purple-600/80 rounded-full py-0.5 px-2 text-xs text-white flex items-center">
-                              <User className="h-3 w-3 mr-1" />
-                              Olivia's Image
-                            </div>
-                          )}
-                        </div>
-                        <div className="flex justify-center mt-4 gap-3">
-                          <Button 
-                            variant="outline"
-                            onClick={triggerFileUpload}
-                            className="border-white/20 text-white hover:bg-white/10"
-                          >
-                            <Upload className="mr-2 h-4 w-4" /> Change Photo
-                          </Button>
-                        </div>
-                      </div>
-                    )}
+              <CardContent className="p-6">
+                <h2 className="text-xl font-semibold mb-4">Your Photo</h2>
+                
+                {!userPhoto ? (
+                  <div className="flex flex-col items-center justify-center py-8 flex-grow bg-black/20 rounded-lg border border-white/10">
+                    <div className="mb-6 bg-slate-800/50 p-6 rounded-full">
+                      <Camera className="h-12 w-12 text-purple-400" />
+                    </div>
+                    <h3 className="text-xl font-medium mb-2">Upload Your Photo</h3>
+                    <p className="text-white/70 mb-6 text-center max-w-sm px-2">
+                      See how outfits look on you with our virtual try-on feature
+                    </p>
+                    <div className="flex flex-col gap-3 w-full max-w-xs px-4">
+                      <Button 
+                        onClick={triggerFileUpload}
+                        className="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90"
+                      >
+                        <Upload className="mr-2 h-5 w-5" /> Choose Photo
+                      </Button>
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        className="hidden"
+                        accept="image/*"
+                        onChange={handlePhotoUpload}
+                      />
+                      <Button
+                        variant="outline"
+                        className="w-full border-purple-400/30 text-white hover:bg-white/10"
+                        onClick={handleTakePhoto}
+                      >
+                        <Camera className="mr-2 h-5 w-5" /> Take a Photo
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => setShowOliviaImageGallery(true)}
+                        className="w-full text-sm border-purple-500/30 text-purple-300 hover:bg-purple-500/20 hover:text-purple-100 hover:border-purple-500/50 transition-colors"
+                      >
+                        <User className="mr-2 h-4 w-4" />
+                        Choose an Image of Olivia Bloom
+                      </Button>
+                    </div>
                   </div>
-                  
-                  <div className="p-6 flex flex-col h-full bg-black/10">
-                    <h2 className="text-xl font-semibold mb-4">Outfit Preview</h2>
-                    
-                    <VirtualFittingRoom 
-                      finalImage={finalImage}
-                      outfit={selectedOutfit}
-                      clothingItems={clothingItems}
-                      isProcessing={isProcessingTryOn}
-                      userPhoto={userPhoto}
-                      onSaveLook={handleSaveLook}
-                      className="flex-grow"
-                    />
+                ) : (
+                  <div className="flex flex-col h-full">
+                    <div className="relative flex-grow bg-black/20 rounded-lg border border-white/10 overflow-hidden">
+                      <img 
+                        src={userPhoto} 
+                        alt="Your uploaded photo" 
+                        className="w-full h-full object-contain"
+                      />
+                      {isUsingOliviaImage && (
+                        <div className="absolute top-2 left-2 bg-purple-600/80 rounded-full py-0.5 px-2 text-xs text-white flex items-center">
+                          <User className="h-3 w-3 mr-1" />
+                          Olivia's Image
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex justify-center mt-4 gap-3">
+                      <Button 
+                        variant="outline"
+                        onClick={triggerFileUpload}
+                        className="border-white/20 text-white hover:bg-white/10"
+                      >
+                        <Upload className="mr-2 h-4 w-4" /> Change Photo
+                      </Button>
+                    </div>
                   </div>
-                </div>
+                )}
               </CardContent>
             </Card>
           </motion.div>
           
+          {/* 2. Choose an Outfit Section - Now Second */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -381,11 +363,37 @@ const Showroom = () => {
             </Card>
           </motion.div>
           
+          {/* 3. Outfit Preview Section - Now Third */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="mb-8"
+          >
+            <Card className="glass-dark border-white/10 overflow-hidden">
+              <CardContent className="p-6">
+                <h2 className="text-xl font-semibold mb-4">Outfit Preview</h2>
+                
+                <VirtualFittingRoom 
+                  finalImage={finalImage}
+                  outfit={selectedOutfit}
+                  clothingItems={clothingItems}
+                  isProcessing={isProcessingTryOn}
+                  userPhoto={userPhoto}
+                  onSaveLook={handleSaveLook}
+                  isOliviaImage={isUsingOliviaImage}
+                  className="flex-grow"
+                />
+              </CardContent>
+            </Card>
+          </motion.div>
+          
+          {/* Premium Features Section - Kept at the bottom */}
           {!isPremiumUser && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
+              transition={{ delay: 0.5 }}
             >
               <Card className="glass-dark border-white/10 overflow-hidden bg-gradient-to-r from-slate-900/90 to-purple-950/90">
                 <CardContent className="p-4 md:p-8">
