@@ -106,6 +106,43 @@ export function useOutfitState(initialOutfits: Outfit[], initialClothingItems: C
     }, 1500);
   };
 
+  // New functions for outfit calendar and tracking
+  const handleWearOutfit = (outfitId: string, date: Date = new Date()) => {
+    setOutfits(prev =>
+      prev.map(outfit => {
+        if (outfit.id === outfitId) {
+          return {
+            ...outfit,
+            timesWorn: outfit.timesWorn + 1,
+            lastWorn: date
+          };
+        }
+        return outfit;
+      })
+    );
+  };
+
+  const getOutfitsByDate = (date: Date) => {
+    return outfits.filter(
+      outfit => outfit.lastWorn && 
+      new Date(outfit.lastWorn).toDateString() === date.toDateString()
+    );
+  };
+
+  const getRarelyWornOutfits = (days: number = 30) => {
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - days);
+    
+    return outfits.filter(outfit => {
+      if (!outfit.lastWorn) return true;
+      return new Date(outfit.lastWorn) < cutoffDate;
+    });
+  };
+
+  const getFrequentlyWornOutfits = (threshold: number = 5) => {
+    return outfits.filter(outfit => outfit.timesWorn > threshold);
+  };
+
   return {
     outfits,
     clothingItems,
@@ -129,7 +166,12 @@ export function useOutfitState(initialOutfits: Outfit[], initialClothingItems: C
     handleUserPhotoChange,
     handleClearUserPhoto,
     handleTryOnOutfit,
+    // New calendar and tracking functions
+    handleWearOutfit,
+    getOutfitsByDate,
+    getRarelyWornOutfits,
+    getFrequentlyWornOutfits,
     setShowAssistant,
-    setIsBuilderOpen // Export this setter to allow direct control of the builder state
+    setIsBuilderOpen
   };
 }
