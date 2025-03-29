@@ -28,10 +28,8 @@ const OutfitSelector = ({ outfits, clothingItems, onSelect, selectedOutfitId }: 
   };
 
   return (
-    <div className="w-full">
-      <Carousel
-        className="w-full"
-      >
+    <div className="w-full overflow-hidden">
+      <Carousel className="w-full">
         <CarouselContent>
           {outfits.map((outfit, index) => {
             const isSelected = outfit.id === selectedOutfitId;
@@ -47,7 +45,7 @@ const OutfitSelector = ({ outfits, clothingItems, onSelect, selectedOutfitId }: 
                   )}
                   onClick={() => handleSelect(outfit)}
                 >
-                  <h3 className="font-medium mb-2 text-white text-sm sm:text-base">{outfit.name}</h3>
+                  <h3 className="font-medium mb-2 text-white text-sm sm:text-base truncate">{outfit.name}</h3>
                   
                   <div className="grid grid-cols-3 gap-1 sm:gap-2">
                     {outfit.items.slice(0, 3).map(itemId => {

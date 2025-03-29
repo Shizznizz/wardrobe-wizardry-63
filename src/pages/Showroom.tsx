@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Header from '@/components/Header';
@@ -170,11 +171,11 @@ const Showroom = () => {
   const yourOutfits = fashionCollections.find(c => c.id === 'wardrobe')?.outfits || [];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white">
+    <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white overflow-x-hidden">
       <Header />
       
-      <main className="container mx-auto px-4 pt-24 pb-32">
-        <div className="max-w-6xl mx-auto">
+      <main className="container mx-auto px-4 pt-24 pb-32 max-w-full">
+        <div className="w-full mx-auto">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -183,7 +184,7 @@ const Showroom = () => {
             <h1 className="text-3xl md:text-4xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
               Virtual Try-On Studio
             </h1>
-            <p className="text-base md:text-lg text-white/80 max-w-2xl mx-auto">
+            <p className="text-base md:text-lg text-white/80 mx-auto">
               Upload your photo and discover how outfits look on you with our virtual try-on experience.
             </p>
           </motion.div>
@@ -207,10 +208,10 @@ const Showroom = () => {
                           <Camera className="h-12 w-12 text-purple-400" />
                         </div>
                         <h3 className="text-xl font-medium mb-2">Upload Your Photo</h3>
-                        <p className="text-white/70 mb-6 text-center max-w-sm">
+                        <p className="text-white/70 mb-6 text-center max-w-sm px-2">
                           See how outfits look on you with our virtual try-on feature
                         </p>
-                        <div className="flex flex-col gap-3 w-full max-w-xs">
+                        <div className="flex flex-col gap-3 w-full max-w-xs px-4">
                           <Button 
                             onClick={triggerFileUpload}
                             className="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90"
@@ -387,30 +388,30 @@ const Showroom = () => {
               transition={{ delay: 0.4 }}
             >
               <Card className="glass-dark border-white/10 overflow-hidden bg-gradient-to-r from-slate-900/90 to-purple-950/90">
-                <CardContent className="p-8">
+                <CardContent className="p-4 md:p-8">
                   <div className="flex items-center gap-4 mb-6">
                     <div className="p-3 rounded-full bg-yellow-500/20">
                       <Star className="h-6 w-6 text-yellow-500" />
                     </div>
-                    <h2 className="text-2xl font-semibold">Unlock Premium Features</h2>
+                    <h2 className="text-xl md:text-2xl font-semibold">Unlock Premium Features</h2>
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div className="glass-dark rounded-lg p-5 border border-white/5">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-8">
+                    <div className="glass-dark rounded-lg p-3 md:p-5 border border-white/5">
                       <UploadIcon className="h-5 w-5 mb-3 text-purple-400" />
                       <h3 className="text-lg font-medium mb-2">Multiple Photos</h3>
                       <p className="text-white/70 text-sm">
                         Upload multiple photos and try on different outfits for various occasions.
                       </p>
                     </div>
-                    <div className="glass-dark rounded-lg p-5 border border-white/5">
+                    <div className="glass-dark rounded-lg p-3 md:p-5 border border-white/5">
                       <ShoppingBag className="h-5 w-5 mb-3 text-purple-400" />
                       <h3 className="text-lg font-medium mb-2">Exclusive Collections</h3>
                       <p className="text-white/70 text-sm">
                         Access to premium outfit collections created by expert stylists.
                       </p>
                     </div>
-                    <div className="glass-dark rounded-lg p-5 border border-white/5">
+                    <div className="glass-dark rounded-lg p-3 md:p-5 border border-white/5">
                       <Heart className="h-5 w-5 mb-3 text-purple-400" />
                       <h3 className="text-lg font-medium mb-2">Advanced Styling</h3>
                       <p className="text-white/70 text-sm">

@@ -43,10 +43,10 @@ const Outfits = () => {
   };
 
   return (
-    <div className={`min-h-screen bg-gradient-to-b ${weatherBackground} text-white transition-colors duration-700`}>
+    <div className={`min-h-screen bg-gradient-to-b ${weatherBackground} text-white transition-colors duration-700 overflow-x-hidden`}>
       <Header />
       
-      <main className="container mx-auto px-4 pt-24 pb-16">
+      <main className="container mx-auto px-4 pt-24 pb-16 max-w-full">
         <motion.div 
           className="space-y-12"
           initial="hidden"

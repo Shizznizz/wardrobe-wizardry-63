@@ -44,8 +44,8 @@ const RecommendedOutfit = ({ outfit, clothingItems, onRefreshOutfit }: Recommend
       hidden: { y: 20, opacity: 0 },
       visible: { y: 0, opacity: 1 }
     }} className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold mb-0 bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-purple-400">
+      <div className="flex flex-wrap justify-between items-center gap-2">
+        <h2 className="text-xl sm:text-2xl font-bold mb-0 bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-purple-400">
           Today's Recommended Outfit
         </h2>
         <Button 

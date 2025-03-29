@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -170,7 +169,7 @@ const NewClothes = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white">
+    <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white overflow-x-hidden">
       <Header />
       
       <HelpTipsSection 
@@ -180,7 +179,7 @@ const NewClothes = () => {
         onNextTip={handleNextTip}
       />
       
-      <main className="container mx-auto px-4 pt-24 pb-16">
+      <main className="container mx-auto px-4 pt-24 pb-16 max-w-full">
         <motion.div 
           className="space-y-8"
           initial="hidden"
