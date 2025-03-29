@@ -263,7 +263,7 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
       occasion,
       count,
       percentage: total > 0 ? Math.round((count / total) * 100) : 0
-    }).sort((a, b) => b.count - a.count);
+    }).sort((a, b) => b.count - a.count));
   };
 
   const occasionStats = getOccasionStats();
@@ -289,7 +289,7 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
       color,
       count,
       percentage: total > 0 ? Math.round((count / total) * 100) : 0
-    }).sort((a, b) => b.count - a.count);
+    }).sort((a, b) => b.count - a.count));
   };
 
   const colorStats = getColorStats();
@@ -426,10 +426,9 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
                         initialFocus
                         className="p-3 pointer-events-auto"
                         components={{
-                          DayContent: ({ date }) => (
+                          DayContent: (props) => (
                             <div className="relative w-full h-full flex items-center justify-center">
-                              <div></div>
-                              {renderCalendarDay(date)}
+                              {props.date && renderCalendarDay(props.date)}
                             </div>
                           ),
                         }}
@@ -779,3 +778,172 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
                             className="w-full mt-2 text-xs h-8"
                             onClick={() => setFilterCategory(null)}
                           >
+                            Clear filter
+                          </Button>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                </div>
+                
+                <div className="mt-4">
+                  <p className="text-slate-400 text-sm italic">Outfit usage chart will be displayed here</p>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
+      
+      <Dialog open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
+        <DialogContent className="bg-slate-900/60 backdrop-blur-sm border border-purple-500/20 rounded-xl p-6 shadow-xl">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmitLog)}>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-medium text-purple-300">Log Outfit</h3>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-purple-500/30 bg-slate-800/70"
+                  onClick={() => setIsLogDialogOpen(false)}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+              </div>
+              
+              <FormField
+                control={form.control}
+                name="outfitId"
+                render={({ field }) => (
+                  <FormItem className="mb-4">
+                    <FormLabel className="text-purple-300">Outfit</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <SelectTrigger className="w-full justify-start text-left font-normal border-purple-500/30 bg-slate-800/70">
+                        <SelectValue placeholder="Select an outfit" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {getFilteredOutfits().map(outfit => (
+                          <SelectItem key={outfit.id} value={outfit.id}>
+                            {outfit.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="date"
+                render={({ field }) => (
+                  <FormItem className="mb-4">
+                    <FormLabel className="text-purple-300">Date</FormLabel>
+                    <Input
+                      type="date"
+                      {...field}
+                      className="w-full border border-purple-500/30 bg-slate-800/70"
+                    />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="timeOfDay"
+                render={({ field }) => (
+                  <FormItem className="mb-4">
+                    <FormLabel className="text-purple-300">Time of Day</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <SelectTrigger className="w-full justify-start text-left font-normal border-purple-500/30 bg-slate-800/70">
+                        <SelectValue placeholder="Select a time of day" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="morning">Morning</SelectItem>
+                        <SelectItem value="afternoon">Afternoon</SelectItem>
+                        <SelectItem value="evening">Evening</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="notes"
+                render={({ field }) => (
+                  <FormItem className="mb-4">
+                    <FormLabel className="text-purple-300">Notes</FormLabel>
+                    <Textarea
+                      {...field}
+                      className="w-full border border-purple-500/30 bg-slate-800/70"
+                    />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="weatherCondition"
+                render={({ field }) => (
+                  <FormItem className="mb-4">
+                    <FormLabel className="text-purple-300">Weather Condition</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <SelectTrigger className="w-full justify-start text-left font-normal border-purple-500/30 bg-slate-800/70">
+                        <SelectValue placeholder="Select a weather condition" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="sunny">Sunny</SelectItem>
+                        <SelectItem value="cloudy">Cloudy</SelectItem>
+                        <SelectItem value="rainy">Rainy</SelectItem>
+                        <SelectItem value="snowy">Snowy</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="temperature"
+                render={({ field }) => (
+                  <FormItem className="mb-4">
+                    <FormLabel className="text-purple-300">Temperature</FormLabel>
+                    <Input
+                      type="number"
+                      {...field}
+                      className="w-full border border-purple-500/30 bg-slate-800/70"
+                    />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <div className="flex justify-end mt-4">
+                <Button type="submit" className="bg-purple-600 hover:bg-purple-700">
+                  Log Outfit
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+    </motion.section>
+  );
+};
+
+export default OutfitCalendar;
