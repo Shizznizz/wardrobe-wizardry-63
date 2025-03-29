@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { format, isSameDay, endOfMonth, startOfMonth, eachDayOfInterval, isToday, addMonths, subMonths } from 'date-fns';
@@ -477,9 +478,9 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
                       <p className="text-sm text-slate-300 mb-3">
                         Consider wearing these outfits that haven't been worn in the last 30 days:
                       </p>
-                      {outfits.length > 0 ? (
+                      {rarelyWornOutfits.length > 0 ? (
                         <div className="flex flex-wrap gap-2">
-                          {outfits.slice(0, 3).map(outfit => (
+                          {rarelyWornOutfits.slice(0, 3).map(outfit => (
                             <Badge 
                               key={outfit.id} 
                               className="bg-purple-800/50 hover:bg-purple-700/70 cursor-pointer transition-colors"
@@ -491,8 +492,8 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
                               {outfit.name}
                             </Badge>
                           ))}
-                          {outfits.length > 3 && (
-                            <Badge className="bg-slate-700/70">+{outfits.length - 3} more</Badge>
+                          {rarelyWornOutfits.length > 3 && (
+                            <Badge className="bg-slate-700/70">+{rarelyWornOutfits.length - 3} more</Badge>
                           )}
                         </div>
                       ) : (
@@ -610,14 +611,14 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {clothingItems.slice(0, 5).map((item) => (
+                    {getMostWornItems().map(({ item, count }) => item && (
                       <TableRow key={item.id} className="hover:bg-slate-800/50 border-b-purple-500/10">
                         <TableCell className="font-medium">{item.name}</TableCell>
                         <TableCell>{item.type}</TableCell>
-                        <TableCell className="text-right">{item.timesWorn || 0}</TableCell>
+                        <TableCell className="text-right">{count}</TableCell>
                       </TableRow>
                     ))}
-                    {clothingItems.length === 0 && (
+                    {getMostWornItems().length === 0 && (
                       <TableRow>
                         <TableCell colSpan={3} className="text-center text-slate-400 italic">
                           No data available
@@ -679,7 +680,7 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
                   <div>
                     <h4 className="text-sm font-medium text-slate-300 mb-2">Color Preferences</h4>
                     <div className="flex items-center gap-2 flex-wrap">
-                      {getColorStats().slice(0, 6).map(({ color, percentage }) => (
+                      {colorStats.slice(0, 6).map(({ color, percentage }) => (
                         <Badge 
                           key={color} 
                           className={`
@@ -701,9 +702,9 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
                           {color.charAt(0).toUpperCase() + color.slice(1)}: {percentage}%
                         </Badge>
                       ))}
-                      {getColorStats().length > 6 && (
+                      {colorStats.length > 6 && (
                         <Badge className="bg-slate-500 hover:bg-slate-400">
-                          Others: {getColorStats().slice(6).reduce((acc, { percentage }) => acc + percentage, 0)}%
+                          Others: {colorStats.slice(6).reduce((acc, { percentage }) => acc + percentage, 0)}%
                         </Badge>
                       )}
                     </div>
@@ -777,5 +778,62 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
                   </div>
                 </div>
                 
+                <p className="text-sm text-slate-400 mb-2">
+                  Track your outfit usage patterns over time to identify trends and optimize your wardrobe.
+                </p>
+                
                 <div className="mt-4">
-                  <p className="text-
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="text-purple-300">Outfit</TableHead>
+                        <TableHead className="text-purple-300">Last Worn</TableHead>
+                        <TableHead className="text-purple-300">Frequency</TableHead>
+                        <TableHead className="text-purple-300 text-right">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {getFilteredOutfits().slice(0, 5).map(outfit => (
+                        <TableRow key={outfit.id}>
+                          <TableCell className="font-medium">{outfit.name}</TableCell>
+                          <TableCell>{outfit.lastWorn ? format(new Date(outfit.lastWorn), 'MMM d, yyyy') : 'Never'}</TableCell>
+                          <TableCell>
+                            <Badge variant={outfit.timesWorn > 10 ? 'default' : 'outline'}>
+                              {outfit.timesWorn} times
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Button 
+                              size="sm" 
+                              variant="ghost" 
+                              className="h-7 px-2"
+                              onClick={() => {
+                                handleOpenLogDialog(selectedDate);
+                                form.setValue('outfitId', outfit.id);
+                              }}
+                            >
+                              Log
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                      {getFilteredOutfits().length === 0 && (
+                        <TableRow>
+                          <TableCell colSpan={4} className="text-center py-6 text-slate-400 italic">
+                            No outfits match your filters
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </motion.section>
+  );
+};
+
+export default OutfitCalendar;

@@ -319,11 +319,7 @@ const Wardrobe = () => {
             />
           </motion.div>
           
-          {/* Added OutfitCalendar component to use full width */}
-          <motion.div 
-            variants={itemVariants} 
-            className="w-full mt-10"
-          >
+          <motion.div variants={itemVariants} className="w-full mt-10">
             <OutfitCalendar 
               outfits={sampleOutfits}
               clothingItems={items}
