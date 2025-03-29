@@ -9,16 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-type OutfitLog = {
-  id: string;
-  outfitId: string;
-  date: Date;
-  timeOfDay: string;
-  notes?: string;
-  weatherCondition?: string;
-  temperature?: string;
-};
+import { OutfitLog } from './OutfitLogItem';
 
 interface OutfitLogChartProps {
   outfitLogs: OutfitLog[];

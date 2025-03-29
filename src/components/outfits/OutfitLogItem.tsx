@@ -3,7 +3,8 @@ import { Clock, Cloud, Droplets, Sun, Wind, Snowflake } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Outfit } from '@/lib/types';
 
-type OutfitLog = {
+// Updated type for OutfitLog with required properties
+export type OutfitLog = {
   id: string;
   outfitId: string;
   date: Date;

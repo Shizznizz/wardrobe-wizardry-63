@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { format, isSameDay, endOfMonth, startOfMonth, eachDayOfInterval, isToday, addMonths, subMonths } from 'date-fns';
@@ -121,9 +120,15 @@ const OutfitCalendar = ({ outfits, clothingItems }: OutfitCalendarProps) => {
 
   // Function to log a new outfit
   const onSubmitLog = (values: z.infer<typeof OutfitLogSchema>) => {
+    // Create a new log with required fields ensuring they're not undefined
     const newLog: OutfitLog = {
       id: Date.now().toString(),
-      ...values,
+      outfitId: values.outfitId,
+      date: values.date,
+      timeOfDay: values.timeOfDay,
+      notes: values.notes,
+      weatherCondition: values.weatherCondition,
+      temperature: values.temperature,
     };
     
     setOutfitLogs((prev) => [...prev, newLog]);
