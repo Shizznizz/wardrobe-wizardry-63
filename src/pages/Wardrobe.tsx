@@ -14,7 +14,7 @@ import { ClothingItem, ClothingType } from '@/lib/types';
 import { sampleClothingItems, sampleOutfits, sampleUserPreferences } from '@/lib/wardrobeData';
 import { toast } from 'sonner';
 import { Confetti } from '@/components/ui/confetti';
-import { ArrowUpDown, Info, Shirt, Sparkles, LayoutGrid, ArrowRight, X } from 'lucide-react';
+import { ArrowUpDown, Info, Shirt, Sparkles, LayoutGrid, ArrowRight, X, ChevronDown } from 'lucide-react';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -25,6 +25,13 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import CategoryModal from '@/components/CategoryModal';
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger 
+} from '@/components/ui/dropdown-menu';
+import OutfitMatchModal from '@/components/OutfitMatchModal';
 
 const Wardrobe = () => {
   const [items, setItems] = useState<ClothingItem[]>(sampleClothingItems);
@@ -35,6 +42,9 @@ const Wardrobe = () => {
   const [showCompactView, setShowCompactView] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<ClothingType | null>(null);
   const [categoryModalOpen, setCategoryModalOpen] = useState(false);
+  const [matchModalOpen, setMatchModalOpen] = useState(false);
+  const [selectedItemForMatch, setSelectedItemForMatch] = useState<ClothingItem | null>(null);
+  const isMobile = useIsMobile();
   const { user } = useAuth();
 
   const handleUpload = (newItem: ClothingItem) => {
@@ -72,6 +82,11 @@ const Wardrobe = () => {
       toast.success('Showing all items');
     }
     setCategoryModalOpen(false);
+  };
+
+  const handleMatchItem = (item: ClothingItem) => {
+    setSelectedItemForMatch(item);
+    setMatchModalOpen(true);
   };
 
   const containerVariants = {
@@ -151,8 +166,21 @@ const Wardrobe = () => {
     return "My Wardrobe";
   };
 
+  const getSortLabel = (option: string) => {
+    switch(option) {
+      case 'newest': return 'Newest First';
+      case 'favorites': return 'Favorites';
+      case 'most-worn': return 'Most Worn';
+      case 'color': return 'By Color';
+      case 'most-matched': return 'Most Matched';
+      case 'weather-fit': return 'Weather Fit';
+      case 'not-recent': return 'Not Recent';
+      default: return 'Sort';
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white overflow-x-hidden">
+    <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white overflow-x-hidden max-w-[100vw]">
       <Header />
       
       {showConfetti && (
@@ -227,26 +255,66 @@ const Wardrobe = () => {
             </div>
             
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-4 mb-6 md:mb-10 gap-3 w-full">
-              <div className="flex items-center gap-2 bg-slate-900/50 p-2 rounded-full backdrop-blur-sm border border-white/5 shadow-md overflow-x-auto max-w-full hide-scrollbar">
-                <Badge variant="gradient" className="mr-1 whitespace-nowrap flex-shrink-0">
-                  <ArrowUpDown className="h-3.5 w-3.5 mr-1 text-white" />
-                  <span>Sort</span>
-                </Badge>
-                <ToggleGroup 
-                  type="single" 
-                  value={sortOption} 
-                  onValueChange={(value) => value && setSortOption(value as any)}
-                  className="bg-slate-800/40 rounded-full p-1 flex flex-nowrap overflow-x-auto hide-scrollbar"
-                >
-                  <ToggleGroupItem value="newest" size="sm" className="text-xs h-8 rounded-full data-[state=on]:bg-gradient-to-r from-blue-500/80 to-purple-500/80 data-[state=on]:text-white transition-all duration-200 whitespace-nowrap">Newest</ToggleGroupItem>
-                  <ToggleGroupItem value="favorites" size="sm" className="text-xs h-8 rounded-full data-[state=on]:bg-gradient-to-r from-blue-500/80 to-purple-500/80 data-[state=on]:text-white transition-all duration-200 whitespace-nowrap">Favorites</ToggleGroupItem>
-                  <ToggleGroupItem value="most-worn" size="sm" className="text-xs h-8 rounded-full data-[state=on]:bg-gradient-to-r from-blue-500/80 to-purple-500/80 data-[state=on]:text-white transition-all duration-200 whitespace-nowrap">Most Worn</ToggleGroupItem>
-                  <ToggleGroupItem value="color" size="sm" className="text-xs h-8 rounded-full data-[state=on]:bg-gradient-to-r from-blue-500/80 to-purple-500/80 data-[state=on]:text-white transition-all duration-200 whitespace-nowrap">By Color</ToggleGroupItem>
-                  <ToggleGroupItem value="most-matched" size="sm" className="text-xs h-8 rounded-full data-[state=on]:bg-gradient-to-r from-blue-500/80 to-purple-500/80 data-[state=on]:text-white transition-all duration-200 whitespace-nowrap">Most Matched</ToggleGroupItem>
-                  <ToggleGroupItem value="weather-fit" size="sm" className="text-xs h-8 rounded-full data-[state=on]:bg-gradient-to-r from-blue-500/80 to-purple-500/80 data-[state=on]:text-white transition-all duration-200 whitespace-nowrap">Weather Fit</ToggleGroupItem>
-                  <ToggleGroupItem value="not-recent" size="sm" className="text-xs h-8 rounded-full data-[state=on]:bg-gradient-to-r from-blue-500/80 to-purple-500/80 data-[state=on]:text-white transition-all duration-200 whitespace-nowrap">Not Recent</ToggleGroupItem>
-                </ToggleGroup>
-              </div>
+              {isMobile ? (
+                <div className="flex items-center gap-2 bg-slate-900/50 p-2 rounded-full backdrop-blur-sm border border-white/5 shadow-md overflow-x-auto max-w-full hide-scrollbar">
+                  <Badge variant="gradient" className="mr-1 whitespace-nowrap flex-shrink-0">
+                    <ArrowUpDown className="h-3.5 w-3.5 mr-1 text-white" />
+                    <span>Sort</span>
+                  </Badge>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" size="sm" className="text-xs h-8 rounded-full bg-slate-800/40 border-slate-700/30">
+                        {getSortLabel(sortOption)}
+                        <ChevronDown className="ml-1 h-3 w-3" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="bg-slate-900/95 backdrop-blur-md border-slate-700/50 text-white">
+                      <DropdownMenuItem onClick={() => setSortOption('newest')} className="focus:bg-slate-800">
+                        Newest First
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setSortOption('favorites')} className="focus:bg-slate-800">
+                        Favorites
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setSortOption('most-worn')} className="focus:bg-slate-800">
+                        Most Worn
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setSortOption('color')} className="focus:bg-slate-800">
+                        By Color
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setSortOption('most-matched')} className="focus:bg-slate-800">
+                        Most Matched
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setSortOption('weather-fit')} className="focus:bg-slate-800">
+                        Weather Fit
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setSortOption('not-recent')} className="focus:bg-slate-800">
+                        Not Recent
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 bg-slate-900/50 p-2 rounded-full backdrop-blur-sm border border-white/5 shadow-md overflow-x-auto max-w-full hide-scrollbar">
+                  <Badge variant="gradient" className="mr-1 whitespace-nowrap flex-shrink-0">
+                    <ArrowUpDown className="h-3.5 w-3.5 mr-1 text-white" />
+                    <span>Sort</span>
+                  </Badge>
+                  <ToggleGroup 
+                    type="single" 
+                    value={sortOption} 
+                    onValueChange={(value) => value && setSortOption(value as any)}
+                    className="bg-slate-800/40 rounded-full p-1 flex flex-nowrap overflow-x-auto hide-scrollbar"
+                  >
+                    <ToggleGroupItem value="newest" size="sm" className="text-xs h-8 rounded-full data-[state=on]:bg-gradient-to-r from-blue-500/80 to-purple-500/80 data-[state=on]:text-white transition-all duration-200 whitespace-nowrap">Newest</ToggleGroupItem>
+                    <ToggleGroupItem value="favorites" size="sm" className="text-xs h-8 rounded-full data-[state=on]:bg-gradient-to-r from-blue-500/80 to-purple-500/80 data-[state=on]:text-white transition-all duration-200 whitespace-nowrap">Favorites</ToggleGroupItem>
+                    <ToggleGroupItem value="most-worn" size="sm" className="text-xs h-8 rounded-full data-[state=on]:bg-gradient-to-r from-blue-500/80 to-purple-500/80 data-[state=on]:text-white transition-all duration-200 whitespace-nowrap">Most Worn</ToggleGroupItem>
+                    <ToggleGroupItem value="color" size="sm" className="text-xs h-8 rounded-full data-[state=on]:bg-gradient-to-r from-blue-500/80 to-purple-500/80 data-[state=on]:text-white transition-all duration-200 whitespace-nowrap">By Color</ToggleGroupItem>
+                    <ToggleGroupItem value="most-matched" size="sm" className="text-xs h-8 rounded-full data-[state=on]:bg-gradient-to-r from-blue-500/80 to-purple-500/80 data-[state=on]:text-white transition-all duration-200 whitespace-nowrap">Most Matched</ToggleGroupItem>
+                    <ToggleGroupItem value="weather-fit" size="sm" className="text-xs h-8 rounded-full data-[state=on]:bg-gradient-to-r from-blue-500/80 to-purple-500/80 data-[state=on]:text-white transition-all duration-200 whitespace-nowrap">Weather Fit</ToggleGroupItem>
+                    <ToggleGroupItem value="not-recent" size="sm" className="text-xs h-8 rounded-full data-[state=on]:bg-gradient-to-r from-blue-500/80 to-purple-500/80 data-[state=on]:text-white transition-all duration-200 whitespace-nowrap">Not Recent</ToggleGroupItem>
+                  </ToggleGroup>
+                </div>
+              )}
               
               <div className="flex items-center">
                 <TooltipProvider>
@@ -316,7 +384,8 @@ const Wardrobe = () => {
           <motion.div variants={itemVariants} className="glass-dark p-3 sm:p-6 rounded-xl border border-white/10 mt-6 w-full overflow-hidden">
             <WardrobeGrid 
               items={sortedItems} 
-              onToggleFavorite={handleToggleFavorite} 
+              onToggleFavorite={handleToggleFavorite}
+              onMatchItem={handleMatchItem}
               compactView={showCompactView}
             />
           </motion.div>
@@ -361,6 +430,15 @@ const Wardrobe = () => {
         onSelectCategory={handleCategorySelect}
         selectedCategory={selectedCategory}
       />
+
+      {selectedItemForMatch && (
+        <OutfitMatchModal
+          open={matchModalOpen}
+          onOpenChange={setMatchModalOpen}
+          item={selectedItemForMatch}
+          allItems={items}
+        />
+      )}
     </div>
   );
 };
