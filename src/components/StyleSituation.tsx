@@ -147,13 +147,9 @@ const StyleSituation = () => {
                 disabled={isTyping || (!situation.trim() && !selectedEvent)}
               >
                 <Wand2 className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                Generate Outfit
+                What outfit do you recommend?
               </Button>
             </div>
-            
-            <p className="text-[13px] text-coral-200 mt-2 ml-1 italic">
-              e.g. Date Night, 15°C – and let the AI style you!
-            </p>
             
             <PopoverContent className="p-0 bg-slate-900/95 border border-coral-500/30 text-white w-full" align="start">
               <Command className="bg-transparent">
