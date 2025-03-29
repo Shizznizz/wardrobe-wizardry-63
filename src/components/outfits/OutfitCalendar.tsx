@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { format, isSameDay, endOfMonth, startOfMonth, eachDayOfInterval, isToday, addMonths, subMonths } from 'date-fns';
@@ -259,11 +260,14 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
     
     const total = Object.values(occasions).reduce((sum, count) => sum + count, 0);
     
-    return Object.entries(occasions).map(([occasion, count]) => ({
-      occasion,
-      count,
-      percentage: total > 0 ? Math.round((count / total) * 100) : 0
-    }).sort((a, b) => b.count - a.count));
+    // Fixed: Return the array first, then sort it
+    return Object.entries(occasions)
+      .map(([occasion, count]) => ({
+        occasion,
+        count,
+        percentage: total > 0 ? Math.round((count / total) * 100) : 0
+      }))
+      .sort((a, b) => b.count - a.count);
   };
 
   const occasionStats = getOccasionStats();
@@ -285,11 +289,14 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
     
     const total = Object.values(colors).reduce((sum, count) => sum + count, 0);
     
-    return Object.entries(colors).map(([color, count]) => ({
-      color,
-      count,
-      percentage: total > 0 ? Math.round((count / total) * 100) : 0
-    }).sort((a, b) => b.count - a.count));
+    // Fixed: Return the array first, then sort it
+    return Object.entries(colors)
+      .map(([color, count]) => ({
+        color,
+        count,
+        percentage: total > 0 ? Math.round((count / total) * 100) : 0
+      }))
+      .sort((a, b) => b.count - a.count);
   };
 
   const colorStats = getColorStats();
@@ -825,7 +832,7 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
                         <SelectValue placeholder="Select an outfit" />
                       </SelectTrigger>
                       <SelectContent>
-                        {getFilteredOutfits().map(outfit => (
+                        {outfits.map(outfit => (
                           <SelectItem key={outfit.id} value={outfit.id}>
                             {outfit.name}
                           </SelectItem>
@@ -843,9 +850,14 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
                 render={({ field }) => (
                   <FormItem className="mb-4">
                     <FormLabel className="text-purple-300">Date</FormLabel>
+                    {/* Fixed: Converting Date to string for the input field */}
                     <Input
                       type="date"
-                      {...field}
+                      value={field.value ? format(field.value, "yyyy-MM-dd") : ""}
+                      onChange={(e) => {
+                        const date = e.target.value ? new Date(e.target.value) : undefined;
+                        field.onChange(date);
+                      }}
                       className="w-full border border-purple-500/30 bg-slate-800/70"
                     />
                     <FormMessage />
