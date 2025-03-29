@@ -1,5 +1,6 @@
+
 import { useState, useEffect } from 'react';
-import { Outfit, ClothingItem, WeatherInfo, TimeOfDay, Activity } from '@/lib/types';
+import { Outfit, ClothingItem, WeatherInfo, TimeOfDay, Activity, ClothingSeason } from '@/lib/types';
 import { OutfitLog } from '@/components/outfits/OutfitLogItem';
 
 export function useOutfitState(initialOutfits: Outfit[], initialClothingItems: ClothingItem[]) {
@@ -230,7 +231,7 @@ export function useOutfitState(initialOutfits: Outfit[], initialClothingItems: C
     if (!currentWeather) return [];
     
     const temp = currentWeather.temperature;
-    let recommendedSeason = 'all';
+    let recommendedSeason: ClothingSeason = 'all';
     
     if (temp < 5) recommendedSeason = 'winter';
     else if (temp < 15) recommendedSeason = 'autumn';

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { format, isSameDay, endOfMonth, startOfMonth, eachDayOfInterval, isToday, addMonths, subMonths } from 'date-fns';
@@ -363,8 +362,8 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
   };
   
   // Render calendar day with outfit indicators
-  const renderCalendarDay = (day: Date) => {
-    const logs = getLogsForDay(day);
+  const renderCalendarDay = (date: Date, _cellProps: any) => {
+    const logs = getLogsForDay(date);
     if (logs.length === 0) return null;
     
     return (
@@ -454,10 +453,10 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
                     initialFocus
                     className="p-3 pointer-events-auto"
                     components={{
-                      DayContent: ({ day, ...props }) => (
+                      DayContent: ({ date, ...props }) => (
                         <div className="relative w-full h-full flex items-center justify-center">
                           <div {...props} />
-                          {renderCalendarDay(day)}
+                          {renderCalendarDay(date, props)}
                         </div>
                       ),
                     }}
