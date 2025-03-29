@@ -25,6 +25,7 @@ import SectionDivider from '@/components/SectionDivider';
 import HowItWorks from '@/components/HowItWorks';
 import { useIsMobile } from '@/hooks/use-mobile';
 import TestimonialsCarousel from '@/components/TestimonialsCarousel';
+import OliviaChatDialog from '@/components/OliviaChatDialog';
 
 const Index = () => {
   const [preferences, setPreferences] = useState<UserPreferences>({
@@ -74,14 +75,15 @@ const Index = () => {
   
   const [showOliviaWelcome, setShowOliviaWelcome] = useState(true);
   const [expandOliviaMessage, setExpandOliviaMessage] = useState(false);
+  const [showOliviaChat, setShowOliviaChat] = useState(false);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white relative overflow-hidden">
       <BackgroundShapes />
       <Header />
       
-      <div className={`fixed ${isMobile ? 'right-5 top-48 z-30' : 'top-52 right-6'} z-50`}>
-        <TooltipProvider>
+      <div className={`fixed ${isMobile ? 'right-5 top-36 z-30' : 'top-40 right-6'} z-50`}>
+        <TooltipProvider delayDuration={300}>
           <Tooltip>
             <TooltipTrigger asChild>
               <motion.div
@@ -91,20 +93,26 @@ const Index = () => {
                 className="relative"
               >
                 <div className="absolute -inset-3 rounded-full bg-gradient-to-r from-pink-500/60 via-purple-500/60 to-indigo-500/60 blur-md animate-pulse"></div>
-                <Avatar className={`${isMobile ? 'w-16 h-16' : 'w-22 h-22'} border-2 border-pink-400 shadow-xl cursor-pointer relative hover:scale-105 transition-transform duration-300`} onClick={() => setExpandOliviaMessage(!expandOliviaMessage)}>
-                  <AvatarImage src="/lovable-uploads/86bf74b8-b311-4e3c-bfd6-53819add3df8.png" alt="Olivia Bloom" />
-                  <AvatarFallback className="bg-purple-800">OB</AvatarFallback>
-                </Avatar>
+                <Button 
+                  className={`${isMobile ? 'w-16 h-16' : 'w-20 h-20'} rounded-full p-0 relative hover:scale-105 transition-transform duration-300`}
+                  onClick={() => setShowOliviaChat(true)}
+                >
+                  <Avatar className="w-full h-full border-2 border-pink-400 shadow-xl">
+                    <AvatarImage src="/lovable-uploads/86bf74b8-b311-4e3c-bfd6-53819add3df8.png" alt="Olivia Bloom" />
+                    <AvatarFallback className="bg-purple-800">OB</AvatarFallback>
+                  </Avatar>
+                </Button>
                 
-                {showOliviaWelcome && !expandOliviaMessage && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 1.5, duration: 0.3 }}
-                    className="absolute bottom-0 right-0"
+                {!showOliviaChat && (
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.8, y: -5 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    transition={{ delay: 0.7, duration: 0.3 }}
+                    className="absolute -top-14 right-0 transform translate-x-1/4 z-20 whitespace-nowrap"
                   >
-                    <div className="relative p-2 rounded-full bg-pink-500 text-white shadow-lg animate-pulse">
-                      <MessageSquare className="h-4 w-4" />
+                    <div className="bg-white text-purple-900 px-3 py-2 rounded-lg shadow-lg text-sm font-medium relative">
+                      Chat with Olivia, your Style Assistant
+                      <div className="absolute bottom-0 right-8 transform translate-y-1/2 rotate-45 w-4 h-4 bg-white"></div>
                     </div>
                   </motion.div>
                 )}
@@ -115,49 +123,12 @@ const Index = () => {
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-        
-        {showOliviaWelcome && expandOliviaMessage && (
-          <motion.div 
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            className={`absolute ${isMobile ? 'right-0 top-20 max-w-[280px]' : 'top-24 right-0 z-20 w-68 max-w-280'} scale-85 origin-top-right`}
-          >
-            <div className="olivia-bubble relative p-5 rounded-xl bg-gradient-to-br from-purple-600/90 to-pink-600/90 text-white backdrop-blur-sm shadow-lg border border-white/20 curved-pointer olivia-glow">
-              <button 
-                onClick={() => setExpandOliviaMessage(false)} 
-                className="absolute top-2 right-2 p-1.5 hover:bg-white/10 rounded-full transition-colors"
-              >
-                <motion.div whileHover={{ rotate: 90 }} transition={{ duration: 0.2 }}>
-                  <ArrowRight className="h-5 w-5 text-white/80" />
-                </motion.div>
-              </button>
-              <div className="flex items-center mb-3">
-                <h4 className="font-medium text-white flex items-center text-sm">
-                  Olivia Bloom
-                  <Sparkles className="h-3.5 w-3.5 ml-1 text-yellow-300" />
-                </h4>
-                <span className="ml-2 text-xs bg-gradient-to-r from-purple-600/80 to-pink-500/80 text-white px-2 py-0.5 rounded-full text-[10px]">
-                  Style Advisor
-                </span>
-              </div>
-              <p className="text-white/90 text-xs mb-4">
-                Welcome to Future of Fashion! I'm Olivia, your personal style advisor. I'll help you create outfits that match your style and the weather. What would you like to explore today?
-              </p>
-              <Button 
-                onClick={() => {
-                  setShowOliviaWelcome(false);
-                  setExpandOliviaMessage(false);
-                }}
-                className="text-xs px-4 py-1.5 h-auto bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:opacity-90"
-                size="sm"
-              >
-                Thanks, Olivia!
-              </Button>
-            </div>
-          </motion.div>
-        )}
       </div>
+
+      <OliviaChatDialog 
+        isOpen={showOliviaChat} 
+        onClose={() => setShowOliviaChat(false)} 
+      />
       
       <main className={`container mx-auto px-4 ${isMobile ? 'pt-24' : 'pt-32'} pb-16 relative z-10`}>
         <motion.div 
