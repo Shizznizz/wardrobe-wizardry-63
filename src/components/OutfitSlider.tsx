@@ -39,7 +39,7 @@ const outfitItems = [
   {
     id: 2,
     name: "Winter Formal",
-    image: "/lovable-uploads/outfit-winter-formal.png",
+    image: "/lovable-uploads/44448809-be5b-44da-a910-3f9b0e36264b.png",
     quote: "Cozy layers with elegant sophistication",
     colors: ["black", "burgundy", "silver"],
     season: "Winter",
