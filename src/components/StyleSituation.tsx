@@ -110,10 +110,11 @@ const StyleSituation = () => {
         What are you dressing for today?
       </h3>
       
-      <form onSubmit={handleSubmit} className="space-y-1.5">
+      <form onSubmit={handleSubmit} className="space-y-3">
         <div className="relative">
           <Popover open={open} onOpenChange={setOpen}>
-            <div className="flex items-center gap-3">
+            {/* Changed to flex-col for mobile to stack elements vertically */}
+            <div className={`flex ${isMobile ? 'flex-col' : 'items-center'} gap-3`}>
               <div className="relative flex-grow">
                 <PopoverTrigger asChild>
                   <div className="w-full cursor-pointer">
@@ -141,9 +142,13 @@ const StyleSituation = () => {
                   </Button>
                 )}
               </div>
+              
+              {/* Button takes full width on mobile */}
               <Button 
                 type="submit" 
-                className="bg-gradient-to-r from-coral-500 to-coral-400 hover:from-coral-400 hover:to-coral-300 shadow-lg hover:shadow-coral px-4 py-2 text-sm sm:text-base sm:py-2.5 h-auto min-w-[150px] rounded-xl transform hover:scale-105 transition-all duration-300"
+                className={`bg-gradient-to-r from-coral-500 to-coral-400 hover:from-coral-400 hover:to-coral-300 shadow-lg 
+                  hover:shadow-coral rounded-xl transform hover:scale-105 transition-all duration-300 
+                  ${isMobile ? 'w-full py-3' : 'px-4 py-2 sm:py-2.5 h-auto min-w-[150px]'}`}
                 disabled={isTyping || (!situation.trim() && !selectedEvent)}
               >
                 <Wand2 className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
