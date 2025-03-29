@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { format, isSameDay, endOfMonth, startOfMonth, eachDayOfInterval, isToday, addMonths, subMonths } from 'date-fns';
@@ -43,6 +42,8 @@ import {
 import {
   Dialog,
   DialogContent,
+} from "@/components/ui/dialog";
+import {
   FormField,
   FormItem,
   FormLabel,
@@ -419,7 +420,7 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
                         components={{
                           DayContent: (props) => (
                             <div className="relative w-full h-full flex items-center justify-center">
-                              <div>{props.day}</div>
+                              <div>{props.date?.getDate()}</div>
                               {props.date && renderCalendarDay(props.date)}
                             </div>
                           ),
