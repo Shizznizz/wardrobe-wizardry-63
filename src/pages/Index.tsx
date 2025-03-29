@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -80,7 +81,7 @@ const Index = () => {
       <BackgroundShapes />
       <Header />
       
-      <div className={`fixed ${isMobile ? 'right-5 top-48 z-30' : 'top-52 right-6'} z-50`}>
+      <div className={`fixed ${isMobile ? 'right-5 top-28 z-30' : 'top-32 right-6'} z-50`}>
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -98,13 +99,14 @@ const Index = () => {
                 
                 {showOliviaWelcome && !expandOliviaMessage && (
                   <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 1.5, duration: 0.3 }}
-                    className="absolute bottom-0 right-0"
+                    initial={{ opacity: 0, y: -30 }}
+                    animate={{ opacity: 1, y: -40 }}
+                    transition={{ delay: 0.8, duration: 0.4 }}
+                    className="absolute -top-4 left-1/2 -translate-x-1/2 w-44 text-center"
                   >
-                    <div className="relative p-2 rounded-full bg-pink-500 text-white shadow-lg animate-pulse">
-                      <MessageSquare className="h-4 w-4" />
+                    <div className="relative bg-white text-purple-800 p-2 rounded-lg shadow-lg text-xs font-medium">
+                      Chat with Olivia, your Style Assistant
+                      <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white rotate-45 transform"></div>
                     </div>
                   </motion.div>
                 )}
