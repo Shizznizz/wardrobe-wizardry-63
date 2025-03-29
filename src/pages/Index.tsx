@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -82,7 +83,7 @@ const Index = () => {
       <BackgroundShapes />
       <Header />
       
-      <div className={`fixed ${isMobile ? 'right-5 top-36 z-30' : 'top-40 right-6'} z-50`}>
+      <div className={`fixed ${isMobile ? 'right-5 top-48 z-30' : 'top-40 right-6'} z-50`}>
         <TooltipProvider delayDuration={300}>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -103,7 +104,7 @@ const Index = () => {
                   </Avatar>
                 </Button>
                 
-                {!showOliviaChat && (
+                {!showOliviaChat && !isMobile && (
                   <motion.div 
                     initial={{ opacity: 0, scale: 0.8, y: -5 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -162,7 +163,7 @@ const Index = () => {
                   }}
                 />
                 <motion.h1 
-                  className={`relative ${isMobile ? 'text-4xl font-bold text-center' : 'text-5xl md:text-6xl lg:text-7xl font-extrabold'} tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 pb-3 leading-tight`}
+                  className={`relative ${isMobile ? 'text-5xl font-bold text-center w-full' : 'text-5xl md:text-6xl lg:text-7xl font-extrabold'} tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 pb-3 leading-tight`}
                   animate={{ 
                     filter: ["brightness(1)", "brightness(1.3)", "brightness(1)"] 
                   }}
