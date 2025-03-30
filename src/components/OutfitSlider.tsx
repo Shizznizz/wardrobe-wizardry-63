@@ -29,7 +29,7 @@ const outfitItems = [
   {
     id: 1,
     name: "Business Casual",
-    image: "/lovable-uploads/outfit-business-casual.png",
+    image: "/lovable-uploads/413b249c-e4b5-48cd-a468-d23b2a23eca2.png",
     quote: "Effortless professionalism with comfort in mind",
     colors: ["blue", "gray", "white"],
     season: "All year",
@@ -49,7 +49,7 @@ const outfitItems = [
   {
     id: 3,
     name: "Summer Breeze",
-    image: "/lovable-uploads/outfit-summer-breeze.png",
+    image: "/lovable-uploads/e4bf2134-0936-46f8-8d70-adcc220e50be.png",
     quote: "Light fabrics that flow with every step",
     colors: ["teal", "white", "beige"],
     season: "Summer",
@@ -59,7 +59,7 @@ const outfitItems = [
   {
     id: 4,
     name: "Autumn Layers",
-    image: "/lovable-uploads/outfit-autumn-layers.png",
+    image: "/lovable-uploads/2551cee7-6f38-4c04-b656-16c188b19ace.png",
     quote: "Rich textures that embrace the changing leaves",
     colors: ["brown", "orange", "cream"],
     season: "Autumn",
@@ -69,7 +69,7 @@ const outfitItems = [
   {
     id: 5,
     name: "Spring Pastel",
-    image: "/lovable-uploads/outfit-spring-pastel.png",
+    image: "/lovable-uploads/547609e6-3e31-4592-9c0c-a9a94e8e4996.png",
     quote: "Soft hues that bloom with the season",
     colors: ["lavender", "mint", "pink"],
     season: "Spring",
