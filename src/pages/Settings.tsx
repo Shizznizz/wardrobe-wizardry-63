@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -7,9 +6,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
-import { AlertTriangle, Download, Mail, Trash2, RotateCcw } from 'lucide-react';
+import { AlertTriangle, Download, Mail, Trash2, RotateCcw, Sliders } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useTheme } from '@/components/ThemeProvider';
+import { Link } from 'react-router-dom';
 
 const Settings = () => {
   const { theme, setTheme } = useTheme();
@@ -122,6 +122,30 @@ const Settings = () => {
                       checked={notifications} 
                       onCheckedChange={handleToggleNotifications} 
                     />
+                  </div>
+                </motion.div>
+                
+                <motion.div 
+                  variants={itemVariants}
+                  className="glass-dark rounded-xl border border-white/10 p-6 space-y-4"
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h2 className="text-xl font-medium text-blue-200">Fashion Preferences</h2>
+                      <p className="text-sm text-blue-100/80">
+                        Manage your style preferences, colors, and outfit settings
+                      </p>
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      className="border-white/20 text-white hover:bg-white/10"
+                      asChild
+                    >
+                      <Link to="/preferences">
+                        <Sliders className="h-4 w-4 mr-2" />
+                        <span>Preferences</span>
+                      </Link>
+                    </Button>
                   </div>
                 </motion.div>
                 

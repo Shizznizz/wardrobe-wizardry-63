@@ -1,3 +1,4 @@
+
 export type ClothingType = 
   | 'shirt'
   | 'jeans'
@@ -85,6 +86,14 @@ export type PersonalityTag =
   | 'preppy'
   | 'artistic';
 
+export type ClimateType =
+  | 'tropical'
+  | 'desert'
+  | 'temperate'
+  | 'continental'
+  | 'polar'
+  | 'coastal';
+
 export interface ClothingItem {
   id: string;
   name: string;
@@ -139,4 +148,6 @@ export interface UserPreferences {
   };
   outfitReminders: boolean;
   reminderTime: string; // "HH:MM" format
+  occasionPreferences?: string[]; // New field for occasion preferences
+  climatePreferences?: ClimateType[]; // New field for climate preferences
 }

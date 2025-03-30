@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -16,10 +15,10 @@ import NotFound from "./pages/NotFound";
 import VirtualTryOn from "./pages/VirtualTryOn";
 import NewClothes from "./pages/NewClothes";
 import Showroom from "./pages/Showroom";
+import Preferences from './pages/Preferences';
 
 const queryClient = new QueryClient();
 
-// Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
   
@@ -40,13 +39,14 @@ const AppRoutes = () => {
       <ScrollToTop />
       <Routes>
         <Route path="/" element={<Index />} />
-        <Route path="/auth" element={user ? <Navigate to="/" replace /> : <Auth />} />
         <Route path="/wardrobe" element={<ProtectedRoute><Wardrobe /></ProtectedRoute>} />
         <Route path="/outfits" element={<ProtectedRoute><Outfits /></ProtectedRoute>} />
-        <Route path="/try-on" element={<ProtectedRoute><VirtualTryOn /></ProtectedRoute>} />
-        <Route path="/new-clothes" element={<ProtectedRoute><NewClothes /></ProtectedRoute>} />
         <Route path="/showroom" element={<ProtectedRoute><Showroom /></ProtectedRoute>} />
+        <Route path="/new-clothes" element={<ProtectedRoute><NewClothes /></ProtectedRoute>} />
+        <Route path="/virtual-try-on" element={<ProtectedRoute><VirtualTryOn /></ProtectedRoute>} />
         <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+        <Route path="/preferences" element={<Preferences />} />
+        <Route path="/auth" element={<Auth />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>

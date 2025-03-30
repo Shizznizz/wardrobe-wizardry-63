@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -27,6 +26,7 @@ import HowItWorks from '@/components/HowItWorks';
 import { useIsMobile } from '@/hooks/use-mobile';
 import TestimonialsCarousel from '@/components/TestimonialsCarousel';
 import OliviaChatDialog from '@/components/OliviaChatDialog';
+import Sliders from 'lucide-react';
 
 const Index = () => {
   const [preferences, setPreferences] = useState<UserPreferences>({
@@ -233,12 +233,19 @@ const Index = () => {
                     whileTap={{ scale: 0.98 }}
                     className="w-full sm:w-auto"
                   >
-                    <PreferencesModal 
-                      preferences={preferences} 
-                      onSave={handleUpdatePreferences} 
-                      buttonClassName="text-base w-full px-6 py-6 h-auto rounded-xl transition-all duration-300"
-                      buttonVariant="fashion-tertiary"
-                    />
+                    <Button
+                      size="lg"
+                      variant="fashion-tertiary"
+                      className="rounded-xl text-base px-6 py-6 h-auto w-full sm:w-auto"
+                      asChild
+                    >
+                      <Link to="/preferences">
+                        <span className="relative flex items-center justify-center gap-2 text-white font-medium">
+                          <Sliders className="h-5 w-5" />
+                          Preferences
+                        </span>
+                      </Link>
+                    </Button>
                   </motion.div>
                 </motion.div>
               </motion.div>
