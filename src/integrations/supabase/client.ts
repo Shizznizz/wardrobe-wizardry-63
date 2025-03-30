@@ -75,6 +75,11 @@ export const saveUserPreferences = async (userId: string, preferences: UserPrefe
   console.log(`Saving preferences for user ${userId}:`, preferences);
 
   try {
+    if (!userId) {
+      console.error('No user ID provided');
+      return { success: false, error: 'No user ID provided' };
+    }
+
     // Format the preferences for Supabase storage
     const formattedPreferences = {
       user_id: userId,
@@ -82,15 +87,19 @@ export const saveUserPreferences = async (userId: string, preferences: UserPrefe
       favorite_styles: preferences.favoriteStyles,
       seasonal_preferences: preferences.seasonalPreferences,
       reminder_enabled: preferences.outfitReminders,
-      occasions_preferences: preferences.occasionPreferences,
-      climate_preferences: preferences.climatePreferences,
-      personality_tags: preferences.personalityTags,
-      reminder_time: preferences.reminderTime
+      occasions_preferences: preferences.occasionPreferences || [],
+      climate_preferences: preferences.climatePreferences || [],
+      personality_tags: preferences.personalityTags || [],
+      reminder_time: preferences.reminderTime || '08:00'
     };
+
+    console.log('Formatted preferences for saving:', formattedPreferences);
 
     const { data, error } = await supabase
       .from('user_preferences')
-      .upsert([formattedPreferences]);
+      .upsert([formattedPreferences], {
+        onConflict: 'user_id'
+      });
 
     if (error) {
       console.error('Error saving preferences:', error);
@@ -108,6 +117,11 @@ export const getUserPreferences = async (userId: string) => {
   console.log(`Fetching preferences for user ${userId}`);
 
   try {
+    if (!userId) {
+      console.error('No user ID provided');
+      return { success: false, error: 'No user ID provided' };
+    }
+
     const { data, error } = await supabase
       .from('user_preferences')
       .select('*')
@@ -143,8 +157,8 @@ export const getUserPreferences = async (userId: string) => {
 
     // Convert the database format back to our application format with proper type casting
     const appPreferences: UserPreferences = {
-      favoriteColors: (data.favorite_colors || ['black', 'blue']) as ClothingColor[], // Ensure proper type casting
-      favoriteStyles: data.favorite_styles || [],
+      favoriteColors: (data.favorite_colors || ['black', 'blue', 'white']) as ClothingColor[],
+      favoriteStyles: data.favorite_styles || ['casual', 'minimalist', 'smart casual'],
       seasonalPreferences: data.seasonal_preferences || {
         spring: { enabled: true, temperatureRange: [10, 22], timeOfYear: [1, 3] },
         summer: { enabled: true, temperatureRange: [20, 35], timeOfYear: [1, 3] },
@@ -154,11 +168,12 @@ export const getUserPreferences = async (userId: string) => {
       },
       outfitReminders: data.reminder_enabled || false,
       reminderTime: data.reminder_time || '08:00',
-      occasionPreferences: data.occasions_preferences || [],
-      climatePreferences: data.climate_preferences || [],
-      personalityTags: data.personality_tags || []
+      occasionPreferences: data.occasions_preferences || ['casual', 'work'],
+      climatePreferences: data.climate_preferences || ['temperate_oceanic'],
+      personalityTags: data.personality_tags || ['minimalist', 'casual']
     };
 
+    console.log('Fetched and parsed preferences:', appPreferences);
     return { success: true, data: appPreferences };
   } catch (err) {
     console.error('Unexpected error fetching preferences:', err);

@@ -40,7 +40,7 @@ const ColorPreferences = ({ value, onChange }: ColorPreferencesProps) => {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 bg-transparent">
       <p className="text-sm text-muted-foreground">
         Select colors you prefer to wear most often.
       </p>

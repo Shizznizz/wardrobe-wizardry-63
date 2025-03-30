@@ -14,7 +14,7 @@ import { saveUserPreferences, getUserPreferences } from '@/integrations/supabase
 
 const Preferences = () => {
   const isMobile = useIsMobile();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(true);
   
   // Default preferences
@@ -61,15 +61,13 @@ const Preferences = () => {
       
       try {
         setLoading(true);
+        console.log("Fetching preferences for user:", user.id);
         const { success, data, error } = await getUserPreferences(user.id);
         
         if (success && data) {
           console.log("Loaded preferences:", data);
-          // Ensure proper type casting from API data to our UserPreferences type
-          setPreferences({
-            ...data,
-            favoriteColors: data.favoriteColors as ClothingColor[],
-          });
+          // Set the preferences with proper type casting
+          setPreferences(data);
         } else if (error) {
           console.error("Error loading preferences:", error);
           toast.error("Failed to load your preferences");
@@ -82,11 +80,13 @@ const Preferences = () => {
       }
     };
     
-    loadUserPreferences();
-  }, [user]);
+    if (!authLoading) {
+      loadUserPreferences();
+    }
+  }, [user, authLoading]);
   
   // If user is not logged in, redirect to auth page
-  if (!user) {
+  if (!authLoading && !user) {
     toast.error("You need to be logged in to access preferences", {
       id: "auth-required",
     });
@@ -94,11 +94,16 @@ const Preferences = () => {
   }
   
   const handleSavePreferences = async (newPreferences: UserPreferences) => {
+    if (!user) {
+      toast.error("You need to be logged in to save preferences");
+      return;
+    }
+    
     try {
+      console.log("Saving preferences:", newPreferences);
+      
       // Update local state with proper type casting
       setPreferences(newPreferences);
-      
-      console.log("Saving preferences:", newPreferences);
       
       // Save to Supabase
       const { success, error } = await saveUserPreferences(user.id, newPreferences);
@@ -136,6 +141,17 @@ const Preferences = () => {
     }
   };
 
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-12 w-12 animate-spin text-blue-400 mx-auto" />
+          <p className="mt-4 text-lg text-blue-100/90">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white">
       <Header />
@@ -164,7 +180,7 @@ const Preferences = () => {
               </div>
             </div>
 
-            <div className="glass-dark rounded-xl border border-white/10 p-6 space-y-6">
+            <div className="glass-dark rounded-xl border border-white/10 p-6 space-y-6 bg-black/40 backdrop-blur-lg">
               {loading ? (
                 <div className="flex flex-col items-center justify-center py-12 space-y-4">
                   <Loader2 className="h-12 w-12 animate-spin text-blue-400" />

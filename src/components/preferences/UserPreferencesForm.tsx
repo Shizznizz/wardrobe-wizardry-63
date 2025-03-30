@@ -71,10 +71,16 @@ const UserPreferencesForm = ({ initialPreferences, onSave, onCancel }: UserPrefe
   const handleSubmit = async (data: UserPreferences) => {
     setIsSubmitting(true);
     try {
-      await onSave(data);
+      // Make a copy of the data to ensure all fields have proper types
+      const typedData: UserPreferences = {
+        ...data,
+        favoriteColors: data.favoriteColors as ClothingColor[],
+      };
+      await onSave(typedData);
+      toast.success("Your preferences have been saved!");
     } catch (error) {
-      console.error(error);
-      toast.error("Failed to save preferences. Please try again.");
+      console.error("Failed to save preferences:", error);
+      toast.error("Failed to save your preferences. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -112,7 +118,7 @@ const UserPreferencesForm = ({ initialPreferences, onSave, onCancel }: UserPrefe
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="colors" className="pt-4">
+            <TabsContent value="colors" className="pt-4 space-y-6">
               <FormField
                 control={form.control}
                 name="favoriteColors"
@@ -131,7 +137,7 @@ const UserPreferencesForm = ({ initialPreferences, onSave, onCancel }: UserPrefe
               />
             </TabsContent>
 
-            <TabsContent value="styles" className="pt-4">
+            <TabsContent value="styles" className="pt-4 space-y-6">
               <FormField
                 control={form.control}
                 name="favoriteStyles"
@@ -149,28 +155,26 @@ const UserPreferencesForm = ({ initialPreferences, onSave, onCancel }: UserPrefe
                 )}
               />
 
-              <div className="mt-6">
-                <FormField
-                  control={form.control}
-                  name="personalityTags"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-lg font-medium">Your style personality</FormLabel>
-                      <FormControl>
-                        <StylePreferences 
-                          value={field.value as string[] || []} 
-                          onChange={field.onChange}
-                          isPersonalityTags={true}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+              <FormField
+                control={form.control}
+                name="personalityTags"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-lg font-medium">Your style personality</FormLabel>
+                    <FormControl>
+                      <StylePreferences 
+                        value={field.value as string[] || []} 
+                        onChange={field.onChange}
+                        isPersonalityTags={true}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </TabsContent>
 
-            <TabsContent value="seasons" className="pt-4">
+            <TabsContent value="seasons" className="pt-4 space-y-6">
               <FormField
                 control={form.control}
                 name="seasonalPreferences"
@@ -189,7 +193,7 @@ const UserPreferencesForm = ({ initialPreferences, onSave, onCancel }: UserPrefe
               />
             </TabsContent>
 
-            <TabsContent value="reminders" className="pt-4">
+            <TabsContent value="reminders" className="pt-4 space-y-6">
               <FormField
                 control={form.control}
                 name="outfitReminders"
@@ -210,7 +214,7 @@ const UserPreferencesForm = ({ initialPreferences, onSave, onCancel }: UserPrefe
               />
             </TabsContent>
 
-            <TabsContent value="occasions" className="pt-4">
+            <TabsContent value="occasions" className="pt-4 space-y-6">
               <FormField
                 control={form.control}
                 name="occasionPreferences"
@@ -229,7 +233,7 @@ const UserPreferencesForm = ({ initialPreferences, onSave, onCancel }: UserPrefe
               />
             </TabsContent>
 
-            <TabsContent value="climate" className="pt-4">
+            <TabsContent value="climate" className="pt-4 space-y-6">
               <FormField
                 control={form.control}
                 name="climatePreferences"
