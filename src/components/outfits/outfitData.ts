@@ -1,5 +1,5 @@
 
-import { Briefcase, Shirt, Sunset, Leaf, FlowerIcon } from "lucide-react";
+import { Briefcase, Shirt, Sunset, Leaf, FlowerIcon, Sun } from "lucide-react";
 import { OutfitItem } from "./types";
 
 export const outfitItems: OutfitItem[] = [
@@ -52,5 +52,15 @@ export const outfitItems: OutfitItem[] = [
     season: "Spring",
     gradient: "from-purple-300/70 to-green-200/70",
     icon: FlowerIcon
+  },
+  {
+    id: 6,
+    name: "June Collection",
+    image: "/lovable-uploads/340ce8c6-e90a-46a2-9c66-701ec740250d.png",
+    quote: "Breezy elegance for sunny beach days",
+    colors: ["beige", "sand", "straw"],
+    season: "Summer",
+    gradient: "from-amber-300/70 to-orange-200/70",
+    icon: Sun
   }
 ];
