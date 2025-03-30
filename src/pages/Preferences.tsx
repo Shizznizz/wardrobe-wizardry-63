@@ -64,6 +64,7 @@ const Preferences = () => {
         const { success, data, error } = await getUserPreferences(user.id);
         
         if (success && data) {
+          console.log("Loaded preferences:", data);
           setPreferences(data);
         } else if (error) {
           console.error("Error loading preferences:", error);
@@ -80,17 +81,20 @@ const Preferences = () => {
     loadUserPreferences();
   }, [user]);
   
-  // If user is not logged in, redirect to home page
+  // If user is not logged in, redirect to auth page
   if (!user) {
     toast.error("You need to be logged in to access preferences", {
       id: "auth-required",
     });
-    return <Navigate to="/" replace />;
+    return <Navigate to="/auth" replace />;
   }
   
   const handleSavePreferences = async (newPreferences: UserPreferences) => {
     try {
+      // Update local state
       setPreferences(newPreferences);
+      
+      console.log("Saving preferences:", newPreferences);
       
       // Save to Supabase
       const { success, error } = await saveUserPreferences(user.id, newPreferences);

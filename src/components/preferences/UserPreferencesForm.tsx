@@ -44,7 +44,8 @@ const formSchema = z.object({
   personalityTags: z.array(z.string()).optional(),
   seasonalPreferences: z.record(z.object({
     enabled: z.boolean(),
-    temperatureRange: z.tuple([z.number(), z.number()])
+    temperatureRange: z.tuple([z.number(), z.number()]),
+    timeOfYear: z.tuple([z.number(), z.number()]).optional()
   })),
   outfitReminders: z.boolean(),
   reminderTime: z.string(),
@@ -70,13 +71,10 @@ const UserPreferencesForm = ({ initialPreferences, onSave, onCancel }: UserPrefe
   const handleSubmit = async (data: UserPreferences) => {
     setIsSubmitting(true);
     try {
-      // Simulate API call with timeout
-      await new Promise(resolve => setTimeout(resolve, 800));
-      onSave(data);
-      toast.success("Your preferences have been saved!");
+      await onSave(data);
     } catch (error) {
-      toast.error("Failed to save preferences. Please try again.");
       console.error(error);
+      toast.error("Failed to save preferences. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
