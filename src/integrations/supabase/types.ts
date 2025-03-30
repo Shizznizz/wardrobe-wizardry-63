@@ -11,26 +11,44 @@ export type Database = {
     Tables: {
       user_preferences: {
         Row: {
+          climate_preferences: string[] | null
           created_at: string | null
+          favorite_colors: string[] | null
+          favorite_styles: string[] | null
           id: string
+          occasions_preferences: string[] | null
           preferred_city: string | null
           preferred_country: string | null
+          reminder_enabled: boolean | null
+          seasonal_preferences: Json | null
           updated_at: string | null
           user_id: string
         }
         Insert: {
+          climate_preferences?: string[] | null
           created_at?: string | null
+          favorite_colors?: string[] | null
+          favorite_styles?: string[] | null
           id?: string
+          occasions_preferences?: string[] | null
           preferred_city?: string | null
           preferred_country?: string | null
+          reminder_enabled?: boolean | null
+          seasonal_preferences?: Json | null
           updated_at?: string | null
           user_id: string
         }
         Update: {
+          climate_preferences?: string[] | null
           created_at?: string | null
+          favorite_colors?: string[] | null
+          favorite_styles?: string[] | null
           id?: string
+          occasions_preferences?: string[] | null
           preferred_city?: string | null
           preferred_country?: string | null
+          reminder_enabled?: boolean | null
+          seasonal_preferences?: Json | null
           updated_at?: string | null
           user_id?: string
         }

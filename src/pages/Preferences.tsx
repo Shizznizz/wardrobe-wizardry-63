@@ -3,22 +3,24 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import { toast } from 'sonner';
-import { SlidersHorizontal, ArrowLeftIcon, ShieldAlert } from 'lucide-react';
+import { SlidersHorizontal, ArrowLeftIcon, ShieldAlert, Loader2 } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { UserPreferences } from '@/lib/types';
 import UserPreferencesForm from '@/components/preferences/UserPreferencesForm';
 import { Button } from '@/components/ui/button';
 import { Link, Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { saveUserPreferences, getUserPreferences } from '@/integrations/supabase/client';
 
 const Preferences = () => {
   const isMobile = useIsMobile();
   const { user } = useAuth();
+  const [loading, setLoading] = useState(true);
   
   // Default preferences
   const [preferences, setPreferences] = useState<UserPreferences>({
     favoriteColors: ['black', 'blue', 'white'],
-    favoriteStyles: ['casual', 'minimalist', 'smart casual'], // Added Smart Casual
+    favoriteStyles: ['casual', 'minimalist', 'smart casual'],
     personalityTags: ['minimalist', 'casual'],
     seasonalPreferences: {
       spring: { 
@@ -49,8 +51,34 @@ const Preferences = () => {
     outfitReminders: false,
     reminderTime: '08:00',
     occasionPreferences: ['casual', 'work'],
-    climatePreferences: ['temperate_oceanic'] // Updated to match new climate types
+    climatePreferences: ['temperate_oceanic']
   });
+  
+  // Load user preferences when component mounts
+  useEffect(() => {
+    const loadUserPreferences = async () => {
+      if (!user) return;
+      
+      try {
+        setLoading(true);
+        const { success, data, error } = await getUserPreferences(user.id);
+        
+        if (success && data) {
+          setPreferences(data);
+        } else if (error) {
+          console.error("Error loading preferences:", error);
+          toast.error("Failed to load your preferences");
+        }
+      } catch (err) {
+        console.error("Error loading preferences:", err);
+        toast.error("An error occurred while loading your preferences");
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadUserPreferences();
+  }, [user]);
   
   // If user is not logged in, redirect to home page
   if (!user) {
@@ -60,11 +88,23 @@ const Preferences = () => {
     return <Navigate to="/" replace />;
   }
   
-  const handleSavePreferences = (newPreferences: UserPreferences) => {
-    setPreferences(newPreferences);
-    // In a real app, you would save these preferences to a database
-    console.log('Saving preferences:', newPreferences);
-    toast.success("Your preferences have been saved successfully!");
+  const handleSavePreferences = async (newPreferences: UserPreferences) => {
+    try {
+      setPreferences(newPreferences);
+      
+      // Save to Supabase
+      const { success, error } = await saveUserPreferences(user.id, newPreferences);
+      
+      if (success) {
+        toast.success("Your preferences have been saved successfully!");
+      } else {
+        console.error("Error saving preferences:", error);
+        toast.error("Failed to save your preferences");
+      }
+    } catch (err) {
+      console.error("Error saving preferences:", err);
+      toast.error("An error occurred while saving your preferences");
+    }
   };
 
   const containerVariants = {
@@ -117,14 +157,23 @@ const Preferences = () => {
             </div>
 
             <div className="glass-dark rounded-xl border border-white/10 p-6 space-y-6">
-              <p className="text-lg text-blue-100/90">
-                Set your preferences to help us provide better outfit recommendations. Your selections will be used to tailor fashion suggestions to your personal style.
-              </p>
-              
-              <UserPreferencesForm
-                initialPreferences={preferences}
-                onSave={handleSavePreferences}
-              />
+              {loading ? (
+                <div className="flex flex-col items-center justify-center py-12 space-y-4">
+                  <Loader2 className="h-12 w-12 animate-spin text-blue-400" />
+                  <p className="text-lg text-blue-100/90">Loading your preferences...</p>
+                </div>
+              ) : (
+                <>
+                  <p className="text-lg text-blue-100/90">
+                    Set your preferences to help us provide better outfit recommendations. Your selections will be used to tailor fashion suggestions to your personal style.
+                  </p>
+                  
+                  <UserPreferencesForm
+                    initialPreferences={preferences}
+                    onSave={handleSavePreferences}
+                  />
+                </>
+              )}
             </div>
           </motion.div>
         </motion.div>
