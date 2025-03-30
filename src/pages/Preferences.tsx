@@ -5,7 +5,7 @@ import Header from '@/components/Header';
 import { toast } from 'sonner';
 import { SlidersHorizontal, ArrowLeftIcon, ShieldAlert, Loader2 } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { UserPreferences } from '@/lib/types';
+import { UserPreferences, ClothingColor } from '@/lib/types';
 import UserPreferencesForm from '@/components/preferences/UserPreferencesForm';
 import { Button } from '@/components/ui/button';
 import { Link, Navigate } from 'react-router-dom';
@@ -19,7 +19,7 @@ const Preferences = () => {
   
   // Default preferences
   const [preferences, setPreferences] = useState<UserPreferences>({
-    favoriteColors: ['black', 'blue', 'white'],
+    favoriteColors: ['black', 'blue', 'white'] as ClothingColor[],
     favoriteStyles: ['casual', 'minimalist', 'smart casual'],
     personalityTags: ['minimalist', 'casual'],
     seasonalPreferences: {
@@ -65,7 +65,11 @@ const Preferences = () => {
         
         if (success && data) {
           console.log("Loaded preferences:", data);
-          setPreferences(data);
+          // Ensure proper type casting from API data to our UserPreferences type
+          setPreferences({
+            ...data,
+            favoriteColors: data.favoriteColors as ClothingColor[],
+          });
         } else if (error) {
           console.error("Error loading preferences:", error);
           toast.error("Failed to load your preferences");
@@ -91,7 +95,7 @@ const Preferences = () => {
   
   const handleSavePreferences = async (newPreferences: UserPreferences) => {
     try {
-      // Update local state
+      // Update local state with proper type casting
       setPreferences(newPreferences);
       
       console.log("Saving preferences:", newPreferences);

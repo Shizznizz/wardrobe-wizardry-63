@@ -1,6 +1,6 @@
 
 import { createClient } from '@supabase/supabase-js';
-import { Outfit, ClothingItem, UserPreferences } from '@/lib/types';
+import { Outfit, ClothingItem, UserPreferences, ClothingColor } from '@/lib/types';
 
 // Use direct values for the Supabase URL and anon key
 const supabaseUrl = 'https://aaiyxtbovepseasghtth.supabase.co';
@@ -84,7 +84,8 @@ export const saveUserPreferences = async (userId: string, preferences: UserPrefe
       reminder_enabled: preferences.outfitReminders,
       occasions_preferences: preferences.occasionPreferences,
       climate_preferences: preferences.climatePreferences,
-      personality_tags: preferences.personalityTags
+      personality_tags: preferences.personalityTags,
+      reminder_time: preferences.reminderTime
     };
 
     const { data, error } = await supabase
@@ -120,30 +121,29 @@ export const getUserPreferences = async (userId: string) => {
 
     // If no preferences found, return default values
     if (!data) {
-      return { 
-        success: true, 
-        data: {
-          favoriteColors: ['black', 'blue', 'white'],
-          favoriteStyles: ['casual', 'minimalist', 'smart casual'],
-          personalityTags: ['minimalist', 'casual'],
-          seasonalPreferences: {
-            spring: { enabled: true, temperatureRange: [10, 22], timeOfYear: [1, 3] },
-            summer: { enabled: true, temperatureRange: [20, 35], timeOfYear: [1, 3] },
-            autumn: { enabled: true, temperatureRange: [8, 20], timeOfYear: [1, 3] },
-            winter: { enabled: true, temperatureRange: [-5, 10], timeOfYear: [1, 3] },
-            all: { enabled: true, temperatureRange: [-10, 40] }
-          },
-          outfitReminders: false,
-          reminderTime: '08:00',
-          occasionPreferences: ['casual', 'work'],
-          climatePreferences: ['temperate_oceanic']
-        } 
+      const defaultPreferences: UserPreferences = {
+        favoriteColors: ['black', 'blue', 'white'] as ClothingColor[],
+        favoriteStyles: ['casual', 'minimalist', 'smart casual'],
+        personalityTags: ['minimalist', 'casual'],
+        seasonalPreferences: {
+          spring: { enabled: true, temperatureRange: [10, 22], timeOfYear: [1, 3] },
+          summer: { enabled: true, temperatureRange: [20, 35], timeOfYear: [1, 3] },
+          autumn: { enabled: true, temperatureRange: [8, 20], timeOfYear: [1, 3] },
+          winter: { enabled: true, temperatureRange: [-5, 10], timeOfYear: [1, 3] },
+          all: { enabled: true, temperatureRange: [-10, 40] }
+        },
+        outfitReminders: false,
+        reminderTime: '08:00',
+        occasionPreferences: ['casual', 'work'],
+        climatePreferences: ['temperate_oceanic']
       };
+      
+      return { success: true, data: defaultPreferences };
     }
 
-    // Convert the database format back to our application format
+    // Convert the database format back to our application format with proper type casting
     const appPreferences: UserPreferences = {
-      favoriteColors: data.favorite_colors || [],
+      favoriteColors: (data.favorite_colors || ['black', 'blue']) as ClothingColor[], // Ensure proper type casting
       favoriteStyles: data.favorite_styles || [],
       seasonalPreferences: data.seasonal_preferences || {
         spring: { enabled: true, temperatureRange: [10, 22], timeOfYear: [1, 3] },
