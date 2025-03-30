@@ -29,9 +29,9 @@ const outfitItems = [
   {
     id: 1,
     name: "Business Casual",
-    image: "/lovable-uploads/413b249c-e4b5-48cd-a468-d23b2a23eca2.png",
+    image: "/lovable-uploads/ca91e684-af2e-416d-a94c-9adf43d54288.png",
     quote: "Effortless professionalism with comfort in mind",
-    colors: ["blue", "gray", "white"],
+    colors: ["blue", "yellow", "white"],
     season: "All year",
     gradient: "from-blue-400/70 to-gray-400/70",
     icon: Briefcase
@@ -39,7 +39,7 @@ const outfitItems = [
   {
     id: 2,
     name: "Winter Formal",
-    image: "/lovable-uploads/c0be3b58-4cc0-4277-8c62-da17547e44ff.png",
+    image: "/lovable-uploads/1598554e-fc76-4ffa-b527-e0c5f4292f0b.png",
     quote: "Cozy layers with elegant sophistication",
     colors: ["black", "burgundy", "silver"],
     season: "Winter",
@@ -49,9 +49,9 @@ const outfitItems = [
   {
     id: 3,
     name: "Summer Breeze",
-    image: "/lovable-uploads/e4bf2134-0936-46f8-8d70-adcc220e50be.png",
+    image: "/lovable-uploads/92cf4e4f-c3fd-4d7f-9006-dc5d5f5a46b3.png",
     quote: "Light fabrics that flow with every step",
-    colors: ["teal", "white", "beige"],
+    colors: ["beige", "cream", "tan"],
     season: "Summer",
     gradient: "from-teal-400/70 to-blue-200/70",
     icon: Sunset
@@ -59,9 +59,9 @@ const outfitItems = [
   {
     id: 4,
     name: "Autumn Layers",
-    image: "/lovable-uploads/2551cee7-6f38-4c04-b656-16c188b19ace.png",
+    image: "/lovable-uploads/27cd65da-fcc7-498b-90fb-f5332875e2f3.png",
     quote: "Rich textures that embrace the changing leaves",
-    colors: ["brown", "orange", "cream"],
+    colors: ["green", "brown", "beige"],
     season: "Autumn",
     gradient: "from-amber-600/70 to-orange-300/70",
     icon: Leaf
@@ -69,9 +69,9 @@ const outfitItems = [
   {
     id: 5,
     name: "Spring Pastel",
-    image: "/lovable-uploads/547609e6-3e31-4592-9c0c-a9a94e8e4996.png",
+    image: "/lovable-uploads/4a35e171-06c0-4996-ac15-61b2f7358f92.png",
     quote: "Soft hues that bloom with the season",
-    colors: ["lavender", "mint", "pink"],
+    colors: ["camel", "cream", "beige"],
     season: "Spring",
     gradient: "from-purple-300/70 to-green-200/70",
     icon: FlowerIcon
