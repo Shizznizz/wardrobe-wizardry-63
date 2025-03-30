@@ -27,6 +27,7 @@ import HowItWorks from '@/components/HowItWorks';
 import { useIsMobile } from '@/hooks/use-mobile';
 import TestimonialsCarousel from '@/components/TestimonialsCarousel';
 import OliviaChatDialog from '@/components/OliviaChatDialog';
+import SeasonalCollections from '@/components/SeasonalCollections';
 
 const Index = () => {
   const [preferences, setPreferences] = useState<UserPreferences>({
@@ -312,6 +313,12 @@ const Index = () => {
           </motion.section>
           
           <SectionDivider variant="gradient" className="my-8" />
+          
+          <motion.section variants={itemVariants} className="relative">
+            <SeasonalCollections />
+          </motion.section>
+          
+          <SectionDivider variant="dotted" className="my-8" />
           
           <motion.section variants={itemVariants} className="relative">
             <StyleDiscoveryQuiz />

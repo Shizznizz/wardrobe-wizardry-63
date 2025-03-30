@@ -16,9 +16,9 @@ export const outfitItems: OutfitItem[] = [
   {
     id: 2,
     name: "Winter Formal",
-    image: "/lovable-uploads/1598554e-fc76-4ffa-b527-e0c5f4292f0b.png",
+    image: "/lovable-uploads/b95aff04-b610-4908-a45a-287879e8e828.png",
     quote: "Cozy layers with elegant sophistication",
-    colors: ["black", "burgundy", "silver"],
+    colors: ["green", "beige", "camel"],
     season: "Winter",
     gradient: "from-purple-800/70 to-gray-800/70",
     icon: Shirt
@@ -36,9 +36,9 @@ export const outfitItems: OutfitItem[] = [
   {
     id: 4,
     name: "Autumn Layers",
-    image: "/lovable-uploads/27cd65da-fcc7-498b-90fb-f5332875e2f3.png",
+    image: "/lovable-uploads/ff2a5006-a6bb-46e6-a17b-0431d72ab0ce.png",
     quote: "Rich textures that embrace the changing leaves",
-    colors: ["green", "brown", "beige"],
+    colors: ["green", "beige", "camel"],
     season: "Autumn",
     gradient: "from-amber-600/70 to-orange-300/70",
     icon: Leaf
@@ -56,7 +56,7 @@ export const outfitItems: OutfitItem[] = [
   {
     id: 6,
     name: "June Collection",
-    image: "/lovable-uploads/340ce8c6-e90a-46a2-9c66-701ec740250d.png",
+    image: "/lovable-uploads/7fe27c49-55e7-4d32-8bf3-801c4f4978d9.png",
     quote: "Breezy elegance for sunny beach days",
     colors: ["beige", "sand", "straw"],
     season: "Summer",
