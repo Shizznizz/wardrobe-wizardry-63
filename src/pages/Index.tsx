@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, Shirt, Palette, Sparkles, MessageSquare, Smartphone, Wand2 } from 'lucide-react';
+import { ArrowRight, Shirt, Palette, Sparkles, MessageSquare, Smartphone, Wand2, SlidersHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import {
@@ -26,7 +26,6 @@ import HowItWorks from '@/components/HowItWorks';
 import { useIsMobile } from '@/hooks/use-mobile';
 import TestimonialsCarousel from '@/components/TestimonialsCarousel';
 import OliviaChatDialog from '@/components/OliviaChatDialog';
-import Sliders from 'lucide-react';
 
 const Index = () => {
   const [preferences, setPreferences] = useState<UserPreferences>({
@@ -241,7 +240,7 @@ const Index = () => {
                     >
                       <Link to="/preferences">
                         <span className="relative flex items-center justify-center gap-2 text-white font-medium">
-                          <Sliders className="h-5 w-5" />
+                          <SlidersHorizontal className="h-5 w-5" />
                           Preferences
                         </span>
                       </Link>
