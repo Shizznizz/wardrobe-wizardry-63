@@ -1,4 +1,3 @@
-
 export type ClothingType = 
   | 'shirt'
   | 'jeans'
@@ -144,10 +143,11 @@ export interface UserPreferences {
     [key in ClothingSeason]: {
       enabled: boolean;
       temperatureRange: [number, number];
+      timeOfYear?: [number, number]; // New property for early/mid/late season
     }
   };
   outfitReminders: boolean;
   reminderTime: string; // "HH:MM" format
   occasionPreferences?: string[]; // New field for occasion preferences
-  climatePreferences?: ClimateType[]; // New field for climate preferences
+  climatePreferences?: string[]; // Updated to just string[] to accommodate new climate types
 }

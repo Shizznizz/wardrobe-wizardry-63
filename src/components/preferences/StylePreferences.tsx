@@ -28,6 +28,7 @@ const StylePreferences = ({ value, onChange, isPersonalityTags = false }: StyleP
     'casual',
     'formal',
     'business casual',
+    'smart casual', // Added "Smart Casual" style
     'sporty',
     'bohemian',
     'vintage',

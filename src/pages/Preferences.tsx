@@ -1,40 +1,70 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import { toast } from 'sonner';
-import { Sliders, ArrowLeftIcon } from 'lucide-react';
+import { SlidersHorizontal, ArrowLeftIcon, ShieldAlert } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { UserPreferences } from '@/lib/types';
 import UserPreferencesForm from '@/components/preferences/UserPreferencesForm';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
 
 const Preferences = () => {
   const isMobile = useIsMobile();
+  const { user } = useAuth();
   
   // Default preferences
   const [preferences, setPreferences] = useState<UserPreferences>({
     favoriteColors: ['black', 'blue', 'white'],
-    favoriteStyles: ['casual', 'minimalist'],
+    favoriteStyles: ['casual', 'minimalist', 'smart casual'], // Added Smart Casual
     personalityTags: ['minimalist', 'casual'],
     seasonalPreferences: {
-      spring: { enabled: true, temperatureRange: [10, 22] },
-      summer: { enabled: true, temperatureRange: [20, 35] },
-      autumn: { enabled: true, temperatureRange: [8, 20] },
-      winter: { enabled: true, temperatureRange: [-5, 10] },
-      all: { enabled: true, temperatureRange: [-10, 40] }
+      spring: { 
+        enabled: true, 
+        temperatureRange: [10, 22],
+        timeOfYear: [1, 3]
+      },
+      summer: { 
+        enabled: true, 
+        temperatureRange: [20, 35],
+        timeOfYear: [1, 3]
+      },
+      autumn: { 
+        enabled: true, 
+        temperatureRange: [8, 20],
+        timeOfYear: [1, 3]
+      },
+      winter: { 
+        enabled: true, 
+        temperatureRange: [-5, 10],
+        timeOfYear: [1, 3]
+      },
+      all: { 
+        enabled: true, 
+        temperatureRange: [-10, 40]
+      }
     },
     outfitReminders: false,
     reminderTime: '08:00',
     occasionPreferences: ['casual', 'work'],
-    climatePreferences: ['temperate']
+    climatePreferences: ['temperate_oceanic'] // Updated to match new climate types
   });
+  
+  // If user is not logged in, redirect to home page
+  if (!user) {
+    toast.error("You need to be logged in to access preferences", {
+      id: "auth-required",
+    });
+    return <Navigate to="/" replace />;
+  }
   
   const handleSavePreferences = (newPreferences: UserPreferences) => {
     setPreferences(newPreferences);
     // In a real app, you would save these preferences to a database
     console.log('Saving preferences:', newPreferences);
+    toast.success("Your preferences have been saved successfully!");
   };
 
   const containerVariants = {
@@ -79,7 +109,7 @@ const Preferences = () => {
                 </Button>
                 <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
                   <span className="flex items-center gap-2">
-                    <Sliders className="h-7 w-7" />
+                    <SlidersHorizontal className="h-7 w-7" />
                     Your Fashion Preferences
                   </span>
                 </h1>

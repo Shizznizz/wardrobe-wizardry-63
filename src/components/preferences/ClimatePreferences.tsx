@@ -7,7 +7,9 @@ import {
   Droplets, 
   Snowflake, 
   Sun, 
-  ThermometerIcon 
+  ThermometerIcon,
+  Landmark,
+  Mountain
 } from 'lucide-react';
 
 interface ClimatePreferencesProps {
@@ -19,8 +21,10 @@ const ClimatePreferences = ({ value, onChange }: ClimatePreferencesProps) => {
   const climates = [
     { id: 'tropical', label: 'Tropical (Hot & Humid)', icon: Sun, description: 'Hot and humid year-round' },
     { id: 'desert', label: 'Desert (Hot & Dry)', icon: ThermometerIcon, description: 'Hot days, cool nights, very dry' },
-    { id: 'temperate', label: 'Temperate', icon: CloudSun, description: 'Moderate temperatures, distinct seasons' },
-    { id: 'continental', label: 'Continental', icon: Cloud, description: 'Hot summers, cold winters' },
+    { id: 'temperate_oceanic', label: 'Temperate Oceanic', icon: CloudSun, description: 'Mild temperatures, influenced by oceans' },
+    { id: 'temperate_mediterranean', label: 'Temperate Mediterranean', icon: Landmark, description: 'Warm dry summers, mild wet winters' },
+    { id: 'continental_humid', label: 'Continental Humid', icon: Cloud, description: 'Hot summers, cold winters, year-round precipitation' },
+    { id: 'continental_subarctic', label: 'Continental Subarctic', icon: Mountain, description: 'Short summers, very cold winters' },
     { id: 'polar', label: 'Polar', icon: Snowflake, description: 'Very cold year-round' },
     { id: 'coastal', label: 'Coastal', icon: Droplets, description: 'Mild, influenced by the ocean' }
   ];

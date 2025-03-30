@@ -9,12 +9,17 @@ import {
   Leaf, 
   Snowflake,
   Flower,
-  ThermometerIcon
+  ThermometerIcon,
+  CalendarIcon
 } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Button } from "@/components/ui/button";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 type SeasonalPreferencesValue = Record<ClothingSeason, {
   enabled: boolean;
   temperatureRange: [number, number];
+  timeOfYear?: [number, number]; // Added time of year range (1-3 for early, mid, late in season)
 }>;
 
 interface SeasonalPreferencesProps {
@@ -23,6 +28,8 @@ interface SeasonalPreferencesProps {
 }
 
 const SeasonalPreferences = ({ value, onChange }: SeasonalPreferencesProps) => {
+  const [openSeason, setOpenSeason] = useState<string | null>(null);
+  
   const seasonIcons = {
     spring: Flower,
     summer: SunIcon,
@@ -50,6 +57,22 @@ const SeasonalPreferences = ({ value, onChange }: SeasonalPreferencesProps) => {
       }
     });
   };
+  
+  const handleTimeOfYearChange = (season: ClothingSeason, newRange: number[]) => {
+    onChange({
+      ...value,
+      [season]: {
+        ...value[season],
+        timeOfYear: [newRange[0], newRange[1]] as [number, number]
+      }
+    });
+  };
+  
+  const getTimeOfYearLabel = (value: number) => {
+    if (value <= 1) return "Early";
+    if (value <= 2) return "Mid";
+    return "Late";
+  };
 
   return (
     <div className="space-y-6">
@@ -61,6 +84,12 @@ const SeasonalPreferences = ({ value, onChange }: SeasonalPreferencesProps) => {
         .filter(([season]) => season !== 'all')
         .map(([season, preferences]) => {
           const SeasonIcon = seasonIcons[season as ClothingSeason];
+          const isOpen = openSeason === season;
+          
+          // Initialize timeOfYear if not present
+          if (!preferences.timeOfYear) {
+            preferences.timeOfYear = [1, 3]; // Default to full season range
+          }
           
           return (
             <div key={season} className="border rounded-lg p-4 space-y-4">
@@ -76,7 +105,11 @@ const SeasonalPreferences = ({ value, onChange }: SeasonalPreferencesProps) => {
               </div>
               
               {preferences.enabled && (
-                <div className="pt-2 space-y-4">
+                <Collapsible
+                  open={isOpen}
+                  onOpenChange={(open) => setOpenSeason(open ? season : null)}
+                  className="pt-2 space-y-4"
+                >
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-sm">Temperature Range</span>
@@ -97,7 +130,41 @@ const SeasonalPreferences = ({ value, onChange }: SeasonalPreferencesProps) => {
                       <span>40°C</span>
                     </div>
                   </div>
-                </div>
+                  
+                  <CollapsibleTrigger asChild>
+                    <Button variant="ghost" size="sm" className="w-full flex justify-between items-center p-0 h-8">
+                      <span className="flex items-center gap-1 text-sm font-normal">
+                        <CalendarIcon className="h-4 w-4" />
+                        Advanced Settings
+                      </span>
+                      {isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                    </Button>
+                  </CollapsibleTrigger>
+                  
+                  <CollapsibleContent className="space-y-4">
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm">Time of Year</span>
+                        <span className="text-sm font-medium">
+                          {getTimeOfYearLabel(preferences.timeOfYear![0])} - {getTimeOfYearLabel(preferences.timeOfYear![1])}
+                        </span>
+                      </div>
+                      <Slider
+                        value={[preferences.timeOfYear![0], preferences.timeOfYear![1]]}
+                        min={1}
+                        max={3}
+                        step={0.1}
+                        onValueChange={(values) => handleTimeOfYearChange(season as ClothingSeason, values)}
+                        className="my-4"
+                      />
+                      <div className="flex justify-between text-xs text-muted-foreground">
+                        <span>Early</span>
+                        <span>Mid</span>
+                        <span>Late</span>
+                      </div>
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
               )}
             </div>
           );
