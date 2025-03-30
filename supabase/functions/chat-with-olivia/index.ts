@@ -21,6 +21,8 @@ serve(async (req) => {
       throw new Error('OPENAI_API_KEY is not set in environment variables');
     }
 
+    console.log('Calling OpenAI API with messages:', JSON.stringify(messages.slice(-2)));
+
     // Call OpenAI API
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -42,7 +44,18 @@ serve(async (req) => {
       }),
     });
 
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('OpenAI API error:', errorData);
+      throw new Error(`OpenAI API returned ${response.status}: ${JSON.stringify(errorData)}`);
+    }
+    
     const data = await response.json();
+    
+    if (!data || !data.choices || data.choices.length === 0) {
+      console.error('Invalid response structure from OpenAI:', data);
+      throw new Error('Invalid response received from OpenAI');
+    }
     
     return new Response(JSON.stringify({
       reply: data.choices[0].message.content,
@@ -53,7 +66,7 @@ serve(async (req) => {
     console.error('Error in chat-with-olivia function:', error);
     
     return new Response(JSON.stringify({
-      error: error.message,
+      error: error.message || 'An unexpected error occurred',
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

@@ -1,7 +1,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, X, Send, Sparkles, Loader2 } from 'lucide-react';
+import { MessageCircle, X, Send, Sparkles, Loader2, AlertTriangle } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
@@ -24,6 +24,7 @@ const OliviaChatDialog = ({ isOpen, onClose, initialMessage = "Hi there! I'm Oli
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [hasError, setHasError] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -31,6 +32,24 @@ const OliviaChatDialog = ({ isOpen, onClose, initialMessage = "Hi there! I'm Oli
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  // Reset error state when dialog opens
+  useEffect(() => {
+    if (isOpen) {
+      setHasError(false);
+    }
+  }, [isOpen]);
+
+  const handleRetry = () => {
+    if (messages.length > 1) {
+      // Get the last user message
+      const lastUserMessage = messages.filter(msg => msg.role === 'user').pop();
+      if (lastUserMessage) {
+        setHasError(false);
+        setInput(lastUserMessage.content);
+      }
+    }
+  };
 
   const handleSendMessage = async () => {
     if (!input.trim()) return;
@@ -40,6 +59,7 @@ const OliviaChatDialog = ({ isOpen, onClose, initialMessage = "Hi there! I'm Oli
     setMessages(prevMessages => [...prevMessages, userMessage]);
     setInput('');
     setIsLoading(true);
+    setHasError(false);
     
     try {
       // Convert messages to format expected by OpenAI API
@@ -50,12 +70,22 @@ const OliviaChatDialog = ({ isOpen, onClose, initialMessage = "Hi there! I'm Oli
           content: msg.content
         }));
       
+      console.log('Sending messages to Olivia:', formattedMessages.slice(-2));
+      
       // Call Supabase Edge Function
       const { data, error } = await supabase.functions.invoke('chat-with-olivia', {
         body: { messages: formattedMessages }
       });
       
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase function error:', error);
+        throw new Error(`Error invoking function: ${error.message}`);
+      }
+      
+      if (!data || data.error) {
+        console.error('Function returned error:', data?.error);
+        throw new Error(data?.error || 'Unknown error occurred');
+      }
       
       // Add assistant response to chat
       setMessages(prevMessages => [
@@ -64,10 +94,12 @@ const OliviaChatDialog = ({ isOpen, onClose, initialMessage = "Hi there! I'm Oli
       ]);
     } catch (error) {
       console.error('Error sending message:', error);
+      setHasError(true);
       toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong.",
         description: "Olivia is unavailable right now. Please try again later.",
+        action: <Button variant="outline" size="sm" onClick={handleRetry}>Retry</Button>
       });
     } finally {
       setIsLoading(false);
@@ -151,6 +183,17 @@ const OliviaChatDialog = ({ isOpen, onClose, initialMessage = "Hi there! I'm Oli
                 </div>
               </div>
             )}
+            {hasError && (
+              <div className="flex justify-center my-4">
+                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-3 rounded-lg flex items-center gap-2 text-red-600 dark:text-red-300">
+                  <AlertTriangle className="h-5 w-5" />
+                  <span className="text-sm font-medium">Connection issue. Please try again.</span>
+                  <Button size="sm" variant="outline" onClick={handleRetry} className="ml-2">
+                    Retry
+                  </Button>
+                </div>
+              </div>
+            )}
             <div ref={messagesEndRef} />
           </div>
           
@@ -164,6 +207,7 @@ const OliviaChatDialog = ({ isOpen, onClose, initialMessage = "Hi there! I'm Oli
                 placeholder="Ask Olivia for style advice..."
                 className="flex-1 px-4 py-2 border border-gray-300 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm resize-none h-10 max-h-24 dark:bg-slate-800 dark:text-white"
                 rows={1}
+                disabled={isLoading}
               />
               <Button
                 onClick={handleSendMessage}
