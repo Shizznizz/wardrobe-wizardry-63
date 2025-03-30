@@ -56,25 +56,27 @@ const OccasionPreferences = ({ value, onChange }: OccasionPreferencesProps) => {
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
         {occasions.map((occasion) => {
           const Icon = occasion.icon;
+          const isSelected = value.includes(occasion.id);
+          
           return (
             <div 
               key={occasion.id} 
               className={cn(
-                "flex flex-col items-center justify-center space-y-2 rounded-md border p-3 cursor-pointer transition-all text-center h-[100px]",
-                value.includes(occasion.id) ? "border-primary bg-primary/10" : "border-muted hover:bg-muted/50"
+                "relative flex flex-col items-center justify-center space-y-2 rounded-md border p-3 cursor-pointer transition-all text-center h-[100px] z-0",
+                isSelected ? "border-primary bg-primary/10" : "border-muted hover:bg-muted/50"
               )}
               onClick={() => handleToggle(occasion.id)}
             >
               <Checkbox
                 id={`occasion-${occasion.id}`}
-                checked={value.includes(occasion.id)}
-                onCheckedChange={() => handleToggle(occasion.id)}
-                className="mb-1"
+                checked={isSelected}
+                // Remove the onCheckedChange to prevent double triggering
+                className="mb-1 z-10"
               />
-              {Icon && <Icon className="h-5 w-5" />}
+              {Icon && <Icon className="h-5 w-5 z-10" />}
               <Label
                 htmlFor={`occasion-${occasion.id}`}
-                className="cursor-pointer font-medium text-sm"
+                className="cursor-pointer font-medium text-sm z-10"
               >
                 {occasion.label}
               </Label>

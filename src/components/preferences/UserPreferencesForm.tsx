@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -68,7 +67,8 @@ const UserPreferencesForm = ({ initialPreferences, onSave, onCancel }: UserPrefe
     defaultValues: initialPreferences,
   });
 
-  const handleSubmit = async (data: UserPreferences) => {
+  // Memoize the handleSubmit function to prevent unnecessary re-renders
+  const handleSubmit = useCallback(async (data: UserPreferences) => {
     setIsSubmitting(true);
     try {
       // Make a copy of the data to ensure all fields have proper types
@@ -84,7 +84,7 @@ const UserPreferencesForm = ({ initialPreferences, onSave, onCancel }: UserPrefe
     } finally {
       setIsSubmitting(false);
     }
-  };
+  }, [onSave]);
 
   return (
     <div className="w-full">

@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import { toast } from 'sonner';
@@ -18,7 +18,7 @@ const Preferences = () => {
   const [loading, setLoading] = useState(true);
   
   // Default preferences
-  const [preferences, setPreferences] = useState<UserPreferences>({
+  const defaultPreferences: UserPreferences = {
     favoriteColors: ['black', 'blue', 'white'] as ClothingColor[],
     favoriteStyles: ['casual', 'minimalist', 'smart casual'],
     personalityTags: ['minimalist', 'casual'],
@@ -52,7 +52,9 @@ const Preferences = () => {
     reminderTime: '08:00',
     occasionPreferences: ['casual', 'work'],
     climatePreferences: ['temperate_oceanic']
-  });
+  };
+  
+  const [preferences, setPreferences] = useState<UserPreferences>(defaultPreferences);
   
   // Load user preferences when component mounts
   useEffect(() => {
@@ -67,7 +69,10 @@ const Preferences = () => {
         if (success && data) {
           console.log("Loaded preferences:", data);
           // Set the preferences with proper type casting
-          setPreferences(data);
+          setPreferences({
+            ...data,
+            favoriteColors: data.favoriteColors as ClothingColor[]
+          });
         } else if (error) {
           console.error("Error loading preferences:", error);
           toast.error("Failed to load your preferences");
@@ -93,7 +98,8 @@ const Preferences = () => {
     return <Navigate to="/auth" replace />;
   }
   
-  const handleSavePreferences = async (newPreferences: UserPreferences) => {
+  // Memoize this function to prevent unnecessary re-renders
+  const handleSavePreferences = useCallback(async (newPreferences: UserPreferences) => {
     if (!user) {
       toast.error("You need to be logged in to save preferences");
       return;
@@ -103,7 +109,10 @@ const Preferences = () => {
       console.log("Saving preferences:", newPreferences);
       
       // Update local state with proper type casting
-      setPreferences(newPreferences);
+      setPreferences({
+        ...newPreferences,
+        favoriteColors: newPreferences.favoriteColors as ClothingColor[]
+      });
       
       // Save to Supabase
       const { success, error } = await saveUserPreferences(user.id, newPreferences);
@@ -118,7 +127,7 @@ const Preferences = () => {
       console.error("Error saving preferences:", err);
       toast.error("An error occurred while saving your preferences");
     }
-  };
+  }, [user]);
 
   const containerVariants = {
     hidden: { opacity: 0 },

@@ -11,6 +11,7 @@ import {
   Landmark,
   Mountain
 } from 'lucide-react';
+import { useCallback } from 'react';
 
 interface ClimatePreferencesProps {
   value: string[];
@@ -29,10 +30,11 @@ const ClimatePreferences = ({ value, onChange }: ClimatePreferencesProps) => {
     { id: 'coastal', label: 'Coastal', icon: Droplets, description: 'Mild, influenced by the ocean' }
   ];
 
-  const handleChange = (climateId: string) => {
+  // Memoize the handleChange function to prevent unnecessary re-renders
+  const handleChange = useCallback((climateId: string) => {
     // For climate, we'll only allow selecting one option
     onChange([climateId]);
-  };
+  }, [onChange]);
 
   return (
     <div className="space-y-4">
@@ -50,11 +52,15 @@ const ClimatePreferences = ({ value, onChange }: ClimatePreferencesProps) => {
           return (
             <div 
               key={climate.id}
-              className="flex items-center space-x-3 rounded-md border p-3 cursor-pointer transition-all hover:bg-muted/50"
+              className="relative flex items-center space-x-3 rounded-md border p-3 cursor-pointer transition-all hover:bg-muted/50 z-0"
               onClick={() => handleChange(climate.id)}
             >
-              <RadioGroupItem value={climate.id} id={`climate-${climate.id}`} />
-              <div className="flex-1">
+              <RadioGroupItem 
+                value={climate.id} 
+                id={`climate-${climate.id}`}
+                className="z-10" 
+              />
+              <div className="flex-1 z-10">
                 <div className="flex items-center gap-2">
                   {Icon && <Icon className="h-4 w-4 text-primary" />}
                   <Label

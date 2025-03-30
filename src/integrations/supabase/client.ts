@@ -80,10 +80,13 @@ export const saveUserPreferences = async (userId: string, preferences: UserPrefe
       return { success: false, error: 'No user ID provided' };
     }
 
+    // Ensure favoriteColors is properly typed before saving
+    const typedFavoriteColors = preferences.favoriteColors as ClothingColor[];
+
     // Format the preferences for Supabase storage
     const formattedPreferences = {
       user_id: userId,
-      favorite_colors: preferences.favoriteColors,
+      favorite_colors: typedFavoriteColors,
       favorite_styles: preferences.favoriteStyles,
       seasonal_preferences: preferences.seasonalPreferences,
       reminder_enabled: preferences.outfitReminders,
@@ -98,7 +101,8 @@ export const saveUserPreferences = async (userId: string, preferences: UserPrefe
     const { data, error } = await supabase
       .from('user_preferences')
       .upsert([formattedPreferences], {
-        onConflict: 'user_id'
+        onConflict: 'user_id',
+        ignoreDuplicates: false
       });
 
     if (error) {

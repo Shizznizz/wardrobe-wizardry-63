@@ -1,5 +1,4 @@
 
-import { useState } from 'react';
 import { ClothingColor } from '@/lib/types';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
@@ -46,37 +45,43 @@ const ColorPreferences = ({ value, onChange }: ColorPreferencesProps) => {
       </p>
       
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-        {colors.map((color) => (
-          <div 
-            key={color.value} 
-            className={cn(
-              "flex items-center space-x-3 rounded-md border p-3 cursor-pointer transition-all",
-              value.includes(color.value) ? "border-primary bg-primary/10" : "border-muted hover:bg-muted/50"
-            )}
-            onClick={() => handleToggle(color.value)}
-          >
-            <Checkbox
-              id={`color-${color.value}`}
-              checked={value.includes(color.value)}
-              onCheckedChange={() => handleToggle(color.value)}
-            />
-            <div className="flex items-center gap-3 flex-1">
-              <div 
-                className={cn(
-                  "w-6 h-6 rounded-full border shadow-sm", 
-                  color.bgClass,
-                  color.value === 'white' ? "border-gray-300" : "border-transparent"
-                )} 
+        {colors.map((color) => {
+          // Check if the color is included
+          const isSelected = value.includes(color.value);
+          
+          return (
+            <div 
+              key={color.value} 
+              className={cn(
+                "relative flex items-center space-x-3 rounded-md border p-3 cursor-pointer transition-all z-0",
+                isSelected ? "border-primary bg-primary/10" : "border-muted hover:bg-muted/50"
+              )}
+              onClick={() => handleToggle(color.value)}
+            >
+              <Checkbox
+                id={`color-${color.value}`}
+                checked={isSelected}
+                // Remove the onCheckedChange to prevent double triggering
+                className="z-10"
               />
-              <Label
-                htmlFor={`color-${color.value}`}
-                className="cursor-pointer font-medium"
-              >
-                {color.label}
-              </Label>
+              <div className="flex items-center gap-3 flex-1 z-10">
+                <div 
+                  className={cn(
+                    "w-6 h-6 rounded-full border shadow-sm", 
+                    color.bgClass,
+                    color.value === 'white' ? "border-gray-300" : "border-transparent"
+                  )} 
+                />
+                <Label
+                  htmlFor={`color-${color.value}`}
+                  className="cursor-pointer font-medium"
+                >
+                  {color.label}
+                </Label>
+              </div>
             </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   );
