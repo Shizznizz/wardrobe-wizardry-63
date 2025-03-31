@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Star, Lock, Plus, Filter } from 'lucide-react';
+import { Star, Lock, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import OutfitSelector from '@/components/OutfitSelector';
 import { ClothingItem, Outfit } from '@/lib/types';
@@ -56,23 +56,15 @@ const OutfitSelectionSection = ({
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
             <h2 className="text-xl font-semibold">Choose an Outfit</h2>
             
-            <div className="flex space-x-3">
-              {!isMobile && (
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  className="border-purple-400/30 text-white hover:bg-white/10"
-                >
-                  <Filter className="mr-2 h-4 w-4" /> Filter
-                </Button>
-              )}
+            {!isMobile && (
               <Button 
+                variant="outline" 
                 size="sm"
-                className="bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90"
+                className="border-purple-400/30 text-white hover:bg-white/10"
               >
-                <Plus className="mr-2 h-4 w-4" /> Add Outfit
+                <Filter className="mr-2 h-4 w-4" /> Filter
               </Button>
-            </div>
+            )}
           </div>
           
           <Tabs value={activeTab} onValueChange={(val) => handleTabChange(val as any)}>
