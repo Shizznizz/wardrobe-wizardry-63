@@ -1,11 +1,13 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, X, Send, Sparkles, Loader2, AlertTriangle } from 'lucide-react';
+import { MessageCircle, X, Send, Sparkles, Loader2, AlertTriangle, Lock } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
+import { useAuth } from '@/hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 
 interface Message {
   role: 'assistant' | 'user';
@@ -18,15 +20,19 @@ interface OliviaChatDialogProps {
   initialMessage?: string;
 }
 
-const OliviaChatDialog = ({ isOpen, onClose, initialMessage = "Hi there! I'm Olivia Bloom, your personal style advisor. How can I help with your fashion needs today?" }: OliviaChatDialogProps) => {
+const OliviaChatDialog = ({ isOpen, onClose, initialMessage = "Hi! I'm Olivia Bloom, your personal style assistant. How can I help with your fashion needs today? The first 5 messages are free, after which you'll need a premium account to continue chatting." }: OliviaChatDialogProps) => {
   const [messages, setMessages] = useState<Message[]>([
     { role: 'assistant', content: initialMessage }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const [messageCount, setMessageCount] = useState(0);
+  const [limitReached, setLimitReached] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -40,6 +46,40 @@ const OliviaChatDialog = ({ isOpen, onClose, initialMessage = "Hi there! I'm Oli
     }
   }, [isOpen]);
 
+  // Get user message count on initial load
+  useEffect(() => {
+    const fetchMessageCount = async () => {
+      if (!user) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from('user_preferences')
+          .select('message_count')
+          .eq('user_id', user.id)
+          .maybeSingle();
+        
+        if (error) {
+          console.error('Error fetching message count:', error);
+          return;
+        }
+        
+        if (data && data.message_count) {
+          setMessageCount(data.message_count);
+          // If they've already reached the limit, show the limit reached message
+          if (data.message_count > 5) {
+            setLimitReached(true);
+          }
+        }
+      } catch (error) {
+        console.error('Error getting message count:', error);
+      }
+    };
+    
+    if (isOpen && user) {
+      fetchMessageCount();
+    }
+  }, [isOpen, user]);
+
   const handleRetry = () => {
     if (messages.length > 1) {
       // Get the last user message
@@ -51,8 +91,27 @@ const OliviaChatDialog = ({ isOpen, onClose, initialMessage = "Hi there! I'm Oli
     }
   };
 
+  const handleUpgradeClick = () => {
+    // Here you would redirect to your premium subscription page
+    // For now, we'll just close the chat and navigate to settings
+    onClose();
+    navigate('/settings');
+  };
+
   const handleSendMessage = async () => {
     if (!input.trim()) return;
+    
+    // Check if user is logged in
+    if (!user) {
+      onClose();
+      toast({
+        title: "Login Required",
+        description: "Please log in to chat with Olivia",
+        variant: "destructive"
+      });
+      navigate('/auth');
+      return;
+    }
     
     // Add user message to chat
     const userMessage = { role: 'user' as const, content: input.trim() };
@@ -72,9 +131,12 @@ const OliviaChatDialog = ({ isOpen, onClose, initialMessage = "Hi there! I'm Oli
       
       console.log('Sending messages to Olivia:', formattedMessages.slice(-2));
       
-      // Call Supabase Edge Function
+      // Call Supabase Edge Function with user ID
       const { data, error } = await supabase.functions.invoke('chat-with-olivia', {
-        body: { messages: formattedMessages }
+        body: { 
+          messages: formattedMessages,
+          userId: user.id
+        }
       });
       
       if (error) {
@@ -85,6 +147,16 @@ const OliviaChatDialog = ({ isOpen, onClose, initialMessage = "Hi there! I'm Oli
       if (!data || data.error) {
         console.error('Function returned error:', data?.error);
         throw new Error(data?.error || 'Unknown error occurred');
+      }
+      
+      // Update message count from response
+      if (data.messageCount) {
+        setMessageCount(data.messageCount);
+      }
+      
+      // Check if limit has been reached
+      if (data.limitReached) {
+        setLimitReached(true);
       }
       
       // Add assistant response to chat
@@ -194,6 +266,27 @@ const OliviaChatDialog = ({ isOpen, onClose, initialMessage = "Hi there! I'm Oli
                 </div>
               </div>
             )}
+            {limitReached && (
+              <div className="flex justify-center my-4">
+                <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 p-4 rounded-lg">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="bg-amber-100 dark:bg-amber-700 p-2 rounded-full">
+                      <Lock className="h-5 w-5 text-amber-600 dark:text-amber-300" />
+                    </div>
+                    <h3 className="font-medium text-amber-800 dark:text-amber-300">Premium Feature</h3>
+                  </div>
+                  <p className="text-sm text-amber-700 dark:text-amber-400 mb-3">
+                    You've reached your limit of free messages. Please upgrade to premium to continue chatting with Olivia Bloom.
+                  </p>
+                  <Button 
+                    onClick={handleUpgradeClick}
+                    className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white"
+                  >
+                    <Sparkles className="mr-2 h-4 w-4" /> Upgrade to Premium
+                  </Button>
+                </div>
+              </div>
+            )}
             <div ref={messagesEndRef} />
           </div>
           
@@ -204,20 +297,29 @@ const OliviaChatDialog = ({ isOpen, onClose, initialMessage = "Hi there! I'm Oli
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyPress}
-                placeholder="Ask Olivia for style advice..."
+                placeholder={limitReached ? "Upgrade to continue chatting..." : "Ask Olivia for style advice..."}
                 className="flex-1 px-4 py-2 border border-gray-300 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm resize-none h-10 max-h-24 dark:bg-slate-800 dark:text-white"
                 rows={1}
-                disabled={isLoading}
+                disabled={isLoading || limitReached || !user}
               />
               <Button
                 onClick={handleSendMessage}
-                disabled={!input.trim() || isLoading}
+                disabled={!input.trim() || isLoading || limitReached || !user}
                 size="icon"
                 className="rounded-full h-10 w-10 bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 disabled:opacity-50"
               >
                 <Send className="h-4 w-4" />
               </Button>
             </div>
+            {messageCount > 0 && (
+              <div className="mt-2 text-xs text-center text-gray-500 dark:text-gray-400">
+                {messageCount <= 5 ? (
+                  <span>{5 - messageCount} free {messageCount === 5 ? 'message' : 'messages'} remaining</span>
+                ) : (
+                  <span>Premium access required</span>
+                )}
+              </div>
+            )}
           </div>
         </motion.div>
       )}

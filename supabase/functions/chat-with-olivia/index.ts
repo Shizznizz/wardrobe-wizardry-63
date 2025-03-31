@@ -14,11 +14,78 @@ serve(async (req) => {
   }
 
   try {
-    const { messages } = await req.json();
+    const { messages, userId } = await req.json();
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
     
     if (!openAIApiKey) {
       throw new Error('OPENAI_API_KEY is not set in environment variables');
+    }
+
+    if (!userId) {
+      throw new Error('User ID is required');
+    }
+
+    // Increment message count in Supabase
+    if (supabaseUrl && supabaseServiceKey) {
+      try {
+        const incrementResponse = await fetch(`${supabaseUrl}/rest/v1/rpc/increment_message_count`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${supabaseServiceKey}`,
+            'apikey': supabaseServiceKey
+          },
+          body: JSON.stringify({ user_id_param: userId }),
+        });
+
+        if (!incrementResponse.ok) {
+          console.error('Failed to increment message count:', await incrementResponse.text());
+        }
+      } catch (error) {
+        console.error('Error incrementing message count:', error);
+        // Continue with the chat even if tracking fails
+      }
+    }
+
+    // Get current message count
+    let messageCount = 0;
+    let isPremium = false;
+    
+    if (supabaseUrl && supabaseServiceKey) {
+      try {
+        const userPrefsResponse = await fetch(
+          `${supabaseUrl}/rest/v1/user_preferences?user_id=eq.${userId}&select=message_count`, {
+            headers: {
+              'Authorization': `Bearer ${supabaseServiceKey}`,
+              'apikey': supabaseServiceKey
+            }
+          });
+        
+        if (userPrefsResponse.ok) {
+          const userData = await userPrefsResponse.json();
+          if (userData && userData.length > 0) {
+            messageCount = userData[0].message_count || 0;
+            
+            // Check if user is premium (this would be based on your app's logic)
+            // For now, we'll just assume they're not premium
+            isPremium = false; // This should be replaced with actual premium check
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching user preferences:', error);
+      }
+    }
+
+    // If user exceeded message limit and is not premium, return message limit reached
+    if (messageCount > 5 && !isPremium) {
+      return new Response(JSON.stringify({
+        reply: "You've reached your limit of free messages. Please upgrade to premium to continue chatting with Olivia Bloom.",
+        limitReached: true
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     console.log('Calling OpenAI API with messages:', JSON.stringify(messages.slice(-2)));
@@ -59,6 +126,8 @@ serve(async (req) => {
     
     return new Response(JSON.stringify({
       reply: data.choices[0].message.content,
+      messageCount,
+      limitReached: false
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });

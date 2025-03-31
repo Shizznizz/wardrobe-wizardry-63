@@ -16,6 +16,7 @@ export type Database = {
           favorite_colors: string[] | null
           favorite_styles: string[] | null
           id: string
+          message_count: number | null
           occasions_preferences: string[] | null
           preferred_city: string | null
           preferred_country: string | null
@@ -30,6 +31,7 @@ export type Database = {
           favorite_colors?: string[] | null
           favorite_styles?: string[] | null
           id?: string
+          message_count?: number | null
           occasions_preferences?: string[] | null
           preferred_city?: string | null
           preferred_country?: string | null
@@ -44,6 +46,7 @@ export type Database = {
           favorite_colors?: string[] | null
           favorite_styles?: string[] | null
           id?: string
+          message_count?: number | null
           occasions_preferences?: string[] | null
           preferred_city?: string | null
           preferred_country?: string | null
@@ -59,7 +62,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      increment_message_count: {
+        Args: {
+          user_id_param: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
