@@ -1,11 +1,10 @@
-
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageCircle, X, Send, Sparkles, Loader2, AlertTriangle, Lock } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 
@@ -30,6 +29,7 @@ const OliviaChatDialog = ({ isOpen, onClose, initialMessage = "Hi! I'm Olivia Bl
   const [messageCount, setMessageCount] = useState(0);
   const [limitReached, setLimitReached] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const { toast } = useToast();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -43,6 +43,10 @@ const OliviaChatDialog = ({ isOpen, onClose, initialMessage = "Hi! I'm Olivia Bl
   useEffect(() => {
     if (isOpen) {
       setHasError(false);
+      // Focus input field when dialog opens
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
     }
   }, [isOpen]);
 
@@ -80,6 +84,13 @@ const OliviaChatDialog = ({ isOpen, onClose, initialMessage = "Hi! I'm Olivia Bl
     }
   }, [isOpen, user]);
 
+  // Focus the input field
+  const focusInput = () => {
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 100);
+  };
+
   const handleRetry = () => {
     if (messages.length > 1) {
       // Get the last user message
@@ -87,6 +98,7 @@ const OliviaChatDialog = ({ isOpen, onClose, initialMessage = "Hi! I'm Olivia Bl
       if (lastUserMessage) {
         setHasError(false);
         setInput(lastUserMessage.content);
+        focusInput();
       }
     }
   };
@@ -169,6 +181,9 @@ const OliviaChatDialog = ({ isOpen, onClose, initialMessage = "Hi! I'm Olivia Bl
         ...prevMessages, 
         { role: 'assistant', content: data.reply }
       ]);
+      
+      // Focus the input field after response is received
+      focusInput();
     } catch (error) {
       console.error('Error sending message:', error);
       setHasError(true);
@@ -299,6 +314,7 @@ const OliviaChatDialog = ({ isOpen, onClose, initialMessage = "Hi! I'm Olivia Bl
           <div className="p-3 border-t border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900">
             <div className="flex items-center space-x-2">
               <textarea
+                ref={inputRef}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyPress}
