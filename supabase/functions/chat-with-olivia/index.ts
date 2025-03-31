@@ -82,7 +82,8 @@ serve(async (req) => {
     if (messageCount > 5 && !isPremium) {
       return new Response(JSON.stringify({
         reply: "You've reached your limit of free messages. Please upgrade to premium to continue chatting with Olivia Bloom.",
-        limitReached: true
+        limitReached: true,
+        messageCount
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });

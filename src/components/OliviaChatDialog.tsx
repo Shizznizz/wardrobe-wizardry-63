@@ -96,6 +96,11 @@ const OliviaChatDialog = ({ isOpen, onClose, initialMessage = "Hi! I'm Olivia Bl
     // For now, we'll just close the chat and navigate to settings
     onClose();
     navigate('/settings');
+    toast({
+      title: "Premium Required",
+      description: "You'll need to upgrade to premium to continue chatting with Olivia.",
+      variant: "default"
+    });
   };
 
   const handleSendMessage = async () => {
@@ -314,7 +319,7 @@ const OliviaChatDialog = ({ isOpen, onClose, initialMessage = "Hi! I'm Olivia Bl
             {messageCount > 0 && (
               <div className="mt-2 text-xs text-center text-gray-500 dark:text-gray-400">
                 {messageCount <= 5 ? (
-                  <span>{5 - messageCount} free {messageCount === 5 ? 'message' : 'messages'} remaining</span>
+                  <span>{5 - messageCount} free {messageCount === 4 ? 'message' : 'messages'} remaining</span>
                 ) : (
                   <span>Premium access required</span>
                 )}

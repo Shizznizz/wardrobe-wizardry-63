@@ -30,7 +30,7 @@ const OliviaChatTrigger = ({
     if (!user) {
       toast({
         title: "Login Required",
-        description: "Please log in to chat with Olivia Bloom",
+        description: "Please log in to chat with Olivia Bloom, your personal style advisor",
         variant: "default",
       });
       navigate('/auth');
