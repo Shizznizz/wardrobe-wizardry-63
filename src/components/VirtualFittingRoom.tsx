@@ -14,6 +14,7 @@ interface VirtualFittingRoomProps {
   clothingItems: ClothingItem[];
   isProcessing: boolean;
   userPhoto?: string | null;
+  clothingPhoto?: string | null; // Add optional clothing photo prop
   className?: string;
   onSaveLook?: () => void;
   isOliviaImage?: boolean; // New prop to indicate if using Olivia's image
@@ -25,6 +26,7 @@ const VirtualFittingRoom = ({
   clothingItems,
   isProcessing,
   userPhoto,
+  clothingPhoto,
   className,
   onSaveLook,
   isOliviaImage = false

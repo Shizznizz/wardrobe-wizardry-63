@@ -47,7 +47,7 @@ const AiTryOnButton = ({
         promptText = `a photorealistic image of a person wearing ${selectedOutfit.name}`;
       } else if (clothingPhoto) {
         // If only a clothing photo is available, use a generic description
-        promptText = "a photorealistic image of a person wearing the provided white t-shirt";
+        promptText = "a photorealistic image of a person wearing the provided clothing item";
       }
       
       console.log("AI generation prompt:", promptText);
@@ -56,7 +56,7 @@ const AiTryOnButton = ({
         body: {
           prompt: promptText,
           userPhotoUrl: userPhoto,
-          clothingPhotoUrl: clothingPhoto // Pass the clothing photo URL too
+          clothingPhotoUrl: clothingPhoto // Pass the clothing photo URL
         }
       });
 
@@ -66,16 +66,19 @@ const AiTryOnButton = ({
 
       console.log("AI generation response:", data);
       
-      if (data.generatedImageUrl) {
+      if (data?.generatedImageUrl) {
         // Image was generated immediately
         onImageGenerated(data.generatedImageUrl, null);
         toast.success("AI-generated try-on ready!");
-      } else if (data.predictionId) {
+      } else if (data?.predictionId) {
         // Need to poll for results
         onImageGenerated(data.mockImageUrl || userPhoto, data.predictionId);
         toast("Generating AI try-on image...", {
           description: "This may take a minute or two. We'll notify you when it's ready."
         });
+      } else {
+        // Something went wrong but no clear error
+        throw new Error("No result returned from generation API");
       }
     } catch (error) {
       console.error("Error in AI generation:", error);

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -30,9 +29,10 @@ const NewClothes = () => {
   const [showHelpTips, setShowHelpTips] = useState(false);
   const [currentTipIndex, setCurrentTipIndex] = useState(0);
   const [predictionId, setPredictionId] = useState<string | null>(null);
-  
+  const [generationError, setGenerationError] = useState<string | null>(null);
+
   const isMobile = useIsMobile();
-  
+
   const mockOutfit: Outfit = {
     id: 'new-clothing',
     name: 'New Clothing Preview',
@@ -44,7 +44,6 @@ const NewClothes = () => {
     dateAdded: new Date()
   };
 
-  // Effect for polling prediction results if needed
   useEffect(() => {
     if (!predictionId) return;
     
@@ -57,7 +56,6 @@ const NewClothes = () => {
         if (error) throw new Error(error.message);
         
         if (data.generatedImageUrl) {
-          // Image generation is complete
           setFinalImage(data.generatedImageUrl);
           setPredictionId(null);
           setIsProcessing(false);
@@ -117,18 +115,19 @@ const NewClothes = () => {
 
   const handleTryOn = async () => {
     if (!userPhoto || !clothingPhoto) {
-      toast.error('Please upload both your photo and a clothing photo');
+      toast.error("Please upload both a photo of yourself and a clothing item");
       return;
     }
 
+    setIsProcessing(true);
+    setFinalImage(null);
+
     try {
-      setIsProcessing(true);
-      toast.info('Processing your virtual try-on. This may take a few moments...');
+      const promptText = "a photorealistic image of a person wearing the provided white t-shirt";
       
-      // Generate AI try-on using Replicate API through Edge Function
       const { data, error } = await supabase.functions.invoke('generate-image', {
         body: {
-          prompt: "a photorealistic image of a person wearing a white t-shirt",
+          prompt: promptText,
           userPhotoUrl: userPhoto,
           clothingPhotoUrl: clothingPhoto
         }
@@ -139,39 +138,23 @@ const NewClothes = () => {
       }
 
       console.log("AI generation response:", data);
-      
-      if (data.generatedImageUrl) {
-        // Image was generated immediately
+
+      if (data?.generatedImageUrl) {
         setFinalImage(data.generatedImageUrl);
-        setIsProcessing(false);
-        toast.success("Virtual try-on complete!");
-      } else if (data.predictionId) {
-        // Need to poll for results
+        toast.success("AI-generated try-on ready!");
+      } else if (data?.predictionId) {
         setPredictionId(data.predictionId);
-        // Use mock image temporarily and start polling
-        setFinalImage(data.mockImageUrl || userPhoto);
         toast("Generating AI try-on image...", {
           description: "This may take a minute or two. We'll notify you when it's ready."
         });
+      } else {
+        throw new Error("No result returned from generation API");
       }
-      
-      // Add the clothing item to selected items
-      setSelectedItems([{
-        id: 'main-item',
-        name: 'Uploaded Item',
-        type: 'shirt',
-        imageUrl: clothingPhoto,
-        occasions: ['casual'],
-        seasons: ['all'],
-        color: 'white',
-        material: 'cotton',
-        favorite: false,
-        timesWorn: 0,
-        dateAdded: new Date()
-      }]);
     } catch (error) {
-      console.error('Error in virtual try-on:', error);
-      toast.error('Something went wrong. Please try again.');
+      console.error("Error in AI try-on:", error);
+      setGenerationError(String(error));
+      toast.error("Failed to generate virtual try-on");
+    } finally {
       setIsProcessing(false);
     }
   };

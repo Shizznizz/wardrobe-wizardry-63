@@ -78,7 +78,7 @@ serve(async (req) => {
     // Enhanced prompt with more clothing details if we have a clothing image
     let enhancedPrompt;
     if (clothingPhotoUrl) {
-      enhancedPrompt = "A photorealistic image of a person wearing the exact white t-shirt shown in the reference image. The t-shirt should appear natural and perfectly fitted on the person. Maintain the person's exact pose, facial expression, and background from the reference image.";
+      enhancedPrompt = "A photorealistic image of a person wearing the exact clothing shown in the reference image. The clothing should appear natural and perfectly fitted on the person. Maintain the person's exact pose, facial expression, and background from the reference image.";
     } else {
       enhancedPrompt = prompt;
     }

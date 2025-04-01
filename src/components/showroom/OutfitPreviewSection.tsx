@@ -87,6 +87,7 @@ const OutfitPreviewSection = ({
                 clothingItems={clothingItems}
                 isProcessing={isProcessingTryOn}
                 userPhoto={userPhoto}
+                clothingPhoto={clothingPhoto}
                 onSaveLook={onSaveLook}
                 isOliviaImage={isUsingOliviaImage}
                 className="flex-grow"
