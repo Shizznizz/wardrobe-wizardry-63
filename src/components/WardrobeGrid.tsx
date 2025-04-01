@@ -1,6 +1,6 @@
 
 import { motion } from 'framer-motion';
-import { Star, Tally4, Calendar, Tags, Heart, ArrowRight } from 'lucide-react';
+import { Star, Tally4, Calendar, Tags, Heart, ArrowRight, Trash2, Edit } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -13,6 +13,8 @@ interface WardrobeGridProps {
   items: ClothingItem[];
   onToggleFavorite: (id: string) => void;
   onMatchItem: (item: ClothingItem) => void;
+  onDeleteItem?: (id: string) => void;
+  onEditItem?: (item: ClothingItem) => void;
   compactView?: boolean;
   selectable?: boolean;
   selectedItems?: string[];
@@ -23,6 +25,8 @@ const WardrobeGrid = ({
   items,
   onToggleFavorite,
   onMatchItem,
+  onDeleteItem,
+  onEditItem,
   compactView = false,
   selectable = false,
   selectedItems = [],
@@ -86,17 +90,35 @@ const WardrobeGrid = ({
                 alt={item.name}
                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
               />
-              <button
-                className="absolute top-2 right-2 rounded-full w-8 h-8 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-all duration-300 group-hover:bg-black/60"
-                onClick={() => onToggleFavorite(item.id)}
-              >
-                <Heart
-                  className={cn(
-                    "w-4 h-4 transition-colors duration-300",
-                    item.favorite ? "fill-red-500 text-red-500" : "text-white"
-                  )}
-                />
-              </button>
+              <div className="absolute top-2 right-2 flex gap-2">
+                <button
+                  className="rounded-full w-8 h-8 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-all duration-300 group-hover:bg-black/60"
+                  onClick={() => onToggleFavorite(item.id)}
+                >
+                  <Heart
+                    className={cn(
+                      "w-4 h-4 transition-colors duration-300",
+                      item.favorite ? "fill-red-500 text-red-500" : "text-white"
+                    )}
+                  />
+                </button>
+                {onDeleteItem && (
+                  <button
+                    className="rounded-full w-8 h-8 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-all duration-300 group-hover:bg-black/60 opacity-0 group-hover:opacity-100"
+                    onClick={() => onDeleteItem(item.id)}
+                  >
+                    <Trash2 className="w-4 h-4 text-white hover:text-red-400" />
+                  </button>
+                )}
+                {onEditItem && (
+                  <button
+                    className="rounded-full w-8 h-8 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-all duration-300 group-hover:bg-black/60 opacity-0 group-hover:opacity-100"
+                    onClick={() => onEditItem(item)}
+                  >
+                    <Edit className="w-4 h-4 text-white hover:text-blue-400" />
+                  </button>
+                )}
+              </div>
               
               <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/80 to-transparent text-white">
                 <h3 className="font-semibold text-sm sm:text-base truncate">{item.name}</h3>
@@ -128,7 +150,7 @@ const WardrobeGrid = ({
                     </Badge>
                   ))}
                   
-                  {item.occasions.map((occasion) => (
+                  {item.occasions && item.occasions.map((occasion) => (
                     <Badge key={occasion} variant="outline" className="text-[10px] h-5 px-1.5 border-purple-500/30 text-purple-100">
                       {occasion}
                     </Badge>

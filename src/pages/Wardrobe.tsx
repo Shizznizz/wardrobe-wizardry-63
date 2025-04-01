@@ -14,7 +14,7 @@ import { ClothingItem, ClothingType } from '@/lib/types';
 import { sampleClothingItems, sampleOutfits, sampleUserPreferences } from '@/lib/wardrobeData';
 import { toast } from 'sonner';
 import { Confetti } from '@/components/ui/confetti';
-import { ArrowUpDown, Info, Shirt, Sparkles, LayoutGrid, ArrowRight, X, ChevronDown } from 'lucide-react';
+import { ArrowUpDown, Info, Shirt, Sparkles, LayoutGrid, ArrowRight, X, ChevronDown, AlertCircle, Trash2 } from 'lucide-react';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -29,12 +29,27 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger 
+  DropdownMenuTrigger,
+  DropdownMenuSeparator 
 } from '@/components/ui/dropdown-menu';
 import OutfitMatchModal from '@/components/OutfitMatchModal';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { supabase } from '@/integrations/supabase/client';
 
 const Wardrobe = () => {
-  const [items, setItems] = useState<ClothingItem[]>(sampleClothingItems);
+  // Local state for the items
+  const [items, setItems] = useState<ClothingItem[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [showUploadTip, setShowUploadTip] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [hasAddedItem, setHasAddedItem] = useState(false);
@@ -44,8 +59,46 @@ const Wardrobe = () => {
   const [categoryModalOpen, setCategoryModalOpen] = useState(false);
   const [matchModalOpen, setMatchModalOpen] = useState(false);
   const [selectedItemForMatch, setSelectedItemForMatch] = useState<ClothingItem | null>(null);
+  const [clearWardrobeDialogOpen, setClearWardrobeDialogOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [itemToEdit, setItemToEdit] = useState<ClothingItem | null>(null);
+  
   const isMobile = useIsMobile();
   const { user } = useAuth();
+
+  // Load items from localStorage on initial render
+  useEffect(() => {
+    const loadItems = () => {
+      setIsLoading(true);
+      try {
+        const savedItems = localStorage.getItem('wardrobeItems');
+        if (savedItems) {
+          setItems(JSON.parse(savedItems));
+        } else {
+          // Use sample items as fallback
+          setItems(sampleClothingItems);
+          // Save sample items to localStorage for future use
+          localStorage.setItem('wardrobeItems', JSON.stringify(sampleClothingItems));
+        }
+      } catch (error) {
+        console.error("Failed to load wardrobe items:", error);
+        setLoadError("Failed to load your wardrobe items. Please try again later.");
+        // Fallback to sample items
+        setItems(sampleClothingItems);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadItems();
+  }, []);
+
+  // Save items to localStorage whenever they change
+  useEffect(() => {
+    if (!isLoading && items) {
+      localStorage.setItem('wardrobeItems', JSON.stringify(items));
+    }
+  }, [items, isLoading]);
 
   const handleUpload = (newItem: ClothingItem) => {
     setItems(prev => [newItem, ...prev]);
@@ -72,6 +125,32 @@ const Wardrobe = () => {
       const action = !item.favorite ? 'added to' : 'removed from';
       toast.success(`${item.name} ${action} favorites`);
     }
+  };
+
+  const handleDeleteItem = (id: string) => {
+    const itemToDelete = items.find(item => item.id === id);
+    if (itemToDelete) {
+      setItems(prev => prev.filter(item => item.id !== id));
+      toast.success(`${itemToDelete.name} has been removed from your wardrobe`);
+    }
+  };
+
+  const handleEditItem = (item: ClothingItem) => {
+    setItemToEdit(item);
+    setEditModalOpen(true);
+    // The actual edit functionality would be implemented in an EditModal component
+    // For now, we'll just show a toast notification
+    toast.info(`Editing ${item.name} would open an edit modal`);
+  };
+
+  const handleClearWardrobe = () => {
+    setClearWardrobeDialogOpen(true);
+  };
+
+  const confirmClearWardrobe = () => {
+    setItems([]);
+    setClearWardrobeDialogOpen(false);
+    toast.success("Your wardrobe has been cleared");
   };
 
   const handleCategorySelect = (category: ClothingType | null) => {
@@ -221,6 +300,26 @@ const Wardrobe = () => {
                 >
                   <ArrowRight className="mr-2 h-4 w-4" /> Browse Categories
                 </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button 
+                      size="lg" 
+                      variant="outline" 
+                      className="border-purple-400/30 text-white hover:bg-white/10"
+                    >
+                      <Shirt className="mr-2 h-4 w-4" /> Wardrobe Options
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="bg-slate-900/95 backdrop-blur-md border-slate-700/50 text-white w-56">
+                    <DropdownMenuItem 
+                      onClick={handleClearWardrobe}
+                      className="text-red-400 focus:text-red-300 focus:bg-red-950/30"
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      Clear Wardrobe
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </motion.div>
           </div>
@@ -345,7 +444,45 @@ const Wardrobe = () => {
             </div>
           </motion.div>
           
-          {(items.length <= 2 || (selectedCategory && sortedItems.length === 0)) ? (
+          {isLoading && (
+            <motion.div variants={itemVariants} className="mb-10 w-full">
+              <Card className="bg-gradient-to-r from-indigo-950/60 to-purple-950/60 border border-indigo-500/20">
+                <CardContent className="p-4 sm:p-6 flex flex-col md:flex-row gap-4 items-center">
+                  <div className="w-16 h-16 rounded-full bg-purple-600/20 flex items-center justify-center flex-shrink-0">
+                    <div className="h-8 w-8 border-t-2 border-r-2 border-purple-300 rounded-full animate-spin"></div>
+                  </div>
+                  <div className="text-center md:text-left">
+                    <h3 className="text-xl font-semibold mb-2">Loading your wardrobe...</h3>
+                    <p className="text-gray-300">Please wait while we fetch your items.</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
+
+          {loadError && !isLoading && (
+            <motion.div variants={itemVariants} className="mb-10 w-full">
+              <Card className="bg-gradient-to-r from-red-950/60 to-purple-950/60 border border-red-500/20">
+                <CardContent className="p-4 sm:p-6 flex flex-col md:flex-row gap-4 items-center">
+                  <div className="w-16 h-16 rounded-full bg-red-600/20 flex items-center justify-center flex-shrink-0">
+                    <AlertCircle className="h-8 w-8 text-red-300" />
+                  </div>
+                  <div className="text-center md:text-left">
+                    <h3 className="text-xl font-semibold mb-2">Error loading your wardrobe</h3>
+                    <p className="text-gray-300 mb-4">{loadError}</p>
+                    <Button 
+                      variant="destructive" 
+                      onClick={() => window.location.reload()}
+                    >
+                      Reload Page
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
+          
+          {!isLoading && !loadError && (items.length <= 2 || (selectedCategory && sortedItems.length === 0)) && (
             <motion.div variants={itemVariants} className="mb-10 w-full">
               <Card className="bg-gradient-to-r from-indigo-950/60 to-purple-950/60 border border-indigo-500/20">
                 <CardContent className="p-4 sm:p-6 flex flex-col md:flex-row gap-4 items-center">
@@ -379,16 +516,20 @@ const Wardrobe = () => {
                 </CardContent>
               </Card>
             </motion.div>
-          ) : null}
+          )}
           
-          <motion.div variants={itemVariants} className="glass-dark p-3 sm:p-6 rounded-xl border border-white/10 mt-6 w-full overflow-hidden">
-            <WardrobeGrid 
-              items={sortedItems} 
-              onToggleFavorite={handleToggleFavorite}
-              onMatchItem={handleMatchItem}
-              compactView={showCompactView}
-            />
-          </motion.div>
+          {!isLoading && !loadError && items.length > 0 && (
+            <motion.div variants={itemVariants} className="glass-dark p-3 sm:p-6 rounded-xl border border-white/10 mt-6 w-full overflow-hidden">
+              <WardrobeGrid 
+                items={sortedItems} 
+                onToggleFavorite={handleToggleFavorite}
+                onMatchItem={handleMatchItem}
+                onDeleteItem={handleDeleteItem}
+                onEditItem={handleEditItem}
+                compactView={showCompactView}
+              />
+            </motion.div>
+          )}
           
           <motion.div variants={itemVariants} className="w-full mt-10 overflow-hidden">
             <OutfitCalendar 
@@ -439,6 +580,29 @@ const Wardrobe = () => {
           allItems={items}
         />
       )}
+      
+      {/* Clear Wardrobe Confirmation Dialog */}
+      <AlertDialog open={clearWardrobeDialogOpen} onOpenChange={setClearWardrobeDialogOpen}>
+        <AlertDialogContent className="bg-slate-900 border-slate-700 text-white">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Clear your entire wardrobe?</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-300">
+              This action will remove all clothing items from your wardrobe. This cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-white">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              className="bg-red-600 hover:bg-red-700 text-white"
+              onClick={confirmClearWardrobe}
+            >
+              Clear Wardrobe
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
