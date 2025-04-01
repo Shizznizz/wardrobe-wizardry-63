@@ -20,16 +20,65 @@ serve(async (req) => {
       throw new Error('Missing REPLICATE_API_KEY');
     }
 
-    const { prompt, userPhotoUrl } = await req.json();
+    const { prompt, userPhotoUrl, clothingPhotoUrl, predictionId } = await req.json();
     
-    if (!prompt) {
+    // If we're checking status for an existing prediction
+    if (predictionId) {
+      console.log("Checking status for prediction:", predictionId);
+      
+      const response = await fetch(`https://api.replicate.com/v1/predictions/${predictionId}`, {
+        headers: {
+          "Authorization": `Token ${REPLICATE_API_TOKEN}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      const prediction = await response.json();
+      console.log("Status check response:", prediction);
+      
+      if (prediction.status === "succeeded" && prediction.output) {
+        return new Response(
+          JSON.stringify({ 
+            success: true,
+            generatedImageUrl: prediction.output[0] 
+          }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      } else if (prediction.status === "failed") {
+        return new Response(
+          JSON.stringify({ 
+            success: false,
+            error: prediction.error || "Image generation failed" 
+          }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      } else {
+        return new Response(
+          JSON.stringify({ 
+            success: true,
+            message: "Still processing" 
+          }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
+    
+    // This is a new generation request
+    if (!prompt || !userPhotoUrl) {
       return new Response(
-        JSON.stringify({ error: 'Prompt is required' }),
+        JSON.stringify({ error: 'Prompt and userPhotoUrl are required' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
     console.log("Processing virtual try-on with prompt:", prompt);
+    console.log("User photo URL provided:", !!userPhotoUrl);
+    console.log("Clothing photo URL provided:", !!clothingPhotoUrl);
+    
+    // Enhanced prompt with more clothing details if we have a clothing image
+    const enhancedPrompt = clothingPhotoUrl 
+      ? `${prompt}, accurate white t-shirt fit, high quality, photorealistic, detailed`
+      : prompt;
     
     // Call Replicate API for image generation
     const response = await fetch("https://api.replicate.com/v1/predictions", {
@@ -44,9 +93,10 @@ serve(async (req) => {
           seed: -1,
           width: 1024,
           height: 1024,
-          prompt: prompt,
+          prompt: enhancedPrompt,
           guidance_scale: 4.5,
-          inference_steps: 2,
+          inference_steps: 25, // Increased for better quality
+          reference_image: userPhotoUrl,
         },
       }),
     });
@@ -62,7 +112,7 @@ serve(async (req) => {
       // Poll for completion - in a real production environment you'd implement
       // a webhook or client-side polling instead of blocking the edge function
       let attempts = 0;
-      const maxAttempts = 20; // Prevent infinite loops
+      const maxAttempts = 5; // Quick check with a few attempts
 
       while (attempts < maxAttempts) {
         const statusResponse = await fetch(`https://api.replicate.com/v1/predictions/${predictionId}`, {

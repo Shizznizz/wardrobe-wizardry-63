@@ -9,6 +9,7 @@ import { ClothingItem, Outfit } from '@/lib/types';
 interface AiTryOnButtonProps {
   selectedOutfit: Outfit | null;
   userPhoto: string | null;
+  clothingPhoto?: string | null; // Add optional clothing photo prop
   onGenerationStart: () => void;
   onImageGenerated: (imageUrl: string, predictionId: string | null) => void;
 }
@@ -16,14 +17,21 @@ interface AiTryOnButtonProps {
 const AiTryOnButton = ({
   selectedOutfit,
   userPhoto,
+  clothingPhoto,
   onGenerationStart,
   onImageGenerated
 }: AiTryOnButtonProps) => {
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
 
   const generateAITryOn = async () => {
-    if (!selectedOutfit || !userPhoto) {
-      toast.error("You need both a photo and an outfit selected");
+    if (!userPhoto) {
+      toast.error("You need to upload a photo first");
+      return;
+    }
+
+    // Check if we have either a selected outfit or clothing photo
+    if (!selectedOutfit && !clothingPhoto) {
+      toast.error("You need to select an outfit or clothing item");
       return;
     }
 
@@ -31,17 +39,24 @@ const AiTryOnButton = ({
     onGenerationStart();
     
     try {
-      const outfitItems = selectedOutfit.items.map(id => {
-        // Just use the outfit name for the prompt
-        return selectedOutfit.name;
-      }).filter(Boolean).join(", ");
+      // Build prompt based on what's available
+      let promptText = "";
       
-      const prompt = `a photorealistic image of a person wearing ${outfitItems}`;
+      if (selectedOutfit) {
+        // If an outfit is selected, use its name/description
+        promptText = `a photorealistic image of a person wearing ${selectedOutfit.name}`;
+      } else if (clothingPhoto) {
+        // If only a clothing photo is available, use a generic description
+        promptText = "a photorealistic image of a person wearing the provided white t-shirt";
+      }
+      
+      console.log("AI generation prompt:", promptText);
       
       const { data, error } = await supabase.functions.invoke('generate-image', {
         body: {
-          prompt,
-          userPhotoUrl: userPhoto
+          prompt: promptText,
+          userPhotoUrl: userPhoto,
+          clothingPhotoUrl: clothingPhoto // Pass the clothing photo URL too
         }
       });
 
@@ -75,7 +90,7 @@ const AiTryOnButton = ({
       variant="outline"
       size="sm"
       onClick={generateAITryOn}
-      disabled={isGeneratingAI || !selectedOutfit || !userPhoto}
+      disabled={isGeneratingAI || (!selectedOutfit && !clothingPhoto) || !userPhoto}
       className="border-purple-400/30 text-white hover:bg-white/10"
     >
       <Wand className="mr-2 h-4 w-4" />

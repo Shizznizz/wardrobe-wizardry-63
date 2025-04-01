@@ -16,6 +16,7 @@ interface OutfitPreviewSectionProps {
   clothingItems: ClothingItem[];
   isProcessingTryOn: boolean;
   userPhoto: string | null;
+  clothingPhoto?: string | null; // Add optional clothing photo prop
   isUsingOliviaImage: boolean;
   onSaveLook: () => void;
 }
@@ -26,6 +27,7 @@ const OutfitPreviewSection = ({
   clothingItems,
   isProcessingTryOn,
   userPhoto,
+  clothingPhoto,
   isUsingOliviaImage,
   onSaveLook
 }: OutfitPreviewSectionProps) => {
@@ -33,6 +35,7 @@ const OutfitPreviewSection = ({
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
   const [aiGeneratedImage, setAiGeneratedImage] = useState<string | null>(null);
   const [predictionId, setPredictionId] = useState<string | null>(null);
+  const [generationError, setGenerationError] = useState<string | null>(null);
   const isMobile = useIsMobile();
   
   const handleToggleOptions = () => {
@@ -49,6 +52,7 @@ const OutfitPreviewSection = ({
 
   const handleGenerationStart = () => {
     setIsGeneratingAI(true);
+    setGenerationError(null); // Clear any previous errors
   };
 
   const handleImageGenerated = (imageUrl: string, newPredictionId: string | null) => {
@@ -63,6 +67,14 @@ const OutfitPreviewSection = ({
     setAiGeneratedImage(imageUrl);
     setIsGeneratingAI(false);
     setPredictionId(null);
+  };
+  
+  const handlePredictionError = (error: string) => {
+    console.error("Prediction error:", error);
+    setGenerationError(error);
+    setIsGeneratingAI(false);
+    setPredictionId(null);
+    // Toast is already shown in the poller component
   };
 
   // Display AI-generated image if available, otherwise show the regular final image
@@ -90,6 +102,7 @@ const OutfitPreviewSection = ({
                 <AiTryOnButton
                   selectedOutfit={selectedOutfit}
                   userPhoto={userPhoto}
+                  clothingPhoto={clothingPhoto}
                   onGenerationStart={handleGenerationStart}
                   onImageGenerated={handleImageGenerated}
                 />
@@ -109,6 +122,13 @@ const OutfitPreviewSection = ({
                 isOliviaImage={isUsingOliviaImage}
                 className="flex-grow"
               />
+              
+              {generationError && (
+                <div className="mt-4 p-3 bg-red-900/30 border border-red-500/30 rounded-md text-red-200 text-sm">
+                  <p>AI generation error: {generationError}</p>
+                  <p className="mt-1">Please try again or choose a different outfit/photo combination.</p>
+                </div>
+              )}
             </div>
             
             {showClothingOptions && (
@@ -124,6 +144,7 @@ const OutfitPreviewSection = ({
           <PredictionPoller
             predictionId={predictionId}
             onPredictionComplete={handlePredictionComplete}
+            onPredictionError={handlePredictionError}
           />
         </CardContent>
       </Card>

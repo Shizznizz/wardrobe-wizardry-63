@@ -7,14 +7,13 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import OutfitSubscriptionPopup from '@/components/OutfitSubscriptionPopup';
 import OliviaImageGallery from '@/components/outfits/OliviaImageGallery';
 
-// Import our new components
 import NewClothesHeader from '@/components/new-clothes/NewClothesHeader';
 import TryOnSection from '@/components/new-clothes/TryOnSection';
 import PreviewResultSection from '@/components/new-clothes/PreviewResultSection';
 import RelatedContentSection from '@/components/new-clothes/RelatedContentSection';
 import PremiumFeaturesSection from '@/components/new-clothes/PremiumFeaturesSection';
 import HelpTipsSection from '@/components/new-clothes/HelpTipsSection';
-import { defaultOutfitTips } from '@/components/outfits/OutfitTips'; // Import defaultOutfitTips
+import { defaultOutfitTips } from '@/components/outfits/OutfitTips';
 
 const NewClothes = () => {
   const [userPhoto, setUserPhoto] = useState<string | null>(null);
@@ -211,6 +210,7 @@ const NewClothes = () => {
               clothingItems={selectedItems}
               isProcessing={isProcessing}
               userPhoto={userPhoto}
+              clothingPhoto={clothingPhoto}
               isOliviaImage={isUsingOliviaImage}
               isPremiumUser={isPremiumUser}
               onSaveLook={handleSaveLook}
