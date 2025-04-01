@@ -89,6 +89,16 @@ const OutfitSelector = ({ outfits, clothingItems, onSelect, selectedOutfitId }: 
                           {season}
                         </span>
                       ))}
+                      
+                      {/* Add null check for outfit.occasions before mapping */}
+                      {outfit.occasions && outfit.occasions.length > 0 && outfit.occasions.map(occasion => (
+                        <span 
+                          key={occasion} 
+                          className="text-xs py-0.5 px-2 bg-blue-900/40 rounded-full capitalize"
+                        >
+                          {occasion}
+                        </span>
+                      ))}
                     </div>
                   </div>
                 </motion.div>
