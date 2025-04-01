@@ -9,7 +9,7 @@ import { ClothingItem, Outfit } from '@/lib/types';
 interface AiTryOnButtonProps {
   selectedOutfit: Outfit | null;
   userPhoto: string | null;
-  clothingPhoto?: string | null; // Add optional clothing photo prop
+  clothingPhoto?: string | null;
   onGenerationStart: () => void;
   onImageGenerated: (imageUrl: string, predictionId: string | null) => void;
 }
@@ -51,16 +51,19 @@ const AiTryOnButton = ({
       }
       
       console.log("AI generation prompt:", promptText);
+      console.log("User photo provided:", !!userPhoto);
+      console.log("Clothing photo provided:", !!clothingPhoto);
       
       const { data, error } = await supabase.functions.invoke('generate-image', {
         body: {
           prompt: promptText,
           userPhotoUrl: userPhoto,
-          clothingPhotoUrl: clothingPhoto // Pass the clothing photo URL
+          clothingPhotoUrl: clothingPhoto
         }
       });
 
       if (error) {
+        console.error("Supabase function error:", error);
         throw new Error(error.message);
       }
 

@@ -28,12 +28,16 @@ const PredictionPoller = ({
           body: { predictionId }
         });
 
-        if (error) throw new Error(error.message);
+        if (error) {
+          console.error("Polling error:", error);
+          throw new Error(error.message);
+        }
         
         // Increment attempt counter
         setAttempts(prev => prev + 1);
+        console.log(`Polling attempt ${attempts + 1}: status = ${data?.success ? "success" : "waiting"}`);
 
-        if (data.generatedImageUrl) {
+        if (data?.generatedImageUrl) {
           // Image generation is complete
           console.log("Polling complete, image URL received:", data.generatedImageUrl);
           onPredictionComplete(data.generatedImageUrl);
@@ -51,7 +55,7 @@ const PredictionPoller = ({
         console.error("Error polling for prediction:", err);
         if (onPredictionError) onPredictionError(String(err));
       }
-    }, 3000);
+    }, 3000); // Poll every 3 seconds
 
     // Cleanup interval on component unmount or when polling completes
     return () => clearInterval(pollInterval);

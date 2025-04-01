@@ -1,4 +1,3 @@
-
 import { useState, useRef } from 'react';
 import { Shirt, Trash2, Upload, User, Camera } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
@@ -227,7 +226,7 @@ const TryOnSection = ({
             <TooltipTrigger asChild>
               <Button 
                 onClick={onTryOn} 
-                disabled={!userPhoto || !clothingPhoto || isProcessing}
+                disabled={isProcessing || !clothingPhoto || !userPhoto}
                 className="w-full md:w-auto bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90 h-12 text-lg font-medium shadow-md px-8 transition-all duration-300"
               >
                 {isProcessing ? 'Processing...' : 'Preview on Me'}
