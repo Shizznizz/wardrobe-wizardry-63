@@ -2,11 +2,12 @@
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Camera } from 'lucide-react';
+import { Camera, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { ClothingType, ClothingColor, ClothingMaterial, ClothingSeason } from '@/lib/types';
 import ImageUploader from './wardrobe/ImageUploader';
 import ClothingDetailsForm from './wardrobe/ClothingDetailsForm';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface UploadModalProps {
   onUpload: (item: any) => void;
@@ -22,18 +23,38 @@ const UploadModal = ({ onUpload, buttonText = "Add Item" }: UploadModalProps) =>
   const [seasons, setSeasons] = useState<ClothingSeason[]>([]);
   const [favorite, setFavorite] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+  const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/jpg', 'image/png'];
 
   const handleImageChange = (file: File) => {
+    // Validate file type
+    if (!ALLOWED_FILE_TYPES.includes(file.type)) {
+      toast.error('Invalid file type. Please upload a PNG, JPG, or JPEG image.');
+      return;
+    }
+
+    // Validate file size
+    if (file.size > MAX_FILE_SIZE) {
+      toast.error(`File size too large. Maximum allowed size is ${MAX_FILE_SIZE / (1024 * 1024)}MB.`);
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = () => {
       setImagePreview(reader.result as string);
     };
     reader.readAsDataURL(file);
+    setImageFile(file);
   };
 
   const clearImage = () => {
     setImagePreview(null);
+    setImageFile(null);
   };
 
   const toggleSeason = (season: ClothingSeason) => {
@@ -44,19 +65,45 @@ const UploadModal = ({ onUpload, buttonText = "Add Item" }: UploadModalProps) =>
     );
   };
 
+  const validateForm = (): string[] => {
+    const errors: string[] = [];
+
+    // Check for special characters in name (alphanumeric, spaces, and basic punctuation allowed)
+    if (name && !/^[a-zA-Z0-9\s.,'-]*$/.test(name)) {
+      errors.push("Name contains invalid characters. Please use only letters, numbers, and basic punctuation.");
+    }
+
+    // Required fields check
+    if (!name) errors.push("Name is required");
+    if (!type) errors.push("Category is required");
+    if (!imagePreview) errors.push("Image is required");
+    if (!color) errors.push("Color is required");
+    if (!material) errors.push("Material is required");
+    if (seasons.length === 0) errors.push("At least one season is required");
+
+    return errors;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!name || !type || !color || !material || seasons.length === 0 || !imagePreview) {
-      toast.error('Please fill out all fields and upload an image');
+    // Validate form
+    const errors = validateForm();
+    if (errors.length > 0) {
+      setValidationErrors(errors);
       return;
     }
 
+    // Clear previous errors
+    setValidationErrors([]);
     setIsSubmitting(true);
+    setIsLoading(true);
     
     try {
+      // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       
+      // Create new item
       const newItem = {
         id: Date.now().toString(),
         name,
@@ -67,12 +114,14 @@ const UploadModal = ({ onUpload, buttonText = "Add Item" }: UploadModalProps) =>
         imageUrl: imagePreview,
         favorite,
         timesWorn: 0,
+        occasions: [], // Adding empty array for occasions to prevent errors
         dateAdded: new Date()
       };
       
       onUpload(newItem);
-      toast.success('Item added to your wardrobe');
+      toast.success('Item added to your wardrobe!');
       
+      // Reset form
       setName('');
       setType('');
       setColor('');
@@ -80,13 +129,15 @@ const UploadModal = ({ onUpload, buttonText = "Add Item" }: UploadModalProps) =>
       setSeasons([]);
       setFavorite(false);
       setImagePreview(null);
+      setImageFile(null);
       
       setOpen(false);
     } catch (error) {
+      console.error("Upload error:", error);
       toast.error('Error adding item. Please try again.');
-      console.error(error);
     } finally {
       setIsSubmitting(false);
+      setIsLoading(false);
     }
   };
 
@@ -105,11 +156,27 @@ const UploadModal = ({ onUpload, buttonText = "Add Item" }: UploadModalProps) =>
             Add a new item to your wardrobe
           </DialogDescription>
         </DialogHeader>
+        
+        {validationErrors.length > 0 && (
+          <Alert variant="destructive" className="bg-red-900/20 border-red-500/50 mb-4">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription className="text-sm">
+              <p className="font-medium mb-1">Please fix the following errors:</p>
+              <ul className="list-disc pl-4">
+                {validationErrors.map((error, index) => (
+                  <li key={index}>{error}</li>
+                ))}
+              </ul>
+            </AlertDescription>
+          </Alert>
+        )}
+        
         <form onSubmit={handleSubmit} className="space-y-4 py-2">
           <ImageUploader 
             imagePreview={imagePreview}
             onImageChange={handleImageChange}
             onClearImage={clearImage}
+            label="Upload an image (PNG, JPG, or JPEG, max 10MB)"
           />
 
           <ClothingDetailsForm
@@ -131,8 +198,22 @@ const UploadModal = ({ onUpload, buttonText = "Add Item" }: UploadModalProps) =>
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? 'Adding...' : 'Add to Wardrobe'}
+            <Button 
+              type="submit" 
+              disabled={isSubmitting || isLoading}
+              className="relative"
+            >
+              {isSubmitting || isLoading ? (
+                <>
+                  <span className="opacity-0">Adding...</span>
+                  <span className="absolute inset-0 flex items-center justify-center">
+                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                  </span>
+                </>
+              ) : 'Add to Wardrobe'}
             </Button>
           </DialogFooter>
         </form>

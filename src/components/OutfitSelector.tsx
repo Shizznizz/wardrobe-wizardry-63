@@ -90,7 +90,7 @@ const OutfitSelector = ({ outfits, clothingItems, onSelect, selectedOutfitId }: 
                         </span>
                       ))}
                       
-                      {/* Add null check for outfit.occasions before mapping */}
+                      {/* Check if outfit.occasions exists and has items before mapping */}
                       {outfit.occasions && outfit.occasions.length > 0 && outfit.occasions.map(occasion => (
                         <span 
                           key={occasion} 
