@@ -1,14 +1,15 @@
-
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import VirtualFittingRoom from '@/components/VirtualFittingRoom';
 import { ClothingItem, Outfit } from '@/lib/types';
 import { Button } from '@/components/ui/button';
-import { Edit, Plus } from 'lucide-react';
+import { Edit, Plus, Wand } from 'lucide-react';
 import { useState } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import WardrobeGrid from '@/components/WardrobeGrid';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface OutfitPreviewSectionProps {
   finalImage: string | null;
@@ -31,9 +32,10 @@ const OutfitPreviewSection = ({
 }: OutfitPreviewSectionProps) => {
   const [showClothingOptions, setShowClothingOptions] = useState(false);
   const [selectedTab, setSelectedTab] = useState<string>('tops');
+  const [isGeneratingAI, setIsGeneratingAI] = useState(false);
+  const [aiGeneratedImage, setAiGeneratedImage] = useState<string | null>(null);
   const isMobile = useIsMobile();
   
-  // Filter clothing items by category for the tabs
   const tops = clothingItems.filter(item => 
     ['shirt', 'sweater', 'hoodie'].includes(item.type)
   );
@@ -63,13 +65,52 @@ const OutfitPreviewSection = ({
   };
   
   const handleMatchItem = (item: ClothingItem) => {
-    // This would add the item to the outfit
     console.log('Adding item to outfit:', item);
   };
   
   const handleToggleFavorite = (id: string) => {
-    // Toggle favorite status
     console.log('Toggle favorite for item:', id);
+  };
+
+  const generateAITryOn = async () => {
+    if (!selectedOutfit || !userPhoto) {
+      toast.error("You need both a photo and an outfit selected");
+      return;
+    }
+
+    setIsGeneratingAI(true);
+    
+    try {
+      const outfitItems = selectedOutfit.items.map(id => {
+        const item = clothingItems.find(item => item.id === id);
+        return item ? item.name : "";
+      }).filter(Boolean).join(", ");
+      
+      const prompt = `a photorealistic image of a person wearing ${outfitItems}`;
+      
+      const { data, error } = await supabase.functions.invoke('generate-image', {
+        body: {
+          prompt,
+          userPhotoUrl: userPhoto
+        }
+      });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      console.log("AI generation response:", data);
+      
+      if (data.mockImageUrl) {
+        setAiGeneratedImage(data.mockImageUrl);
+        toast.success("AI-generated try-on ready!");
+      }
+    } catch (error) {
+      console.error("Error in AI generation:", error);
+      toast.error("Failed to generate AI try-on image");
+    } finally {
+      setIsGeneratingAI(false);
+    }
   };
 
   return (
@@ -84,31 +125,46 @@ const OutfitPreviewSection = ({
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold">Outfit Preview</h2>
             
-            {selectedOutfit && finalImage && (
-              <Button 
-                variant="outline"
-                size="sm"
-                onClick={handleToggleOptions}
-                className="border-purple-400/30 text-white hover:bg-white/10"
-              >
-                {showClothingOptions ? (
-                  <>Hide Options</>
-                ) : (
-                  <>
-                    <Edit className="mr-2 h-4 w-4" /> Customize Outfit
-                  </>
-                )}
-              </Button>
-            )}
+            <div className="flex gap-2">
+              {selectedOutfit && userPhoto && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={generateAITryOn}
+                  disabled={isGeneratingAI}
+                  className="border-purple-400/30 text-white hover:bg-white/10"
+                >
+                  <Wand className="mr-2 h-4 w-4" />
+                  {isGeneratingAI ? 'Generating...' : 'AI Try-On'}
+                </Button>
+              )}
+              
+              {selectedOutfit && finalImage && (
+                <Button 
+                  variant="outline"
+                  size="sm"
+                  onClick={handleToggleOptions}
+                  className="border-purple-400/30 text-white hover:bg-white/10"
+                >
+                  {showClothingOptions ? (
+                    <>Hide Options</>
+                  ) : (
+                    <>
+                      <Edit className="mr-2 h-4 w-4" /> Customize Outfit
+                    </>
+                  )}
+                </Button>
+              )}
+            </div>
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className={`${showClothingOptions ? 'lg:col-span-2' : 'lg:col-span-3'}`}>
               <VirtualFittingRoom 
-                finalImage={finalImage}
+                finalImage={aiGeneratedImage || finalImage}
                 outfit={selectedOutfit}
                 clothingItems={clothingItems}
-                isProcessing={isProcessingTryOn}
+                isProcessing={isProcessingTryOn || isGeneratingAI}
                 userPhoto={userPhoto}
                 onSaveLook={onSaveLook}
                 isOliviaImage={isUsingOliviaImage}
