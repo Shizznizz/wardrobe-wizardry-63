@@ -1,10 +1,11 @@
+
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import VirtualFittingRoom from '@/components/VirtualFittingRoom';
 import { ClothingItem, Outfit } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Edit, Plus, Wand } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import WardrobeGrid from '@/components/WardrobeGrid';
@@ -34,6 +35,7 @@ const OutfitPreviewSection = ({
   const [selectedTab, setSelectedTab] = useState<string>('tops');
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
   const [aiGeneratedImage, setAiGeneratedImage] = useState<string | null>(null);
+  const [predictionId, setPredictionId] = useState<string | null>(null);
   const isMobile = useIsMobile();
   
   const tops = clothingItems.filter(item => 
@@ -59,6 +61,35 @@ const OutfitPreviewSection = ({
   const accessories = clothingItems.filter(item => 
     ['accessories'].includes(item.type)
   );
+
+  // Poll for prediction results if we have a prediction ID
+  useEffect(() => {
+    if (!predictionId) return;
+
+    const pollInterval = setInterval(async () => {
+      try {
+        const { data, error } = await supabase.functions.invoke('generate-image', {
+          body: { predictionId }
+        });
+
+        if (error) throw new Error(error.message);
+
+        if (data.generatedImageUrl) {
+          // Image generation is complete
+          setAiGeneratedImage(data.generatedImageUrl);
+          setIsGeneratingAI(false);
+          setPredictionId(null);
+          clearInterval(pollInterval);
+          toast.success("AI-generated try-on is ready!");
+        }
+      } catch (err) {
+        console.error("Error polling for prediction:", err);
+      }
+    }, 3000);
+
+    // Cleanup interval on component unmount or when polling completes
+    return () => clearInterval(pollInterval);
+  }, [predictionId]);
 
   const handleToggleOptions = () => {
     setShowClothingOptions(!showClothingOptions);
@@ -101,14 +132,25 @@ const OutfitPreviewSection = ({
 
       console.log("AI generation response:", data);
       
-      if (data.mockImageUrl) {
-        setAiGeneratedImage(data.mockImageUrl);
+      if (data.generatedImageUrl) {
+        // Image was generated immediately
+        setAiGeneratedImage(data.generatedImageUrl);
         toast.success("AI-generated try-on ready!");
+        setIsGeneratingAI(false);
+      } else if (data.predictionId) {
+        // Need to poll for results
+        setPredictionId(data.predictionId);
+        // Use the mock image URL temporarily if provided
+        if (data.mockImageUrl) {
+          setAiGeneratedImage(data.mockImageUrl);
+        }
+        toast("Generating AI try-on image...", {
+          description: "This may take a minute or two. We'll notify you when it's ready."
+        });
       }
     } catch (error) {
       console.error("Error in AI generation:", error);
       toast.error("Failed to generate AI try-on image");
-    } finally {
       setIsGeneratingAI(false);
     }
   };

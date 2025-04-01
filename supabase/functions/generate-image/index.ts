@@ -54,15 +54,58 @@ serve(async (req) => {
     const prediction = await response.json();
     console.log("Prediction created:", prediction.id);
 
-    // For demo purposes, we'll return a mock image URL immediately
-    // In a real implementation, you would poll the prediction status until it's completed
+    // Start polling for the result
+    let result = null;
+    const predictionId = prediction.id;
+    
+    if (predictionId) {
+      // Poll for completion - in a real production environment you'd implement
+      // a webhook or client-side polling instead of blocking the edge function
+      let attempts = 0;
+      const maxAttempts = 20; // Prevent infinite loops
+
+      while (attempts < maxAttempts) {
+        const statusResponse = await fetch(`https://api.replicate.com/v1/predictions/${predictionId}`, {
+          headers: {
+            "Authorization": `Token ${REPLICATE_API_TOKEN}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        const statusData = await statusResponse.json();
+
+        if (statusData.status === "succeeded") {
+          result = statusData.output;
+          break;
+        } else if (statusData.status === "failed") {
+          throw new Error(`Prediction failed: ${statusData.error}`);
+        }
+
+        // Wait 1 second before polling again
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        attempts++;
+      }
+
+      if (!result && attempts >= maxAttempts) {
+        return new Response(
+          JSON.stringify({
+            success: true,
+            message: "Image generation still in progress, check status endpoint",
+            predictionId: predictionId,
+            mockImageUrl: userPhotoUrl // Return user photo as fallback
+          }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
+
     return new Response(
       JSON.stringify({
         success: true,
-        message: "Image generation initiated",
-        predictionId: prediction.id,
-        // Mock image URL for immediate preview while actual generation happens
-        mockImageUrl: userPhotoUrl 
+        message: result ? "Image generation completed" : "Image generation initiated",
+        predictionId: predictionId,
+        generatedImageUrl: result ? result[0] : null,
+        mockImageUrl: userPhotoUrl // Include user photo for immediate display
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
