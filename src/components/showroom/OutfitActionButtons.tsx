@@ -8,7 +8,6 @@ interface OutfitActionButtonsProps {
   finalImage: string | null;
   showClothingOptions: boolean;
   onToggleOptions: () => void;
-  aiTryOnButton?: React.ReactNode;
 }
 
 const OutfitActionButtons = ({
@@ -16,13 +15,10 @@ const OutfitActionButtons = ({
   userPhoto,
   finalImage,
   showClothingOptions,
-  onToggleOptions,
-  aiTryOnButton
+  onToggleOptions
 }: OutfitActionButtonsProps) => {
   return (
     <div className="flex gap-2">
-      {selectedOutfit && userPhoto && aiTryOnButton}
-      
       {selectedOutfit && finalImage && (
         <Button 
           variant="outline"

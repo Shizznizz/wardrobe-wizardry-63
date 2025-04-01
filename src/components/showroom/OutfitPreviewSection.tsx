@@ -5,7 +5,6 @@ import VirtualFittingRoom from '@/components/VirtualFittingRoom';
 import { ClothingItem, Outfit } from '@/lib/types';
 import { useState } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
-import AiTryOnButton from './AiTryOnButton';
 import PredictionPoller from './PredictionPoller';
 import OutfitCustomizationPanel from './OutfitCustomizationPanel';
 import OutfitActionButtons from './OutfitActionButtons';
@@ -32,8 +31,6 @@ const OutfitPreviewSection = ({
   onSaveLook
 }: OutfitPreviewSectionProps) => {
   const [showClothingOptions, setShowClothingOptions] = useState(false);
-  const [isGeneratingAI, setIsGeneratingAI] = useState(false);
-  const [aiGeneratedImage, setAiGeneratedImage] = useState<string | null>(null);
   const [predictionId, setPredictionId] = useState<string | null>(null);
   const [generationError, setGenerationError] = useState<string | null>(null);
   const isMobile = useIsMobile();
@@ -50,35 +47,16 @@ const OutfitPreviewSection = ({
     console.log('Toggle favorite for item:', id);
   };
 
-  const handleGenerationStart = () => {
-    setIsGeneratingAI(true);
-    setGenerationError(null); // Clear any previous errors
-  };
-
-  const handleImageGenerated = (imageUrl: string, newPredictionId: string | null) => {
-    setAiGeneratedImage(imageUrl);
-    setPredictionId(newPredictionId);
-    if (!newPredictionId) {
-      setIsGeneratingAI(false);
-    }
-  };
-
   const handlePredictionComplete = (imageUrl: string) => {
-    setAiGeneratedImage(imageUrl);
-    setIsGeneratingAI(false);
+    // This would be implemented if we need to handle prediction completion here
     setPredictionId(null);
   };
   
   const handlePredictionError = (error: string) => {
     console.error("Prediction error:", error);
     setGenerationError(error);
-    setIsGeneratingAI(false);
     setPredictionId(null);
-    // Toast is already shown in the poller component
   };
-
-  // Display AI-generated image if available, otherwise show the regular final image
-  const displayImage = aiGeneratedImage || finalImage;
 
   return (
     <motion.div 
@@ -95,28 +73,19 @@ const OutfitPreviewSection = ({
             <OutfitActionButtons 
               selectedOutfit={selectedOutfit}
               userPhoto={userPhoto}
-              finalImage={displayImage}
+              finalImage={finalImage}
               showClothingOptions={showClothingOptions}
               onToggleOptions={handleToggleOptions}
-              aiTryOnButton={
-                <AiTryOnButton
-                  selectedOutfit={selectedOutfit}
-                  userPhoto={userPhoto}
-                  clothingPhoto={clothingPhoto}
-                  onGenerationStart={handleGenerationStart}
-                  onImageGenerated={handleImageGenerated}
-                />
-              }
             />
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className={`${showClothingOptions ? 'lg:col-span-2' : 'lg:col-span-3'}`}>
               <VirtualFittingRoom 
-                finalImage={displayImage}
+                finalImage={finalImage}
                 outfit={selectedOutfit}
                 clothingItems={clothingItems}
-                isProcessing={isProcessingTryOn || isGeneratingAI}
+                isProcessing={isProcessingTryOn}
                 userPhoto={userPhoto}
                 onSaveLook={onSaveLook}
                 isOliviaImage={isUsingOliviaImage}

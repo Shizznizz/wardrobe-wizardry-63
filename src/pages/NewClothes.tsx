@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -6,6 +7,7 @@ import { Outfit, ClothingItem } from '@/lib/types';
 import { useIsMobile } from '@/hooks/use-mobile';
 import OutfitSubscriptionPopup from '@/components/OutfitSubscriptionPopup';
 import OliviaImageGallery from '@/components/outfits/OliviaImageGallery';
+import { supabase } from '@/integrations/supabase/client';
 
 import NewClothesHeader from '@/components/new-clothes/NewClothesHeader';
 import TryOnSection from '@/components/new-clothes/TryOnSection';
@@ -27,6 +29,8 @@ const NewClothes = () => {
   const [isUsingOliviaImage, setIsUsingOliviaImage] = useState(false);
   const [showHelpTips, setShowHelpTips] = useState(false);
   const [currentTipIndex, setCurrentTipIndex] = useState(0);
+  const [predictionId, setPredictionId] = useState<string | null>(null);
+  
   const isMobile = useIsMobile();
   
   const mockOutfit: Outfit = {
@@ -39,6 +43,35 @@ const NewClothes = () => {
     timesWorn: 0,
     dateAdded: new Date()
   };
+
+  // Effect for polling prediction results if needed
+  useEffect(() => {
+    if (!predictionId) return;
+    
+    const pollInterval = setInterval(async () => {
+      try {
+        const { data, error } = await supabase.functions.invoke('generate-image', {
+          body: { predictionId }
+        });
+
+        if (error) throw new Error(error.message);
+        
+        if (data.generatedImageUrl) {
+          // Image generation is complete
+          setFinalImage(data.generatedImageUrl);
+          setPredictionId(null);
+          setIsProcessing(false);
+          toast.success("AI-generated try-on is ready!");
+          clearInterval(pollInterval);
+        }
+      } catch (err) {
+        console.error("Error polling for prediction:", err);
+        toast.error("Error checking generation status");
+      }
+    }, 3000);
+
+    return () => clearInterval(pollInterval);
+  }, [predictionId]);
 
   useEffect(() => {
     if (finalImage && !isPremiumUser) {
@@ -91,10 +124,38 @@ const NewClothes = () => {
     try {
       setIsProcessing(true);
       toast.info('Processing your virtual try-on. This may take a few moments...');
-
-      await new Promise(resolve => setTimeout(resolve, 2000));
       
-      setFinalImage(userPhoto);
+      // Generate AI try-on using Replicate API through Edge Function
+      const { data, error } = await supabase.functions.invoke('generate-image', {
+        body: {
+          prompt: "a photorealistic image of a person wearing a white t-shirt",
+          userPhotoUrl: userPhoto,
+          clothingPhotoUrl: clothingPhoto
+        }
+      });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      console.log("AI generation response:", data);
+      
+      if (data.generatedImageUrl) {
+        // Image was generated immediately
+        setFinalImage(data.generatedImageUrl);
+        setIsProcessing(false);
+        toast.success("Virtual try-on complete!");
+      } else if (data.predictionId) {
+        // Need to poll for results
+        setPredictionId(data.predictionId);
+        // Use mock image temporarily and start polling
+        setFinalImage(data.mockImageUrl || userPhoto);
+        toast("Generating AI try-on image...", {
+          description: "This may take a minute or two. We'll notify you when it's ready."
+        });
+      }
+      
+      // Add the clothing item to selected items
       setSelectedItems([{
         id: 'main-item',
         name: 'Uploaded Item',
@@ -108,12 +169,9 @@ const NewClothes = () => {
         timesWorn: 0,
         dateAdded: new Date()
       }]);
-      
-      toast.success('Virtual try-on complete!');
     } catch (error) {
       console.error('Error in virtual try-on:', error);
       toast.error('Something went wrong. Please try again.');
-    } finally {
       setIsProcessing(false);
     }
   };
@@ -136,6 +194,7 @@ const NewClothes = () => {
     setUserPhoto(null);
     setClothingPhoto(null);
     setFinalImage(null);
+    setPredictionId(null);
     setSelectedItems([]);
     setIsUsingOliviaImage(false);
     toast.success('Photos cleared');
