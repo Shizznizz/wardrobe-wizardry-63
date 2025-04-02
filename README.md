@@ -7,6 +7,23 @@ This application, **"Wardrobe Wizardry"**, is a proprietary fashion-tech concept
 
 This project is protected under a **custom proprietary license**. For licensing inquiries, please contact: 📧 danieldeurloo@hotmail.com
 
+# Project Vision
+
+**Wardrobe Wizardry** reimagines how people interact with their clothing by offering a personalized fashion experience that adapts to individual style, occasion needs, and real-time weather conditions.
+
+## Our Mission
+
+To empower individuals to express their unique style confidently while eliminating the daily "what to wear" dilemma through intelligent fashion technology.
+
+## Key Features
+
+- **Virtual Wardrobe Management**: Digitize your entire collection for effortless organization and outfit creation.
+- **Smart Outfit Generator**: Receive tailored outfit recommendations based on your personal style, local weather conditions, and upcoming occasions.
+- **Olivia Bloom AI Stylist**: Get professional fashion advice from your personal style assistant who learns your preferences over time.
+- **Virtual Try-On Experience**: Visualize outfits on your own photos before wearing them in real life.
+
+Wardrobe Wizardry represents a breakthrough in fashion-tech by seamlessly blending artificial intelligence with personalized styling to create a truly unique experience that grows with each user.
+
 # Welcome to your Lovable project
 
 ## Project info
