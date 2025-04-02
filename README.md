@@ -1,4 +1,5 @@
 
+
 # Copyright & Usage Notice
 
 This application, **"Wardrobe Wizardry"**, is a proprietary fashion-tech concept by **Daniel Deurloo (Shizznizz)**. All rights reserved.
@@ -23,6 +24,23 @@ To empower individuals to express their unique style confidently while eliminati
 - **Virtual Try-On Experience**: Visualize outfits on your own photos before wearing them in real life.
 
 Wardrobe Wizardry represents a breakthrough in fashion-tech by seamlessly blending artificial intelligence with personalized styling to create a truly unique experience that grows with each user.
+
+# Meet Olivia – Your AI Stylist
+
+At the heart of Wardrobe Wizardry is **Olivia Bloom** – your personal AI fashion stylist who transforms how you dress every day. More than just an algorithm, Olivia is the fashionable friend you've always wanted.
+
+## How Olivia Helps You Shine
+
+- **Personalized Style Guidance**: Olivia analyzes your wardrobe items, color preferences, body shape, and personal style to create looks that are uniquely you.
+- **Weather-Adaptive Recommendations**: She checks your local forecast to suggest outfits that are both stylish and practical for the day ahead.
+- **Occasion-Specific Styling**: Whether it's a job interview, date night, or weekend brunch, Olivia ensures you're dressed appropriately for any event.
+- **Trend Integration**: While honoring your personal style, Olivia gently introduces trending elements that complement your existing wardrobe.
+
+## Who is Olivia?
+
+Olivia Bloom joined the Wardrobe Wizardry team after years in the fashion industry. With an impeccable eye for style and color harmony, she's now bringing her expertise to everyone through AI. Her approach is confident yet kind, mixing high-fashion knowledge with practical advice. Olivia's talent lies in understanding not just what's trendy, but what works for *you* – making her suggestions feel like they're coming from someone who truly gets your style journey.
+
+When interacting with Olivia, expect the attentiveness of a personal shopper combined with the efficiency of cutting-edge AI – all wrapped in a friendly, conversational tone that makes fashion advice feel like chatting with a stylish friend.
 
 # Welcome to your Lovable project
 
