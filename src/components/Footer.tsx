@@ -4,12 +4,14 @@ import { Link } from 'react-router-dom';
 import { Mail, Home, Shirt, Palette, Smartphone, Image } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { useIsMobile } from '@/hooks/use-mobile';
+import BackToTop from './BackToTop';
 
 const Footer = () => {
   const isMobile = useIsMobile();
   
   return (
     <footer className="w-full bg-gradient-to-r from-slate-950 to-purple-950 border-t border-white/10">
+      <BackToTop />
       <div className="container mx-auto px-4 py-6">
         <div className={`flex ${isMobile ? 'flex-col space-y-6' : 'flex-row justify-between items-center'}`}>
           {/* Left Side */}
