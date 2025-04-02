@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./hooks/useAuth";
 import { ThemeProvider } from "./components/ThemeProvider";
 import ScrollToTop from "./components/ScrollToTop";
+import Footer from "./components/Footer";
 import Index from "./pages/Index";
 import Wardrobe from "./pages/Wardrobe";
 import Outfits from "./pages/Outfits";
@@ -38,18 +39,23 @@ const AppRoutes = () => {
   return (
     <>
       <ScrollToTop />
-      <Routes>
-        <Route path="/" element={<Index />} />
-        <Route path="/wardrobe" element={<ProtectedRoute><Wardrobe /></ProtectedRoute>} />
-        <Route path="/outfits" element={<ProtectedRoute><Outfits /></ProtectedRoute>} />
-        <Route path="/showroom" element={<ProtectedRoute><Showroom /></ProtectedRoute>} />
-        <Route path="/new-clothes" element={<ProtectedRoute><NewClothes /></ProtectedRoute>} />
-        <Route path="/virtual-try-on" element={<ProtectedRoute><VirtualTryOn /></ProtectedRoute>} />
-        <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-        <Route path="/preferences" element={<ProtectedRoute><Preferences /></ProtectedRoute>} />
-        <Route path="/auth" element={<Auth />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <div className="flex flex-col min-h-screen">
+        <div className="flex-grow">
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/wardrobe" element={<ProtectedRoute><Wardrobe /></ProtectedRoute>} />
+            <Route path="/outfits" element={<ProtectedRoute><Outfits /></ProtectedRoute>} />
+            <Route path="/showroom" element={<ProtectedRoute><Showroom /></ProtectedRoute>} />
+            <Route path="/new-clothes" element={<ProtectedRoute><NewClothes /></ProtectedRoute>} />
+            <Route path="/virtual-try-on" element={<ProtectedRoute><VirtualTryOn /></ProtectedRoute>} />
+            <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+            <Route path="/preferences" element={<ProtectedRoute><Preferences /></ProtectedRoute>} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </div>
+        <Footer />
+      </div>
     </>
   );
 };
