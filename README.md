@@ -1,3 +1,12 @@
+
+# Copyright & Usage Notice
+
+This application, **"Wardrobe Wizardry"**, is a proprietary fashion-tech concept by **Daniel Deurloo (Shizznizz)**. All rights reserved.
+
+**Unauthorized use, reproduction, or commercial distribution is strictly prohibited.**
+
+This project is protected under a **custom proprietary license**. For licensing inquiries, please contact: 📧 danieldeurloo@hotmail.com
+
 # Welcome to your Lovable project
 
 ## Project info
