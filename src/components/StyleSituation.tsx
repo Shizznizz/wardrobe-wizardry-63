@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { SendHorizontal, Sparkles, Calendar, CalendarDays, X, Wand2 } from 'lucide-react';
@@ -113,7 +112,6 @@ const StyleSituation = () => {
       <form onSubmit={handleSubmit} className="space-y-3">
         <div className="relative">
           <Popover open={open} onOpenChange={setOpen}>
-            {/* Changed to flex-col for mobile to stack elements vertically */}
             <div className={`flex ${isMobile ? 'flex-col' : 'items-center'} gap-3`}>
               <div className="relative flex-grow">
                 <PopoverTrigger asChild>
@@ -143,16 +141,15 @@ const StyleSituation = () => {
                 )}
               </div>
               
-              {/* Button takes full width on mobile */}
               <Button 
                 type="submit" 
                 className={`bg-gradient-to-r from-coral-500 to-coral-400 hover:from-coral-400 hover:to-coral-300 shadow-lg 
-                  hover:shadow-coral rounded-xl transform hover:scale-105 transition-all duration-300 
-                  ${isMobile ? 'w-full py-3' : 'px-4 py-2 sm:py-2.5 h-auto min-w-[150px]'}`}
+                  hover:shadow-coral transition-all duration-300 rounded-xl
+                  ${isMobile ? 'w-full py-2.5 text-sm' : 'px-4 py-2 sm:py-2.5 h-auto min-w-[150px]'}`}
                 disabled={isTyping || (!situation.trim() && !selectedEvent)}
               >
-                <Wand2 className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                What outfit do you recommend?
+                <Wand2 className={`${isMobile ? 'h-4 w-4 mr-1' : 'h-4 w-4 sm:h-5 sm:w-5 mr-2'}`} />
+                {isMobile ? "Recommend outfit" : "What outfit do you recommend?"}
               </Button>
             </div>
             

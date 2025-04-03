@@ -224,6 +224,7 @@
   .mobile-button-compact {
     padding-top: 0.5rem !important;
     padding-bottom: 0.5rem !important;
+    font-size: 0.875rem !important;
   }
   
   .avatar-content-gap {
@@ -257,8 +258,9 @@
   .btn-mobile {
     padding-left: 0.75rem !important;
     padding-right: 0.75rem !important;
-    padding-top: 0.75rem !important;
-    padding-bottom: 0.75rem !important;
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+    font-size: 0.875rem !important;
   }
   
   .mobile-section-spacing {
@@ -266,9 +268,18 @@
     margin-bottom: 2.5rem !important;
   }
   
-  /* Added responsive button width for better mobile experience */
+  /* Improved button paddings for mobile */
   .preference-button-mobile {
     width: 100% !important;
+    padding: 0.5rem 0.75rem !important;
+  }
+  
+  /* Improved touch targets for mobile buttons */
+  .mobile-button {
+    min-height: 44px !important;
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+    font-size: 0.875rem !important;
   }
 }
 
@@ -294,6 +305,21 @@
   .xs-flex-col {
     flex-direction: column !important;
   }
+  
+  /* Better button padding for extra small screens */
+  .xs-button-padding {
+    padding-top: 0.375rem !important;
+    padding-bottom: 0.375rem !important;
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+  }
+  
+  /* More compact icons for mobile buttons */
+  .xs-icon-compact {
+    width: 1rem !important;
+    height: 1rem !important;
+    margin-right: 0.25rem !important;
+  }
 }
 
 /* Improved tablet responsiveness */
@@ -308,5 +334,10 @@
   
   .md-w-auto {
     width: auto !important;
+  }
+  
+  /* Better button padding for tablet screens */
+  .md-button-padding {
+    padding: 0.5rem 0.75rem !important;
   }
 }

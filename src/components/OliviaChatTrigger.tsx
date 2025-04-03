@@ -6,6 +6,7 @@ import { MessageCircle } from 'lucide-react';
 import OliviaChatDialog from './OliviaChatDialog';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface OliviaChatTriggerProps {
   buttonText?: string;
@@ -25,6 +26,7 @@ const OliviaChatTrigger = ({
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
 
   const handleOpenChat = () => {
     if (!user) {
@@ -45,10 +47,11 @@ const OliviaChatTrigger = ({
       <Button
         variant={buttonVariant as any}
         onClick={handleOpenChat}
-        className={className}
+        size={isMobile ? "sm" : "default"}
+        className={`${className} ${isMobile ? 'py-2' : ''}`}
       >
-        <MessageCircle className="mr-2 h-4 w-4" />
-        {buttonText}
+        <MessageCircle className={`${isMobile ? 'mr-1' : 'mr-2'} h-4 w-4`} />
+        {isMobile && buttonText.length > 10 ? "Chat" : buttonText}
       </Button>
       
       <OliviaChatDialog 
