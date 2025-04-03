@@ -57,7 +57,7 @@ export const UserMenu = ({ isScrolled = false }: UserMenuProps) => {
           variant="ghost" 
           size="icon" 
           className={cn(
-            "ml-2 rounded-full transition-all duration-300",
+            "ml-2 rounded-full transition-all duration-300 z-[50]", // Lower z-index for avatar
             isScrolled 
               ? "text-white hover:bg-white/10" 
               : "text-white hover:bg-white/10"

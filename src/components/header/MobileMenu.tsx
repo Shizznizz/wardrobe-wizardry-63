@@ -89,7 +89,8 @@ export const MobileMenu = ({
               </Button>
             </div>
 
-            <nav className="flex flex-col items-center mt-6 space-y-4">
+            {/* Navigation items - moved higher up in the layout */}
+            <nav className="flex flex-col items-center mt-2 space-y-3">
               {navItems.map((item, i) => (
                 <motion.div
                   key={item.path}
@@ -133,6 +134,7 @@ export const MobileMenu = ({
               )}
             </nav>
 
+            {/* Spacer to push content to bottom */}
             <div className="flex-grow"></div>
 
             {weather && (
@@ -147,6 +149,7 @@ export const MobileMenu = ({
               </motion.div>
             )}
             
+            {/* Sign out button - stays at the bottom */}
             {user && (
               <motion.button
                 variants={itemVariants}
