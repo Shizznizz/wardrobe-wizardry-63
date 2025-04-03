@@ -66,7 +66,15 @@ export const MobileMenu = ({
     <AnimatePresence>
       {isOpen && (
         <motion.div 
-          className="fixed inset-0 z-[9999] bg-purple-900/90 backdrop-blur-md mobile-menu-overlay"
+          className="fixed inset-0 bg-purple-900/90 backdrop-blur-md mobile-menu-overlay"
+          style={{ 
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 99999 // Increased z-index to ensure it's above everything
+          }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}

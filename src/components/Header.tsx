@@ -75,10 +75,11 @@ const Header = ({ weather }: HeaderProps) => {
   return (
     <header 
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-500 py-2 sm:py-4",
+        "fixed top-0 left-0 right-0 transition-all duration-500 py-2 sm:py-4",
         isScrolled 
           ? "bg-purple-900/95 shadow-lg border-b border-white/10" 
-          : "bg-[rgba(50,0,80,0.5)] backdrop-blur-md border-transparent text-white"
+          : "bg-[rgba(50,0,80,0.5)] backdrop-blur-md border-transparent text-white",
+        "z-[999]" // Added explicit z-index for header
       )}
     >
       <div className="container mx-auto px-3 md:px-6 flex items-center justify-between">
