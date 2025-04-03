@@ -8,6 +8,7 @@ import { AuthProvider, useAuth } from "./hooks/useAuth";
 import { ThemeProvider } from "./components/ThemeProvider";
 import ScrollToTop from "./components/ScrollToTop";
 import Footer from "./components/Footer";
+import LegalDisclaimer from "./components/LegalDisclaimer";
 import Index from "./pages/Index";
 import Wardrobe from "./pages/Wardrobe";
 import Outfits from "./pages/Outfits";
@@ -42,7 +43,10 @@ const AppRoutes = () => {
       <div className="flex flex-col min-h-screen">
         <div className="flex-grow">
           <Routes>
-            <Route path="/" element={<Index />} />
+            <Route path="/" element={<>
+              <Index />
+              <LegalDisclaimer />
+            </>} />
             <Route path="/wardrobe" element={<ProtectedRoute><Wardrobe /></ProtectedRoute>} />
             <Route path="/outfits" element={<ProtectedRoute><Outfits /></ProtectedRoute>} />
             <Route path="/showroom" element={<ProtectedRoute><Showroom /></ProtectedRoute>} />

@@ -1,18 +1,27 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, Home, Shirt, Palette, Smartphone, Image } from 'lucide-react';
+import { Mail, Home, Shirt, Palette, Smartphone, Image, FileText } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { useIsMobile } from '@/hooks/use-mobile';
 import BackToTop from './BackToTop';
+import LegalModal from './LegalModal';
 
 const Footer = () => {
   const isMobile = useIsMobile();
+  const [legalModalOpen, setLegalModalOpen] = useState(false);
   
   return (
     <footer className="w-full bg-gradient-to-r from-slate-950 to-purple-950 border-t border-white/10">
       <BackToTop />
       <div className="container mx-auto px-4 py-6">
+        {/* Copyright notice - positioned above main footer content */}
+        <div className="text-center mb-4">
+          <p className="text-xs text-white/70">
+            © 2023–2025 Daniel Deurloo (Shizznizz) — Wardrobe Wizardry. All rights reserved. This application is protected by a proprietary license. Unauthorized use or reproduction is prohibited.
+          </p>
+        </div>
+
         <div className={`flex ${isMobile ? 'flex-col space-y-6' : 'flex-row justify-between items-center'}`}>
           {/* Left Side */}
           <div className="space-y-2">
@@ -63,6 +72,15 @@ const Footer = () => {
                   <span>Showroom</span>
                 </Link>
               </li>
+              <li>
+                <button 
+                  onClick={() => setLegalModalOpen(true)}
+                  className="text-slate-300 hover:text-white flex items-center space-x-1 opacity-80 hover:opacity-100 transition-all"
+                >
+                  <FileText className="h-3 w-3" />
+                  <span>License & Legal</span>
+                </button>
+              </li>
             </ul>
           </nav>
           
@@ -91,6 +109,9 @@ const Footer = () => {
           </div>
         </div>
       </div>
+
+      {/* Legal Modal */}
+      <LegalModal open={legalModalOpen} onOpenChange={setLegalModalOpen} />
     </footer>
   );
 };
