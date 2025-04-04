@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu } from 'lucide-react';
@@ -60,7 +59,7 @@ const Header = ({ weather }: HeaderProps) => {
       ...navItems,
       { name: 'Wardrobe', path: '/wardrobe' },
       { name: 'Outfits', path: '/outfits' },
-      { name: 'Calendar', path: '/calendar' }, // Added Calendar nav item
+      { name: 'Calendar', path: '/calendar' },
       { name: 'Showroom', path: '/showroom' },
       { name: 'New Clothes', path: '/new-clothes' },
       { name: 'Settings', path: '/settings' },
@@ -80,7 +79,7 @@ const Header = ({ weather }: HeaderProps) => {
         isScrolled 
           ? "bg-purple-900/95 shadow-lg border-b border-white/10" 
           : "bg-[rgba(50,0,80,0.5)] backdrop-blur-md border-transparent text-white",
-        "z-[999]" // Added explicit z-index for header
+        "z-[100]"
       )}
     >
       <div className="container mx-auto px-3 md:px-6 flex items-center justify-between">

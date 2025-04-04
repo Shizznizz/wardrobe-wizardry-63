@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { format, isSameDay, endOfMonth, startOfMonth, eachDayOfInterval, isToday, addMonths, subMonths } from 'date-fns';
@@ -59,6 +60,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -353,15 +355,11 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="bg-slate-900/60 backdrop-blur-sm border border-purple-500/20 rounded-xl p-4 md:p-6 shadow-xl w-full"
+      className="space-y-6"
     >
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
-        <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-          Outfit Calendar & Stats
-        </h2>
-        
-        <Tabs defaultValue={selectedTab} onValueChange={setSelectedTab} className="w-full md:w-auto">
-          <TabsList className="grid w-full grid-cols-2">
+      <div className="mb-8">
+        <Tabs defaultValue={selectedTab} onValueChange={setSelectedTab} className="w-full">
+          <TabsList className="grid w-full md:w-1/2 mx-auto grid-cols-2 mb-6">
             <TabsTrigger value="calendar" className="flex items-center gap-2">
               <Calendar className="h-4 w-4" />
               Calendar
@@ -373,10 +371,13 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
           </TabsList>
         
           <TabsContent value="calendar">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-2">
-              <div className="col-span-1">
-                <div className="bg-slate-800/50 rounded-lg p-4 border border-purple-500/20">
-                  <div className="flex justify-between items-center mb-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <Card className="col-span-1 bg-slate-800/40 border-purple-500/20 shadow-lg backdrop-blur-sm">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-xl text-purple-200">Date Selection</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex justify-between items-center mb-2">
                     <Button
                       variant="outline"
                       size="sm"
@@ -434,19 +435,24 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
                       />
                     </PopoverContent>
                   </Popover>
-                  
-                  <div className="flex justify-between items-center mt-4 mb-3">
-                    <h3 className="text-lg font-medium text-purple-300">Logged outfits</h3>
-                    <Button 
-                      size="sm" 
-                      className="bg-purple-600 hover:bg-purple-700"
-                      onClick={() => handleOpenLogDialog(selectedDate)}
-                    >
-                      <Plus className="h-3.5 w-3.5 mr-1" />
-                      Log Outfit
-                    </Button>
-                  </div>
-                  
+                </CardContent>
+                <CardFooter className="pt-2 flex justify-center">
+                  <Button 
+                    size="lg" 
+                    className="w-full bg-purple-600 hover:bg-purple-700 font-medium"
+                    onClick={() => handleOpenLogDialog(selectedDate)}
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Log Outfit
+                  </Button>
+                </CardFooter>
+              </Card>
+              
+              <Card className="col-span-1 md:col-span-2 bg-slate-800/40 border-purple-500/20 shadow-lg backdrop-blur-sm">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-xl text-purple-200">Outfits on {selectedDate ? format(selectedDate, 'MMMM d, yyyy') : 'Selected Date'}</CardTitle>
+                </CardHeader>
+                <CardContent>
                   {outfitLogsOnDate && outfitLogsOnDate.length > 0 ? (
                     <div className="space-y-3">
                       {outfitLogsOnDate.map(log => {
@@ -464,17 +470,28 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
                       })}
                     </div>
                   ) : (
-                    <p className="text-slate-400 italic mt-2">No outfits logged on this date</p>
+                    <div className="text-center py-8">
+                      <p className="text-slate-400 italic mb-4">No outfits logged on this date</p>
+                      <Button 
+                        variant="outline" 
+                        className="border-purple-500/30 hover:bg-purple-500/20"
+                        onClick={() => handleOpenLogDialog(selectedDate)}
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add Your First Outfit Log
+                      </Button>
+                    </div>
                   )}
-                </div>
-              </div>
+                </CardContent>
+              </Card>
               
-              <div className="col-span-1 md:col-span-2">
-                <div className="bg-slate-800/50 rounded-lg p-4 border border-purple-500/20 h-full">
-                  <h3 className="text-lg font-medium mb-3 text-purple-300">Wardrobe Recommendations</h3>
-                  
-                  <div className="space-y-4">
-                    <div className="bg-purple-900/30 p-3 rounded-md border border-purple-500/30">
+              <Card className="col-span-1 md:col-span-3 bg-slate-800/40 border-purple-500/20 shadow-lg backdrop-blur-sm">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-xl text-purple-200">Wardrobe Recommendations</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="bg-purple-900/30 p-4 rounded-md border border-purple-500/30">
                       <h4 className="font-medium text-purple-200 mb-2">Rarely Worn Items</h4>
                       <p className="text-sm text-slate-300 mb-3">
                         Consider wearing these outfits that haven't been worn in the last 30 days:
@@ -502,7 +519,7 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
                       )}
                     </div>
                     
-                    <div className="bg-amber-900/20 p-3 rounded-md border border-amber-500/30">
+                    <div className="bg-amber-900/20 p-4 rounded-md border border-amber-500/30">
                       <h4 className="font-medium text-amber-200 mb-2">Frequently Worn Items</h4>
                       <p className="text-sm text-slate-300 mb-3">
                         Consider giving these frequently worn outfits a break:
@@ -526,7 +543,7 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
                       )}
                     </div>
                     
-                    <div className="bg-blue-900/20 p-3 rounded-md border border-blue-500/30">
+                    <div className="bg-blue-900/20 p-4 rounded-md border border-blue-500/30">
                       <h4 className="font-medium text-blue-200 mb-2">Seasonal Suggestions</h4>
                       <p className="text-sm text-slate-300">
                         Based on the current season and your wardrobe history, consider trying these combinations:
@@ -537,102 +554,112 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
                         <li>• Your summer collection hasn't been used much - perfect time to try it</li>
                       </ul>
                     </div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card className="col-span-1 md:col-span-3 bg-slate-800/40 border-purple-500/20 shadow-lg backdrop-blur-sm">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-xl text-purple-200">Monthly Calendar View</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-7 gap-1 text-center">
+                    {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                      <div key={day} className="text-xs font-medium text-slate-400 mb-1">{day}</div>
+                    ))}
                     
-                    <div className="bg-green-900/20 p-3 rounded-md border border-green-500/30">
-                      <h4 className="font-medium text-green-200 mb-2">Monthly Calendar View</h4>
-                      <div className="grid grid-cols-7 gap-1 text-center">
-                        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                          <div key={day} className="text-xs font-medium text-slate-400 mb-1">{day}</div>
-                        ))}
-                        
-                        {eachDayOfInterval({
-                          start: startOfMonth(currentMonth),
-                          end: endOfMonth(currentMonth)
-                        }).map(day => {
-                          const dayLogs = getLogsForDay(day);
-                          const isSelected = selectedDate && isSameDay(day, selectedDate);
-                          const isCurrentMonth = day.getMonth() === currentMonth.getMonth();
-                          
-                          return (
-                            <div 
-                              key={day.toString()}
-                              onClick={() => setSelectedDate(day)}
-                              className={`
-                                p-1 rounded-sm text-xs cursor-pointer relative
-                                ${isCurrentMonth ? 'hover:bg-slate-700/50' : 'opacity-40'}
-                                ${isSelected ? 'bg-purple-700/50 text-white' : ''}
-                                ${isToday(day) ? 'border border-purple-500' : ''}
-                                ${dayLogs.length > 0 ? 'bg-slate-800' : ''}
-                              `}
-                            >
-                              <div className="mb-2">{format(day, 'd')}</div>
-                              {dayLogs.length > 0 && (
-                                <div className="flex justify-center gap-0.5">
-                                  {dayLogs.slice(0, 3).map((log, i) => {
-                                    const outfit = getOutfitById(log.outfitId);
-                                    if (!outfit) return null;
-                                    
-                                    return (
-                                      <div 
-                                        key={log.id}
-                                        className={`
-                                          h-1 w-1 rounded-full
-                                          ${i === 0 ? 'bg-purple-500' : i === 1 ? 'bg-blue-500' : 'bg-pink-500'}
-                                        `}
-                                        title={outfit.name}
-                                      />
-                                    );
-                                  })}
-                                  {dayLogs.length > 3 && (
-                                    <div className="text-[8px] text-slate-400">+{dayLogs.length - 3}</div>
-                                  )}
-                                </div>
+                    {eachDayOfInterval({
+                      start: startOfMonth(currentMonth),
+                      end: endOfMonth(currentMonth)
+                    }).map(day => {
+                      const dayLogs = getLogsForDay(day);
+                      const isSelected = selectedDate && isSameDay(day, selectedDate);
+                      const isCurrentMonth = day.getMonth() === currentMonth.getMonth();
+                      
+                      return (
+                        <div 
+                          key={day.toString()}
+                          onClick={() => setSelectedDate(day)}
+                          className={`
+                            p-1 rounded-sm text-xs cursor-pointer relative
+                            ${isCurrentMonth ? 'hover:bg-slate-700/50' : 'opacity-40'}
+                            ${isSelected ? 'bg-purple-700/50 text-white' : ''}
+                            ${isToday(day) ? 'border border-purple-500' : ''}
+                            ${dayLogs.length > 0 ? 'bg-slate-800' : ''}
+                          `}
+                        >
+                          <div className="mb-2">{format(day, 'd')}</div>
+                          {dayLogs.length > 0 && (
+                            <div className="flex justify-center gap-0.5">
+                              {dayLogs.slice(0, 3).map((log, i) => {
+                                const outfit = getOutfitById(log.outfitId);
+                                if (!outfit) return null;
+                                
+                                return (
+                                  <div 
+                                    key={log.id}
+                                    className={`
+                                      h-1 w-1 rounded-full
+                                      ${i === 0 ? 'bg-purple-500' : i === 1 ? 'bg-blue-500' : 'bg-pink-500'}
+                                    `}
+                                    title={outfit.name}
+                                  />
+                                );
+                              })}
+                              {dayLogs.length > 3 && (
+                                <div className="text-[8px] text-slate-400">+{dayLogs.length - 3}</div>
                               )}
                             </div>
-                          );
-                        })}
-                      </div>
-                    </div>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
             </div>
           </TabsContent>
           
           <TabsContent value="stats">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-2">
-              <div className="bg-slate-800/50 rounded-lg p-4 border border-purple-500/20">
-                <h3 className="text-lg font-medium mb-3 text-purple-300">Most Worn Items</h3>
-                <Table>
-                  <TableHeader>
-                    <TableRow className="hover:bg-transparent">
-                      <TableHead className="text-purple-300">Item</TableHead>
-                      <TableHead className="text-purple-300">Type</TableHead>
-                      <TableHead className="text-right text-purple-300">Times Worn</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {getMostWornItems().map(({ item, count }) => item && (
-                      <TableRow key={item.id} className="hover:bg-slate-800/50 border-b-purple-500/10">
-                        <TableCell className="font-medium">{item.name}</TableCell>
-                        <TableCell>{item.type}</TableCell>
-                        <TableCell className="text-right">{count}</TableCell>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card className="bg-slate-800/40 border-purple-500/20 shadow-lg backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle className="text-xl text-purple-300">Most Worn Items</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="hover:bg-transparent">
+                        <TableHead className="text-purple-300">Item</TableHead>
+                        <TableHead className="text-purple-300">Type</TableHead>
+                        <TableHead className="text-right text-purple-300">Times Worn</TableHead>
                       </TableRow>
-                    ))}
-                    {getMostWornItems().length === 0 && (
-                      <TableRow>
-                        <TableCell colSpan={3} className="text-center text-slate-400 italic">
-                          No data available
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
+                    </TableHeader>
+                    <TableBody>
+                      {getMostWornItems().map(({ item, count }) => item && (
+                        <TableRow key={item.id} className="hover:bg-slate-800/50 border-b-purple-500/10">
+                          <TableCell className="font-medium">{item.name}</TableCell>
+                          <TableCell>{item.type}</TableCell>
+                          <TableCell className="text-right">{count}</TableCell>
+                        </TableRow>
+                      ))}
+                      {getMostWornItems().length === 0 && (
+                        <TableRow>
+                          <TableCell colSpan={3} className="text-center text-slate-400 italic">
+                            No data available
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
               
-              <div className="bg-slate-800/50 rounded-lg p-4 border border-purple-500/20">
-                <h3 className="text-lg font-medium mb-3 text-purple-300">Wardrobe Usage Statistics</h3>
-                <div className="space-y-4">
+              <Card className="bg-slate-800/40 border-purple-500/20 shadow-lg backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle className="text-xl text-purple-300">Wardrobe Usage Statistics</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
                   <div>
                     <h4 className="text-sm font-medium text-slate-300 mb-2">Occasion Distribution</h4>
                     <div className="flex items-center gap-2 flex-wrap">
@@ -703,15 +730,10 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
                           {color.charAt(0).toUpperCase() + color.slice(1)}: {percentage}%
                         </Badge>
                       ))}
-                      {colorStats.length > 6 && (
-                        <Badge className="bg-slate-500 hover:bg-slate-400">
-                          Others: {colorStats.slice(6).reduce((acc, { percentage }) => acc + percentage, 0)}%
-                        </Badge>
-                      )}
                     </div>
                   </div>
                   
-                  <div className="pt-2">
+                  <div>
                     <h4 className="text-sm font-medium text-slate-300 mb-2">Outfit Insights</h4>
                     <ul className="space-y-2">
                       <li className="text-sm text-slate-300">
@@ -728,13 +750,13 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
                       </li>
                     </ul>
                   </div>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
               
-              <div className="md:col-span-2 bg-slate-800/50 rounded-lg p-4 border border-purple-500/20">
-                <div className="flex justify-between items-center mb-3">
-                  <h3 className="text-lg font-medium text-purple-300">Outfit Usage Trends</h3>
-                  <div className="flex items-center gap-2">
+              <Card className="md:col-span-2 bg-slate-800/40 border-purple-500/20 shadow-lg backdrop-blur-sm">
+                <CardHeader className="flex flex-col md:flex-row justify-between items-start md:items-center">
+                  <CardTitle className="text-xl text-purple-300 mb-3 md:mb-0">Outfit Usage Trends</CardTitle>
+                  <div className="flex flex-col md:flex-row items-start md:items-center gap-2">
                     <div className="relative">
                       <Search className="h-4 w-4 absolute left-2.5 top-2.5 text-slate-400" />
                       <Input 
@@ -777,13 +799,12 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
                       </PopoverContent>
                     </Popover>
                   </div>
-                </div>
-                
-                <p className="text-sm text-slate-400 mb-2">
-                  Track your outfit usage patterns over time to identify trends and optimize your wardrobe.
-                </p>
-                
-                <div className="mt-4">
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-slate-400 mb-4">
+                    Track your outfit usage patterns over time to identify trends and optimize your wardrobe.
+                  </p>
+                  
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -827,8 +848,8 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
                       )}
                     </TableBody>
                   </Table>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
             </div>
           </TabsContent>
         </Tabs>
