@@ -1,13 +1,14 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Coffee, Party, Umbrella, Sunset, Moon, TrousersIcon } from '@/components/ui/icons';
 import WeatherWidget from '@/components/WeatherWidget';
 import OutfitSuggestion from '@/components/OutfitSuggestion';
-import LocationSelector from '@/components/weather/LocationSelector';
+import EnhancedLocationSelector from '@/components/weather/EnhancedLocationSelector';
 import { Outfit, ClothingItem, WeatherInfo } from '@/lib/types';
+import { useLocationStorage } from '@/hooks/useLocationStorage';
 
 interface RecommendedOutfitProps {
   outfit: Outfit;
@@ -20,6 +21,17 @@ const RecommendedOutfit = ({ outfit, clothingItems, onRefreshOutfit }: Recommend
   const [selectedOccasion, setSelectedOccasion] = useState<string | null>(null);
   const [showRotatingView, setShowRotatingView] = useState(false);
   const [location, setLocation] = useState<{ city?: string; country?: string }>({});
+  const { savedLocation, isLoading } = useLocationStorage();
+
+  // Initialize location from saved preferences
+  useEffect(() => {
+    if (savedLocation && !isLoading) {
+      setLocation({
+        country: savedLocation.country,
+        city: savedLocation.city
+      });
+    }
+  }, [savedLocation, isLoading]);
 
   const handleWeatherChange = (weather: WeatherInfo) => {
     setCurrentWeather(weather);
@@ -61,7 +73,7 @@ const RecommendedOutfit = ({ outfit, clothingItems, onRefreshOutfit }: Recommend
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
         <div className="md:col-span-1">
-          <LocationSelector 
+          <EnhancedLocationSelector 
             onLocationChange={handleLocationChange}
             initialCity={location.city}
             initialCountry={location.country}
@@ -72,6 +84,7 @@ const RecommendedOutfit = ({ outfit, clothingItems, onRefreshOutfit }: Recommend
               onWeatherChange={handleWeatherChange} 
               city={location.city}
               country={location.country}
+              savePreferences={false} // We handle preferences in EnhancedLocationSelector
             />
           </div>
           

@@ -8,11 +8,25 @@ import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { Card, CardContent } from '@/components/ui/card';
 import { useIsMobile } from '@/hooks/use-mobile';
+import EnhancedLocationSelector from '@/components/weather/EnhancedLocationSelector';
+import { useLocationStorage } from '@/hooks/useLocationStorage';
 
 const Calendar = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [items, setItems] = useState(sampleClothingItems);
+  const [location, setLocation] = useState<{ city: string; country: string }>({ city: '', country: '' });
   const isMobile = useIsMobile();
+  const { savedLocation } = useLocationStorage();
+
+  // Initialize location from saved preferences
+  useEffect(() => {
+    if (savedLocation) {
+      setLocation({
+        country: savedLocation.country,
+        city: savedLocation.city
+      });
+    }
+  }, [savedLocation]);
 
   // Load items from localStorage on initial render
   useEffect(() => {
@@ -39,6 +53,10 @@ const Calendar = () => {
 
     loadItems();
   }, []);
+
+  const handleLocationChange = (city: string, country: string) => {
+    setLocation({ city, country });
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -83,6 +101,14 @@ const Calendar = () => {
                 </p>
               </CardContent>
             </Card>
+          </motion.div>
+          
+          <motion.div variants={itemVariants} className="w-full max-w-md mx-auto">
+            <EnhancedLocationSelector 
+              onLocationChange={handleLocationChange}
+              initialCity={location.city}
+              initialCountry={location.country}
+            />
           </motion.div>
           
           {!isLoading && (
