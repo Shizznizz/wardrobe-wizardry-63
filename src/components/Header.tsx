@@ -60,6 +60,7 @@ const Header = ({ weather }: HeaderProps) => {
       ...navItems,
       { name: 'Wardrobe', path: '/wardrobe' },
       { name: 'Outfits', path: '/outfits' },
+      { name: 'Calendar', path: '/calendar' }, // Added Calendar nav item
       { name: 'Showroom', path: '/showroom' },
       { name: 'New Clothes', path: '/new-clothes' },
       { name: 'Settings', path: '/settings' },

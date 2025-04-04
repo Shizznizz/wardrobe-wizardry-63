@@ -1,7 +1,5 @@
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { format } from 'date-fns';
 import { useIsMobile } from '@/hooks/use-mobile';
 import Header from '@/components/Header';
 import WardrobeGrid from '@/components/WardrobeGrid';
@@ -9,7 +7,6 @@ import OliviaBloomAdvisor from '@/components/OliviaBloomAdvisor';
 import OliviaBloomAssistant from '@/components/OliviaBloomAssistant';
 import OliviaTips from '@/components/OliviaTips';
 import UploadModal from '@/components/UploadModal';
-import OutfitCalendar from '@/components/outfits/OutfitCalendar';
 import { ClothingItem, ClothingType } from '@/lib/types';
 import { sampleClothingItems, sampleOutfits, sampleUserPreferences } from '@/lib/wardrobeData';
 import { toast } from 'sonner';
@@ -46,7 +43,6 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 
 const Wardrobe = () => {
-  // Local state for the items
   const [items, setItems] = useState<ClothingItem[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -66,7 +62,6 @@ const Wardrobe = () => {
   const isMobile = useIsMobile();
   const { user } = useAuth();
 
-  // Load items from localStorage on initial render
   useEffect(() => {
     const loadItems = () => {
       setIsLoading(true);
@@ -75,15 +70,12 @@ const Wardrobe = () => {
         if (savedItems) {
           setItems(JSON.parse(savedItems));
         } else {
-          // Use sample items as fallback
           setItems(sampleClothingItems);
-          // Save sample items to localStorage for future use
           localStorage.setItem('wardrobeItems', JSON.stringify(sampleClothingItems));
         }
       } catch (error) {
         console.error("Failed to load wardrobe items:", error);
         setLoadError("Failed to load your wardrobe items. Please try again later.");
-        // Fallback to sample items
         setItems(sampleClothingItems);
       } finally {
         setIsLoading(false);
@@ -93,7 +85,6 @@ const Wardrobe = () => {
     loadItems();
   }, []);
 
-  // Save items to localStorage whenever they change
   useEffect(() => {
     if (!isLoading && items) {
       localStorage.setItem('wardrobeItems', JSON.stringify(items));
@@ -138,8 +129,6 @@ const Wardrobe = () => {
   const handleEditItem = (item: ClothingItem) => {
     setItemToEdit(item);
     setEditModalOpen(true);
-    // The actual edit functionality would be implemented in an EditModal component
-    // For now, we'll just show a toast notification
     toast.info(`Editing ${item.name} would open an edit modal`);
   };
 
@@ -530,16 +519,6 @@ const Wardrobe = () => {
               />
             </motion.div>
           )}
-          
-          <motion.div variants={itemVariants} className="w-full mt-10 overflow-hidden">
-            <OutfitCalendar 
-              outfits={sampleOutfits}
-              clothingItems={items}
-              onAddLog={(log) => {
-                toast.success(`Outfit logged for ${format(log.date, 'MMMM d, yyyy')}`);
-              }}
-            />
-          </motion.div>
         </motion.div>
       </main>
       
@@ -581,7 +560,6 @@ const Wardrobe = () => {
         />
       )}
       
-      {/* Clear Wardrobe Confirmation Dialog */}
       <AlertDialog open={clearWardrobeDialogOpen} onOpenChange={setClearWardrobeDialogOpen}>
         <AlertDialogContent className="bg-slate-900 border-slate-700 text-white">
           <AlertDialogHeader>

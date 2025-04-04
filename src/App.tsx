@@ -19,6 +19,7 @@ import VirtualTryOn from "./pages/VirtualTryOn";
 import NewClothes from "./pages/NewClothes";
 import Showroom from "./pages/Showroom";
 import Preferences from './pages/Preferences';
+import Calendar from './pages/Calendar'; // Import the new Calendar page
 
 const queryClient = new QueryClient();
 
@@ -49,6 +50,7 @@ const AppRoutes = () => {
             </>} />
             <Route path="/wardrobe" element={<ProtectedRoute><Wardrobe /></ProtectedRoute>} />
             <Route path="/outfits" element={<ProtectedRoute><Outfits /></ProtectedRoute>} />
+            <Route path="/calendar" element={<ProtectedRoute><Calendar /></ProtectedRoute>} /> {/* Add Calendar route */}
             <Route path="/showroom" element={<ProtectedRoute><Showroom /></ProtectedRoute>} />
             <Route path="/new-clothes" element={<ProtectedRoute><NewClothes /></ProtectedRoute>} />
             <Route path="/virtual-try-on" element={<ProtectedRoute><VirtualTryOn /></ProtectedRoute>} />
