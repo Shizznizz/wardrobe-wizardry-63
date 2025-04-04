@@ -27,11 +27,13 @@ const DateSelector = ({
   renderCalendarDay
 }: DateSelectorProps) => {
   const handlePreviousMonth = () => {
-    setCurrentMonth(prevMonth => subMonths(prevMonth, 1));
+    const newDate = subMonths(currentMonth, 1);
+    setCurrentMonth(newDate);
   };
 
   const handleNextMonth = () => {
-    setCurrentMonth(prevMonth => addMonths(prevMonth, 1));
+    const newDate = addMonths(currentMonth, 1);
+    setCurrentMonth(newDate);
   };
 
   return (
