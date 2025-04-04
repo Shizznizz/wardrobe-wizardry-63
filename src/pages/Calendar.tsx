@@ -64,19 +64,19 @@ const Calendar = () => {
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white overflow-x-hidden max-w-[100vw]">
       <Header />
       
-      <main className="w-full px-4 sm:px-6 md:px-8 pt-20 pb-16 max-w-7xl mx-auto overflow-hidden">
+      <main className="w-full px-4 sm:px-6 md:px-8 pt-24 pb-20 max-w-7xl mx-auto overflow-hidden">
         <motion.div 
-          className="space-y-6"
+          className="space-y-10"
           initial="hidden"
           animate="visible"
           variants={containerVariants}
         >
-          <motion.div variants={itemVariants} className="text-center max-w-3xl mx-auto mb-8">
-            <h1 className="text-3xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
+          <motion.div variants={itemVariants} className="text-center max-w-3xl mx-auto mb-10">
+            <h1 className="text-3xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 mb-4">
               Your Outfit Tracker & Insights
             </h1>
-            <Card className="mt-4 bg-slate-800/40 border-purple-500/20 backdrop-blur-sm">
-              <CardContent className="p-4 md:p-6">
+            <Card className="bg-slate-800/40 border-purple-500/20 backdrop-blur-sm shadow-lg">
+              <CardContent className="p-6">
                 <p className="text-base md:text-lg text-white/80">
                   Track, analyze, and optimize your outfits with powerful visual analytics and personalized recommendations.
                 </p>
@@ -85,7 +85,10 @@ const Calendar = () => {
           </motion.div>
           
           {!isLoading && (
-            <motion.div variants={itemVariants} className="w-full overflow-hidden">
+            <motion.div 
+              variants={itemVariants} 
+              className="w-full overflow-hidden rounded-2xl shadow-xl"
+            >
               <OutfitCalendar 
                 outfits={sampleOutfits}
                 clothingItems={items}
