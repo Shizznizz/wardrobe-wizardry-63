@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface DateSelectorProps {
   selectedDate: Date | undefined;
@@ -26,6 +27,8 @@ const DateSelector = ({
   setCurrentMonth,
   renderCalendarDay
 }: DateSelectorProps) => {
+  const isMobile = useIsMobile();
+  
   const handlePreviousMonth = () => {
     const newDate = subMonths(currentMonth, 1);
     setCurrentMonth(newDate);
@@ -34,6 +37,13 @@ const DateSelector = ({
   const handleNextMonth = () => {
     const newDate = addMonths(currentMonth, 1);
     setCurrentMonth(newDate);
+  };
+
+  const handleDateSelect = (date: Date | undefined) => {
+    setSelectedDate(date);
+    if (date && date.getMonth() !== currentMonth.getMonth()) {
+      setCurrentMonth(date);
+    }
   };
 
   return (
@@ -48,6 +58,7 @@ const DateSelector = ({
             size="sm"
             className="border-purple-500/30 bg-slate-800/70"
             onClick={handlePreviousMonth}
+            aria-label="Previous month"
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
@@ -61,6 +72,7 @@ const DateSelector = ({
             size="sm"
             className="border-purple-500/30 bg-slate-800/70"
             onClick={handleNextMonth}
+            aria-label="Next month"
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
@@ -80,7 +92,7 @@ const DateSelector = ({
             <CalendarComponent
               mode="single"
               selected={selectedDate}
-              onSelect={setSelectedDate}
+              onSelect={handleDateSelect}
               initialFocus
               className="p-3 pointer-events-auto"
               components={{
@@ -103,7 +115,7 @@ const DateSelector = ({
       </CardContent>
       <CardFooter className="pt-2 flex justify-center">
         <Button 
-          size="lg" 
+          size={isMobile ? "default" : "lg"}
           className="w-full bg-purple-600 hover:bg-purple-700 font-medium"
           onClick={() => onLogButtonClick(selectedDate)}
         >

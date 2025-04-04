@@ -3,6 +3,7 @@ import { format, eachDayOfInterval, isToday, isSameDay, startOfMonth, endOfMonth
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { OutfitLog } from '../OutfitLogItem';
 import { Outfit } from '@/lib/types';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface MonthlyCalendarViewProps {
   currentMonth: Date;
@@ -19,6 +20,10 @@ const MonthlyCalendarView = ({
   getLogsForDay,
   getOutfitById,
 }: MonthlyCalendarViewProps) => {
+  const isMobile = useIsMobile();
+  const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const mobileDaysOfWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+  
   return (
     <Card className="col-span-1 md:col-span-3 bg-slate-800/40 border-purple-500/20 shadow-lg backdrop-blur-sm">
       <CardHeader className="pb-2">
@@ -26,7 +31,7 @@ const MonthlyCalendarView = ({
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-7 gap-1 text-center">
-          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+          {(isMobile ? mobileDaysOfWeek : daysOfWeek).map(day => (
             <div key={day} className="text-xs font-medium text-slate-400 mb-1">{day}</div>
           ))}
           
@@ -48,12 +53,13 @@ const MonthlyCalendarView = ({
                   ${isSelected ? 'bg-purple-700/50 text-white' : ''}
                   ${isToday(day) ? 'border border-purple-500' : ''}
                   ${dayLogs.length > 0 ? 'bg-slate-800' : ''}
+                  ${isMobile ? 'h-8' : ''}
                 `}
               >
-                <div className="mb-2">{format(day, 'd')}</div>
+                <div className={isMobile ? "text-[10px]" : "mb-2"}>{format(day, 'd')}</div>
                 {dayLogs.length > 0 && (
                   <div className="flex justify-center gap-0.5">
-                    {dayLogs.slice(0, 3).map((log, i) => {
+                    {dayLogs.slice(0, isMobile ? 2 : 3).map((log, i) => {
                       const outfit = getOutfitById(log.outfitId);
                       if (!outfit) return null;
                       
@@ -68,8 +74,8 @@ const MonthlyCalendarView = ({
                         />
                       );
                     })}
-                    {dayLogs.length > 3 && (
-                      <div className="text-[8px] text-slate-400">+{dayLogs.length - 3}</div>
+                    {dayLogs.length > (isMobile ? 2 : 3) && (
+                      <div className="text-[8px] text-slate-400">+{dayLogs.length - (isMobile ? 2 : 3)}</div>
                     )}
                   </div>
                 )}

@@ -7,11 +7,12 @@ import { sampleClothingItems, sampleOutfits } from '@/lib/wardrobeData';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { Card, CardContent } from '@/components/ui/card';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Calendar = () => {
-  // We'll use the same loading state logic as the Wardrobe page
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [items, setItems] = useState(sampleClothingItems);
+  const isMobile = useIsMobile();
 
   // Load items from localStorage on initial render
   useEffect(() => {
@@ -66,18 +67,18 @@ const Calendar = () => {
       
       <main className="w-full px-4 sm:px-6 md:px-8 pt-24 pb-20 max-w-7xl mx-auto overflow-hidden">
         <motion.div 
-          className="space-y-10"
+          className="space-y-8 md:space-y-10"
           initial="hidden"
           animate="visible"
           variants={containerVariants}
         >
-          <motion.div variants={itemVariants} className="text-center max-w-3xl mx-auto mb-10">
-            <h1 className="text-3xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 mb-4">
+          <motion.div variants={itemVariants} className="text-center max-w-3xl mx-auto mb-6 md:mb-10">
+            <h1 className="text-2xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 mb-4">
               Your Outfit Tracker & Insights
             </h1>
             <Card className="bg-slate-800/40 border-purple-500/20 backdrop-blur-sm shadow-lg">
-              <CardContent className="p-6">
-                <p className="text-base md:text-lg text-white/80">
+              <CardContent className="p-4 md:p-6">
+                <p className="text-sm md:text-lg text-white/80">
                   Track, analyze, and optimize your outfits with powerful visual analytics and personalized recommendations.
                 </p>
               </CardContent>

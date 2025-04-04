@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import OutfitLogItem, { OutfitLog } from '../OutfitLogItem';
 import { Outfit } from '@/lib/types';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface OutfitLogsListProps {
   selectedDate: Date | undefined;
@@ -21,8 +22,10 @@ const OutfitLogsList = ({
   handleViewLog,
   handleOpenLogDialog,
 }: OutfitLogsListProps) => {
+  const isMobile = useIsMobile();
+  
   return (
-    <Card className="col-span-1 md:col-span-2 bg-slate-800/40 border-purple-500/20 shadow-lg backdrop-blur-sm">
+    <Card className={`col-span-1 ${isMobile ? 'w-full' : 'md:col-span-2'} bg-slate-800/40 border-purple-500/20 shadow-lg backdrop-blur-sm`}>
       <CardHeader className="pb-2">
         <CardTitle className="text-xl text-purple-200">
           Outfits on {selectedDate ? format(selectedDate, 'MMMM d, yyyy') : 'Selected Date'}
