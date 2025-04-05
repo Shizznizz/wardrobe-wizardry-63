@@ -14,8 +14,10 @@ import UserPhotoSection from '@/components/showroom/UserPhotoSection';
 import OutfitSelectionSection from '@/components/showroom/OutfitSelectionSection';
 import OutfitPreviewSection from '@/components/showroom/OutfitPreviewSection';
 import PremiumFeaturesSection from '@/components/showroom/PremiumFeaturesSection';
+import ShowroomPreviewCarousel from '@/components/showroom/ShowroomPreviewCarousel';
+import StatusBar from '@/components/showroom/StatusBar';
 import { Button } from '@/components/ui/button';
-import { Check, Camera, Shirt, X } from 'lucide-react';
+import { Check, Camera, Shirt, X, MessageCircle } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 const fashionCollections = [
@@ -61,6 +63,8 @@ const Showroom = () => {
   const [showOliviaImageGallery, setShowOliviaImageGallery] = useState(false);
   const [isUsingOliviaImage, setIsUsingOliviaImage] = useState(false);
   const [showStatusBar, setShowStatusBar] = useState(false);
+  const [isUploadLoading, setIsUploadLoading] = useState(false);
+  const [oliviaSuggestion, setOliviaSuggestion] = useState("");
   const isMobile = useIsMobile();
 
   const {
@@ -94,15 +98,30 @@ const Showroom = () => {
   useEffect(() => {
     if (userPhoto && selectedOutfit) {
       setShowStatusBar(true);
+      
+      // Generate a random suggestion from Olivia
+      const suggestions = [
+        "This outfit looks amazing for a summer evening!",
+        "Perfect choice for your style profile!",
+        "This color really complements your features!",
+        "I love how this outfit highlights your silhouette!",
+        "This look will definitely turn heads!"
+      ];
+      setOliviaSuggestion(suggestions[Math.floor(Math.random() * suggestions.length)]);
     } else {
       setShowStatusBar(false);
     }
   }, [userPhoto, selectedOutfit]);
 
   const handleSelectOliviaImage = (imageSrc: string) => {
+    setIsUploadLoading(true);
     handleUserPhotoChange(imageSrc);
     setIsUsingOliviaImage(true);
-    toast.success('Selected Olivia\'s image successfully!');
+    
+    setTimeout(() => {
+      setIsUploadLoading(false);
+      toast.success('Selected Olivia\'s image successfully!');
+    }, 800);
   };
 
   const handleSelectOutfit = (outfit: any) => {
@@ -116,6 +135,16 @@ const Showroom = () => {
     }
   };
 
+  const handleUserPhotoUpload = (photo: string) => {
+    setIsUploadLoading(true);
+    
+    // Simulate a short loading time for "dressing the avatar"
+    setTimeout(() => {
+      handleUserPhotoChange(photo);
+      setIsUploadLoading(false);
+    }, 800);
+  };
+
   const handleSaveLook = () => {
     if (!finalImage) {
       toast.error('Create a look first!');
@@ -123,7 +152,9 @@ const Showroom = () => {
     }
     
     handleSaveOutfit();
-    toast.success('Look saved to your wardrobe!');
+    toast.success('Look saved to your wardrobe!', {
+      description: 'You can access it anytime in your personal collection.'
+    });
   };
 
   const handleUpgradeToPremium = () => {
@@ -139,6 +170,16 @@ const Showroom = () => {
   const resetSelection = () => {
     handleClearUserPhoto();
     setShowStatusBar(false);
+  };
+
+  const handleSuggestAnotherOutfit = () => {
+    // Get a random outfit from the recommended collection
+    const recommendedOutfits = fashionCollections.find(c => c.id === 'recommended')?.outfits || [];
+    if (recommendedOutfits.length > 0) {
+      const randomOutfit = recommendedOutfits[Math.floor(Math.random() * recommendedOutfits.length)];
+      handleTryOnOutfit(randomOutfit);
+      toast.success('Olivia suggested a new outfit for you!');
+    }
   };
 
   return (
@@ -166,17 +207,31 @@ const Showroom = () => {
             </motion.p>
           </div>
           
+          {/* Preview Carousel - only show when no user photo */}
+          {!userPhoto && !isUploadLoading && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="mb-8"
+            >
+              <ShowroomPreviewCarousel />
+            </motion.div>
+          )}
+          
           {/* User Photo Section */}
           <motion.div
             id="photo-section"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.3 }}
+            style={{ display: finalImage ? 'none' : 'block' }}
           >
             <UserPhotoSection 
               userPhoto={userPhoto} 
+              isUploading={isUploadLoading}
               isUsingOliviaImage={isUsingOliviaImage}
-              onUserPhotoChange={handleUserPhotoChange}
+              onUserPhotoChange={handleUserPhotoUpload}
               onShowOliviaImageGallery={() => setShowOliviaImageGallery(true)}
             />
           </motion.div>
@@ -214,6 +269,23 @@ const Showroom = () => {
                 document.getElementById('photo-section')?.scrollIntoView({ behavior: 'smooth' });
               }}
             />
+            
+            {/* Try Another Outfit button */}
+            {finalImage && (
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="flex justify-center mt-4"
+              >
+                <Button 
+                  onClick={handleSuggestAnotherOutfit}
+                  className="bg-gradient-to-r from-pink-500 to-purple-600 hover:opacity-90 text-white"
+                >
+                  👗 Try Another Outfit
+                </Button>
+              </motion.div>
+            )}
           </div>
           
           {/* Premium Features Section */}
@@ -228,65 +300,15 @@ const Showroom = () => {
       {/* Sticky Status Bar */}
       <AnimatePresence>
         {showStatusBar && (
-          <motion.div 
-            className="fixed bottom-0 left-0 right-0 bg-slate-900/90 backdrop-blur-md border-t border-white/10 py-3 px-4 z-40"
-            initial={{ y: 100 }}
-            animate={{ y: 0 }}
-            exit={{ y: 100 }}
-            transition={{ type: "spring", stiffness: 300, damping: 20 }}
-          >
-            <div className="container mx-auto flex justify-between items-center">
-              <div className="flex items-center gap-3">
-                <div className={`rounded-full p-1 ${userPhoto ? 'bg-green-500/20 text-green-400' : 'bg-gray-500/20 text-gray-400'}`}>
-                  {userPhoto ? <Check className="h-4 w-4" /> : <Camera className="h-4 w-4" />}
-                </div>
-                <span className={`text-sm ${userPhoto ? 'text-white' : 'text-gray-400'}`}>
-                  {userPhoto ? 'Photo Selected' : 'No Photo Selected'}
-                </span>
-                
-                <div className="mx-2 h-4 w-px bg-white/20"></div>
-                
-                <div className={`rounded-full p-1 ${selectedOutfit ? 'bg-green-500/20 text-green-400' : 'bg-gray-500/20 text-gray-400'}`}>
-                  {selectedOutfit ? <Check className="h-4 w-4" /> : <Shirt className="h-4 w-4" />}
-                </div>
-                <span className={`text-sm ${selectedOutfit ? 'text-white' : 'text-gray-400'}`}>
-                  {selectedOutfit ? selectedOutfit.name : 'No Outfit Selected'}
-                </span>
-              </div>
-              
-              <div className="flex items-center gap-2">
-                {isMobile ? (
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="border-red-500/30 text-red-300 hover:bg-red-500/20"
-                    onClick={resetSelection}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                ) : (
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="border-red-500/30 text-red-300 hover:bg-red-500/20"
-                    onClick={resetSelection}
-                  >
-                    Reset Selection
-                  </Button>
-                )}
-                
-                {!finalImage && userPhoto && selectedOutfit && (
-                  <Button 
-                    size="sm" 
-                    className="bg-gradient-to-r from-blue-500 to-purple-500 hover:opacity-90"
-                    onClick={() => handleTryOnOutfit(selectedOutfit)}
-                  >
-                    Preview Now
-                  </Button>
-                )}
-              </div>
-            </div>
-          </motion.div>
+          <StatusBar 
+            userPhoto={userPhoto}
+            selectedOutfit={selectedOutfit}
+            oliviaSuggestion={oliviaSuggestion}
+            onReset={resetSelection}
+            onPreviewNow={() => handleTryOnOutfit(selectedOutfit)}
+            isMobile={isMobile}
+            finalImage={finalImage}
+          />
         )}
       </AnimatePresence>
       
