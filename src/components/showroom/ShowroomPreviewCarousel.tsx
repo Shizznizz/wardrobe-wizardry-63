@@ -10,6 +10,7 @@ import {
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { motion } from 'framer-motion';
+import { type CarouselApi } from '@/components/ui/carousel';
 
 const previewExamples = [
   {
@@ -37,6 +38,17 @@ const previewExamples = [
 
 const ShowroomPreviewCarousel = () => {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null);
+  
+  // Update the active index when the carousel changes
+  const handleCarouselCreated = (api: CarouselApi) => {
+    setCarouselApi(api);
+    
+    // Setup the onSelect handler
+    api.on("select", () => {
+      setActiveIndex(api.selectedScrollSnap());
+    });
+  };
 
   return (
     <Card className="glass-dark border-white/10 overflow-hidden shadow-xl">
@@ -51,11 +63,7 @@ const ShowroomPreviewCarousel = () => {
         
         <Carousel 
           opts={{ loop: true }}
-          onSelect={(api) => {
-            if (api) {
-              setActiveIndex(api.selectedScrollSnap());
-            }
-          }}
+          setApi={handleCarouselCreated}
           className="w-full max-w-4xl mx-auto"
         >
           <CarouselContent>

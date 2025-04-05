@@ -1,3 +1,4 @@
+
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Check, Camera, Shirt, X, MessageCircle } from 'lucide-react';
@@ -91,7 +92,7 @@ const StatusBar = ({
             <Button 
               size="sm" 
               className="bg-gradient-to-r from-blue-500 to-purple-500 hover:opacity-90"
-              onClick={() => onPreviewNow()}
+              onClick={onPreviewNow}
             >
               Preview Now
             </Button>

@@ -166,6 +166,12 @@ const Showroom = () => {
     setShowStatusBar(false);
   };
 
+  const handlePreviewNow = () => {
+    if (selectedOutfit) {
+      handleTryOnOutfit(selectedOutfit);
+    }
+  };
+
   const handleSuggestAnotherOutfit = () => {
     const recommendedOutfits = fashionCollections.find(c => c.id === 'recommended')?.outfits || [];
     if (recommendedOutfits.length > 0) {
@@ -289,7 +295,7 @@ const Showroom = () => {
             selectedOutfit={selectedOutfit}
             oliviaSuggestion={oliviaSuggestion}
             onReset={resetSelection}
-            onPreviewNow={() => handleTryOnOutfit(selectedOutfit!)}
+            onPreviewNow={handlePreviewNow}
             isMobile={isMobile}
             finalImage={finalImage}
           />
