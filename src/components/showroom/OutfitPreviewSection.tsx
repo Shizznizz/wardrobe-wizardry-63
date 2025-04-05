@@ -1,5 +1,5 @@
 
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import VirtualFittingRoom from '@/components/VirtualFittingRoom';
 import { ClothingItem, Outfit } from '@/lib/types';
@@ -8,6 +8,8 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import PredictionPoller from './PredictionPoller';
 import OutfitCustomizationPanel from './OutfitCustomizationPanel';
 import OutfitActionButtons from './OutfitActionButtons';
+import { Button } from '@/components/ui/button';
+import { Camera, ArrowLeft } from 'lucide-react';
 
 interface OutfitPreviewSectionProps {
   finalImage: string | null;
@@ -15,9 +17,10 @@ interface OutfitPreviewSectionProps {
   clothingItems: ClothingItem[];
   isProcessingTryOn: boolean;
   userPhoto: string | null;
-  clothingPhoto?: string | null; // Add optional clothing photo prop
+  clothingPhoto?: string | null;
   isUsingOliviaImage: boolean;
   onSaveLook: () => void;
+  onChangePhoto?: () => void;
 }
 
 const OutfitPreviewSection = ({
@@ -28,7 +31,8 @@ const OutfitPreviewSection = ({
   userPhoto,
   clothingPhoto,
   isUsingOliviaImage,
-  onSaveLook
+  onSaveLook,
+  onChangePhoto
 }: OutfitPreviewSectionProps) => {
   const [showClothingOptions, setShowClothingOptions] = useState(false);
   const [predictionId, setPredictionId] = useState<string | null>(null);
@@ -48,7 +52,6 @@ const OutfitPreviewSection = ({
   };
 
   const handlePredictionComplete = (imageUrl: string) => {
-    // This would be implemented if we need to handle prediction completion here
     setPredictionId(null);
   };
   
@@ -65,10 +68,17 @@ const OutfitPreviewSection = ({
       transition={{ delay: 0.4 }}
       className="mb-8"
     >
-      <Card className="glass-dark border-white/10 overflow-hidden">
+      <Card className="glass-dark border-white/10 overflow-hidden shadow-xl shadow-purple-900/10">
         <CardContent className="p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold">Outfit Preview</h2>
+          <div className="flex justify-between items-center mb-6">
+            <motion.h2 
+              className="text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-blue-300 to-purple-300"
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.5 }}
+            >
+              Outfit Preview
+            </motion.h2>
             
             <OutfitActionButtons 
               selectedOutfit={selectedOutfit}
@@ -81,17 +91,47 @@ const OutfitPreviewSection = ({
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className={`${showClothingOptions ? 'lg:col-span-2' : 'lg:col-span-3'}`}>
-              <VirtualFittingRoom 
-                finalImage={finalImage}
-                outfit={selectedOutfit}
-                clothingItems={clothingItems}
-                isProcessing={isProcessingTryOn}
-                userPhoto={userPhoto}
-                clothingPhoto={clothingPhoto}
-                onSaveLook={onSaveLook}
-                isOliviaImage={isUsingOliviaImage}
-                className="flex-grow"
-              />
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={`preview-${finalImage || 'empty'}`}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="relative"
+                >
+                  {userPhoto && !finalImage && (
+                    <motion.div
+                      className="absolute top-4 left-4 z-10"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.2 }}
+                    >
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        className="bg-black/40 hover:bg-black/60 text-white"
+                        onClick={onChangePhoto}
+                      >
+                        <ArrowLeft className="h-4 w-4 mr-2" />
+                        Change Photo
+                      </Button>
+                    </motion.div>
+                  )}
+                  
+                  <VirtualFittingRoom 
+                    finalImage={finalImage}
+                    outfit={selectedOutfit}
+                    clothingItems={clothingItems}
+                    isProcessing={isProcessingTryOn}
+                    userPhoto={userPhoto}
+                    clothingPhoto={clothingPhoto}
+                    onSaveLook={onSaveLook}
+                    isOliviaImage={isUsingOliviaImage}
+                    className="rounded-xl overflow-hidden shadow-lg transition-all"
+                  />
+                </motion.div>
+              </AnimatePresence>
               
               {generationError && (
                 <div className="mt-4 p-3 bg-red-900/30 border border-red-500/30 rounded-md text-red-200 text-sm">
