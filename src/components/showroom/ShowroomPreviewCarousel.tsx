@@ -53,8 +53,7 @@ const ShowroomPreviewCarousel = () => {
           opts={{ loop: true }}
           onSelect={(api) => {
             if (api) {
-              const selectedIndex = api.selectedScrollSnap();
-              setActiveIndex(selectedIndex);
+              setActiveIndex(api.selectedScrollSnap());
             }
           }}
           className="w-full max-w-4xl mx-auto"
