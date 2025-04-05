@@ -15,7 +15,7 @@ import OutfitSelectionSection from '@/components/showroom/OutfitSelectionSection
 import OutfitPreviewSection from '@/components/showroom/OutfitPreviewSection';
 import PremiumFeaturesSection from '@/components/showroom/PremiumFeaturesSection';
 import { Button } from '@/components/ui/button';
-import { Check, Camera, Tshirt, X } from 'lucide-react';
+import { Check, Camera, Shirt, X } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 const fashionCollections = [
@@ -247,7 +247,7 @@ const Showroom = () => {
                 <div className="mx-2 h-4 w-px bg-white/20"></div>
                 
                 <div className={`rounded-full p-1 ${selectedOutfit ? 'bg-green-500/20 text-green-400' : 'bg-gray-500/20 text-gray-400'}`}>
-                  {selectedOutfit ? <Check className="h-4 w-4" /> : <Tshirt className="h-4 w-4" />}
+                  {selectedOutfit ? <Check className="h-4 w-4" /> : <Shirt className="h-4 w-4" />}
                 </div>
                 <span className={`text-sm ${selectedOutfit ? 'text-white' : 'text-gray-400'}`}>
                   {selectedOutfit ? selectedOutfit.name : 'No Outfit Selected'}
