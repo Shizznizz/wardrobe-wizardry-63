@@ -51,7 +51,12 @@ const ShowroomPreviewCarousel = () => {
         
         <Carousel 
           opts={{ loop: true }}
-          onSelect={(selectedIndex) => setActiveIndex(selectedIndex)}
+          onSelect={(api) => {
+            if (api) {
+              const selectedIndex = api.selectedScrollSnap();
+              setActiveIndex(selectedIndex);
+            }
+          }}
           className="w-full max-w-4xl mx-auto"
         >
           <CarouselContent>

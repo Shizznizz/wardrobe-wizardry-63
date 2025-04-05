@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import Header from '@/components/Header';
@@ -9,7 +8,6 @@ import { useOutfitState } from '@/hooks/useOutfitState';
 import { sampleClothingItems, sampleOutfits } from '@/lib/wardrobeData';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Import the new components
 import UserPhotoSection from '@/components/showroom/UserPhotoSection';
 import OutfitSelectionSection from '@/components/showroom/OutfitSelectionSection';
 import OutfitPreviewSection from '@/components/showroom/OutfitPreviewSection';
@@ -94,12 +92,10 @@ const Showroom = () => {
     }
   }, [userPhoto, finalImage, isPremiumUser]);
 
-  // Show status bar when both photo and outfit are selected
   useEffect(() => {
     if (userPhoto && selectedOutfit) {
       setShowStatusBar(true);
       
-      // Generate a random suggestion from Olivia
       const suggestions = [
         "This outfit looks amazing for a summer evening!",
         "Perfect choice for your style profile!",
@@ -127,7 +123,6 @@ const Showroom = () => {
   const handleSelectOutfit = (outfit: any) => {
     handleTryOnOutfit(outfit);
     
-    // Scroll to the preview section
     if (userPhoto) {
       setTimeout(() => {
         document.getElementById('preview-section')?.scrollIntoView({ behavior: 'smooth' });
@@ -138,7 +133,6 @@ const Showroom = () => {
   const handleUserPhotoUpload = (photo: string) => {
     setIsUploadLoading(true);
     
-    // Simulate a short loading time for "dressing the avatar"
     setTimeout(() => {
       handleUserPhotoChange(photo);
       setIsUploadLoading(false);
@@ -173,7 +167,6 @@ const Showroom = () => {
   };
 
   const handleSuggestAnotherOutfit = () => {
-    // Get a random outfit from the recommended collection
     const recommendedOutfits = fashionCollections.find(c => c.id === 'recommended')?.outfits || [];
     if (recommendedOutfits.length > 0) {
       const randomOutfit = recommendedOutfits[Math.floor(Math.random() * recommendedOutfits.length)];
@@ -207,7 +200,6 @@ const Showroom = () => {
             </motion.p>
           </div>
           
-          {/* Preview Carousel - only show when no user photo */}
           {!userPhoto && !isUploadLoading && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -219,7 +211,6 @@ const Showroom = () => {
             </motion.div>
           )}
           
-          {/* User Photo Section */}
           <motion.div
             id="photo-section"
             initial={{ opacity: 0 }}
@@ -236,12 +227,10 @@ const Showroom = () => {
             />
           </motion.div>
           
-          {/* Section Divider */}
           <div className="flex items-center justify-center my-8">
             <div className="h-px bg-gradient-to-r from-transparent via-purple-500/30 to-transparent w-full max-w-2xl"></div>
           </div>
           
-          {/* Outfit Selection Section */}
           <OutfitSelectionSection 
             fashionCollections={fashionCollections}
             clothingItems={clothingItems}
@@ -250,12 +239,10 @@ const Showroom = () => {
             onSelectOutfit={handleSelectOutfit}
           />
           
-          {/* Section Divider */}
           <div className="flex items-center justify-center my-8">
             <div className="h-px bg-gradient-to-r from-transparent via-purple-500/30 to-transparent w-full max-w-2xl"></div>
           </div>
           
-          {/* Outfit Preview Section */}
           <div id="preview-section">
             <OutfitPreviewSection 
               finalImage={finalImage}
@@ -270,7 +257,6 @@ const Showroom = () => {
               }}
             />
             
-            {/* Try Another Outfit button */}
             {finalImage && (
               <motion.div 
                 initial={{ opacity: 0, y: 10 }}
@@ -288,7 +274,6 @@ const Showroom = () => {
             )}
           </div>
           
-          {/* Premium Features Section */}
           {!isPremiumUser && (
             <PremiumFeaturesSection 
               onUpgradeToPremium={handleUpgradeToPremium} 
@@ -297,7 +282,6 @@ const Showroom = () => {
         </div>
       </main>
       
-      {/* Sticky Status Bar */}
       <AnimatePresence>
         {showStatusBar && (
           <StatusBar 
@@ -305,7 +289,7 @@ const Showroom = () => {
             selectedOutfit={selectedOutfit}
             oliviaSuggestion={oliviaSuggestion}
             onReset={resetSelection}
-            onPreviewNow={() => handleTryOnOutfit(selectedOutfit)}
+            onPreviewNow={() => handleTryOnOutfit(selectedOutfit!)}
             isMobile={isMobile}
             finalImage={finalImage}
           />
