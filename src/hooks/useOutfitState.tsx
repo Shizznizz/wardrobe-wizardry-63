@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Outfit, ClothingItem, WeatherInfo, TimeOfDay, Activity, ClothingSeason } from '@/lib/types';
 import { OutfitLog } from '@/components/outfits/OutfitLogItem';
@@ -18,7 +17,6 @@ export function useOutfitState(initialOutfits: Outfit[], initialClothingItems: C
   const [outfitLogs, setOutfitLogs] = useState<OutfitLog[]>([]);
 
   useEffect(() => {
-    // Update background based on weather
     if (currentWeather) {
       const condition = currentWeather.condition.toLowerCase();
       if (condition.includes('rain')) {
@@ -93,8 +91,8 @@ export function useOutfitState(initialOutfits: Outfit[], initialClothingItems: C
     setFinalImage(null);
   };
 
-  const handleTryOnOutfit = (outfit: Outfit) => {
-    if (!userPhoto) return;
+  const handleTryOnOutfit = (outfit?: Outfit) => {
+    if (!userPhoto || !outfit) return;
     
     setIsProcessingTryOn(true);
     setFinalImage(null);
