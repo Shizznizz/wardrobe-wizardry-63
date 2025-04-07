@@ -100,7 +100,7 @@ const DateSelector = ({
   };
 
   // Create DayPicker-compatible modifiers from our data
-  // Convert our complex activeModifiers to the simple format DayPicker expects
+  // Transform our complex activeModifiers into the format that DayPicker expects
   const selectedDays = [selectedDate];
   const daysWithOutfits = outfitLogs
     .filter(log => log.date)
