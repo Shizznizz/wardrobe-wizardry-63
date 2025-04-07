@@ -1,348 +1,191 @@
 
-import { useState, useEffect, useRef } from 'react';
-import { countries } from '@/data/countries';
-import { Globe, MapPin, CheckCircle, X, Loader2, AlertCircle } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+  Card, 
+  CardContent,
+  CardHeader,
+  CardTitle
+} from '@/components/ui/card';
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
 } from '@/components/ui/select';
-import { 
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList
-} from '@/components/ui/command';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger
-} from '@/components/ui/popover';
-import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { Combobox } from '@/components/ui/combobox';
+import { Label } from '@/components/ui/label';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { useLocationStorage } from '@/hooks/useLocationStorage';
-import { 
-  getCitiesByCountry, 
-  getCurrentLocation, 
-  getCountryName,
-  validateLocation
-} from '@/services/LocationService';
+import { useLocation } from '@/hooks/useLocation';
+import { countries } from '@/data/countries';
+import { getCitiesByCountry } from '@/services/LocationService';
+import { Loader2, MapPin, Save, X, Check } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 interface EnhancedLocationSelectorProps {
-  onLocationChange: (city: string, country: string) => void;
+  onLocationChange?: (city: string, country: string) => void;
   initialCity?: string;
   initialCountry?: string;
 }
 
 const EnhancedLocationSelector = ({ 
-  onLocationChange, 
-  initialCity, 
-  initialCountry 
+  onLocationChange,
+  initialCity,
+  initialCountry
 }: EnhancedLocationSelectorProps) => {
-  const [selectedCountry, setSelectedCountry] = useState<string>(initialCountry || '');
-  const [selectedCity, setSelectedCity] = useState<string>(initialCity || '');
-  const [citySearchQuery, setCitySearchQuery] = useState<string>('');
-  const [filteredCities, setFilteredCities] = useState<string[]>([]);
-  const [isCityPopoverOpen, setCityPopoverOpen] = useState<boolean>(false);
-  const [isLoadingLocation, setIsLoadingLocation] = useState<boolean>(false);
-  const [locationError, setLocationError] = useState<string | null>(null);
-  const [validationMessage, setValidationMessage] = useState<string | null>(null);
-  const cityInputRef = useRef<HTMLInputElement>(null);
+  const {
+    country,
+    city,
+    isDetecting,
+    isSavingPreference,
+    hasChanges,
+    usingSavedPreference,
+    detectLocation,
+    saveLocationPreference,
+    clearLocation,
+    handleCountryChange,
+    handleCityChange
+  } = useLocation();
+  
   const isMobile = useIsMobile();
-  const { savedLocation, saveLocation } = useLocationStorage();
-
-  // When savedLocation changes, update the form
+  const [availableCities, setAvailableCities] = useState<string[]>([]);
+  const [citySearch, setCitySearch] = useState('');
+  
+  // Initial setup from props
   useEffect(() => {
-    if (savedLocation && !selectedCountry && !selectedCity) {
-      setSelectedCountry(savedLocation.country);
-      setSelectedCity(savedLocation.city);
+    if (initialCountry && !country) {
+      handleCountryChange(initialCountry);
     }
-  }, [savedLocation]);
-
-  // When initialCity or initialCountry change, update the form
+    if (initialCity && !city) {
+      handleCityChange(initialCity);
+    }
+  }, [initialCountry, initialCity]);
+  
+  // Notify parent component when location changes
   useEffect(() => {
-    if (initialCountry) setSelectedCountry(initialCountry);
-    if (initialCity) setSelectedCity(initialCity);
-  }, [initialCity, initialCountry]);
-
-  // When selectedCountry changes, update the city list
+    if (onLocationChange) {
+      onLocationChange(city, country);
+    }
+  }, [city, country, onLocationChange]);
+  
+  // Load available cities when country changes
   useEffect(() => {
-    if (selectedCountry) {
-      const cities = getCitiesByCountry(selectedCountry, citySearchQuery);
-      setFilteredCities(cities);
+    if (country) {
+      const cities = getCitiesByCountry(country, citySearch);
+      setAvailableCities(cities);
     } else {
-      setFilteredCities([]);
+      setAvailableCities([]);
     }
-  }, [selectedCountry, citySearchQuery]);
-
-  // When selectedCountry or selectedCity change, notify parent
-  useEffect(() => {
-    if (selectedCountry) {
-      // Validate the location
-      const validation = validateLocation(selectedCountry, selectedCity);
-      setValidationMessage(validation.message || null);
-
-      if (validation.isValid) {
-        onLocationChange(selectedCity, selectedCountry);
-      }
-    }
-  }, [selectedCountry, selectedCity, onLocationChange]);
-
-  const handleCountryChange = (countryCode: string) => {
-    setSelectedCountry(countryCode);
-    setSelectedCity(''); // Reset city when country changes
-    setCitySearchQuery(''); // Reset search query
+  }, [country, citySearch]);
+  
+  // Handle city search input change
+  const handleCitySearchChange = (value: string) => {
+    setCitySearch(value);
     
-    // Focus the city input after selecting a country
-    setTimeout(() => {
-      if (cityInputRef.current) {
-        cityInputRef.current.focus();
-        setCityPopoverOpen(true);
-      }
-    }, 100);
-  };
-
-  const handleCitySelect = (city: string) => {
-    setSelectedCity(city);
-    setCityPopoverOpen(false);
-  };
-
-  const handleCityInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const query = e.target.value;
-    setCitySearchQuery(query);
-    setSelectedCity(query);
-  };
-
-  const clearSelection = () => {
-    setSelectedCountry('');
-    setSelectedCity('');
-    setCitySearchQuery('');
-    setLocationError(null);
-    setValidationMessage(null);
-  };
-
-  const handleDetectLocation = async () => {
-    setIsLoadingLocation(true);
-    setLocationError(null);
-    
-    try {
-      const location = await getCurrentLocation();
-      
-      if (location && location.country) {
-        setSelectedCountry(location.country);
-        setSelectedCity(location.city || '');
-        toast.success(`Location detected: ${location.city}, ${getCountryName(location.country)}`);
-      } else {
-        setLocationError('Could not determine your location. Please select manually.');
-        toast.error('Location detection failed');
-      }
-    } catch (error) {
-      console.error('Error detecting location:', error);
-      setLocationError('Could not access your location. Please enable location services and try again.');
-      toast.error('Location detection failed');
-    } finally {
-      setIsLoadingLocation(false);
+    if (country) {
+      const filteredCities = getCitiesByCountry(country, value);
+      setAvailableCities(filteredCities);
     }
   };
-
-  const handleSaveLocationPreference = async () => {
-    if (!selectedCountry) {
-      toast.error('Please select a country first');
-      return;
-    }
-
-    const validation = validateLocation(selectedCountry, selectedCity);
-    if (!validation.isValid) {
-      toast.error(validation.message);
-      return;
-    }
-
-    const success = await saveLocation(selectedCountry, selectedCity);
-    if (success) {
-      toast.success('Location saved as your preference');
-    }
-  };
-
-  const showSavedLocationMessage = savedLocation && 
-    selectedCountry === savedLocation.country && 
-    selectedCity === savedLocation.city;
-
+  
   return (
-    <div className="space-y-4 bg-slate-800/30 border border-purple-500/20 rounded-lg p-4 backdrop-blur-sm transition-all duration-300">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <Globe className="h-5 w-5 text-sky-400" />
-          <h3 className="text-lg font-medium">Your Location</h3>
-        </div>
-
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={handleDetectLocation}
-          className="border-purple-500/30 bg-slate-800/60 text-white hover:bg-purple-600/30"
-          disabled={isLoadingLocation}
-        >
-          {isLoadingLocation ? (
-            <Loader2 className="h-4 w-4 mr-1 animate-spin" />
-          ) : (
-            <MapPin className="h-4 w-4 mr-1" />
+    <Card className="bg-slate-800/40 border-purple-500/20 backdrop-blur-sm shadow-lg">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-xl text-purple-200 flex items-center justify-between">
+          <span>Your Location</span>
+          {usingSavedPreference && (
+            <Badge variant="outline" className="bg-green-600/20 text-green-300 border-green-500/30">
+              <Check className="h-3 w-3 mr-1" />
+              Using saved preference
+            </Badge>
           )}
-          {isMobile ? 'Detect' : 'Detect My Location'}
-        </Button>
-      </div>
-
-      {locationError && (
-        <div className="text-orange-400 text-sm bg-orange-500/10 p-2 rounded border border-orange-500/20 flex items-center">
-          <AlertCircle className="h-4 w-4 mr-2 flex-shrink-0" />
-          <span>{locationError}</span>
-        </div>
-      )}
-
-      {showSavedLocationMessage && (
-        <div className="text-green-300 text-sm bg-green-500/10 p-2 rounded border border-green-500/20 flex items-center">
-          <CheckCircle className="h-4 w-4 mr-2 flex-shrink-0" />
-          <span>Using your saved location preference</span>
-        </div>
-      )}
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div className="space-y-1.5 relative">
-          <label htmlFor="country-select" className="text-sm text-white/70">Country</label>
-          <Select value={selectedCountry} onValueChange={handleCountryChange}>
-            <SelectTrigger 
-              id="country-select" 
-              className="bg-slate-800/60 border-white/10 text-white"
-            >
-              <SelectValue placeholder="Select country" />
-            </SelectTrigger>
-            <SelectContent 
-              className="bg-slate-900 border-white/10 text-white max-h-[300px]"
-              position="popper"
-              sideOffset={5}
-            >
-              {countries.map((country) => (
-                <SelectItem 
-                  key={country.code} 
-                  value={country.code} 
-                  className="hover:bg-purple-600/20"
-                >
-                  {country.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-1.5 relative">
-          <label htmlFor="city-select" className="text-sm text-white/70">City (Optional)</label>
-          <Popover open={isCityPopoverOpen} onOpenChange={setCityPopoverOpen}>
-            <PopoverTrigger asChild>
-              <div className="relative flex">
-                <Input
-                  id="city-select"
-                  ref={cityInputRef}
-                  value={selectedCity}
-                  onChange={handleCityInputChange}
-                  onFocus={() => selectedCountry && setCityPopoverOpen(true)}
-                  placeholder={selectedCountry ? "Search or enter city name" : "Select a country first"}
-                  className="bg-slate-800/60 border-white/10 text-white pr-8"
-                  disabled={!selectedCountry}
-                />
-                {selectedCity && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 hover:text-white hover:bg-transparent"
-                    onClick={() => {
-                      setSelectedCity('');
-                      setCitySearchQuery('');
-                      cityInputRef.current?.focus();
-                    }}
-                  >
-                    <X className="h-3.5 w-3.5" />
-                  </Button>
-                )}
-              </div>
-            </PopoverTrigger>
-            {selectedCountry && (
-              <PopoverContent 
-                className="p-0 bg-slate-900 border border-purple-500/30 text-white w-[300px]"
-                align="start"
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="country" className="text-sm text-white/70">Country</Label>
+              <Select 
+                value={country} 
+                onValueChange={handleCountryChange}
               >
-                <Command className="bg-transparent">
-                  <CommandInput 
-                    placeholder="Search cities..." 
-                    className="border-b border-purple-500/20 text-white placeholder:text-slate-400 bg-transparent"
-                    value={citySearchQuery}
-                    onValueChange={setCitySearchQuery}
-                  />
-                  <CommandList className="max-h-[200px] overflow-y-auto">
-                    <CommandEmpty className="py-2 px-4 text-slate-400 text-sm">
-                      {citySearchQuery.length > 0 
-                        ? `No cities found matching "${citySearchQuery}"`
-                        : `No cities found for ${getCountryName(selectedCountry)}`
-                      }
-                    </CommandEmpty>
-                    <CommandGroup heading={`Cities in ${getCountryName(selectedCountry)}`}>
-                      {filteredCities.map((city) => (
-                        <CommandItem
-                          key={city}
-                          value={city}
-                          onSelect={handleCitySelect}
-                          className="py-2 hover:bg-purple-600/20 text-white cursor-pointer"
-                        >
-                          {city}
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            )}
-          </Popover>
-
-          {validationMessage && (
-            <p className="text-yellow-400 text-xs mt-1">
-              <AlertCircle className="inline h-3 w-3 mr-1" />
-              {validationMessage}
-            </p>
-          )}
+                <SelectTrigger className="border-purple-500/30 bg-slate-800">
+                  <SelectValue placeholder="Select country" />
+                </SelectTrigger>
+                <SelectContent className="bg-slate-900 border-purple-500/30 max-h-[300px]">
+                  {countries.map(c => (
+                    <SelectItem key={c.code} value={c.code}>
+                      {c.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="city" className="text-sm text-white/70">City</Label>
+              <Combobox
+                items={availableCities.map(city => ({ value: city, label: city }))}
+                value={city}
+                onChange={handleCityChange}
+                onInputChange={handleCitySearchChange}
+                placeholder="Select or search city"
+                disabled={!country}
+                className="border-purple-500/30 bg-slate-800"
+              />
+            </div>
+          </div>
+          
+          <div className="flex flex-wrap gap-2 justify-between">
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant="outline"
+                size={isMobile ? "sm" : "default"}
+                className="border-purple-500/30 hover:bg-purple-500/20 flex items-center"
+                onClick={detectLocation}
+                disabled={isDetecting}
+              >
+                {isDetecting ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <MapPin className="h-4 w-4 mr-2" />
+                )}
+                {isMobile ? "Detect" : "Detect My Location"}
+              </Button>
+              
+              <Button
+                variant="ghost"
+                size={isMobile ? "sm" : "default"}
+                className="text-white/70 hover:text-white flex items-center"
+                onClick={clearLocation}
+                disabled={!country && !city}
+              >
+                <X className="h-4 w-4 mr-2" />
+                {isMobile ? "Clear" : "Clear Selection"}
+              </Button>
+            </div>
+            
+            <Button
+              variant="secondary"
+              size={isMobile ? "sm" : "default"}
+              className="bg-purple-600 hover:bg-purple-700 text-white flex items-center"
+              onClick={saveLocationPreference}
+              disabled={isSavingPreference || !country || !hasChanges}
+            >
+              {isSavingPreference ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Save className="h-4 w-4 mr-2" />
+              )}
+              {isMobile ? "Save" : "Save as Preference"}
+            </Button>
+          </div>
         </div>
-      </div>
-
-      <div className="flex justify-between pt-2">
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={clearSelection}
-          className="text-slate-400 hover:text-white hover:bg-slate-700/50"
-        >
-          <X className="h-4 w-4 mr-1" />
-          {isMobile ? 'Clear' : 'Clear Selection'}
-        </Button>
-
-        <Button
-          type="button"
-          size="sm"
-          onClick={handleSaveLocationPreference}
-          className="bg-purple-600 hover:bg-purple-700"
-          disabled={!selectedCountry || 
-            (showSavedLocationMessage && selectedCountry === savedLocation?.country && selectedCity === savedLocation?.city)}
-        >
-          <CheckCircle className="h-4 w-4 mr-1" />
-          {isMobile ? 'Save' : 'Save as Preference'}
-        </Button>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };
 

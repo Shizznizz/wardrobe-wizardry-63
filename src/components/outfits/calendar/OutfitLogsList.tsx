@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import OutfitLogItem, { OutfitLog } from '../OutfitLogItem';
 import { Outfit } from '@/lib/types';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { toast } from 'sonner';
 
 interface OutfitLogsListProps {
   selectedDate: Date | undefined;
@@ -13,6 +14,8 @@ interface OutfitLogsListProps {
   getOutfitById: (id: string) => Outfit | undefined;
   handleViewLog: (log: OutfitLog) => void;
   handleOpenLogDialog: (date?: Date) => void;
+  handleDeleteLog?: (id: string) => Promise<boolean>;
+  handleEditLog?: (log: OutfitLog) => void;
 }
 
 const OutfitLogsList = ({
@@ -21,8 +24,19 @@ const OutfitLogsList = ({
   getOutfitById,
   handleViewLog,
   handleOpenLogDialog,
+  handleDeleteLog,
+  handleEditLog
 }: OutfitLogsListProps) => {
   const isMobile = useIsMobile();
+  
+  const onDeleteLog = async (id: string) => {
+    if (handleDeleteLog) {
+      const success = await handleDeleteLog(id);
+      if (success) {
+        toast.success('Outfit log deleted');
+      }
+    }
+  };
   
   return (
     <Card className={`col-span-1 ${isMobile ? 'w-full' : 'md:col-span-2'} bg-slate-800/40 border-purple-500/20 shadow-lg backdrop-blur-sm`}>
@@ -44,6 +58,8 @@ const OutfitLogsList = ({
                   log={log}
                   outfit={outfit}
                   onClick={() => handleViewLog(log)}
+                  onDelete={handleDeleteLog ? onDeleteLog : undefined}
+                  onEdit={handleEditLog}
                 />
               );
             })}

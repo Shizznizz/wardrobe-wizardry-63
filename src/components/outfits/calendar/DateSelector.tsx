@@ -1,21 +1,19 @@
 
-import { useState } from 'react';
-import { format, addMonths, subMonths } from 'date-fns';
-import { CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Calendar as CalendarComponent } from '@/components/ui/calendar';
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { useIsMobile } from '@/hooks/use-mobile';
+import { Calendar } from "@/components/ui/calendar";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { format, addMonths, subMonths } from "date-fns";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface DateSelectorProps {
   selectedDate: Date | undefined;
   setSelectedDate: (date: Date | undefined) => void;
-  datesWithOutfits: { date: Date; logs: any[]; hasLogs: boolean }[];
+  datesWithOutfits: Array<{ date: Date; logs: any[]; hasLogs: boolean }>;
   onLogButtonClick: (date?: Date) => void;
   currentMonth: Date;
   setCurrentMonth: (date: Date) => void;
-  renderCalendarDay: (date: Date) => React.ReactNode;
+  renderCalendarDay?: (date: Date) => React.ReactNode;
 }
 
 const DateSelector = ({
@@ -29,100 +27,80 @@ const DateSelector = ({
 }: DateSelectorProps) => {
   const isMobile = useIsMobile();
   
-  const handlePreviousMonth = () => {
-    const newDate = subMonths(currentMonth, 1);
-    setCurrentMonth(newDate);
-  };
-
   const handleNextMonth = () => {
-    const newDate = addMonths(currentMonth, 1);
-    setCurrentMonth(newDate);
+    setCurrentMonth(addMonths(currentMonth, 1));
   };
-
-  const handleDateSelect = (date: Date | undefined) => {
-    setSelectedDate(date);
-    if (date && date.getMonth() !== currentMonth.getMonth()) {
-      setCurrentMonth(date);
-    }
+  
+  const handlePrevMonth = () => {
+    setCurrentMonth(subMonths(currentMonth, 1));
   };
-
+  
   return (
     <Card className="col-span-1 bg-slate-800/40 border-purple-500/20 shadow-lg backdrop-blur-sm">
-      <CardHeader className="pb-2">
+      <CardHeader className="pb-2 flex flex-row items-center justify-between">
         <CardTitle className="text-xl text-purple-200">Date Selection</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="flex justify-between items-center mb-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="border-purple-500/30 bg-slate-800/70"
-            onClick={handlePreviousMonth}
-            aria-label="Previous month"
+        <div className="flex items-center space-x-2">
+          <Button 
+            variant="outline" 
+            size="icon" 
+            className="h-7 w-7 border-purple-500/30 hover:bg-purple-500/20"
+            onClick={handlePrevMonth}
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          
-          <span className="font-medium text-purple-200">
+          <div className="text-sm font-medium">
             {format(currentMonth, 'MMMM yyyy')}
-          </span>
-          
-          <Button
-            variant="outline"
-            size="sm"
-            className="border-purple-500/30 bg-slate-800/70"
+          </div>
+          <Button 
+            variant="outline" 
+            size="icon" 
+            className="h-7 w-7 border-purple-500/30 hover:bg-purple-500/20"
             onClick={handleNextMonth}
-            aria-label="Next month"
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
+      </CardHeader>
+      <CardContent>
+        <div className="flex justify-center mb-4">
+          <Calendar
+            mode="single"
+            selected={selectedDate}
+            onSelect={setSelectedDate}
+            month={currentMonth}
+            onMonthChange={setCurrentMonth}
+            className="border border-purple-500/20 rounded-md bg-slate-900/50"
+            modifiers={{
+              hasOutfit: datesWithOutfits.map(d => d.date)
+            }}
+            modifiersStyles={{
+              hasOutfit: {
+                fontWeight: 'bold',
+                borderBottom: '2px solid #8b5cf6'
+              }
+            }}
+            components={{
+              DayContent: ({ date, ...props }) => (
+                <div className="relative w-full h-full flex items-center justify-center">
+                  <div {...props} />
+                  {renderCalendarDay && renderCalendarDay(date)}
+                </div>
+              )
+            }}
+          />
+        </div>
         
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className="w-full justify-start text-left font-normal border-purple-500/30 bg-slate-800/70"
-            >
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0 bg-slate-900 border border-purple-500/30" align="start">
-            <CalendarComponent
-              mode="single"
-              selected={selectedDate}
-              onSelect={handleDateSelect}
-              initialFocus
-              className="p-3 pointer-events-auto"
-              components={{
-                DayContent: (props) => (
-                  <div className="relative w-full h-full flex items-center justify-center">
-                    <div>{props.date?.getDate()}</div>
-                    {props.date && renderCalendarDay(props.date)}
-                  </div>
-                ),
-              }}
-              modifiers={{
-                highlighted: datesWithOutfits.map(d => d.date)
-              }}
-              modifiersClassNames={{
-                highlighted: "bg-purple-700/30 text-white rounded-md"
-              }}
-            />
-          </PopoverContent>
-        </Popover>
+        <div className="flex justify-center">
+          <Button 
+            className="border-purple-500/30 hover:bg-purple-500/20"
+            variant="outline"
+            onClick={() => onLogButtonClick(selectedDate)}
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            {isMobile ? "Log Outfit" : "Log Outfit for Selected Date"}
+          </Button>
+        </div>
       </CardContent>
-      <CardFooter className="pt-2 flex justify-center">
-        <Button 
-          size={isMobile ? "default" : "lg"}
-          className="w-full bg-purple-600 hover:bg-purple-700 font-medium"
-          onClick={() => onLogButtonClick(selectedDate)}
-        >
-          <CalendarIcon className="h-4 w-4 mr-2" />
-          Log Outfit
-        </Button>
-      </CardFooter>
     </Card>
   );
 };

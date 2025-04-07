@@ -2,16 +2,19 @@
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Outfit } from '@/lib/types';
+import { CalendarClock, RepeatIcon, Sparkles } from 'lucide-react';
 
 interface WardrobeRecommendationsProps {
   rarelyWornOutfits: Outfit[];
   frequentlyWornOutfits: Outfit[];
+  seasonalSuggestions: Outfit[];
   handleSelectOutfit: (outfitId: string) => void;
 }
 
 const WardrobeRecommendations = ({
   rarelyWornOutfits,
   frequentlyWornOutfits,
+  seasonalSuggestions,
   handleSelectOutfit,
 }: WardrobeRecommendationsProps) => {
   return (
@@ -22,7 +25,10 @@ const WardrobeRecommendations = ({
       <CardContent className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-purple-900/30 p-4 rounded-md border border-purple-500/30">
-            <h4 className="font-medium text-purple-200 mb-2">Rarely Worn Items</h4>
+            <div className="flex items-center gap-2 mb-2">
+              <CalendarClock className="h-4 w-4 text-purple-300" />
+              <h4 className="font-medium text-purple-200">Rarely Worn Items</h4>
+            </div>
             <p className="text-sm text-slate-300 mb-3">
               Consider wearing these outfits that haven't been worn in the last 30 days:
             </p>
@@ -47,7 +53,10 @@ const WardrobeRecommendations = ({
           </div>
           
           <div className="bg-amber-900/20 p-4 rounded-md border border-amber-500/30">
-            <h4 className="font-medium text-amber-200 mb-2">Frequently Worn Items</h4>
+            <div className="flex items-center gap-2 mb-2">
+              <RepeatIcon className="h-4 w-4 text-amber-300" />
+              <h4 className="font-medium text-amber-200">Frequently Worn Items</h4>
+            </div>
             <p className="text-sm text-slate-300 mb-3">
               Consider giving these frequently worn outfits a break:
             </p>
@@ -58,7 +67,7 @@ const WardrobeRecommendations = ({
                     key={outfit.id}
                     className="bg-amber-800/50 hover:bg-amber-700/70 cursor-pointer transition-colors"
                   >
-                    {outfit.name} (worn {outfit.timesWorn} times)
+                    {outfit.name} (worn {outfit.timesWorn || 0} times)
                   </Badge>
                 ))}
                 {frequentlyWornOutfits.length > 3 && (
@@ -71,15 +80,33 @@ const WardrobeRecommendations = ({
           </div>
           
           <div className="bg-blue-900/20 p-4 rounded-md border border-blue-500/30">
-            <h4 className="font-medium text-blue-200 mb-2">Seasonal Suggestions</h4>
-            <p className="text-sm text-slate-300">
-              Based on the current season and your wardrobe history, consider trying these combinations:
+            <div className="flex items-center gap-2 mb-2">
+              <Sparkles className="h-4 w-4 text-blue-300" />
+              <h4 className="font-medium text-blue-200">Seasonal Suggestions</h4>
+            </div>
+            <p className="text-sm text-slate-300 mb-3">
+              Based on the current season and your wardrobe history:
             </p>
-            <ul className="mt-2 space-y-1 text-sm text-slate-300">
-              <li>• Mix your rarely worn blue jeans with your favorite white top</li>
-              <li>• Try pairing your black dress with a colorful accessory for variation</li>
-              <li>• Your summer collection hasn't been used much - perfect time to try it</li>
-            </ul>
+            {seasonalSuggestions.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {seasonalSuggestions.slice(0, 3).map(outfit => (
+                  <Badge 
+                    key={outfit.id}
+                    className="bg-blue-800/50 hover:bg-blue-700/70 cursor-pointer transition-colors"
+                    onClick={() => handleSelectOutfit(outfit.id)}
+                  >
+                    {outfit.name}
+                  </Badge>
+                ))}
+                {seasonalSuggestions.length > 3 && (
+                  <Badge className="bg-slate-700/70">+{seasonalSuggestions.length - 3} more</Badge>
+                )}
+              </div>
+            ) : (
+              <p className="text-slate-400 italic">
+                Try mixing your rarely worn blue jeans with your favorite white top, or pairing your black dress with a colorful accessory for variation.
+              </p>
+            )}
           </div>
         </div>
       </CardContent>

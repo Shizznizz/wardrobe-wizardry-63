@@ -1,7 +1,7 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { isSameDay, format, endOfMonth, startOfMonth, addMonths, subMonths } from 'date-fns';
+import { format } from 'date-fns';
 import { Plus } from 'lucide-react';
 import {
   Tabs,
@@ -10,13 +10,14 @@ import {
   TabsTrigger,
 } from '@/components/ui/tabs';
 import { Outfit, ClothingItem } from '@/lib/types';
-import { OutfitLog } from './OutfitLogItem';
+import OutfitLogItem, { OutfitLog } from './OutfitLogItem';
 import DateSelector from './calendar/DateSelector';
 import OutfitLogsList from './calendar/OutfitLogsList';
 import WardrobeRecommendations from './calendar/WardrobeRecommendations';
 import MonthlyCalendarView from './calendar/MonthlyCalendarView';
 import OutfitLogForm from './calendar/OutfitLogForm';
 import OutfitStatsTab from './calendar/OutfitStatsTab';
+import { useCalendarState } from '@/hooks/useCalendarState';
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -43,12 +44,27 @@ const OutfitLogSchema = z.object({
 });
 
 const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProps) => {
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [selectedTab, setSelectedTab] = useState('calendar');
-  const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
-  const [isLogDialogOpen, setIsLogDialogOpen] = useState(false);
-  const [outfitLogs, setOutfitLogs] = useState<OutfitLog[]>([]);
-  const [selectedLog, setSelectedLog] = useState<OutfitLog | null>(null);
+  
+  const {
+    selectedDate,
+    setSelectedDate,
+    currentMonth,
+    setCurrentMonth,
+    isLogDialogOpen,
+    outfitLogs,
+    isLoading,
+    selectedLog,
+    handleOpenLogDialog,
+    handleCloseLogDialog,
+    handleViewLog,
+    addOutfitLog,
+    deleteOutfitLog,
+    getLogsForDay,
+    getRarelyWornOutfits,
+    getFrequentlyWornOutfits,
+    getSeasonalSuggestions
+  } = useCalendarState(outfits, clothingItems);
 
   const form = useForm<z.infer<typeof OutfitLogSchema>>({
     resolver: zodResolver(OutfitLogSchema),
@@ -58,64 +74,36 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
     },
   });
 
-  const onSubmitLog = (values: Omit<OutfitLog, 'id'>) => {
-    const newLog: OutfitLog = {
-      id: Date.now().toString(),
-      ...values
-    };
+  const onSubmitLog = async (values: Omit<OutfitLog, 'id'>) => {
+    const newLog = await addOutfitLog(values);
     
-    setOutfitLogs((prev) => [...prev, newLog]);
-    
-    if (onAddLog) {
+    if (newLog && onAddLog) {
       onAddLog(values);
     }
-    
-    setIsLogDialogOpen(false);
   };
 
   const outfitLogsOnDate = outfitLogs.filter(
-    log => log.date && selectedDate && isSameDay(new Date(log.date), selectedDate)
+    log => log.date && selectedDate && format(new Date(log.date), 'yyyy-MM-dd') === format(selectedDate, 'yyyy-MM-dd')
   );
 
-  const rarelyWornOutfits = outfits.filter(outfit => {
-    const logs = outfitLogs.filter(log => log.outfitId === outfit.id);
-    if (logs.length === 0) return true;
-    
-    const lastWornLog = logs.reduce((latest, current) => 
-      new Date(latest.date) > new Date(current.date) ? latest : current
-    );
-    
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    return new Date(lastWornLog.date) < thirtyDaysAgo;
-  });
+  const rarelyWornOutfits = getRarelyWornOutfits(outfits);
 
-  const frequentlyWornOutfits = outfits.filter(outfit => {
-    const logs = outfitLogs.filter(log => log.outfitId === outfit.id);
-    return logs.length > 5;
-  });
+  const frequentlyWornOutfits = getFrequentlyWornOutfits(outfits);
 
   const getDatesWithOutfits = () => {
-    if (!currentMonth) return [];
-    
-    const monthStart = startOfMonth(currentMonth);
-    const monthEnd = endOfMonth(currentMonth);
-    const daysInMonth = Array.from(
-      { length: monthEnd.getDate() },
-      (_, i) => new Date(monthStart.getFullYear(), monthStart.getMonth(), i + 1)
-    );
-    
-    return daysInMonth.map(day => {
-      const logsOnDay = outfitLogs.filter(
-        log => log.date && isSameDay(new Date(log.date), day)
-      );
-      
-      return {
-        date: day,
-        logs: logsOnDay,
-        hasLogs: logsOnDay.length > 0
-      };
-    }).filter(day => day.hasLogs);
+    return outfitLogs
+      .filter(log => {
+        const logMonth = new Date(log.date).getMonth();
+        const logYear = new Date(log.date).getFullYear();
+        return logMonth === currentMonth.getMonth() && logYear === currentMonth.getFullYear();
+      })
+      .map(log => {
+        return {
+          date: new Date(log.date),
+          logs: [log],
+          hasLogs: true
+        };
+      });
   };
 
   const datesWithOutfits = getDatesWithOutfits();
@@ -128,21 +116,9 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
     return outfits.find(outfit => outfit.id === id);
   };
 
-  const handleOpenLogDialog = (date?: Date) => {
-    if (date) {
-      form.setValue('date', date);
-    }
-    setIsLogDialogOpen(true);
-  };
-
-  const handleViewLog = (log: OutfitLog) => {
-    setSelectedLog(log);
-  };
-
-  const getLogsForDay = (day: Date) => {
-    return outfitLogs.filter(log => 
-      log.date && isSameDay(new Date(log.date), day)
-    );
+  const handleSelectOutfit = (outfitId: string) => {
+    handleOpenLogDialog(selectedDate);
+    form.setValue('outfitId', outfitId);
   };
 
   const renderCalendarDay = (date: Date) => {
@@ -162,11 +138,6 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
         )}
       </div>
     );
-  };
-
-  const handleSelectOutfit = (outfitId: string) => {
-    handleOpenLogDialog(selectedDate);
-    form.setValue('outfitId', outfitId);
   };
 
   return (
@@ -207,12 +178,14 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
                 getOutfitById={getOutfitById}
                 handleViewLog={handleViewLog}
                 handleOpenLogDialog={handleOpenLogDialog}
+                handleDeleteLog={deleteOutfitLog}
               />
               
               <WardrobeRecommendations
                 rarelyWornOutfits={rarelyWornOutfits}
                 frequentlyWornOutfits={frequentlyWornOutfits}
                 handleSelectOutfit={handleSelectOutfit}
+                seasonalSuggestions={getSeasonalSuggestions(outfits, clothingItems)}
               />
               
               <MonthlyCalendarView
@@ -240,7 +213,7 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
 
       <OutfitLogForm
         isOpen={isLogDialogOpen}
-        onClose={() => setIsLogDialogOpen(false)}
+        onClose={handleCloseLogDialog}
         outfits={outfits}
         selectedDate={selectedDate}
         onSubmit={onSubmitLog}
