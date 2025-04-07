@@ -99,18 +99,13 @@ const DateSelector = ({
     handleMonthChange(addMonths(currentMonth, 1));
   };
 
-  // Create custom modifiers from our activeModifiers structure
-  const customModifiers = Object.keys(activeModifiers).reduce((acc, dateKey) => {
-    const mods = activeModifiers[dateKey];
-    // Convert our custom format to day-picker format
-    if (mods.hasOutfit) {
-      acc[`hasOutfit-${dateKey}`] = new Date(dateKey);
-    }
-    if (mods.isSelected) {
-      acc[`isSelected-${dateKey}`] = new Date(dateKey);
-    }
-    return acc;
-  }, {} as Record<string, Date>);
+  // Create modifiers from activeModifiers state
+  const modifiers = {
+    selected: selectedDate,
+    hasOutfit: outfitLogs
+      .filter(log => log.date)
+      .map(log => new Date(log.date))
+  };
 
   return (
     <Card className={`bg-slate-800/60 border-purple-500/20 shadow-lg backdrop-blur-sm ${className}`}>
@@ -146,9 +141,10 @@ const DateSelector = ({
           month={currentMonth}
           onMonthChange={handleMonthChange}
           className="border-none"
-          modifiers={customModifiers}
+          modifiers={modifiers}
           modifiersClassNames={{
             selected: "bg-purple-600 text-white",
+            hasOutfit: "",
           }}
           components={{
             DayContent: (props) => (

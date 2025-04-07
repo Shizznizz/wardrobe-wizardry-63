@@ -28,12 +28,14 @@ interface EnhancedLocationSelectorProps {
   onLocationChange?: (city: string, country: string) => void;
   initialCity?: string;
   initialCountry?: string;
+  showToasts?: boolean;
 }
 
 const EnhancedLocationSelector = ({ 
   onLocationChange,
   initialCity,
-  initialCountry
+  initialCountry,
+  showToasts = true
 }: EnhancedLocationSelectorProps) => {
   const {
     country,
@@ -66,7 +68,7 @@ const EnhancedLocationSelector = ({
   
   // Notify parent component when location changes
   useEffect(() => {
-    if (onLocationChange) {
+    if (onLocationChange && country) {
       onLocationChange(city, country);
     }
   }, [city, country, onLocationChange]);

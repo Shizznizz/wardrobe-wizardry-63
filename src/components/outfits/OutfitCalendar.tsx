@@ -164,12 +164,10 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <DateSelector 
                 selectedDate={selectedDate}
-                setSelectedDate={setSelectedDate}
-                datesWithOutfits={datesWithOutfits}
-                onLogButtonClick={handleOpenLogDialog}
+                onSelectDate={setSelectedDate}
+                outfitLogs={outfitLogs}
                 currentMonth={currentMonth}
-                setCurrentMonth={setCurrentMonth}
-                renderCalendarDay={renderCalendarDay}
+                onMonthChange={setCurrentMonth}
               />
               
               <OutfitLogsList 
