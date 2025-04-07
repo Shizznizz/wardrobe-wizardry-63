@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -11,6 +12,7 @@ import { ClothingItem, ClothingType, Outfit } from '@/lib/types';
 import { sampleClothingItems, sampleOutfits, sampleUserPreferences } from '@/lib/wardrobeData';
 import { toast } from 'sonner';
 import { Confetti } from '@/components/ui/confetti';
+import { cn } from "@/lib/utils";
 import { 
   ArrowUpDown, 
   Info, 
