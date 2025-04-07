@@ -71,7 +71,6 @@ const DateSelector = ({
       if (log.date) {
         const dateKey = new Date(log.date).toISOString().split('T')[0];
         newModifiers[dateKey] = {
-          ...(newModifiers[dateKey] || {}),
           hasOutfit: true,
           isSelected: isSameDay(new Date(log.date), selectedDate)
         };
@@ -81,7 +80,7 @@ const DateSelector = ({
     // Mark selected date
     const selectedDateKey = selectedDate.toISOString().split('T')[0];
     newModifiers[selectedDateKey] = {
-      ...(newModifiers[selectedDateKey] || {}),
+      hasOutfit: newModifiers[selectedDateKey]?.hasOutfit || false,
       isSelected: true
     };
     
@@ -99,6 +98,19 @@ const DateSelector = ({
   const goToNextMonth = () => {
     handleMonthChange(addMonths(currentMonth, 1));
   };
+
+  // Create custom modifiers from our activeModifiers structure
+  const customModifiers = Object.keys(activeModifiers).reduce((acc, dateKey) => {
+    const mods = activeModifiers[dateKey];
+    // Convert our custom format to day-picker format
+    if (mods.hasOutfit) {
+      acc[`hasOutfit-${dateKey}`] = new Date(dateKey);
+    }
+    if (mods.isSelected) {
+      acc[`isSelected-${dateKey}`] = new Date(dateKey);
+    }
+    return acc;
+  }, {} as Record<string, Date>);
 
   return (
     <Card className={`bg-slate-800/60 border-purple-500/20 shadow-lg backdrop-blur-sm ${className}`}>
@@ -134,6 +146,10 @@ const DateSelector = ({
           month={currentMonth}
           onMonthChange={handleMonthChange}
           className="border-none"
+          modifiers={customModifiers}
+          modifiersClassNames={{
+            selected: "bg-purple-600 text-white",
+          }}
           components={{
             DayContent: (props) => (
               <DayContent 

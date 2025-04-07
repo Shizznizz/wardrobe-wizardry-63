@@ -15,9 +15,13 @@ import StyleSituation from '@/components/StyleSituation';
 import RecommendedOutfits from '@/components/outfits/RecommendedOutfits';
 import { OutfitLog } from '@/components/outfits/OutfitLogItem';
 import { toast } from 'sonner';
+import { useLocationStorage } from '@/hooks/useLocationStorage';
 
 const Outfits = () => {
   const navigate = useNavigate();
+  const [locationUpdated, setLocationUpdated] = useState(false);
+  const { savedLocation } = useLocationStorage();
+  
   const {
     outfits,
     clothingItems,
@@ -42,9 +46,17 @@ const Outfits = () => {
   // Handle when an outfit is added to the calendar
   const handleOutfitAddedToCalendar = (log: OutfitLog) => {
     addOutfitLog(log);
+    toast.success(`Outfit added to calendar for ${new Date(log.date).toLocaleDateString()}`);
     // Optional: navigate to calendar with the date pre-selected
     // navigate(`/calendar?date=${new Date(log.date).toISOString().split('T')[0]}`);
   };
+  
+  // Set location updated flag when location is saved
+  useEffect(() => {
+    if (savedLocation && !locationUpdated) {
+      setLocationUpdated(true);
+    }
+  }, [savedLocation]);
   
   const containerVariants = {
     hidden: { opacity: 0 },

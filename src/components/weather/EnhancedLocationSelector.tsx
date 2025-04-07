@@ -42,6 +42,7 @@ const EnhancedLocationSelector = ({
     isSavingPreference,
     hasChanges,
     usingSavedPreference,
+    locationChangedManually,
     detectLocation,
     saveLocationPreference,
     clearLocation,

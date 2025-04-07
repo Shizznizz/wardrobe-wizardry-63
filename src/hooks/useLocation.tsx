@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -13,6 +13,9 @@ export function useLocation() {
   const [isSavingPreference, setIsSavingPreference] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [usingSavedPreference, setUsingSavedPreference] = useState(false);
+  const [locationChangedManually, setLocationChangedManually] = useState(false);
+  const initialLoadRef = useRef(true);
+  const prevLocationRef = useRef({ country: '', city: '' });
   const { user } = useAuth();
 
   // Load saved location preference when component mounts
@@ -49,26 +52,42 @@ export function useLocation() {
         setCity(savedLocation.city || '');
         setUsingSavedPreference(true);
         setHasChanges(false);
+        
+        // Store initial values for comparison
+        prevLocationRef.current = {
+          country: savedLocation.country,
+          city: savedLocation.city || ''
+        };
       }
+      
+      // Mark that initial load is complete
+      initialLoadRef.current = false;
     } catch (error) {
       console.error('Failed to load saved location:', error);
+      initialLoadRef.current = false;
     }
   };
 
   // Detect user's location using browser geolocation API
   const detectLocation = async () => {
     setIsDetecting(true);
+    setLocationChangedManually(true);
     
     try {
       const location = await getCurrentLocation();
       
       if (location && location.country) {
+        // Only show toast if location actually changed
+        const isNewLocation = location.country !== country || location.city !== city;
+        
         setCountry(location.country);
         setCity(location.city || '');
         setHasChanges(true);
         setUsingSavedPreference(false);
         
-        toast.success(`Location detected: ${location.city ? location.city + ', ' : ''}${getCountryName(location.country)}`);
+        if (isNewLocation) {
+          toast.success(`Location detected: ${location.city ? location.city + ', ' : ''}${getCountryName(location.country)}`);
+        }
       } else {
         toast.error("Couldn't detect your location. Please select manually.");
       }
@@ -90,11 +109,15 @@ export function useLocation() {
     }
     
     setIsSavingPreference(true);
+    setLocationChangedManually(true);
     
     try {
       // Always save to localStorage as fallback
       const locationData = { country, city };
       localStorage.setItem('userLocation', JSON.stringify(locationData));
+      
+      // Check if the location has actually changed
+      const isLocationChanged = country !== prevLocationRef.current.country || city !== prevLocationRef.current.city;
       
       // If user is logged in, save to Supabase as well
       if (user) {
@@ -118,7 +141,15 @@ export function useLocation() {
 
       setUsingSavedPreference(true);
       setHasChanges(false);
-      toast.success('Location preference saved');
+      
+      // Update reference for comparison
+      prevLocationRef.current = { country, city };
+      
+      // Only show toast if actually changed
+      if (isLocationChanged) {
+        toast.success('Location preference saved');
+      }
+      
       return true;
     } catch (error) {
       console.error('Failed to save location:', error);
@@ -131,10 +162,19 @@ export function useLocation() {
 
   // Clear current location selection
   const clearLocation = () => {
+    setLocationChangedManually(true);
+    
+    // Only show toast if values are actually cleared (not already empty)
+    const wasPopulated = country !== '' || city !== '';
+    
     setCountry('');
     setCity('');
     setUsingSavedPreference(false);
     setHasChanges(true);
+    
+    if (wasPopulated) {
+      toast.success('Location cleared');
+    }
   };
 
   // Update country selection
@@ -144,6 +184,7 @@ export function useLocation() {
       setCity(''); // Reset city when country changes
       setHasChanges(true);
       setUsingSavedPreference(false);
+      setLocationChangedManually(true);
     }
   };
 
@@ -153,6 +194,7 @@ export function useLocation() {
       setCity(newCity);
       setHasChanges(true);
       setUsingSavedPreference(false);
+      setLocationChangedManually(true);
     }
   };
 
@@ -163,6 +205,7 @@ export function useLocation() {
     isSavingPreference,
     hasChanges,
     usingSavedPreference,
+    locationChangedManually,
     detectLocation,
     saveLocationPreference,
     clearLocation,

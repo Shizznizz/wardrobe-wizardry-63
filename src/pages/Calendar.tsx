@@ -15,16 +15,18 @@ const Calendar = () => {
   const [items, setItems] = useState(sampleClothingItems);
   const [outfits, setOutfits] = useState(sampleOutfits);
   const [location, setLocation] = useState<{ city: string; country: string }>({ city: '', country: '' });
+  const [locationUpdated, setLocationUpdated] = useState(false);
   const isMobile = useIsMobile();
   const { savedLocation } = useLocationStorage();
 
   // Initialize location from saved preferences
   useEffect(() => {
-    if (savedLocation) {
+    if (savedLocation && !locationUpdated) {
       setLocation({
         country: savedLocation.country,
         city: savedLocation.city
       });
+      setLocationUpdated(true);
     }
   }, [savedLocation]);
 
@@ -132,7 +134,7 @@ const Calendar = () => {
                 outfits={outfits}
                 clothingItems={items}
                 onAddLog={(log) => {
-                  toast.success(`Outfit logged for ${format(log.date, 'MMMM d, yyyy')}`);
+                  toast.success(`Outfit logged for ${format(new Date(log.date), 'MMMM d, yyyy')}`);
                 }}
               />
             </motion.div>
