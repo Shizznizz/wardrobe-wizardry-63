@@ -107,8 +107,8 @@ const DateSelector = ({
     .map(log => new Date(log.date));
 
   // Convert our activeModifiers to the format expected by the Calendar component
-  // Calendar expects a Record<string, true> for custom modifiers
-  const calendarModifiers: Record<string, Date[]> = {
+  // Calendar expects a Record<string, Date[]> for custom modifiers
+  const calendarModifiers = {
     selected: selectedDays,
     hasOutfit: daysWithOutfits
   };

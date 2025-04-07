@@ -7,11 +7,29 @@ import OliviaBloomAdvisor from '@/components/OliviaBloomAdvisor';
 import OliviaBloomAssistant from '@/components/OliviaBloomAssistant';
 import OliviaTips from '@/components/OliviaTips';
 import UploadModal from '@/components/UploadModal';
-import { ClothingItem, ClothingType } from '@/lib/types';
+import { ClothingItem, ClothingType, Outfit } from '@/lib/types';
 import { sampleClothingItems, sampleOutfits, sampleUserPreferences } from '@/lib/wardrobeData';
 import { toast } from 'sonner';
 import { Confetti } from '@/components/ui/confetti';
-import { ArrowUpDown, Info, Shirt, Sparkles, LayoutGrid, ArrowRight, X, ChevronDown, AlertCircle, Trash2 } from 'lucide-react';
+import { 
+  ArrowUpDown, 
+  Info, 
+  Shirt, 
+  Sparkles, 
+  LayoutGrid, 
+  ArrowRight, 
+  X, 
+  ChevronDown, 
+  AlertCircle, 
+  Trash2, 
+  Check,
+  Grid3X3,
+  List,
+  Clock,
+  CloudSun,
+  Layers,
+  Puzzle
+} from 'lucide-react';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -20,8 +38,6 @@ import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import CategoryModal from '@/components/CategoryModal';
 import { 
   DropdownMenu,
   DropdownMenuContent,
@@ -40,7 +56,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { supabase } from '@/integrations/supabase/client';
 
 const Wardrobe = () => {
   const [items, setItems] = useState<ClothingItem[]>([]);
@@ -58,7 +73,13 @@ const Wardrobe = () => {
   const [clearWardrobeDialogOpen, setClearWardrobeDialogOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [itemToEdit, setItemToEdit] = useState<ClothingItem | null>(null);
-  
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [outfits, setOutfits] = useState<Outfit[]>([]);
+  const [smartFilter, setSmartFilter] = useState<string | null>(null);
+  const [itemForPairing, setItemForPairing] = useState<string | null>(null);
+
   const isMobile = useIsMobile();
   const { user } = useAuth();
 
@@ -73,10 +94,19 @@ const Wardrobe = () => {
           setItems(sampleClothingItems);
           localStorage.setItem('wardrobeItems', JSON.stringify(sampleClothingItems));
         }
+        
+        const savedOutfits = localStorage.getItem('outfits');
+        if (savedOutfits) {
+          setOutfits(JSON.parse(savedOutfits));
+        } else {
+          setOutfits(sampleOutfits);
+          localStorage.setItem('outfits', JSON.stringify(sampleOutfits));
+        }
       } catch (error) {
         console.error("Failed to load wardrobe items:", error);
         setLoadError("Failed to load your wardrobe items. Please try again later.");
         setItems(sampleClothingItems);
+        setOutfits(sampleOutfits);
       } finally {
         setIsLoading(false);
       }
@@ -90,6 +120,48 @@ const Wardrobe = () => {
       localStorage.setItem('wardrobeItems', JSON.stringify(items));
     }
   }, [items, isLoading]);
+  
+  useEffect(() => {
+    if (!isLoading && outfits) {
+      localStorage.setItem('outfits', JSON.stringify(outfits));
+    }
+  }, [outfits, isLoading]);
+  
+  useEffect(() => {
+    if (selectedCategory !== null) {
+      setIsSelectionMode(false);
+      setSelectedItems([]);
+    }
+  }, [selectedCategory]);
+
+  const handleToggleSelect = (id: string) => {
+    setSelectedItems(prev => 
+      prev.includes(id) ? prev.filter(itemId => itemId !== id) : [...prev, id]
+    );
+  };
+  
+  const handleCreateOutfit = (name: string, itemIds: string[]) => {
+    const newOutfit: Outfit = {
+      id: `outfit-${Date.now()}`,
+      name,
+      items: itemIds,
+      occasions: [],
+      seasons: [],
+      favorite: false,
+      timesWorn: 0,
+      dateAdded: new Date(),
+    };
+    
+    setOutfits(prev => [newOutfit, ...prev]);
+    setSelectedItems([]);
+    setIsSelectionMode(false);
+    
+    toast.success(`Outfit "${name}" created successfully!`, {
+      description: `Created with ${itemIds.length} item${itemIds.length !== 1 ? 's' : ''}`
+    });
+    setShowConfetti(true);
+    setTimeout(() => setShowConfetti(false), 2000);
+  };
 
   const handleUpload = (newItem: ClothingItem) => {
     setItems(prev => [newItem, ...prev]);
@@ -156,6 +228,45 @@ const Wardrobe = () => {
     setSelectedItemForMatch(item);
     setMatchModalOpen(true);
   };
+  
+  const toggleSelectionMode = () => {
+    setIsSelectionMode(!isSelectionMode);
+    if (isSelectionMode) {
+      setSelectedItems([]);
+    }
+  };
+  
+  const applySmartFilter = (filterType: string, itemId?: string) => {
+    if (filterType === smartFilter && itemId === itemForPairing) {
+      setSmartFilter(null);
+      setItemForPairing(null);
+      return;
+    }
+    
+    setSmartFilter(filterType);
+    if (itemId) {
+      setItemForPairing(itemId);
+    } else {
+      setItemForPairing(null);
+    }
+    
+    switch (filterType) {
+      case 'weather':
+        toast.success('Showing items suitable for current weather');
+        break;
+      case 'pairing':
+        if (itemId) {
+          const item = items.find(i => i.id === itemId);
+          if (item) {
+            toast.success(`Showing items that pair well with "${item.name}"`);
+          }
+        }
+        break;
+      case 'olivia':
+        toast.success("Showing Olivia's suggested pairings for your style");
+        break;
+    }
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -201,31 +312,80 @@ const Wardrobe = () => {
     }
   };
 
-  const filteredItems = selectedCategory 
-    ? items.filter(item => item.type === selectedCategory) 
-    : items;
-
-  const sortedItems = [...filteredItems].sort((a, b) => {
-    switch (sortOption) {
-      case 'newest':
-        return new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime();
-      case 'favorites':
-        return Number(b.favorite) - Number(a.favorite);
-      case 'most-worn':
-        return b.timesWorn - a.timesWorn;
-      case 'color':
-        return a.color.localeCompare(b.color);
-      case 'most-matched':
-        return b.timesWorn - a.timesWorn;
-      case 'weather-fit':
-        const currentSeason: 'winter' | 'spring' | 'summer' | 'autumn' = 'spring';
-        return b.seasons.includes(currentSeason) ? -1 : 1;
-      case 'not-recent':
-        return a.timesWorn - b.timesWorn;
-      default:
-        return 0;
+  const applyFilters = () => {
+    let filteredItems = [...items];
+    
+    if (selectedCategory) {
+      filteredItems = filteredItems.filter(item => item.type === selectedCategory);
     }
-  });
+    
+    if (smartFilter) {
+      switch (smartFilter) {
+        case 'weather':
+          const currentSeason: 'winter' | 'spring' | 'summer' | 'autumn' = 'spring';
+          filteredItems = filteredItems.filter(item => 
+            item.seasons.includes(currentSeason) || item.seasons.includes('all')
+          );
+          break;
+          
+        case 'pairing':
+          if (itemForPairing) {
+            const relevantOutfits = outfits.filter(outfit => 
+              outfit.items.includes(itemForPairing)
+            );
+            
+            const pairingItemIds = new Set<string>();
+            relevantOutfits.forEach(outfit => {
+              outfit.items.forEach(id => {
+                if (id !== itemForPairing) {
+                  pairingItemIds.add(id);
+                }
+              });
+            });
+            
+            filteredItems = filteredItems.filter(item => 
+              pairingItemIds.has(item.id) || item.id === itemForPairing
+            );
+          }
+          break;
+          
+        case 'olivia':
+          const popularColors = ['black', 'white', 'blue', 'gray'];
+          const versatileTypes = ['shirt', 'jeans', 'sneakers', 'sweater'];
+          
+          filteredItems = filteredItems.filter(item => 
+            popularColors.includes(item.color) || 
+            versatileTypes.includes(item.type) ||
+            item.favorite
+          );
+          break;
+      }
+    }
+    
+    return [...filteredItems].sort((a, b) => {
+      switch (sortOption) {
+        case 'newest':
+          return new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime();
+        case 'favorites':
+          return Number(b.favorite) - Number(a.favorite);
+        case 'most-worn':
+          return b.timesWorn - a.timesWorn;
+        case 'color':
+          return a.color.localeCompare(b.color);
+        case 'most-matched':
+          return b.timesWorn - a.timesWorn;
+        case 'weather-fit':
+          const currentSeason: 'winter' | 'spring' | 'summer' | 'autumn' = 'spring';
+          return b.seasons.includes(currentSeason) ? -1 : 1;
+        case 'not-recent':
+          return a.timesWorn - b.timesWorn;
+        default:
+          return 0;
+      }
+    });
+  };
+
+  const sortedItems = applyFilters();
 
   const getPersonalizedGreeting = () => {
     if (user?.user_metadata?.name) {
@@ -244,6 +404,25 @@ const Wardrobe = () => {
       case 'weather-fit': return 'Weather Fit';
       case 'not-recent': return 'Not Recent';
       default: return 'Sort';
+    }
+  };
+  
+  const getSmartFilterDescription = () => {
+    if (!smartFilter) return null;
+    
+    switch (smartFilter) {
+      case 'weather':
+        return "Items suitable for today's weather";
+      case 'pairing':
+        if (itemForPairing) {
+          const item = items.find(i => i.id === itemForPairing);
+          return item ? `Items that pair well with "${item.name}"` : null;
+        }
+        return null;
+      case 'olivia':
+        return "Olivia's personal styling suggestions";
+      default:
+        return null;
     }
   };
 
@@ -300,6 +479,23 @@ const Wardrobe = () => {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="bg-slate-900/95 backdrop-blur-md border-slate-700/50 text-white w-56">
+                    <DropdownMenuItem 
+                      onClick={toggleSelectionMode}
+                      className="focus:bg-slate-800"
+                    >
+                      {isSelectionMode ? (
+                        <>
+                          <X className="mr-2 h-4 w-4 text-purple-400" />
+                          Exit Selection Mode
+                        </>
+                      ) : (
+                        <>
+                          <Check className="mr-2 h-4 w-4 text-purple-400" />
+                          Enter Selection Mode
+                        </>
+                      )}
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem 
                       onClick={handleClearWardrobe}
                       className="text-red-400 focus:text-red-300 focus:bg-red-950/30"
@@ -404,7 +600,65 @@ const Wardrobe = () => {
                 </div>
               )}
               
-              <div className="flex items-center">
+              <div className="flex items-center gap-2">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className={cn(
+                          "border-purple-400/30 text-white hover:bg-white/10 flex items-center",
+                          isSelectionMode && "bg-purple-500/20 border-purple-500/50"
+                        )}
+                        onClick={toggleSelectionMode}
+                      >
+                        {isSelectionMode ? (
+                          <>
+                            <X className="mr-1.5 h-3.5 w-3.5" />
+                            <span>Exit Selection ({selectedItems.length})</span>
+                          </>
+                        ) : (
+                          <>
+                            <Check className="mr-1.5 h-3.5 w-3.5" />
+                            <span>Select Items</span>
+                          </>
+                        )}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" className="bg-slate-900 border-slate-700 text-white">
+                      <p className="text-xs">
+                        {isSelectionMode 
+                          ? "Exit selection mode" 
+                          : "Select multiple items to create an outfit"}
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <ToggleGroup 
+                        type="single" 
+                        value={viewMode} 
+                        onValueChange={(value) => value && setViewMode(value as 'grid' | 'list')}
+                        className="bg-slate-900/60 p-1 rounded-full backdrop-blur-sm border border-white/10 shadow-md"
+                      >
+                        <ToggleGroupItem value="grid" className="rounded-full h-7 w-7 p-0 data-[state=on]:bg-gradient-to-r data-[state=on]:from-indigo-600 data-[state=on]:to-purple-600">
+                          <Grid3X3 className="h-3.5 w-3.5" />
+                        </ToggleGroupItem>
+                        <ToggleGroupItem value="list" className="rounded-full h-7 w-7 p-0 data-[state=on]:bg-gradient-to-r data-[state=on]:from-indigo-600 data-[state=on]:to-purple-600">
+                          <List className="h-3.5 w-3.5" />
+                        </ToggleGroupItem>
+                      </ToggleGroup>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" className="bg-slate-900 border-slate-700 text-white">
+                      <p className="text-xs">Toggle between grid and list view</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -431,6 +685,135 @@ const Wardrobe = () => {
                 </TooltipProvider>
               </div>
             </div>
+            
+            <motion.div 
+              variants={itemVariants}
+              className="mb-6"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <div className="bg-slate-900/50 p-3 sm:px-4 sm:py-3 rounded-xl backdrop-blur-sm border border-white/5 shadow-md">
+                <div className="flex items-center mb-3">
+                  <Puzzle className="h-4 w-4 text-purple-400 mr-2" />
+                  <h3 className="text-sm font-medium text-white">Smart Filters</h3>
+                </div>
+                
+                <div className="flex flex-wrap gap-2">
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className={cn(
+                            "text-xs border-slate-700/50 hover:bg-slate-800/60",
+                            smartFilter === 'weather' && "bg-slate-800/80 border-blue-500/50 text-blue-300"
+                          )}
+                          onClick={() => applySmartFilter('weather')}
+                        >
+                          <CloudSun className="mr-1.5 h-3.5 w-3.5" />
+                          Wear again in similar weather
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" className="bg-slate-900 border-slate-700 text-white">
+                        <p className="text-xs">Find items suitable for today's weather conditions</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  
+                  <DropdownMenu>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className={cn(
+                                "text-xs border-slate-700/50 hover:bg-slate-800/60",
+                                smartFilter === 'pairing' && "bg-slate-800/80 border-green-500/50 text-green-300"
+                              )}
+                            >
+                              <Layers className="mr-1.5 h-3.5 w-3.5" />
+                              Works well with
+                              <ChevronDown className="ml-1 h-3 w-3" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom" className="bg-slate-900 border-slate-700 text-white">
+                          <p className="text-xs">Find items that pair well with a specific piece</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                    <DropdownMenuContent 
+                      className="bg-slate-900/95 backdrop-blur-md border-slate-700/50 text-white max-h-[300px] overflow-y-auto"
+                    >
+                      {items.length === 0 ? (
+                        <div className="px-2 py-1.5 text-xs text-gray-400">No items available</div>
+                      ) : (
+                        items.map(item => (
+                          <DropdownMenuItem 
+                            key={item.id} 
+                            onClick={() => applySmartFilter('pairing', item.id)}
+                            className="focus:bg-slate-800 gap-2"
+                          >
+                            <div className="w-5 h-5 rounded overflow-hidden flex-shrink-0">
+                              <img 
+                                src={item.imageUrl} 
+                                alt={item.name} 
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                            <span className="truncate">{item.name}</span>
+                          </DropdownMenuItem>
+                        ))
+                      )}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                  
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className={cn(
+                            "text-xs border-slate-700/50 hover:bg-slate-800/60",
+                            smartFilter === 'olivia' && "bg-slate-800/80 border-purple-500/50 text-purple-300"
+                          )}
+                          onClick={() => applySmartFilter('olivia')}
+                        >
+                          <Sparkles className="mr-1.5 h-3.5 w-3.5" />
+                          Olivia's Suggested Pairings
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" className="bg-slate-900 border-slate-700 text-white">
+                        <p className="text-xs">Olivia's AI-powered suggestions based on your style</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+                
+                {getSmartFilterDescription() && (
+                  <div className="mt-3 flex items-center text-xs text-indigo-300 bg-indigo-950/30 px-3 py-1.5 rounded-full border border-indigo-500/20">
+                    <Info className="h-3 w-3 mr-1.5" />
+                    {getSmartFilterDescription()}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="ml-2 h-5 w-5 p-0 text-xs hover:bg-indigo-950/50 rounded-full"
+                      onClick={() => {
+                        setSmartFilter(null);
+                        setItemForPairing(null);
+                      }}
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </motion.div>
           </motion.div>
           
           {isLoading && (
@@ -516,6 +899,10 @@ const Wardrobe = () => {
                 onDeleteItem={handleDeleteItem}
                 onEditItem={handleEditItem}
                 compactView={showCompactView}
+                selectable={isSelectionMode}
+                selectedItems={selectedItems}
+                onToggleSelect={handleToggleSelect}
+                onCreateOutfit={handleCreateOutfit}
               />
             </motion.div>
           )}
@@ -544,14 +931,7 @@ const Wardrobe = () => {
         showChatButton={false}
       />
       
-      <CategoryModal 
-        open={categoryModalOpen} 
-        onOpenChange={setCategoryModalOpen}
-        onSelectCategory={handleCategorySelect}
-        selectedCategory={selectedCategory}
-      />
-
-      {selectedItemForMatch && (
+      {sortedItems.length > 0 && selectedItemForMatch && (
         <OutfitMatchModal
           open={matchModalOpen}
           onOpenChange={setMatchModalOpen}
