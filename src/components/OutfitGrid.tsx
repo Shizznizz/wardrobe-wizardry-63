@@ -4,24 +4,41 @@ import { motion } from 'framer-motion';
 import { Outfit, ClothingItem } from '@/lib/types';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Heart, Edit, Trash2, Sparkles } from 'lucide-react';
+import { Heart, Edit, Trash2, Sparkles, Calendar } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import AddToCalendarButton from '@/components/outfits/AddToCalendarButton';
+import { OutfitLog } from '@/components/outfits/OutfitLogItem';
+import { toast } from 'sonner';
 
 interface OutfitGridProps {
   outfits: Outfit[];
   onEdit: (outfit: Outfit) => void;
   onDelete: (id: string) => void;
   onToggleFavorite: (id: string) => void;
-  clothingItems: ClothingItem[]; // Add this prop to access all clothing items
+  clothingItems: ClothingItem[];
+  onOutfitAddedToCalendar?: (log: OutfitLog) => void;
 }
 
-const OutfitGrid = ({ outfits, onEdit, onDelete, onToggleFavorite, clothingItems }: OutfitGridProps) => {
+const OutfitGrid = ({ 
+  outfits, 
+  onEdit, 
+  onDelete, 
+  onToggleFavorite, 
+  clothingItems,
+  onOutfitAddedToCalendar 
+}: OutfitGridProps) => {
   const [expandedOutfit, setExpandedOutfit] = useState<string | null>(null);
   
   // Helper function to get clothing item by ID
   const getClothingItemById = (id: string): ClothingItem | undefined => {
     return clothingItems.find(item => item.id === id);
+  };
+  
+  const handleOutfitAddedToCalendar = (log: OutfitLog) => {
+    if (onOutfitAddedToCalendar) {
+      onOutfitAddedToCalendar(log);
+    }
   };
   
   return (
@@ -108,13 +125,22 @@ const OutfitGrid = ({ outfits, onEdit, onDelete, onToggleFavorite, clothingItems
                 ))}
               </div>
               
-              <div className="flex flex-wrap gap-1">
+              <div className="flex flex-wrap gap-1 mb-3">
                 {outfit.seasons.map((season) => (
                   <Badge key={season} className="text-xs bg-gradient-to-r from-blue-600/30 to-purple-600/30 border-none">
                     {season}
                   </Badge>
                 ))}
               </div>
+              
+              {/* Add to Calendar Button */}
+              <AddToCalendarButton 
+                outfit={outfit} 
+                fullWidth={true}
+                variant="outline"
+                className="mt-2 border-purple-500/30 hover:bg-purple-500/10 w-full"
+                onSuccess={handleOutfitAddedToCalendar}
+              />
             </CardContent>
             
             <CardFooter className="px-4 py-3 border-t border-white/5 bg-slate-900/50 flex justify-between">

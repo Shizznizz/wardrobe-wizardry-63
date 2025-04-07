@@ -1,6 +1,7 @@
 
-import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import OutfitBuilder from '@/components/OutfitBuilder';
 import OliviaBloomAssistant from '@/components/OliviaBloomAssistant';
@@ -11,8 +12,12 @@ import OutfitCollection from '@/components/outfits/OutfitCollection';
 import { useOutfitState } from '@/hooks/useOutfitState';
 import OliviaTips from '@/components/OliviaTips';
 import StyleSituation from '@/components/StyleSituation';
+import RecommendedOutfits from '@/components/outfits/RecommendedOutfits';
+import { OutfitLog } from '@/components/outfits/OutfitLogItem';
+import { toast } from 'sonner';
 
 const Outfits = () => {
+  const navigate = useNavigate();
   const {
     outfits,
     clothingItems,
@@ -33,6 +38,13 @@ const Outfits = () => {
     setShowAssistant,
     setIsBuilderOpen
   } = useOutfitState(sampleOutfits, sampleClothingItems);
+
+  // Handle when an outfit is added to the calendar
+  const handleOutfitAddedToCalendar = (log: OutfitLog) => {
+    addOutfitLog(log);
+    // Optional: navigate to calendar with the date pre-selected
+    // navigate(`/calendar?date=${new Date(log.date).toISOString().split('T')[0]}`);
+  };
   
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -63,6 +75,7 @@ const Outfits = () => {
             outfit={outfits[0]} 
             clothingItems={clothingItems}
             onRefreshOutfit={handleRefreshOutfit}
+            onOutfitAddedToCalendar={handleOutfitAddedToCalendar}
           />
           
           <OutfitCollection 
@@ -72,15 +85,22 @@ const Outfits = () => {
             onDeleteOutfit={handleDeleteOutfit}
             onToggleFavorite={handleToggleFavorite}
             clothingItems={clothingItems}
+            onOutfitAddedToCalendar={handleOutfitAddedToCalendar}
           />
           
-          <OutfitBuilder
-            isOpen={isBuilderOpen}
-            onClose={() => setIsBuilderOpen(false)}
-            onSave={handleSaveOutfit}
-            clothingItems={clothingItems}
-            initialOutfit={selectedOutfit}
-          />
+          <RecommendedOutfits className="pt-8" />
+          
+          <AnimatePresence>
+            {isBuilderOpen && (
+              <OutfitBuilder
+                isOpen={isBuilderOpen}
+                onClose={() => setIsBuilderOpen(false)}
+                onSave={handleSaveOutfit}
+                clothingItems={clothingItems}
+                initialOutfit={selectedOutfit}
+              />
+            )}
+          </AnimatePresence>
         </motion.div>
       </main>
       

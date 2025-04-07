@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import OutfitGrid from '@/components/OutfitGrid';
 import { Outfit, ClothingItem } from '@/lib/types';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { OutfitLog } from '@/components/outfits/OutfitLogItem';
 
 interface OutfitCollectionProps {
   outfits: Outfit[];
@@ -13,6 +14,7 @@ interface OutfitCollectionProps {
   onDeleteOutfit: (id: string) => void;
   onToggleFavorite: (id: string) => void;
   clothingItems: ClothingItem[];
+  onOutfitAddedToCalendar?: (log: OutfitLog) => void;
 }
 
 const OutfitCollection = ({ 
@@ -21,7 +23,8 @@ const OutfitCollection = ({
   onEditOutfit, 
   onDeleteOutfit, 
   onToggleFavorite, 
-  clothingItems 
+  clothingItems,
+  onOutfitAddedToCalendar
 }: OutfitCollectionProps) => {
   const isMobile = useIsMobile();
   
@@ -59,6 +62,7 @@ const OutfitCollection = ({
         onDelete={onDeleteOutfit}
         onToggleFavorite={onToggleFavorite}
         clothingItems={clothingItems}
+        onOutfitAddedToCalendar={onOutfitAddedToCalendar}
       />
       
       <div className="mt-6 flex justify-center">

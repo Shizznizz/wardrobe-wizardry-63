@@ -1,105 +1,149 @@
 
-import { Calendar } from "@/components/ui/calendar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
-import { format, addMonths, subMonths } from "date-fns";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { useState, useEffect } from 'react';
+import { Calendar } from '@/components/ui/calendar';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { format, addMonths, subMonths, isSameDay } from 'date-fns';
+import { OutfitLog } from '@/components/outfits/OutfitLogItem';
+import { DayContentProps } from 'react-day-picker';
 
-interface DateSelectorProps {
-  selectedDate: Date | undefined;
-  setSelectedDate: (date: Date | undefined) => void;
-  datesWithOutfits: Array<{ date: Date; logs: any[]; hasLogs: boolean }>;
-  onLogButtonClick: (date?: Date) => void;
-  currentMonth: Date;
-  setCurrentMonth: (date: Date) => void;
-  renderCalendarDay?: (date: Date) => React.ReactNode;
+interface ActiveModifiers {
+  [date: string]: {
+    hasOutfit: boolean;
+    isSelected: boolean;
+  };
 }
 
-const DateSelector = ({
-  selectedDate,
-  setSelectedDate,
-  datesWithOutfits,
-  onLogButtonClick,
-  currentMonth,
-  setCurrentMonth,
-  renderCalendarDay
-}: DateSelectorProps) => {
-  const isMobile = useIsMobile();
-  
-  const handleNextMonth = () => {
-    setCurrentMonth(addMonths(currentMonth, 1));
-  };
-  
-  const handlePrevMonth = () => {
-    setCurrentMonth(subMonths(currentMonth, 1));
-  };
-  
+interface DateSelectorProps {
+  selectedDate: Date;
+  onSelectDate: (date: Date) => void;
+  outfitLogs: OutfitLog[];
+  className?: string;
+  currentMonth: Date;
+  onMonthChange: (date: Date) => void;
+}
+
+// Custom DayContent component to show outfit indicators
+const DayContent = ({ 
+  date, 
+  displayMonth, 
+  activeModifiers
+}: DayContentProps & { 
+  displayMonth: Date; 
+  activeModifiers: ActiveModifiers;
+}) => {
+  // Format the date to a string key for lookup
+  const dateKey = date.toISOString().split('T')[0];
+  const hasOutfit = activeModifiers[dateKey]?.hasOutfit || false;
+  const isSelected = activeModifiers[dateKey]?.isSelected || false;
+
   return (
-    <Card className="col-span-1 bg-slate-800/40 border-purple-500/20 shadow-lg backdrop-blur-sm">
-      <CardHeader className="pb-2 flex flex-row items-center justify-between">
-        <CardTitle className="text-xl text-purple-200">Date Selection</CardTitle>
-        <div className="flex items-center space-x-2">
+    <div className="relative flex items-center justify-center w-full h-full">
+      <div>{date.getDate()}</div>
+      {hasOutfit && (
+        <div 
+          className={`absolute bottom-0.5 h-1.5 w-1.5 rounded-full ${
+            isSelected ? 'bg-white' : 'bg-purple-500'
+          }`}
+        />
+      )}
+    </div>
+  );
+};
+
+const DateSelector = ({ 
+  selectedDate, 
+  onSelectDate, 
+  outfitLogs,
+  className = '',
+  currentMonth,
+  onMonthChange
+}: DateSelectorProps) => {
+  const [activeModifiers, setActiveModifiers] = useState<ActiveModifiers>({});
+  
+  // Update the active modifiers when outfit logs or selected date changes
+  useEffect(() => {
+    const newModifiers: ActiveModifiers = {};
+    
+    // Add outfit indicators
+    outfitLogs.forEach(log => {
+      if (log.date) {
+        const dateKey = new Date(log.date).toISOString().split('T')[0];
+        newModifiers[dateKey] = {
+          ...(newModifiers[dateKey] || {}),
+          hasOutfit: true,
+          isSelected: isSameDay(new Date(log.date), selectedDate)
+        };
+      }
+    });
+    
+    // Mark selected date
+    const selectedDateKey = selectedDate.toISOString().split('T')[0];
+    newModifiers[selectedDateKey] = {
+      ...(newModifiers[selectedDateKey] || {}),
+      isSelected: true
+    };
+    
+    setActiveModifiers(newModifiers);
+  }, [outfitLogs, selectedDate]);
+  
+  const handleMonthChange = (newMonth: Date) => {
+    onMonthChange(newMonth);
+  };
+
+  const goToPreviousMonth = () => {
+    handleMonthChange(subMonths(currentMonth, 1));
+  };
+
+  const goToNextMonth = () => {
+    handleMonthChange(addMonths(currentMonth, 1));
+  };
+
+  return (
+    <Card className={`bg-slate-800/60 border-purple-500/20 shadow-lg backdrop-blur-sm ${className}`}>
+      <CardContent className="p-4">
+        <div className="flex justify-between items-center mb-4">
           <Button 
-            variant="outline" 
-            size="icon" 
-            className="h-7 w-7 border-purple-500/30 hover:bg-purple-500/20"
-            onClick={handlePrevMonth}
+            variant="ghost" 
+            size="sm"
+            onClick={goToPreviousMonth}
+            className="text-white/80 hover:text-white hover:bg-white/10"
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <div className="text-sm font-medium">
+          
+          <h3 className="text-lg font-medium text-white">
             {format(currentMonth, 'MMMM yyyy')}
-          </div>
+          </h3>
+          
           <Button 
-            variant="outline" 
-            size="icon" 
-            className="h-7 w-7 border-purple-500/30 hover:bg-purple-500/20"
-            onClick={handleNextMonth}
+            variant="ghost" 
+            size="sm"
+            onClick={goToNextMonth}
+            className="text-white/80 hover:text-white hover:bg-white/10"
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
-      </CardHeader>
-      <CardContent>
-        <div className="flex justify-center mb-4">
-          <Calendar
-            mode="single"
-            selected={selectedDate}
-            onSelect={setSelectedDate}
-            month={currentMonth}
-            onMonthChange={setCurrentMonth}
-            className="border border-purple-500/20 rounded-md bg-slate-900/50"
-            modifiers={{
-              hasOutfit: datesWithOutfits.map(d => d.date)
-            }}
-            modifiersStyles={{
-              hasOutfit: {
-                fontWeight: 'bold',
-                borderBottom: '2px solid #8b5cf6'
-              }
-            }}
-            components={{
-              DayContent: ({ date, ...props }) => (
-                <div className="relative w-full h-full flex items-center justify-center">
-                  <div {...props} />
-                  {renderCalendarDay && renderCalendarDay(date)}
-                </div>
-              )
-            }}
-          />
-        </div>
         
-        <div className="flex justify-center">
-          <Button 
-            className="border-purple-500/30 hover:bg-purple-500/20"
-            variant="outline"
-            onClick={() => onLogButtonClick(selectedDate)}
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            {isMobile ? "Log Outfit" : "Log Outfit for Selected Date"}
-          </Button>
-        </div>
+        <Calendar
+          mode="single"
+          selected={selectedDate}
+          onSelect={(date) => date && onSelectDate(date)}
+          month={currentMonth}
+          onMonthChange={handleMonthChange}
+          className="border-none"
+          components={{
+            DayContent: (props) => (
+              <DayContent 
+                {...props} 
+                displayMonth={currentMonth} 
+                activeModifiers={activeModifiers} 
+              />
+            )
+          }}
+        />
       </CardContent>
     </Card>
   );
