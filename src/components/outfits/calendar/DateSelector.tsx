@@ -99,18 +99,23 @@ const DateSelector = ({
     handleMonthChange(addMonths(currentMonth, 1));
   };
 
-  // Create DayPicker-compatible modifiers from our data
-  // We need to transform our complex activeModifiers into the format that DayPicker expects
-  const selectedDays = [selectedDate];
+  // Create arrays of dates for the modifiers instead of complex objects
   const daysWithOutfits = outfitLogs
     .filter(log => log.date)
     .map(log => new Date(log.date));
 
-  // Convert our activeModifiers to the format expected by the Calendar component
+  // Transform our ActiveModifiers into the format expected by the Calendar component
   // Calendar expects a Record<string, Date[]> for custom modifiers
   const calendarModifiers = {
-    selected: selectedDays,
-    hasOutfit: daysWithOutfits
+    selected: [selectedDate],
+    hasOutfit: daysWithOutfits,
+    // We will not use 'activeModifiers' directly with the Calendar component
+  };
+
+  // The 'modifiers' prop in Calendar component expects this specific format
+  const modifiersClassNames = {
+    selected: "bg-purple-600 text-white",
+    hasOutfit: "", // We'll handle this in the DayContent component
   };
 
   return (
@@ -148,10 +153,7 @@ const DateSelector = ({
           onMonthChange={handleMonthChange}
           className="border-none"
           modifiers={calendarModifiers}
-          modifiersClassNames={{
-            selected: "bg-purple-600 text-white",
-            hasOutfit: "",
-          }}
+          modifiersClassNames={modifiersClassNames}
           components={{
             DayContent: (props) => (
               <DayContent 
