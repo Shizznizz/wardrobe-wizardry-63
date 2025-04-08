@@ -107,7 +107,6 @@ const DateSelector = ({
     .map(log => new Date(log.date));
 
   // Prepare the modifiers in the correct format for the Calendar component
-  // Calendar expects { [modifierName]: Date[] }
   const modifiers = {
     hasOutfit: daysWithOutfits,
     selected: [selectedDate],
