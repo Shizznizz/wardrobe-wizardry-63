@@ -8,11 +8,13 @@ import { format, addMonths, subMonths, isSameDay } from 'date-fns';
 import { OutfitLog } from '@/components/outfits/OutfitLogItem';
 import { DayContentProps } from 'react-day-picker';
 
+interface DateDisplayMeta {
+  hasOutfit: boolean;
+  isSelected: boolean;
+}
+
 interface ActiveModifiers {
-  [date: string]: {
-    hasOutfit: boolean;
-    isSelected: boolean;
-  };
+  [date: string]: DateDisplayMeta;
 }
 
 interface DateSelectorProps {
@@ -35,16 +37,15 @@ const DayContent = ({
 }) => {
   // Format the date to a string key for lookup
   const dateKey = date.toISOString().split('T')[0];
-  const hasOutfit = activeModifiers[dateKey]?.hasOutfit || false;
-  const isSelected = activeModifiers[dateKey]?.isSelected || false;
+  const meta = activeModifiers[dateKey] || { hasOutfit: false, isSelected: false };
 
   return (
     <div className="relative flex items-center justify-center w-full h-full">
       <div>{date.getDate()}</div>
-      {hasOutfit && (
+      {meta.hasOutfit && (
         <div 
           className={`absolute bottom-0.5 h-1.5 w-1.5 rounded-full ${
-            isSelected ? 'bg-white' : 'bg-purple-500'
+            meta.isSelected ? 'bg-white' : 'bg-purple-500'
           }`}
         />
       )}

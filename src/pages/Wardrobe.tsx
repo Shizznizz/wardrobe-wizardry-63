@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -19,7 +18,6 @@ import {
   Shirt, 
   Sparkles, 
   LayoutGrid, 
-  ArrowRight, 
   X, 
   ChevronDown, 
   AlertCircle, 
@@ -462,14 +460,6 @@ const Wardrobe = () => {
                 <div id="upload-button">
                   <UploadModal onUpload={handleUpload} />
                 </div>
-                <Button 
-                  size="lg" 
-                  variant="outline" 
-                  className="border-purple-400/30 text-white hover:bg-white/10"
-                  onClick={() => setCategoryModalOpen(true)}
-                >
-                  <ArrowRight className="mr-2 h-4 w-4" /> Browse Categories
-                </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button 

@@ -15,6 +15,7 @@ import { ClothingItem } from '@/lib/types';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { TrousersIcon } from '@/components/ui/icons';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface ClothingCategory {
   id: string;
@@ -143,20 +144,22 @@ const AdditionalItemsSelector = ({ onAddItem, onPremiumClick, isPremium, classNa
             </DialogDescription>
           </DialogHeader>
           
-          <div className="grid grid-cols-2 gap-3 py-4">
-            {selectedCategory?.items.map(item => (
-              <div 
-                key={item.id}
-                className="border border-white/10 rounded-lg p-2 hover:bg-white/5 cursor-pointer transition-colors"
-                onClick={() => handleSelectItem(item)}
-              >
-                <div className="aspect-square mb-2 rounded overflow-hidden bg-slate-800">
-                  <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
+          <ScrollArea className="max-h-[300px]">
+            <div className="grid grid-cols-2 gap-3 py-4">
+              {selectedCategory?.items.map(item => (
+                <div 
+                  key={item.id}
+                  className="border border-white/10 rounded-lg p-2 hover:bg-white/5 cursor-pointer transition-colors"
+                  onClick={() => handleSelectItem(item)}
+                >
+                  <div className="aspect-square mb-2 rounded overflow-hidden bg-slate-800">
+                    <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
+                  </div>
+                  <p className="text-sm font-medium text-white">{item.name}</p>
                 </div>
-                <p className="text-sm font-medium text-white">{item.name}</p>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          </ScrollArea>
         </DialogContent>
       </Dialog>
     </div>

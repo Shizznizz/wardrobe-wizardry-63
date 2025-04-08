@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ClothingItem, ClothingType, ClothingColor, ClothingMaterial, ClothingSeason, ClothingOccasion } from '@/lib/types';
 import {
   Dialog,
@@ -31,7 +31,7 @@ const EditItemDialog = ({ item, isOpen, onClose, onSave }: EditItemDialogProps) 
   const [occasions, setOccasions] = useState<ClothingOccasion[]>(item?.occasions || []);
   
   // Reset form when item changes
-  useState(() => {
+  useEffect(() => {
     if (item) {
       setName(item.name);
       setType(item.type);
@@ -42,7 +42,7 @@ const EditItemDialog = ({ item, isOpen, onClose, onSave }: EditItemDialogProps) 
       setImageUrl(item.imageUrl);
       setOccasions(item.occasions || []);
     }
-  });
+  }, [item]);
   
   const handleImageChange = (file: File) => {
     const reader = new FileReader();

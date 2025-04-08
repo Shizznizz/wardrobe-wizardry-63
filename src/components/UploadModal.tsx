@@ -8,6 +8,7 @@ import { ClothingType, ClothingColor, ClothingMaterial, ClothingSeason } from '@
 import ImageUploader from './wardrobe/ImageUploader';
 import ClothingDetailsForm from './wardrobe/ClothingDetailsForm';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface UploadModalProps {
   onUpload: (item: any) => void;
@@ -149,7 +150,7 @@ const UploadModal = ({ onUpload, buttonText = "Add Item" }: UploadModalProps) =>
           <Camera className="h-4 w-4 transition-transform group-hover:scale-110" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-hidden">
         <DialogHeader>
           <DialogTitle className="text-center">Add Clothing Item</DialogTitle>
           <DialogDescription className="sr-only">
@@ -171,52 +172,55 @@ const UploadModal = ({ onUpload, buttonText = "Add Item" }: UploadModalProps) =>
           </Alert>
         )}
         
-        <form onSubmit={handleSubmit} className="space-y-4 py-2">
-          <ImageUploader 
-            imagePreview={imagePreview}
-            onImageChange={handleImageChange}
-            onClearImage={clearImage}
-            label="Upload an image (PNG, JPG, or JPEG, max 10MB)"
-          />
+        <ScrollArea className="max-h-[calc(90vh-180px)]">
+          <form onSubmit={handleSubmit} className="space-y-4 py-2 px-1">
+            <ImageUploader 
+              imagePreview={imagePreview}
+              onImageChange={handleImageChange}
+              onClearImage={clearImage}
+              label="Upload an image (PNG, JPG, or JPEG, max 10MB)"
+            />
 
-          <ClothingDetailsForm
-            name={name}
-            setName={setName}
-            type={type}
-            setType={setType}
-            color={color}
-            setColor={setColor}
-            material={material}
-            setMaterial={setMaterial}
-            seasons={seasons}
-            toggleSeason={toggleSeason}
-            favorite={favorite}
-            setFavorite={setFavorite}
-          />
+            <ClothingDetailsForm
+              name={name}
+              setName={setName}
+              type={type}
+              setType={setType}
+              color={color}
+              setColor={setColor}
+              material={material}
+              setMaterial={setMaterial}
+              seasons={seasons}
+              toggleSeason={toggleSeason}
+              favorite={favorite}
+              setFavorite={setFavorite}
+            />
+          </form>
+        </ScrollArea>
 
-          <DialogFooter className="mt-4">
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-              Cancel
-            </Button>
-            <Button 
-              type="submit" 
-              disabled={isSubmitting || isLoading}
-              className="relative"
-            >
-              {isSubmitting || isLoading ? (
-                <>
-                  <span className="opacity-0">Adding...</span>
-                  <span className="absolute inset-0 flex items-center justify-center">
-                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                  </span>
-                </>
-              ) : 'Add to Wardrobe'}
-            </Button>
-          </DialogFooter>
-        </form>
+        <DialogFooter className="mt-4">
+          <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+            Cancel
+          </Button>
+          <Button 
+            type="button" 
+            onClick={handleSubmit}
+            disabled={isSubmitting || isLoading}
+            className="relative"
+          >
+            {isSubmitting || isLoading ? (
+              <>
+                <span className="opacity-0">Adding...</span>
+                <span className="absolute inset-0 flex items-center justify-center">
+                  <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                </span>
+              </>
+            ) : 'Add to Wardrobe'}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
