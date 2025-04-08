@@ -105,9 +105,8 @@ const DateSelector = ({
     .filter(log => log.date)
     .map(log => new Date(log.date));
 
-  // Fix for the TypeScript error - Prepare modifiers in the correct format for the Calendar component
-  // The Calendar component expects modifiers in the format { [modifierName]: Date[] }
-  // NOT the ActiveModifiers format we use internally
+  // Fix for the TypeScript error - Create simple modifiers expected by the Calendar component
+  // Instead of directly using ActiveModifiers, create a proper format that the component expects
   const modifiers = {
     hasOutfit: daysWithOutfits,
     selected: [selectedDate]
