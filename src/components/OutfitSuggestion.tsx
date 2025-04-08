@@ -6,35 +6,75 @@ import { Badge } from '@/components/ui/badge';
 import { Confetti } from '@/components/ui/confetti';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { ClothingItem, Outfit, WeatherInfo } from '@/lib/types';
 
 interface OutfitSuggestionProps {
-  suggestion: {
+  suggestion?: {
     title: string;
     description: string;
     image: string;
     items: string[];
   };
-  onReset: () => void;
+  outfit?: Outfit;
+  items?: ClothingItem[];
+  weather?: WeatherInfo;
+  activity?: string;
+  onReset?: () => void;
+  onRefresh?: () => void;
+  onLike?: () => void;
+  onDislike?: () => void;
+  onMakeWarmer?: () => void;
+  onChangeTop?: () => void;
 }
 
-const OutfitSuggestion = ({ suggestion, onReset }: OutfitSuggestionProps) => {
+const OutfitSuggestion = ({ 
+  suggestion, 
+  outfit, 
+  items, 
+  weather, 
+  activity,
+  onReset,
+  onRefresh,
+  onLike,
+  onDislike,
+  onMakeWarmer,
+  onChangeTop
+}: OutfitSuggestionProps) => {
   const navigate = useNavigate();
   
   const handleExploreMore = () => {
-    // Store quiz results in session storage for potential use on the outfits page
-    sessionStorage.setItem('quizStyleResult', JSON.stringify({
-      title: suggestion.title,
-      description: suggestion.description
-    }));
-    
-    // Show toast and navigate to outfits page
-    toast.success("Your style has been identified!", {
-      description: "Let's find some perfect outfits for you."
-    });
-    
-    // Navigate to the outfits page
-    navigate("/outfits");
+    if (suggestion) {
+      // Store quiz results in session storage for potential use on the outfits page
+      sessionStorage.setItem('quizStyleResult', JSON.stringify({
+        title: suggestion.title,
+        description: suggestion.description
+      }));
+      
+      // Show toast and navigate to outfits page
+      toast.success("Your style has been identified!", {
+        description: "Let's find some perfect outfits for you."
+      });
+      
+      // Navigate to the outfits page
+      navigate("/outfits");
+    }
   };
+  
+  // If we have an outfit prop but not a suggestion, create a suggestion-like object
+  const displayData = suggestion || (outfit && {
+    title: outfit.name,
+    description: `Perfect for ${activity || 'any occasion'} in ${weather?.temperature ? `${weather.temperature}°C` : 'any'} weather.`,
+    image: items?.find(item => outfit.items.includes(item.id))?.imageUrl || '/placeholder.svg',
+    items: outfit.items.map(itemId => {
+      const item = items?.find(i => i.id === itemId);
+      return item?.name || 'Unknown item';
+    })
+  });
+  
+  // Safely return null if we don't have display data
+  if (!displayData) {
+    return null;
+  }
   
   return (
     <motion.div
@@ -43,15 +83,15 @@ const OutfitSuggestion = ({ suggestion, onReset }: OutfitSuggestionProps) => {
       exit={{ opacity: 0, y: -10 }}
       className="space-y-6"
     >
-      <Confetti duration={2000} />
+      {onReset && <Confetti duration={2000} />}
       
       <div className="flex flex-col md:flex-row gap-6">
         <div className="md:w-1/2">
           <div className="relative">
             <div className="absolute inset-0 bg-gradient-to-t from-purple-900/80 to-transparent rounded-xl z-10"></div>
             <motion.img 
-              src={suggestion.image} 
-              alt={suggestion.title}
+              src={displayData.image} 
+              alt={displayData.title}
               className="w-full rounded-xl object-cover h-64 md:h-80"
               initial={{ scale: 0.95 }}
               animate={{ scale: 1 }}
@@ -67,13 +107,13 @@ const OutfitSuggestion = ({ suggestion, onReset }: OutfitSuggestionProps) => {
         </div>
         
         <div className="md:w-1/2 space-y-4">
-          <h3 className="text-xl font-bold text-white">{suggestion.title}</h3>
-          <p className="text-sm text-white/90">{suggestion.description}</p>
+          <h3 className="text-xl font-bold text-white">{displayData.title}</h3>
+          <p className="text-sm text-white/90">{displayData.description}</p>
           
           <div className="space-y-3 pt-2">
             <h4 className="text-sm font-medium text-white/80">Key Pieces:</h4>
             <ul className="space-y-2">
-              {suggestion.items.map((item, index) => (
+              {displayData.items.map((item, index) => (
                 <motion.li 
                   key={index}
                   initial={{ opacity: 0, x: -10 }}
@@ -90,25 +130,66 @@ const OutfitSuggestion = ({ suggestion, onReset }: OutfitSuggestionProps) => {
         </div>
       </div>
       
-      <div className="pt-4 flex flex-col sm:flex-row gap-3 justify-center">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={onReset}
-          className="border-white/10 hover:bg-white/5 text-white/90"
-        >
-          Retake Quiz
-        </Button>
-        
-        <Button
-          size="sm"
-          onClick={handleExploreMore}
-          className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
-        >
-          <span>Explore More Outfits</span>
-          <ArrowRightCircle className="ml-2 h-4 w-4" />
-        </Button>
-      </div>
+      {/* Only show the buttons when we're in quiz mode */}
+      {onReset && (
+        <div className="pt-4 flex flex-col sm:flex-row gap-3 justify-center">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onReset}
+            className="border-white/10 hover:bg-white/5 text-white/90"
+          >
+            Retake Quiz
+          </Button>
+          
+          <Button
+            size="sm"
+            onClick={handleExploreMore}
+            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+          >
+            <span>Explore More Outfits</span>
+            <ArrowRightCircle className="ml-2 h-4 w-4" />
+          </Button>
+        </div>
+      )}
+      
+      {/* Show outfit feedback buttons when not in quiz mode */}
+      {(onLike || onDislike || onMakeWarmer || onChangeTop) && (
+        <div className="flex flex-wrap gap-2 justify-center">
+          {onLike && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onLike}
+              className="border-green-500/30 hover:bg-green-500/10 text-green-300"
+            >
+              <span>I Like This</span>
+            </Button>
+          )}
+          
+          {onDislike && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onDislike}
+              className="border-red-500/30 hover:bg-red-500/10 text-red-300"
+            >
+              <span>Not For Me</span>
+            </Button>
+          )}
+          
+          {onRefresh && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onRefresh}
+              className="border-blue-500/30 hover:bg-blue-500/10 text-blue-300"
+            >
+              <span>Refresh</span>
+            </Button>
+          )}
+        </div>
+      )}
     </motion.div>
   );
 };
