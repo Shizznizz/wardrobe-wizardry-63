@@ -99,20 +99,20 @@ const DateSelector = ({
     handleMonthChange(addMonths(currentMonth, 1));
   };
 
-  // Create arrays of dates with outfits instead of complex objects
+  // Create arrays of dates with outfits for the modifiers
   const daysWithOutfits = outfitLogs
     .filter(log => log.date)
     .map(log => new Date(log.date));
 
-  // Transform ActiveModifiers into proper format for Calendar component
-  // The Calendar component expects a Record<string, boolean> where true
-  // means the modifier is active for the date
-  const modifiersForCalendar: Record<string, Date[]> = {
+  // The Calendar component expects a different format for modifiers
+  // It should be a Record<string, Date[]> where the key is the modifier name
+  // and the value is an array of dates for which the modifier is active
+  const modifiers = {
     selected: [selectedDate],
     hasOutfit: daysWithOutfits,
   };
 
-  // The 'modifiersClassNames' prop in Calendar component expects this specific format
+  // The 'modifiersClassNames' prop expects this specific format
   const modifiersClassNames = {
     selected: "bg-purple-600 text-white",
     hasOutfit: "", // We'll handle this in the DayContent component
@@ -152,7 +152,7 @@ const DateSelector = ({
           month={currentMonth}
           onMonthChange={handleMonthChange}
           className="border-none"
-          modifiers={modifiersForCalendar}
+          modifiers={modifiers}
           modifiersClassNames={modifiersClassNames}
           components={{
             DayContent: (props) => (
