@@ -101,12 +101,12 @@ const DateSelector = ({
   };
 
   // Create arrays of dates with outfits for the DayPicker component
-  // DayPicker expects modifiers as { [modifierName]: Date[] }
   const daysWithOutfits = outfitLogs
     .filter(log => log.date)
     .map(log => new Date(log.date));
 
   // Prepare the modifiers in the correct format for the Calendar component
+  // The Calendar component requires { [modifierName]: Date[] } format
   const modifiers = {
     hasOutfit: daysWithOutfits,
     selected: [selectedDate],
