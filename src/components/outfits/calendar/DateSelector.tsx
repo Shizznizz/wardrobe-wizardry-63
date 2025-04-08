@@ -8,14 +8,14 @@ import { format, addMonths, subMonths, isSameDay } from 'date-fns';
 import { OutfitLog } from '@/components/outfits/OutfitLogItem';
 import { DayContentProps } from 'react-day-picker';
 
+// Interface for our rich metadata about dates
 interface DateDisplayMeta {
   hasOutfit: boolean;
   isSelected: boolean;
 }
 
-interface ActiveModifiers {
-  [date: string]: DateDisplayMeta;
-}
+// Storage for our rich metadata, separate from Calendar's modifiers
+type DateMetadataMap = Record<string, DateDisplayMeta>;
 
 interface DateSelectorProps {
   selectedDate: Date;
@@ -29,15 +29,15 @@ interface DateSelectorProps {
 // Custom DayContent component to show outfit indicators
 const DayContent = ({ 
   date, 
-  displayMonth, 
-  activeModifiers
+  displayMonth,
+  dateMetadata
 }: DayContentProps & { 
   displayMonth: Date; 
-  activeModifiers: ActiveModifiers;
+  dateMetadata: DateMetadataMap;
 }) => {
   // Format the date to a string key for lookup
   const dateKey = date.toISOString().split('T')[0];
-  const meta = activeModifiers[dateKey] || { hasOutfit: false, isSelected: false };
+  const meta = dateMetadata[dateKey] || { hasOutfit: false, isSelected: false };
 
   return (
     <div className="relative flex items-center justify-center w-full h-full">
@@ -61,17 +61,18 @@ const DateSelector = ({
   currentMonth,
   onMonthChange
 }: DateSelectorProps) => {
-  const [activeModifiers, setActiveModifiers] = useState<ActiveModifiers>({});
+  // Store our rich metadata separate from Calendar's modifiers
+  const [dateMetadata, setDateMetadata] = useState<DateMetadataMap>({});
   
-  // Update the active modifiers when outfit logs or selected date changes
+  // Update the metadata when outfit logs or selected date changes
   useEffect(() => {
-    const newModifiers: ActiveModifiers = {};
+    const newMetadata: DateMetadataMap = {};
     
     // Add outfit indicators
     outfitLogs.forEach(log => {
       if (log.date) {
         const dateKey = new Date(log.date).toISOString().split('T')[0];
-        newModifiers[dateKey] = {
+        newMetadata[dateKey] = {
           hasOutfit: true,
           isSelected: isSameDay(new Date(log.date), selectedDate)
         };
@@ -80,12 +81,12 @@ const DateSelector = ({
     
     // Mark selected date
     const selectedDateKey = selectedDate.toISOString().split('T')[0];
-    newModifiers[selectedDateKey] = {
-      hasOutfit: newModifiers[selectedDateKey]?.hasOutfit || false,
+    newMetadata[selectedDateKey] = {
+      hasOutfit: newMetadata[selectedDateKey]?.hasOutfit || false,
       isSelected: true
     };
     
-    setActiveModifiers(newModifiers);
+    setDateMetadata(newMetadata);
   }, [outfitLogs, selectedDate]);
   
   const handleMonthChange = (newMonth: Date) => {
@@ -105,8 +106,8 @@ const DateSelector = ({
     .filter(log => log.date)
     .map(log => new Date(log.date));
 
-  // Fix for the TypeScript error - Create simple modifiers expected by the Calendar component
-  // Instead of directly using ActiveModifiers, create a proper format that the component expects
+  // Create simple boolean modifiers that the Calendar component expects
+  // This is what fixes the TypeScript error
   const modifiers = {
     hasOutfit: daysWithOutfits,
     selected: [selectedDate]
@@ -159,7 +160,7 @@ const DateSelector = ({
               <DayContent 
                 {...props} 
                 displayMonth={currentMonth} 
-                activeModifiers={activeModifiers} 
+                dateMetadata={dateMetadata} 
               />
             )
           }}
