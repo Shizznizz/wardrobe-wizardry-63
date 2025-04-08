@@ -99,17 +99,17 @@ const DateSelector = ({
     handleMonthChange(addMonths(currentMonth, 1));
   };
 
-  // Create arrays of dates with outfits for the modifiers
+  // Create arrays of dates with outfits for the DayPicker component
+  // DayPicker expects modifiers as { [modifierName]: Date[] }
   const daysWithOutfits = outfitLogs
     .filter(log => log.date)
     .map(log => new Date(log.date));
 
-  // The Calendar component expects a different format for modifiers
-  // It should be a Record<string, Date[]> where the key is the modifier name
-  // and the value is an array of dates for which the modifier is active
+  // Prepare the modifiers in the correct format for the Calendar component
+  // Calendar expects { [modifierName]: Date[] }
   const modifiers = {
-    selected: [selectedDate],
     hasOutfit: daysWithOutfits,
+    selected: [selectedDate],
   };
 
   // The 'modifiersClassNames' prop expects this specific format
