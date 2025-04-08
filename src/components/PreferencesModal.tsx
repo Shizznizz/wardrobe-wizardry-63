@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
@@ -7,9 +8,12 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
-import { Settings } from 'lucide-react';
+import { Settings, Loader2 } from 'lucide-react';
 import { ClothingColor, ClothingSeason, UserPreferences } from '@/lib/types';
+import { useAuth } from '@/hooks/useAuth';
+import { saveUserPreferences } from '@/integrations/supabase/client';
 
 interface PreferencesModalProps {
   preferences: UserPreferences;
@@ -22,6 +26,7 @@ const PreferencesModal = ({ preferences, onSave, buttonClassName, buttonVariant 
   const [open, setOpen] = useState(false);
   const [localPreferences, setLocalPreferences] = useState<UserPreferences>(preferences);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
     setLocalPreferences(preferences);
@@ -97,12 +102,24 @@ const PreferencesModal = ({ preferences, onSave, buttonClassName, buttonVariant 
     setIsSubmitting(true);
     
     try {
-      // In a real app, this would save to a backend
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      onSave(localPreferences);
-      toast.success('Preferences saved successfully');
-      setOpen(false);
+      if (user) {
+        // Save preferences to Supabase if user is authenticated
+        const { success, error } = await saveUserPreferences(user.id, localPreferences);
+        
+        if (success) {
+          onSave(localPreferences);
+          toast.success('Preferences saved successfully');
+          setOpen(false);
+        } else {
+          toast.error('Error saving preferences to server');
+          console.error(error);
+        }
+      } else {
+        // Just save locally if user is not authenticated
+        onSave(localPreferences);
+        toast.success('Preferences saved locally');
+        setOpen(false);
+      }
     } catch (error) {
       toast.error('Error saving preferences');
       console.error(error);
@@ -145,119 +162,123 @@ const PreferencesModal = ({ preferences, onSave, buttonClassName, buttonVariant 
           <DialogTitle>Your Preferences</DialogTitle>
         </DialogHeader>
         
-        <div className="space-y-6 py-4 max-h-[70vh] overflow-y-auto pr-2">
-          <div className="space-y-4">
-            <h3 className="text-sm font-medium">Favorite Colors</h3>
-            <div className="grid grid-cols-3 gap-2">
-              {colors.map((color) => (
-                <div key={color} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={`color-${color}`}
-                    checked={localPreferences.favoriteColors.includes(color)}
-                    onCheckedChange={() => handleColorToggle(color)}
-                  />
-                  <Label
-                    htmlFor={`color-${color}`}
-                    className="capitalize cursor-pointer text-sm"
-                  >
-                    {color}
-                  </Label>
+        <div className="max-h-[70vh] overflow-hidden">
+          <ScrollArea className="h-[60vh] pr-4">
+            <div className="space-y-6 py-4">
+              <div className="space-y-4">
+                <h3 className="text-sm font-medium">Favorite Colors</h3>
+                <div className="grid grid-cols-3 gap-2">
+                  {colors.map((color) => (
+                    <div key={color} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`color-${color}`}
+                        checked={localPreferences.favoriteColors.includes(color)}
+                        onCheckedChange={() => handleColorToggle(color)}
+                      />
+                      <Label
+                        htmlFor={`color-${color}`}
+                        className="capitalize cursor-pointer text-sm"
+                      >
+                        {color}
+                      </Label>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </div>
+              </div>
 
-          <div className="space-y-4">
-            <h3 className="text-sm font-medium">Favorite Styles</h3>
-            <div className="grid grid-cols-2 gap-2">
-              {styles.map((style) => (
-                <div key={style} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={`style-${style}`}
-                    checked={localPreferences.favoriteStyles.includes(style)}
-                    onCheckedChange={() => handleStyleToggle(style)}
-                  />
-                  <Label
-                    htmlFor={`style-${style}`}
-                    className="capitalize cursor-pointer text-sm"
-                  >
-                    {style}
-                  </Label>
+              <div className="space-y-4">
+                <h3 className="text-sm font-medium">Favorite Styles</h3>
+                <div className="grid grid-cols-2 gap-2">
+                  {styles.map((style) => (
+                    <div key={style} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`style-${style}`}
+                        checked={localPreferences.favoriteStyles.includes(style)}
+                        onCheckedChange={() => handleStyleToggle(style)}
+                      />
+                      <Label
+                        htmlFor={`style-${style}`}
+                        className="capitalize cursor-pointer text-sm"
+                      >
+                        {style}
+                      </Label>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </div>
+              </div>
 
-          <div className="space-y-4">
-            <h3 className="text-sm font-medium">Seasonal Preferences</h3>
-            
-            {(Object.keys(localPreferences.seasonalPreferences) as ClothingSeason[])
-              .filter(season => season !== 'all')
-              .map((season) => (
-                <div key={season} className="space-y-2 border-b pb-4">
-                  <div className="flex items-center justify-between">
-                    <Label 
-                      htmlFor={`season-${season}`}
-                      className="capitalize cursor-pointer"
-                    >
-                      {season}
-                    </Label>
-                    <Switch
-                      id={`season-${season}`}
-                      checked={localPreferences.seasonalPreferences[season].enabled}
-                      onCheckedChange={() => handleSeasonToggle(season)}
+              <div className="space-y-4">
+                <h3 className="text-sm font-medium">Seasonal Preferences</h3>
+                
+                {(Object.keys(localPreferences.seasonalPreferences) as ClothingSeason[])
+                  .filter(season => season !== 'all')
+                  .map((season) => (
+                    <div key={season} className="space-y-2 border-b pb-4">
+                      <div className="flex items-center justify-between">
+                        <Label 
+                          htmlFor={`season-${season}`}
+                          className="capitalize cursor-pointer"
+                        >
+                          {season}
+                        </Label>
+                        <Switch
+                          id={`season-${season}`}
+                          checked={localPreferences.seasonalPreferences[season].enabled}
+                          onCheckedChange={() => handleSeasonToggle(season)}
+                        />
+                      </div>
+                      
+                      {localPreferences.seasonalPreferences[season].enabled && (
+                        <div className="pt-2">
+                          <p className="text-xs text-muted-foreground mb-4">
+                            Temperature range: {localPreferences.seasonalPreferences[season].temperatureRange[0]}°C - {localPreferences.seasonalPreferences[season].temperatureRange[1]}°C
+                          </p>
+                          <Slider
+                            value={[
+                              localPreferences.seasonalPreferences[season].temperatureRange[0], 
+                              localPreferences.seasonalPreferences[season].temperatureRange[1]
+                            ]}
+                            min={-10}
+                            max={40}
+                            step={1}
+                            onValueChange={(values) => handleTemperatureRangeChange(season, values)}
+                          />
+                          <div className="flex justify-between mt-1">
+                            <span className="text-xs text-muted-foreground">-10°C</span>
+                            <span className="text-xs text-muted-foreground">40°C</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+              </div>
+
+              <div className="space-y-4">
+                <h3 className="text-sm font-medium">Daily Outfit Reminders</h3>
+                
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="reminders">Enable daily reminders</Label>
+                  <Switch
+                    id="reminders"
+                    checked={localPreferences.outfitReminders}
+                    onCheckedChange={handleReminderToggle}
+                  />
+                </div>
+                
+                {localPreferences.outfitReminders && (
+                  <div className="space-y-2">
+                    <Label htmlFor="reminder-time">Reminder time</Label>
+                    <Input
+                      id="reminder-time"
+                      type="time"
+                      value={localPreferences.reminderTime}
+                      onChange={(e) => handleReminderTimeChange(e.target.value)}
                     />
                   </div>
-                  
-                  {localPreferences.seasonalPreferences[season].enabled && (
-                    <div className="pt-2">
-                      <p className="text-xs text-muted-foreground mb-4">
-                        Temperature range: {localPreferences.seasonalPreferences[season].temperatureRange[0]}°C - {localPreferences.seasonalPreferences[season].temperatureRange[1]}°C
-                      </p>
-                      <Slider
-                        value={[
-                          localPreferences.seasonalPreferences[season].temperatureRange[0], 
-                          localPreferences.seasonalPreferences[season].temperatureRange[1]
-                        ]}
-                        min={-10}
-                        max={40}
-                        step={1}
-                        onValueChange={(values) => handleTemperatureRangeChange(season, values)}
-                      />
-                      <div className="flex justify-between mt-1">
-                        <span className="text-xs text-muted-foreground">-10°C</span>
-                        <span className="text-xs text-muted-foreground">40°C</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ))}
-          </div>
-
-          <div className="space-y-4">
-            <h3 className="text-sm font-medium">Daily Outfit Reminders</h3>
-            
-            <div className="flex items-center justify-between">
-              <Label htmlFor="reminders">Enable daily reminders</Label>
-              <Switch
-                id="reminders"
-                checked={localPreferences.outfitReminders}
-                onCheckedChange={handleReminderToggle}
-              />
-            </div>
-            
-            {localPreferences.outfitReminders && (
-              <div className="space-y-2">
-                <Label htmlFor="reminder-time">Reminder time</Label>
-                <Input
-                  id="reminder-time"
-                  type="time"
-                  value={localPreferences.reminderTime}
-                  onChange={(e) => handleReminderTimeChange(e.target.value)}
-                />
+                )}
               </div>
-            )}
-          </div>
+            </div>
+          </ScrollArea>
         </div>
 
         <DialogFooter>
@@ -265,7 +286,14 @@ const PreferencesModal = ({ preferences, onSave, buttonClassName, buttonVariant 
             Cancel
           </Button>
           <Button onClick={handleSubmit} disabled={isSubmitting}>
-            {isSubmitting ? 'Saving...' : 'Save Preferences'}
+            {isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              'Save Preferences'
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>

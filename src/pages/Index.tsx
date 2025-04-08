@@ -118,9 +118,6 @@ const Index = () => {
                 )}
               </motion.div>
             </TooltipTrigger>
-            <TooltipContent side="left" className="bg-purple-900/90 text-white border border-pink-400/30">
-              <p>Chat with Olivia, your style assistant!</p>
-            </TooltipContent>
           </Tooltip>
         </TooltipProvider>
       </div>
@@ -232,19 +229,12 @@ const Index = () => {
                     whileTap={{ scale: 0.98 }}
                     className="w-full sm:w-auto"
                   >
-                    <Button
-                      size="lg"
-                      variant="fashion-tertiary"
-                      className="rounded-xl text-base px-6 py-6 h-auto w-full sm:w-auto"
-                      asChild
-                    >
-                      <Link to="/preferences">
-                        <span className="relative flex items-center justify-center gap-2 text-white font-medium">
-                          <SlidersHorizontal className="h-5 w-5" />
-                          Preferences
-                        </span>
-                      </Link>
-                    </Button>
+                    <PreferencesModal
+                      preferences={preferences}
+                      onSave={handleUpdatePreferences}
+                      buttonClassName="rounded-xl text-base px-6 py-6 h-auto w-full sm:w-auto border-white/20 text-white hover:bg-white/10"
+                      buttonVariant="fashion-tertiary"
+                    />
                   </motion.div>
                 </motion.div>
               </motion.div>

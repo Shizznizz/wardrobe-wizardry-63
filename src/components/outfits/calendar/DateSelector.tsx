@@ -105,9 +105,9 @@ const DateSelector = ({
     .filter(log => log.date)
     .map(log => new Date(log.date));
 
-  // Prepare the modifiers in the correct format for the Calendar component
-  // The Calendar component requires { [modifierName]: Date[] } format
-  const modifiers = {
+  // Fix for the TypeScript error - Prepare modifiers in the correct format for the Calendar component
+  // The Calendar component from react-day-picker expects modifiers in the format { [modifierName]: Date[] }
+  const modifierDates = {
     hasOutfit: daysWithOutfits,
     selected: [selectedDate],
   };
@@ -152,7 +152,7 @@ const DateSelector = ({
           month={currentMonth}
           onMonthChange={handleMonthChange}
           className="border-none"
-          modifiers={modifiers}
+          modifiers={modifierDates}
           modifiersClassNames={modifiersClassNames}
           components={{
             DayContent: (props) => (
