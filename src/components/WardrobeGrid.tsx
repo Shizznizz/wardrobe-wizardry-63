@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 import WardrobeItemCard from '@/components/WardrobeItemCard';
 import EditItemDialog from '@/components/wardrobe/EditItemDialog';
 import { Button } from '@/components/ui/button';
-import { Plus, X } from 'lucide-react';
+import { Plus, X, LayoutGrid, LayoutList } from 'lucide-react';
 import { 
   Dialog,
   DialogContent,
@@ -46,6 +46,7 @@ const WardrobeGrid = ({
   const [editingItem, setEditingItem] = useState<ClothingItem | null>(null);
   const [createOutfitDialogOpen, setCreateOutfitDialogOpen] = useState(false);
   const [newOutfitName, setNewOutfitName] = useState('');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   
   const variants = {
     hidden: { opacity: 0 },
@@ -88,33 +89,227 @@ const WardrobeGrid = ({
 
   return (
     <>
-      <motion.div
-        className={cn(
-          "grid gap-3 sm:gap-4",
-          compactView
-            ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
-            : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-        )}
-        variants={variants}
-        initial="hidden"
-        animate="visible"
-      >
-        {items.map((item) => (
-          <motion.div key={item.id} variants={itemVariants}>
-            <WardrobeItemCard
-              item={item}
-              onToggleFavorite={onToggleFavorite}
-              onMatchItem={onMatchItem}
-              onDeleteItem={onDeleteItem}
-              onEditItem={handleEditItem}
-              compactView={compactView}
-              selectable={selectable}
-              isSelected={selectedItems.includes(item.id)}
-              onToggleSelect={onToggleSelect}
-            />
-          </motion.div>
-        ))}
-      </motion.div>
+      <div className="flex justify-end mb-4">
+        <div className="bg-slate-800/40 rounded-lg p-1 flex">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setViewMode('grid')}
+            className={cn(
+              "rounded-lg px-3 py-1.5 h-auto", 
+              viewMode === 'grid' 
+                ? "bg-purple-500/30 text-purple-100" 
+                : "text-slate-400 hover:text-white hover:bg-white/10"
+            )}
+          >
+            <LayoutGrid className="h-4 w-4 mr-1.5" />
+            Grid
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setViewMode('list')}
+            className={cn(
+              "rounded-lg px-3 py-1.5 h-auto", 
+              viewMode === 'list' 
+                ? "bg-purple-500/30 text-purple-100" 
+                : "text-slate-400 hover:text-white hover:bg-white/10"
+            )}
+          >
+            <LayoutList className="h-4 w-4 mr-1.5" />
+            List
+          </Button>
+        </div>
+      </div>
+
+      {viewMode === 'grid' ? (
+        <motion.div
+          className={cn(
+            "grid gap-3 sm:gap-4",
+            compactView
+              ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
+              : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+          )}
+          variants={variants}
+          initial="hidden"
+          animate="visible"
+        >
+          {items.map((item) => (
+            <motion.div key={item.id} variants={itemVariants}>
+              <WardrobeItemCard
+                item={item}
+                onToggleFavorite={onToggleFavorite}
+                onMatchItem={onMatchItem}
+                onDeleteItem={onDeleteItem}
+                onEditItem={handleEditItem}
+                compactView={compactView}
+                selectable={selectable}
+                isSelected={selectedItems.includes(item.id)}
+                onToggleSelect={onToggleSelect}
+              />
+            </motion.div>
+          ))}
+        </motion.div>
+      ) : (
+        <motion.div
+          className="space-y-3"
+          variants={variants}
+          initial="hidden"
+          animate="visible"
+        >
+          {items.map((item) => (
+            <motion.div key={item.id} variants={itemVariants}>
+              <div className="bg-slate-800/40 border border-white/5 rounded-xl p-3 hover:border-purple-500/30 transition-all">
+                <div className="flex items-center space-x-4">
+                  <div className="relative h-20 w-20 rounded-lg overflow-hidden flex-shrink-0">
+                    <img 
+                      src={item.imageUrl} 
+                      alt={item.name} 
+                      className="h-full w-full object-cover"
+                    />
+                    {selectable && (
+                      <div 
+                        className="absolute inset-0 bg-black/40 flex items-center justify-center cursor-pointer"
+                        onClick={() => onToggleSelect && onToggleSelect(item.id)}
+                      >
+                        <div className={cn(
+                          "h-5 w-5 rounded-full border-2",
+                          selectedItems.includes(item.id) 
+                            ? "bg-purple-500 border-white" 
+                            : "border-white/70"
+                        )} />
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="flex-grow">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <h3 className="font-semibold text-white">{item.name}</h3>
+                        <div className="text-xs text-gray-400 flex items-center mt-1">
+                          <span className="capitalize">{item.type}</span>
+                          <span className="mx-1.5">•</span>
+                          <span className="capitalize">{item.color}</span>
+                          <span className="mx-1.5">•</span>
+                          <span>{item.material}</span>
+                        </div>
+                      </div>
+                      
+                      <div className="flex space-x-1">
+                        <Button
+                          variant="ghost" 
+                          size="sm"
+                          className="h-8 w-8 p-0 rounded-full text-white/70 hover:text-white hover:bg-white/10"
+                          onClick={() => onToggleFavorite(item.id)}
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill={item.favorite ? "currentColor" : "none"}
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className={cn(
+                              "h-4 w-4", 
+                              item.favorite ? "text-red-500 fill-red-500" : "text-white"
+                            )}
+                          >
+                            <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                          </svg>
+                        </Button>
+                        
+                        {onEditItem && (
+                          <Button
+                            variant="ghost" 
+                            size="sm"
+                            className="h-8 w-8 p-0 rounded-full text-white/70 hover:text-white hover:bg-white/10"
+                            onClick={() => handleEditItem(item)}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              className="h-4 w-4"
+                            >
+                              <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                              <path d="m15 5 4 4" />
+                            </svg>
+                          </Button>
+                        )}
+                        
+                        {onDeleteItem && (
+                          <Button
+                            variant="ghost" 
+                            size="sm"
+                            className="h-8 w-8 p-0 rounded-full text-white/70 hover:text-red-500 hover:bg-red-500/10"
+                            onClick={() => onDeleteItem(item.id)}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              className="h-4 w-4"
+                            >
+                              <path d="M3 6h18" />
+                              <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                              <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                              <line x1="10" x2="10" y1="11" y2="17" />
+                              <line x1="14" x2="14" y1="11" y2="17" />
+                            </svg>
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div className="mt-3 flex flex-wrap gap-1.5">
+                      {item.seasons.map((season) => (
+                        <span key={season} className="px-2 py-0.5 bg-blue-500/20 text-blue-200 rounded-full text-xs">
+                          {season}
+                        </span>
+                      ))}
+                      
+                      {item.occasions && item.occasions.map((occasion) => (
+                        <span key={occasion} className="px-2 py-0.5 bg-purple-500/20 text-purple-200 rounded-full text-xs">
+                          {occasion}
+                        </span>
+                      ))}
+                    </div>
+                    
+                    <div className="flex items-center justify-between mt-3">
+                      <div className="flex items-center text-xs text-gray-400">
+                        <span>Worn: {item.timesWorn} times</span>
+                        {item.lastWorn && (
+                          <>
+                            <span className="mx-1.5">•</span>
+                            <span>Last: {new Date(item.lastWorn).toLocaleDateString()}</span>
+                          </>
+                        )}
+                      </div>
+                      
+                      <Button
+                        size="sm"
+                        onClick={() => onMatchItem(item)}
+                        className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white h-8 px-3"
+                      >
+                        Match This
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+      )}
       
       {/* Floating Action Button for Create Outfit */}
       <AnimatePresence>

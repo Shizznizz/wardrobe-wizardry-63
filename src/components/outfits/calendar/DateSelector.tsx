@@ -104,15 +104,15 @@ const DateSelector = ({
     .filter(log => log.date)
     .map(log => new Date(log.date));
 
-  // Transform our ActiveModifiers into the format expected by the Calendar component
+  // Transform our ActiveModifiers into a format that Calendar component can use
   // Calendar expects a Record<string, Date[]> for custom modifiers
+  // We'll extract what we need from activeModifiers to create this format
   const calendarModifiers = {
     selected: [selectedDate],
     hasOutfit: daysWithOutfits,
-    // We will not use 'activeModifiers' directly with the Calendar component
   };
 
-  // The 'modifiers' prop in Calendar component expects this specific format
+  // The 'modifiersClassNames' prop in Calendar component expects this specific format
   const modifiersClassNames = {
     selected: "bg-purple-600 text-white",
     hasOutfit: "", // We'll handle this in the DayContent component
