@@ -12,21 +12,21 @@ const slides = [
     id: 'intro',
     title: 'Meet Olivia',
     message: "Hi there! I'm Olivia, your AI stylist. Let me show you how our virtual try-on works—it's quick, stylish, and all about you!",
-    image: '/lovable-uploads/18bb352f-b48d-4bbc-90a8-c49bb27e9bcb.png', // Using the first uploaded image
+    image: '/lovable-uploads/153b37d6-dd2c-4574-b45b-10db91fe8a0c.png', // Updated image for Slide 1
     imageSide: 'right',
   },
   {
     id: 'outfit',
-    title: 'Discover Outfits',
-    message: "This look is called 'Casual Chic.' It's relaxed, pastel-toned, and perfect for a confident spring day out.",
-    image: '/lovable-uploads/a83d6222-7995-44da-b3ac-754d234438e3.png', // Using the third uploaded image (t-shirt)
+    title: 'Choose the clothing',
+    message: "Found a piece you like? Upload it here and see how it could look—on Olivia or yourself!",
+    image: '/lovable-uploads/af8ddcef-7ca3-4cdb-a77f-4cdf410510be.png', // Updated image for Slide 2 (t-shirt only)
     imageSide: 'left',
   },
   {
     id: 'result',
     title: 'See the Magic',
     message: "See the difference? You can try this look too—just upload your photo and let the magic begin!",
-    image: '/lovable-uploads/11dd5dd5-fe91-4203-940b-9b9857bc7369.png', // Using the fourth uploaded image (Olivia with t-shirt)
+    image: '/lovable-uploads/b9589b3d-cc0b-4092-891c-72bfce833557.png', // Updated image for Slide 3 (Olivia with t-shirt)
     imageSide: 'right',
   },
 ];
