@@ -106,7 +106,7 @@ const Calendar = () => {
         >
           <motion.div variants={itemVariants} className="text-center max-w-3xl mx-auto mb-6 md:mb-10">
             <h1 className="text-2xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 mb-4">
-              Your Outfit Tracker & Insights
+              Your Style Planner & Insights
             </h1>
             <Card className="bg-slate-800/40 border-purple-500/20 backdrop-blur-sm shadow-lg">
               <CardContent className="p-4 md:p-6">

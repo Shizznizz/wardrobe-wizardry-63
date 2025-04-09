@@ -54,7 +54,7 @@ const Header = ({ weather }: HeaderProps) => {
     setIsMenuOpen(prevState => !prevState);
   };
 
-  // Navigation items
+  // Navigation items with updated names
   let navItems = [
     { name: 'Home', path: '/' },
   ];
@@ -62,11 +62,11 @@ const Header = ({ weather }: HeaderProps) => {
   if (user) {
     navItems = [
       ...navItems,
-      { name: 'Wardrobe', path: '/wardrobe' },
-      { name: 'Outfits', path: '/outfits' },
-      { name: 'Calendar', path: '/calendar' },
-      { name: 'Showroom', path: '/showroom' },
-      { name: 'New Clothes', path: '/new-clothes' },
+      { name: 'My Wardrobe', path: '/wardrobe' },
+      { name: 'Mix & Match', path: '/outfits' },
+      { name: 'Style Planner', path: '/calendar' },
+      { name: 'Fitting Room', path: '/showroom' },
+      { name: 'Shop & Try', path: '/new-clothes' },
       { name: 'Settings', path: '/settings' },
     ];
   }

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, Calendar, Shirt, Palette, Smartphone, Image, FileText, Home } from 'lucide-react';
@@ -22,7 +21,7 @@ const Footer = () => {
                   <div className="w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-br from-blue-500/10 to-blue-500/5 border border-blue-400/10">
                     <Calendar className="h-4 w-4 text-blue-300 transition-all hover:text-blue-200" />
                   </div>
-                  <span className="text-[10px] text-blue-300/70">Calendar</span>
+                  <span className="text-[10px] text-blue-300/70">Style Planner</span>
                 </Link>
               </li>
               <li>
@@ -30,7 +29,7 @@ const Footer = () => {
                   <div className="w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-br from-pink-500/10 to-pink-500/5 border border-pink-400/10">
                     <Shirt className="h-4 w-4 text-pink-300 transition-all hover:text-pink-200" />
                   </div>
-                  <span className="text-[10px] text-pink-300/70">Wardrobe</span>
+                  <span className="text-[10px] text-pink-300/70">My Wardrobe</span>
                 </Link>
               </li>
               <li>
@@ -38,7 +37,7 @@ const Footer = () => {
                   <div className="w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-br from-purple-500/10 to-purple-500/5 border border-purple-400/10">
                     <Palette className="h-4 w-4 text-purple-300 transition-all hover:text-purple-200" />
                   </div>
-                  <span className="text-[10px] text-purple-300/70">Outfits</span>
+                  <span className="text-[10px] text-purple-300/70">Mix & Match</span>
                 </Link>
               </li>
               <li>
@@ -54,7 +53,7 @@ const Footer = () => {
                   <div className="w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-br from-violet-500/10 to-violet-500/5 border border-violet-400/10">
                     <Image className="h-4 w-4 text-violet-300 transition-all hover:text-violet-200" />
                   </div>
-                  <span className="text-[10px] text-violet-300/70">Showroom</span>
+                  <span className="text-[10px] text-violet-300/70">Fitting Room</span>
                 </Link>
               </li>
             </ul>
@@ -154,13 +153,13 @@ const Footer = () => {
               <li>
                 <Link to="/wardrobe" className="text-slate-300 hover:text-white flex items-center space-x-1 opacity-80 hover:opacity-100 transition-all">
                   <Shirt className="h-3 w-3" />
-                  <span>Wardrobe</span>
+                  <span>My Wardrobe</span>
                 </Link>
               </li>
               <li>
                 <Link to="/outfits" className="text-slate-300 hover:text-white flex items-center space-x-1 opacity-80 hover:opacity-100 transition-all">
                   <Palette className="h-3 w-3" />
-                  <span>Outfits</span>
+                  <span>Mix & Match</span>
                 </Link>
               </li>
               <li>
@@ -172,7 +171,7 @@ const Footer = () => {
               <li>
                 <Link to="/showroom" className="text-slate-300 hover:text-white flex items-center space-x-1 opacity-80 hover:opacity-100 transition-all">
                   <Image className="h-3 w-3" />
-                  <span>Showroom</span>
+                  <span>Fitting Room</span>
                 </Link>
               </li>
               <li>

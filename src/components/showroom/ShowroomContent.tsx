@@ -55,7 +55,7 @@ const ShowroomContent = ({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          Virtual Try-On Studio
+          Virtual Fitting Room
         </motion.h1>
         <motion.p 
           className="text-base md:text-lg text-white/80 mx-auto max-w-2xl"

@@ -395,7 +395,7 @@ const Index = () => {
                     <div className="h-16 w-16 rounded-2xl flex items-center justify-center mb-6 bg-gradient-to-br from-blue-500/20 to-blue-500/5 border border-blue-400/20">
                       <Shirt className="h-8 w-8 text-blue-400" />
                     </div>
-                    <h3 className="text-2xl font-bold mb-3 text-blue-200">Virtual Wardrobe</h3>
+                    <h3 className="text-2xl font-bold mb-3 text-blue-200">My Wardrobe</h3>
                     <p className="text-blue-100/80">
                       Digitize your entire collection with smart categorization and instant access.
                     </p>
@@ -415,7 +415,7 @@ const Index = () => {
                     <div className="h-16 w-16 rounded-2xl flex items-center justify-center mb-6 bg-gradient-to-br from-purple-500/20 to-purple-500/5 border border-purple-400/20">
                       <Palette className="h-8 w-8 text-purple-400" />
                     </div>
-                    <h3 className="text-2xl font-bold mb-3 text-purple-200">AI Styling</h3>
+                    <h3 className="text-2xl font-bold mb-3 text-purple-200">Mix & Match</h3>
                     <p className="text-purple-100/80">
                       Create perfectly coordinated outfits with AI that understands your personal style.
                     </p>
@@ -435,7 +435,7 @@ const Index = () => {
                     <div className="h-16 w-16 rounded-2xl flex items-center justify-center mb-6 bg-gradient-to-br from-pink-500/20 to-pink-500/5 border border-pink-400/20">
                       <Sparkles className="h-8 w-8 text-pink-400" />
                     </div>
-                    <h3 className="text-2xl font-bold mb-3 text-pink-200">Showroom</h3>
+                    <h3 className="text-2xl font-bold mb-3 text-pink-200">Fitting Room</h3>
                     <p className="text-pink-100/80">
                       See exactly how outfits look on you with our cutting-edge virtual fitting room.
                     </p>
@@ -455,7 +455,7 @@ const Index = () => {
                     <div className="h-16 w-16 rounded-2xl flex items-center justify-center mb-6 bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 border border-emerald-400/20">
                       <Shirt className="h-8 w-8 text-emerald-400" />
                     </div>
-                    <h3 className="text-2xl font-bold mb-3 text-emerald-200">New Clothes</h3>
+                    <h3 className="text-2xl font-bold mb-3 text-emerald-200">Shop & Try</h3>
                     <p className="text-emerald-100/80">
                       Visualize how new clothes would look on you before making a purchase decision.
                     </p>
