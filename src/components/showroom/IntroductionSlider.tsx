@@ -59,7 +59,7 @@ export default function IntroductionSlider() {
     onSwipedRight: () => {
       setActiveIndex((current) => (current === 0 ? slides.length - 1 : current - 1));
     },
-    preventDefaultTouchmoveEvent: true,
+    preventScrollOnSwipe: true,
     trackMouse: false
   });
 
