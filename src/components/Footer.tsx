@@ -1,6 +1,7 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, Home, Shirt, Palette, Smartphone, Image, FileText } from 'lucide-react';
+import { Mail, Calendar, Shirt, Palette, Smartphone, Image, FileText } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { useIsMobile } from '@/hooks/use-mobile';
 import BackToTop from './BackToTop';
@@ -17,11 +18,11 @@ const Footer = () => {
           <nav className="px-2 py-3 border-t border-white/10 bg-black/20 backdrop-blur-lg sticky bottom-0 z-30">
             <ul className="flex justify-between items-center px-2">
               <li>
-                <Link to="/" className="flex flex-col items-center gap-1">
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-br from-purple-500/10 to-purple-500/5 border border-purple-400/10">
-                    <Home className="h-4 w-4 text-purple-300 transition-all hover:text-purple-200" />
+                <Link to="/calendar" className="flex flex-col items-center gap-1">
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-br from-blue-500/10 to-blue-500/5 border border-blue-400/10">
+                    <Calendar className="h-4 w-4 text-blue-300 transition-all hover:text-blue-200" />
                   </div>
-                  <span className="text-[10px] text-purple-300/70">Home</span>
+                  <span className="text-[10px] text-blue-300/70">Calendar</span>
                 </Link>
               </li>
               <li>
@@ -34,10 +35,10 @@ const Footer = () => {
               </li>
               <li>
                 <Link to="/outfits" className="flex flex-col items-center gap-1">
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-br from-blue-500/10 to-blue-500/5 border border-blue-400/10">
-                    <Palette className="h-4 w-4 text-blue-300 transition-all hover:text-blue-200" />
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-br from-purple-500/10 to-purple-500/5 border border-purple-400/10">
+                    <Palette className="h-4 w-4 text-purple-300 transition-all hover:text-purple-200" />
                   </div>
-                  <span className="text-[10px] text-blue-300/70">Outfits</span>
+                  <span className="text-[10px] text-purple-300/70">Outfits</span>
                 </Link>
               </li>
               <li>
@@ -58,6 +59,9 @@ const Footer = () => {
               </li>
             </ul>
           </nav>
+
+          {/* Adding a subtle divider between navigation and footer content */}
+          <div className="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent mt-2"></div>
 
           <div className="px-4 py-5 space-y-3">
             <div className="flex justify-center mt-1 mb-3">
@@ -81,7 +85,7 @@ const Footer = () => {
               </p>
             </div>
             
-            <div className="flex justify-center space-x-2 text-[10px]">
+            <div className="flex justify-center space-x-1.5 text-[9px]">
               <span className="text-white/40">Powered by</span>
               <span className="bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">Lovable</span>
               <span className="bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">Supabase</span>
@@ -91,13 +95,16 @@ const Footer = () => {
             <div className="text-center">
               <button 
                 onClick={() => setLegalModalOpen(true)}
-                className="text-[10px] text-white/40 hover:text-white/70 transition-colors py-1"
+                className="text-[10px] text-white/30 hover:text-white/60 transition-colors py-1"
               >
                 License & Legal Information
               </button>
             </div>
             
-            <div className="mt-4 text-center">
+            {/* Additional divider before the designer credit */}
+            <div className="w-full h-px bg-gradient-to-r from-transparent via-white/5 to-transparent"></div>
+            
+            <div className="mt-3 text-center">
               <span className="bg-gradient-to-r from-pink-300 to-purple-300 bg-clip-text text-transparent text-[10px]">
                 Designed by Olivia Bloom
               </span>
