@@ -1,31 +1,32 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useSwipeable } from 'react-swipeable';
 
 const slides = [
   {
     id: 'intro',
     title: 'Meet Olivia',
     message: "Hi there! I'm Olivia, your AI stylist. Let me show you how our virtual try-on works—it's quick, stylish, and all about you!",
-    image: '/lovable-uploads/352f9956-7bac-4f42-a91b-d20e04157b0d.png', // Replace with Olivia image
+    image: '/lovable-uploads/18bb352f-b48d-4bbc-90a8-c49bb27e9bcb.png', // Using the first uploaded image
     imageSide: 'right',
   },
   {
     id: 'outfit',
     title: 'Discover Outfits',
     message: "This look is called 'Casual Chic.' It's relaxed, pastel-toned, and perfect for a confident spring day out.",
-    image: '/lovable-uploads/f1154816-6766-4478-ba89-6342580bc85b.png', // Replace with outfit image
+    image: '/lovable-uploads/a83d6222-7995-44da-b3ac-754d234438e3.png', // Using the third uploaded image (t-shirt)
     imageSide: 'left',
   },
   {
     id: 'result',
     title: 'See the Magic',
     message: "See the difference? You can try this look too—just upload your photo and let the magic begin!",
-    image: '/lovable-uploads/e4bf2134-0936-46f8-8d70-adcc220e50be.png', // Replace with Olivia wearing outfit
+    image: '/lovable-uploads/11dd5dd5-fe91-4203-940b-9b9857bc7369.png', // Using the fourth uploaded image (Olivia with t-shirt)
     imageSide: 'right',
   },
 ];
@@ -33,6 +34,7 @@ const slides = [
 export default function IntroductionSlider() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [autoplay, setAutoplay] = useState(true);
+  const carouselRef = useRef(null);
 
   // Autoplay functionality
   useEffect(() => {
@@ -49,11 +51,25 @@ export default function IntroductionSlider() {
   const handleMouseEnter = () => setAutoplay(false);
   const handleMouseLeave = () => setAutoplay(true);
 
+  // Handle swipe gestures for mobile
+  const handlers = useSwipeable({
+    onSwipedLeft: () => {
+      setActiveIndex((current) => (current === slides.length - 1 ? 0 : current + 1));
+    },
+    onSwipedRight: () => {
+      setActiveIndex((current) => (current === 0 ? slides.length - 1 : current - 1));
+    },
+    preventDefaultTouchmoveEvent: true,
+    trackMouse: false
+  });
+
   return (
     <div 
       className="w-full max-w-5xl mx-auto mb-16 mt-4 relative"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      {...handlers}
+      ref={carouselRef}
     >
       <Carousel
         className="w-full"
@@ -61,6 +77,10 @@ export default function IntroductionSlider() {
           api?.on('select', () => {
             setActiveIndex(api.selectedScrollSnap());
           });
+          // Allow external navigation
+          if (api) {
+            api.scrollTo(activeIndex);
+          }
         }}
         opts={{
           align: 'start',
@@ -94,6 +114,10 @@ export default function IntroductionSlider() {
                   {index === slides.length - 1 && (
                     <Button 
                       className="mt-4 bg-gradient-to-r from-pink-500 to-purple-600 hover:opacity-90"
+                      onClick={() => {
+                        // Scroll to photo upload section
+                        document.getElementById('photo-section')?.scrollIntoView({ behavior: 'smooth' });
+                      }}
                     >
                       Try It Now
                     </Button>
@@ -132,7 +156,7 @@ export default function IntroductionSlider() {
           ))}
         </CarouselContent>
         
-        {/* Custom navigation controls */}
+        {/* Dot indicators showing the current slide */}
         <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-20">
           {slides.map((_, index) => (
             <button
@@ -151,10 +175,11 @@ export default function IntroductionSlider() {
           ))}
         </div>
         
+        {/* Custom navigation buttons with improved visual style */}
         <Button 
           variant="ghost" 
           size="icon" 
-          className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-black/20 backdrop-blur-sm text-white hover:bg-black/40 hidden md:flex"
+          className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-black/20 backdrop-blur-sm text-white hover:bg-black/40 border border-white/10 shadow-lg transition-all duration-300 hidden md:flex"
           onClick={() => {
             setActiveIndex(activeIndex === 0 ? slides.length - 1 : activeIndex - 1);
           }}
@@ -165,7 +190,7 @@ export default function IntroductionSlider() {
         <Button 
           variant="ghost" 
           size="icon" 
-          className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-black/20 backdrop-blur-sm text-white hover:bg-black/40 hidden md:flex"
+          className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-black/20 backdrop-blur-sm text-white hover:bg-black/40 border border-white/10 shadow-lg transition-all duration-300 hidden md:flex"
           onClick={() => {
             setActiveIndex(activeIndex === slides.length - 1 ? 0 : activeIndex + 1);
           }}

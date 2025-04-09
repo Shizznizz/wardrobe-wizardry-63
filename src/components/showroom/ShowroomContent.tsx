@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { Outfit } from '@/lib/types';
-import ShowroomPreviewCarousel from './ShowroomPreviewCarousel';
 import UserPhotoSection from './UserPhotoSection';
 import OutfitSelectionSection from './OutfitSelectionSection';
 import OutfitPreviewSection from './OutfitPreviewSection';
@@ -68,19 +67,8 @@ const ShowroomContent = ({
         </motion.p>
       </div>
       
-      {/* New Introduction Slider */}
+      {/* Introduction Slider - replaces the static explanation section */}
       <IntroductionSlider />
-      
-      {!userPhoto && !isUploadLoading && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          className="mb-12"
-        >
-          <ShowroomPreviewCarousel />
-        </motion.div>
-      )}
       
       {/* New CTA Button */}
       <motion.div
