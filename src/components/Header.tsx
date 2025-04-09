@@ -50,6 +50,10 @@ const Header = ({ weather }: HeaderProps) => {
     }
   };
 
+  const toggleMenu = () => {
+    setIsMenuOpen(prevState => !prevState);
+  };
+
   // Navigation items
   let navItems = [
     { name: 'Home', path: '/' },
@@ -112,7 +116,8 @@ const Header = ({ weather }: HeaderProps) => {
                 "ml-2 transition-all duration-300",
                 isScrolled ? "text-white hover:text-white/80" : "text-white hover:bg-white/10"
               )}
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              onClick={toggleMenu}
+              aria-label="Toggle mobile menu"
             >
               <Menu className="h-5 w-5" />
             </Button>

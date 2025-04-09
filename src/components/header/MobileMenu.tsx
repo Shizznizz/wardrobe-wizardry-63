@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { LogOut } from 'lucide-react';
+import { useEffect } from 'react';
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -18,6 +19,19 @@ interface MobileMenuProps {
 }
 
 export const MobileMenu = ({ isOpen, onClose, navItems, currentPath, weather, onSignOut }: MobileMenuProps) => {
+  // Lock body scroll when menu is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -26,7 +40,7 @@ export const MobileMenu = ({ isOpen, onClose, navItems, currentPath, weather, on
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[999]" // Higher z-index for mobile menu
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[999]" // Higher z-index and better overlay
           onClick={onClose}
         >
           <motion.div
