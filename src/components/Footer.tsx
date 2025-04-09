@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, Calendar, Shirt, Palette, Smartphone, Image, FileText } from 'lucide-react';
+import { Mail, Calendar, Shirt, Palette, Smartphone, Image, FileText, Home } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { useIsMobile } from '@/hooks/use-mobile';
 import BackToTop from './BackToTop';
