@@ -7,6 +7,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import OutfitSubscriptionPopup from '@/components/OutfitSubscriptionPopup';
 import OliviaImageGallery from '@/components/outfits/OliviaImageGallery';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 
 import NewClothesHeader from '@/components/new-clothes/NewClothesHeader';
 import TryOnSection from '@/components/new-clothes/TryOnSection';
@@ -17,11 +18,12 @@ import HelpTipsSection from '@/components/new-clothes/HelpTipsSection';
 import { defaultOutfitTips } from '@/components/outfits/OutfitTips';
 
 const NewClothes = () => {
+  const { isAuthenticated } = useAuth();
   const [userPhoto, setUserPhoto] = useState<string | null>(null);
   const [clothingPhoto, setClothingPhoto] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [finalImage, setFinalImage] = useState<string | null>(null);
-  const [isPremiumUser] = useState(false);
+  const [isPremiumUser, setIsPremiumUser] = useState(false);
   const [showSubscriptionPopup, setShowSubscriptionPopup] = useState(false);
   const [selectedItems, setSelectedItems] = useState<ClothingItem[]>([]);
   const [showOliviaImageGallery, setShowOliviaImageGallery] = useState(false);
@@ -32,6 +34,10 @@ const NewClothes = () => {
   const [generationError, setGenerationError] = useState<string | null>(null);
 
   const isMobile = useIsMobile();
+
+  useEffect(() => {
+    setIsPremiumUser(isAuthenticated);
+  }, [isAuthenticated]);
 
   const mockOutfit: Outfit = {
     id: 'new-clothing',
@@ -72,7 +78,7 @@ const NewClothes = () => {
   }, [predictionId]);
 
   useEffect(() => {
-    if (finalImage && !isPremiumUser) {
+    if (finalImage && !isPremiumUser && !isAuthenticated) {
       const hasSeenPopup = sessionStorage.getItem('hasSeenOutfitSubscriptionPopup');
       if (!hasSeenPopup) {
         const timer = setTimeout(() => {
@@ -83,7 +89,7 @@ const NewClothes = () => {
         return () => clearTimeout(timer);
       }
     }
-  }, [finalImage, isPremiumUser]);
+  }, [finalImage, isPremiumUser, isAuthenticated]);
 
   const handleUserPhotoUpload = (file: File) => {
     const reader = new FileReader();
@@ -254,7 +260,7 @@ const NewClothes = () => {
               userPhoto={userPhoto}
               clothingPhoto={clothingPhoto}
               isOliviaImage={isUsingOliviaImage}
-              isPremiumUser={isPremiumUser}
+              isPremiumUser={isPremiumUser || isAuthenticated}
               onSaveLook={handleSaveLook}
               onAddItem={handleAddItem}
               onShowPremiumPopup={handleShowPremiumPopup}
@@ -264,7 +270,7 @@ const NewClothes = () => {
           <RelatedContentSection finalImage={finalImage} />
           
           <PremiumFeaturesSection 
-            isPremiumUser={isPremiumUser} 
+            isPremiumUser={isPremiumUser || isAuthenticated}
             onUpgradeToPremium={handleUpgradeToPremium} 
           />
         </motion.div>

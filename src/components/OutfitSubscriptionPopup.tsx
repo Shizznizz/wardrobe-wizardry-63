@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -19,6 +18,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useAuth } from '@/hooks/useAuth';
 
 interface OutfitSubscriptionPopupProps {
   isOpen: boolean;
@@ -27,12 +27,13 @@ interface OutfitSubscriptionPopupProps {
 }
 
 const OutfitSubscriptionPopup = ({ isOpen, onClose, onUpgrade }: OutfitSubscriptionPopupProps) => {
+  const { isAuthenticated } = useAuth();
   const [showLocalDialog, setShowLocalDialog] = useState(false);
   
-  // Sync the local state with the prop
+  // Sync the local state with the prop, but don't show if authenticated
   useEffect(() => {
-    setShowLocalDialog(isOpen);
-  }, [isOpen]);
+    setShowLocalDialog(isOpen && !isAuthenticated);
+  }, [isOpen, isAuthenticated]);
   
   const handleClose = () => {
     setShowLocalDialog(false);
