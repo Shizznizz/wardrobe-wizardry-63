@@ -1,12 +1,13 @@
-
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { useOutfitState } from './useOutfitState';
 import { sampleClothingItems, sampleOutfits } from '@/lib/wardrobeData';
 import { Outfit } from '@/lib/types';
+import { useAuth } from '@/hooks/useAuth';
 
 export const useShowroom = () => {
-  const [isPremiumUser] = useState(false);
+  const { isAuthenticated } = useAuth();
+  const [isPremiumUser, setIsPremiumUser] = useState(false);
   const [showTips, setShowTips] = useState(true);
   const [showSubscriptionPopup, setShowSubscriptionPopup] = useState(false);
   const [showOliviaImageGallery, setShowOliviaImageGallery] = useState(false);
@@ -14,6 +15,10 @@ export const useShowroom = () => {
   const [showStatusBar, setShowStatusBar] = useState(false);
   const [isUploadLoading, setIsUploadLoading] = useState(false);
   const [oliviaSuggestion, setOliviaSuggestion] = useState("");
+  
+  useEffect(() => {
+    setIsPremiumUser(isAuthenticated);
+  }, [isAuthenticated]);
   
   const {
     outfits,
@@ -65,7 +70,7 @@ export const useShowroom = () => {
   ];
 
   useEffect(() => {
-    if (userPhoto && finalImage && !isPremiumUser) {
+    if (userPhoto && finalImage && !isPremiumUser && !isAuthenticated) {
       const hasSeenPopup = sessionStorage.getItem('hasSeenSubscriptionPopup');
       if (!hasSeenPopup) {
         const timer = setTimeout(() => {
@@ -76,7 +81,7 @@ export const useShowroom = () => {
         return () => clearTimeout(timer);
       }
     }
-  }, [userPhoto, finalImage, isPremiumUser]);
+  }, [userPhoto, finalImage, isPremiumUser, isAuthenticated]);
 
   useEffect(() => {
     if (userPhoto && selectedOutfit) {
@@ -168,7 +173,7 @@ export const useShowroom = () => {
   };
 
   return {
-    isPremiumUser,
+    isPremiumUser: isPremiumUser || isAuthenticated,
     showTips,
     showSubscriptionPopup,
     showOliviaImageGallery,
@@ -184,7 +189,6 @@ export const useShowroom = () => {
     isProcessingTryOn,
     fashionCollections,
     
-    // Methods
     handleSelectOliviaImage,
     handleSelectOutfit,
     handleUserPhotoUpload,
