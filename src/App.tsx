@@ -1,41 +1,93 @@
 
-import { Routes, Route } from 'react-router-dom';
-import { Toaster } from 'sonner';
-import { AuthProvider } from './hooks/useAuth';
-import Index from './pages/Index';
-import Outfits from './pages/Outfits';
-import Wardrobe from './pages/Wardrobe';
-import Calendar from './pages/Calendar';
-import Showroom from './pages/Showroom';
-import NewClothes from './pages/NewClothes';
-import ShopAndTry from './pages/ShopAndTry';
-import NotFound from './pages/NotFound';
-import Settings from './pages/Settings';
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider, useAuth } from "./hooks/useAuth";
+import { ThemeProvider } from "./components/ThemeProvider";
+import ScrollToTop from "./components/ScrollToTop";
+import Footer from "./components/Footer";
+import LegalDisclaimer from "./components/LegalDisclaimer";
+import Index from "./pages/Index";
+import Wardrobe from "./pages/Wardrobe";
+import Outfits from "./pages/Outfits";
+import Settings from "./pages/Settings";
+import Auth from "./pages/Auth";
+import NotFound from "./pages/NotFound";
+import NewClothes from "./pages/NewClothes";
+import Showroom from "./pages/Showroom";
 import Preferences from './pages/Preferences';
-import Auth from './pages/Auth';
-import ScrollToTop from './components/ScrollToTop';
-import './App.css';
+import Calendar from './pages/Calendar';
 
-function App() {
+const queryClient = new QueryClient();
+
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user, loading } = useAuth();
+  
+  if (loading) return <div className="flex h-screen items-center justify-center">Loading...</div>;
+  
+  if (!user) return <Navigate to="/auth" replace />;
+  
+  return <>{children}</>;
+};
+
+const AppRoutes = () => {
+  const { user, loading } = useAuth();
+  
+  if (loading) return <div className="flex h-screen items-center justify-center">Loading...</div>;
+  
   return (
-    <AuthProvider>
-      <Toaster position="top-right" richColors />
+    <>
       <ScrollToTop />
-      <Routes>
-        <Route path="/" element={<Index />} />
-        <Route path="/outfits" element={<Outfits />} />
-        <Route path="/wardrobe" element={<Wardrobe />} />
-        <Route path="/calendar" element={<Calendar />} />
-        <Route path="/showroom" element={<Showroom />} />
-        <Route path="/new-clothes" element={<NewClothes />} />
-        <Route path="/shop" element={<ShopAndTry />} />
-        <Route path="/settings" element={<Settings />} />
-        <Route path="/preferences" element={<Preferences />} />
-        <Route path="/auth" element={<Auth />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </AuthProvider>
+      <div className="flex flex-col min-h-screen">
+        <div className="flex-grow">
+          <Routes>
+            <Route path="/" element={<>
+              <Index />
+              <LegalDisclaimer />
+            </>} />
+            {/* Updated routes with proper page names */}
+            <Route path="/my-wardrobe" element={<ProtectedRoute><Wardrobe /></ProtectedRoute>} />
+            <Route path="/mix-and-match" element={<ProtectedRoute><Outfits /></ProtectedRoute>} />
+            <Route path="/style-planner" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
+            <Route path="/fitting-room" element={<ProtectedRoute><Showroom /></ProtectedRoute>} />
+            <Route path="/shop-and-try" element={<ProtectedRoute><NewClothes /></ProtectedRoute>} />
+            <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+            <Route path="/preferences" element={<ProtectedRoute><Preferences /></ProtectedRoute>} />
+            <Route path="/auth" element={<Auth />} />
+            
+            {/* Redirects from old to new routes */}
+            <Route path="/wardrobe" element={<Navigate to="/my-wardrobe" replace />} />
+            <Route path="/outfits" element={<Navigate to="/mix-and-match" replace />} />
+            <Route path="/calendar" element={<Navigate to="/style-planner" replace />} />
+            <Route path="/showroom" element={<Navigate to="/fitting-room" replace />} />
+            <Route path="/new-clothes" element={<Navigate to="/shop-and-try" replace />} />
+            <Route path="/virtual-try-on" element={<Navigate to="/shop-and-try" replace />} />
+            
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </div>
+        <Footer />
+      </div>
+    </>
   );
-}
+};
+
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <ThemeProvider>
+      <AuthProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <AppRoutes />
+          </BrowserRouter>
+        </TooltipProvider>
+      </AuthProvider>
+    </ThemeProvider>
+  </QueryClientProvider>
+);
 
 export default App;

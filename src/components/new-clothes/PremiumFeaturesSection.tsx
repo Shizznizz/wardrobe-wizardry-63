@@ -2,6 +2,7 @@
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Image, ShoppingBag, Sparkles, Unlock, Star } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 
 interface PremiumFeaturesSectionProps {
   isPremiumUser: boolean;
@@ -12,7 +13,10 @@ const PremiumFeaturesSection = ({
   isPremiumUser, 
   onUpgradeToPremium 
 }: PremiumFeaturesSectionProps) => {
-  if (isPremiumUser) return null;
+  const { isAuthenticated } = useAuth();
+  
+  // If user is authenticated, don't show this section at all
+  if (isAuthenticated || isPremiumUser) return null;
 
   const itemVariants = {
     hidden: { y: 20, opacity: 0 },

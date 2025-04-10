@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Star, UploadIcon, ShoppingBag, Heart, Unlock } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 
 interface PremiumFeaturesSectionProps {
   onUpgradeToPremium: () => void;
@@ -11,6 +12,11 @@ interface PremiumFeaturesSectionProps {
 const PremiumFeaturesSection = ({
   onUpgradeToPremium
 }: PremiumFeaturesSectionProps) => {
+  const { isAuthenticated } = useAuth();
+  
+  // If user is authenticated, don't show this section at all
+  if (isAuthenticated) return null;
+  
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
