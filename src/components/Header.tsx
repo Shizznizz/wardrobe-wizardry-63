@@ -3,10 +3,10 @@ import { useState, useEffect } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
-import MobileMenu from '@/components/header/MobileMenu';
-import DesktopNavigation from '@/components/header/DesktopNavigation';
-import UserMenu from '@/components/header/UserMenu';
-import WeatherDisplay from '@/components/header/WeatherDisplay';
+import { MobileMenu } from '@/components/header/MobileMenu';
+import { DesktopNavigation } from '@/components/header/DesktopNavigation';
+import { UserMenu } from '@/components/header/UserMenu';
+import { WeatherDisplay } from '@/components/header/WeatherDisplay';
 
 const Header = () => {
   const [showBackground, setShowBackground] = useState(false);
@@ -55,11 +55,11 @@ const Header = () => {
           </Link>
         </div>
 
-        {!isMobile && <DesktopNavigation links={navLinks} activeLink={isActiveLink} />}
+        {!isMobile && <DesktopNavigation navItems={navLinks} currentPath={location.pathname} isScrolled={showBackground} />}
 
         <div className="flex items-center gap-2">
-          {!isMobile && !isHomePage && <WeatherDisplay />}
-          <UserMenu />
+          {!isMobile && !isHomePage && <WeatherDisplay isScrolled={showBackground} />}
+          <UserMenu isScrolled={showBackground} />
           
           {isMobile && (
             <Button
@@ -94,8 +94,12 @@ const Header = () => {
         <MobileMenu
           isOpen={isMenuOpen}
           onClose={() => setIsMenuOpen(false)}
-          links={navLinks}
-          activeLink={isActiveLink}
+          navItems={navLinks}
+          currentPath={location.pathname}
+          onSignOut={() => {
+            // Handle sign out
+            setIsMenuOpen(false);
+          }}
         />
       )}
     </header>

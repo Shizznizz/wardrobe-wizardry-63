@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -16,7 +15,7 @@ import OutfitSubscriptionPopup from '@/components/OutfitSubscriptionPopup';
 import OliviaImageGallery from '@/components/outfits/OliviaImageGallery';
 
 const ShopAndTry = () => {
-  const { user, isAuthenticated } = useAuth();
+  const { user, session } = useAuth();
   const [userPhoto, setUserPhoto] = useState<string | null>(null);
   const [clothingPhoto, setClothingPhoto] = useState<string | null>(null);
   const [finalImage, setFinalImage] = useState<string | null>(null);
@@ -30,7 +29,7 @@ const ShopAndTry = () => {
   const [oliviaMood, setOliviaMood] = useState<'happy' | 'neutral' | 'thinking'>('neutral');
   
   // Use the logged-in status to determine if premium features should be accessible
-  const effectivePremiumUser = isAuthenticated || isPremiumUser;
+  const effectivePremiumUser = !!user || isPremiumUser;
 
   const handleUserPhotoUpload = (file: File) => {
     const reader = new FileReader();
