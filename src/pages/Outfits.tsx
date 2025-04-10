@@ -4,19 +4,18 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import OutfitBuilder from '@/components/OutfitBuilder';
+import OliviaBloomAssistant from '@/components/OliviaBloomAssistant';
 import { sampleOutfits, sampleClothingItems } from '@/lib/wardrobeData';
 import OutfitHero from '@/components/outfits/OutfitHero';
 import RecommendedOutfit from '@/components/outfits/RecommendedOutfit';
 import OutfitCollection from '@/components/outfits/OutfitCollection';
 import { useOutfitState } from '@/hooks/useOutfitState';
+import OliviaTips from '@/components/OliviaTips';
 import StyleSituation from '@/components/StyleSituation';
 import RecommendedOutfits from '@/components/outfits/RecommendedOutfits';
 import { OutfitLog } from '@/components/outfits/OutfitLogItem';
 import { toast } from 'sonner';
 import { useLocationStorage } from '@/hooks/useLocationStorage';
-import OptimizedOliviaAssistant from '@/components/outfits/OptimizedOliviaAssistant';
-import SummonOliviaButton from '@/components/outfits/SummonOliviaButton';
-import { useOliviaAssistant } from '@/hooks/useOliviaAssistant';
 
 const Outfits = () => {
   const navigate = useNavigate();
@@ -28,28 +27,21 @@ const Outfits = () => {
     clothingItems,
     isBuilderOpen,
     selectedOutfit,
+    showAssistant,
     weatherBackground,
     handleCreateOutfit,
     handleEditOutfit,
     handleSaveOutfit,
     handleDeleteOutfit,
     handleToggleFavorite,
+    handleAssistantAction,
     handleRefreshOutfit,
+    handleShowTips,
     outfitLogs,
     addOutfitLog,
+    setShowAssistant,
     setIsBuilderOpen
   } = useOutfitState(sampleOutfits, sampleClothingItems);
-
-  const {
-    assistantState,
-    hideTips,
-    setHideTips,
-    closeAssistant,
-    showOutfitRecommendation,
-    showOutfitSaved,
-    showFeedbackResponse,
-    summonOlivia
-  } = useOliviaAssistant();
 
   // Handle when an outfit is added to the calendar
   const handleOutfitAddedToCalendar = (log: OutfitLog) => {
@@ -65,27 +57,6 @@ const Outfits = () => {
       setLocationUpdated(true);
     }
   }, [savedLocation]);
-  
-  // Show initial recommendation when outfits load
-  useEffect(() => {
-    if (outfits.length > 0 && !hideTips) {
-      const timeoutId = setTimeout(() => {
-        showOutfitRecommendation(outfits[0], 'current');
-      }, 1500);
-      
-      return () => clearTimeout(timeoutId);
-    }
-  }, [outfits, hideTips, showOutfitRecommendation]);
-  
-  // Handle feedback actions from RecommendedOutfit component
-  const handleFeedbackAction = (feedbackType: string, outfit: any) => {
-    showFeedbackResponse(feedbackType, outfit);
-    
-    // For some feedback types, we'll also refresh the outfit
-    if (['dislike', 'warmer', 'change-top'].includes(feedbackType)) {
-      handleRefreshOutfit();
-    }
-  };
   
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -115,15 +86,8 @@ const Outfits = () => {
           <RecommendedOutfit 
             outfit={outfits[0]} 
             clothingItems={clothingItems}
-            onRefreshOutfit={() => {
-              handleRefreshOutfit();
-              // Show assistant message after refreshing outfit
-              setTimeout(() => {
-                showOutfitRecommendation(outfits[0], 'current');
-              }, 500);
-            }}
+            onRefreshOutfit={handleRefreshOutfit}
             onOutfitAddedToCalendar={handleOutfitAddedToCalendar}
-            onFeedbackAction={handleFeedbackAction}
           />
           
           <OutfitCollection 
@@ -131,16 +95,7 @@ const Outfits = () => {
             onCreateOutfit={handleCreateOutfit}
             onEditOutfit={handleEditOutfit}
             onDeleteOutfit={handleDeleteOutfit}
-            onToggleFavorite={(id) => {
-              handleToggleFavorite(id);
-              // Find the outfit that was favorited
-              const outfit = outfits.find(o => o.id === id);
-              if (outfit) {
-                if (outfit.favorite) {
-                  showOutfitSaved(outfit);
-                }
-              }
-            }}
+            onToggleFavorite={handleToggleFavorite}
             clothingItems={clothingItems}
             onOutfitAddedToCalendar={handleOutfitAddedToCalendar}
           />
@@ -161,26 +116,18 @@ const Outfits = () => {
         </motion.div>
       </main>
       
-      {/* Optimized Olivia Assistant */}
-      <OptimizedOliviaAssistant
-        show={assistantState.show}
-        message={assistantState.message}
-        trigger={assistantState.trigger}
-        outfit={assistantState.outfit}
-        onClose={closeAssistant}
-        onAction={assistantState.onAction}
-        actionText={assistantState.actionText}
-        position="bottom"
-        hideTipsPreference={hideTips}
-        setHideTipsPreference={setHideTips}
-      />
+      <OliviaTips position="top-right" />
       
-      {/* Summon Olivia Button */}
-      <SummonOliviaButton
-        position="bottom-right"
-        onSummon={summonOlivia}
-        tooltip="Get style advice from Olivia"
-      />
+      {showAssistant && (
+        <OliviaBloomAssistant
+          message="I've created a style suggestion based on the current weather and your preferences."
+          type="tip"
+          timing="medium"
+          actionText="Thanks!"
+          onAction={handleAssistantAction}
+          position="bottom-right"
+        />
+      )}
     </div>
   );
 };

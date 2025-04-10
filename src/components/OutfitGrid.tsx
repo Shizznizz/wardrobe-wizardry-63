@@ -4,13 +4,12 @@ import { motion } from 'framer-motion';
 import { Outfit, ClothingItem } from '@/lib/types';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Heart, Edit, Trash2, Sparkles, Calendar, ExternalLink } from 'lucide-react';
+import { Heart, Edit, Trash2, Sparkles, Calendar } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import AddToCalendarButton from '@/components/outfits/AddToCalendarButton';
 import { OutfitLog } from '@/components/outfits/OutfitLogItem';
 import { toast } from 'sonner';
-import { useNavigate } from 'react-router-dom';
 
 interface OutfitGridProps {
   outfits: Outfit[];
@@ -30,7 +29,6 @@ const OutfitGrid = ({
   onOutfitAddedToCalendar 
 }: OutfitGridProps) => {
   const [expandedOutfit, setExpandedOutfit] = useState<string | null>(null);
-  const navigate = useNavigate();
   
   // Helper function to get clothing item by ID
   const getClothingItemById = (id: string): ClothingItem | undefined => {
@@ -41,13 +39,6 @@ const OutfitGrid = ({
     if (onOutfitAddedToCalendar) {
       onOutfitAddedToCalendar(log);
     }
-  };
-
-  const handlePreviewInFittingRoom = (outfit: Outfit) => {
-    // Save the selected outfit to localStorage for retrieval in the Fitting Room
-    localStorage.setItem('previewOutfit', JSON.stringify(outfit));
-    toast.success('Taking you to the Fitting Room to preview this look...');
-    navigate('/fitting-room');
   };
   
   return (
@@ -142,27 +133,14 @@ const OutfitGrid = ({
                 ))}
               </div>
               
-              <div className="space-y-2">
-                {/* Preview in Fitting Room Button */}
-                <Button 
-                  variant="default"
-                  size="sm"
-                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 text-xs h-8"
-                  onClick={() => handlePreviewInFittingRoom(outfit)}
-                >
-                  <ExternalLink className="h-3.5 w-3.5 mr-1.5" />
-                  Preview in Fitting Room
-                </Button>
-                
-                {/* Add to Calendar Button */}
-                <AddToCalendarButton 
-                  outfit={outfit} 
-                  fullWidth={true}
-                  variant="outline"
-                  className="border-purple-500/30 hover:bg-purple-500/10 w-full text-xs h-8"
-                  onSuccess={handleOutfitAddedToCalendar}
-                />
-              </div>
+              {/* Add to Calendar Button */}
+              <AddToCalendarButton 
+                outfit={outfit} 
+                fullWidth={true}
+                variant="outline"
+                className="mt-2 border-purple-500/30 hover:bg-purple-500/10 w-full"
+                onSuccess={handleOutfitAddedToCalendar}
+              />
             </CardContent>
             
             <CardFooter className="px-4 py-3 border-t border-white/5 bg-slate-900/50 flex justify-between">

@@ -9,11 +9,9 @@ import {
   ThumbsUp,
   MessageSquare,
   Share2,
-  ExternalLink
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
-import { useNavigate } from 'react-router-dom';
 
 interface UserOutfit {
   id: string;
@@ -55,7 +53,6 @@ interface RecommendedOutfitsProps {
 
 const RecommendedOutfits = ({ className }: RecommendedOutfitsProps) => {
   const [outfits, setOutfits] = useState(dummyOutfits);
-  const navigate = useNavigate();
   
   const handleLikeOutfit = (outfitId: string) => {
     setOutfits(outfits.map(outfit => {
@@ -71,12 +68,8 @@ const RecommendedOutfits = ({ className }: RecommendedOutfitsProps) => {
     }));
   };
   
-  const handlePreviewInFittingRoom = (outfitId: string) => {
-    toast.success('Loading outfit to preview in Fitting Room...');
-    // Navigate to the fitting room with the outfit ID
-    setTimeout(() => {
-      navigate('/fitting-room');
-    }, 800);
+  const handleTryOutfit = (outfitId: string) => {
+    toast.success('Loading outfit to try on...');
   };
   
   const handleShareOutfit = (outfitId: string) => {
@@ -150,10 +143,9 @@ const RecommendedOutfits = ({ className }: RecommendedOutfitsProps) => {
                 
                 <Button 
                   className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white flex items-center gap-2"
-                  onClick={() => handlePreviewInFittingRoom(outfit.id)}
+                  onClick={() => handleTryOutfit(outfit.id)}
                 >
-                  <ExternalLink className="h-4 w-4" />
-                  Preview in Fitting Room
+                  Try This Look
                 </Button>
               </CardContent>
             </Card>
