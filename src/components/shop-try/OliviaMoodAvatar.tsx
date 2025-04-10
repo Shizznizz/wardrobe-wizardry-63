@@ -1,5 +1,5 @@
 
-import { User, Heart, Thinking, Smile } from 'lucide-react';
+import { User, Heart, BrainCircuit, Smile } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface OliviaMoodAvatarProps {
@@ -45,7 +45,7 @@ const OliviaMoodAvatar = ({ mood, size = 'md' }: OliviaMoodAvatarProps) => {
             transition={{ type: "spring", stiffness: 260, damping: 20 }}
             className="absolute -right-1 -bottom-1 bg-amber-500 rounded-full p-1"
           >
-            <Thinking className={`${size === 'sm' ? 'w-3 h-3' : 'w-4 h-4'} text-white`} />
+            <BrainCircuit className={`${size === 'sm' ? 'w-3 h-3' : 'w-4 h-4'} text-white`} />
           </motion.div>
         );
       default:

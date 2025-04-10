@@ -13,6 +13,12 @@ interface TrendingNowSectionProps {
   onUpgradeToPremium: () => void;
 }
 
+// Extended version of ClothingItem with brand property
+interface TrendingClothingItem extends ClothingItem {
+  brand: string;
+  category: string;
+}
+
 const TrendingNowSection = ({
   isPremiumUser,
   onTryItem,
@@ -22,56 +28,81 @@ const TrendingNowSection = ({
   const [scrollPosition, setScrollPosition] = useState(0);
   
   // Sample trending items
-  const trendingItems: ClothingItem[] = [
+  const trendingItems: TrendingClothingItem[] = [
     {
       id: 'trend-1',
       name: 'Zara Mesh Corset Top',
-      category: 'Tops',
+      type: 'shirt',
       seasons: ['spring', 'summer'],
-      color: 'Black',
-      brand: 'Zara',
+      color: 'black',
+      material: 'cotton',
+      occasions: ['party'],
       imageUrl: 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?auto=format&fit=crop&q=80&w=300&h=400',
-      dateAdded: new Date()
+      favorite: false,
+      timesWorn: 0,
+      dateAdded: new Date(),
+      brand: 'Zara',
+      category: 'Tops'
     },
     {
       id: 'trend-2',
       name: 'TikTok Wide-Leg Jeans',
-      category: 'Bottoms',
+      type: 'pants',
       seasons: ['all'],
-      color: 'Blue',
-      brand: 'Urban Outfitters',
+      color: 'blue',
+      material: 'denim',
+      occasions: ['casual'],
       imageUrl: 'https://images.unsplash.com/photo-1582562124811-c09040d0a901?auto=format&fit=crop&q=80&w=300&h=400',
-      dateAdded: new Date()
+      favorite: false,
+      timesWorn: 0,
+      dateAdded: new Date(),
+      brand: 'Urban Outfitters',
+      category: 'Bottoms'
     },
     {
       id: 'trend-3',
       name: 'Revolve Party Bag',
-      category: 'Accessories',
+      type: 'accessories',
       seasons: ['all'],
-      color: 'Silver',
-      brand: 'Revolve',
+      color: 'gray',
+      material: 'leather',
+      occasions: ['party'],
       imageUrl: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=300&h=400',
-      dateAdded: new Date()
+      favorite: false,
+      timesWorn: 0,
+      dateAdded: new Date(),
+      brand: 'Revolve',
+      category: 'Accessories'
     },
     {
       id: 'trend-4',
       name: 'Urban Outfitters Hoodie',
-      category: 'Tops',
+      type: 'hoodie',
       seasons: ['autumn', 'winter'],
-      color: 'Grey',
-      brand: 'Urban Outfitters',
+      color: 'gray',
+      material: 'cotton',
+      occasions: ['casual'],
       imageUrl: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=300&h=400',
-      dateAdded: new Date()
+      favorite: false,
+      timesWorn: 0,
+      dateAdded: new Date(),
+      brand: 'Urban Outfitters',
+      category: 'Tops'
     },
     {
       id: 'trend-5',
       name: 'Shein Sparkle Crop Top',
-      category: 'Tops',
+      type: 'shirt',
       seasons: ['summer'],
-      color: 'Gold',
-      brand: 'Shein',
+      color: 'yellow',
+      material: 'polyester',
+      occasions: ['party'],
       imageUrl: 'https://images.unsplash.com/photo-1500673922987-e212871fec22?auto=format&fit=crop&q=80&w=300&h=400',
-      dateAdded: new Date()
+      favorite: false,
+      timesWorn: 0,
+      dateAdded: new Date(),
+      brand: 'Shein',
+      category: 'Tops'
     }
   ];
   
