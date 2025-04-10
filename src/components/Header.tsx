@@ -1,132 +1,103 @@
+
 import { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu } from 'lucide-react';
+import { useLocation, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { useAuth } from '@/hooks/useAuth';
-import { toast } from 'sonner';
-import { WeatherDisplay } from './header/WeatherDisplay';
-import { UserMenu } from './header/UserMenu';
-import { MobileMenu } from './header/MobileMenu';
-import { DesktopNavigation } from './header/DesktopNavigation';
+import MobileMenu from '@/components/header/MobileMenu';
+import DesktopNavigation from '@/components/header/DesktopNavigation';
+import UserMenu from '@/components/header/UserMenu';
+import WeatherDisplay from '@/components/header/WeatherDisplay';
 
-interface HeaderProps {
-  weather?: {
-    temperature: number;
-    condition: string;
-  };
-}
-
-const Header = ({ weather }: HeaderProps) => {
+const Header = () => {
+  const [showBackground, setShowBackground] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
   const isMobile = useIsMobile();
-  const navigate = useNavigate();
-  const { user, signOut } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
+      if (window.scrollY > 10) {
+        setShowBackground(true);
+      } else {
+        setShowBackground(false);
+      }
     };
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => {
-    setIsMenuOpen(false);
-  }, [location.pathname]);
+  const isHomePage = location.pathname === '/';
+  const isOutfitsPage = location.pathname === '/outfits';
+  const isWardrobePage = location.pathname === '/wardrobe';
+  const isActiveLink = (path: string) => location.pathname === path;
 
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-      toast.success("Signed out successfully");
-      navigate("/");
-    } catch (error) {
-      toast.error("Failed to sign out");
-    }
-  };
-
-  const toggleMenu = () => {
-    setIsMenuOpen(prevState => !prevState);
-  };
-
-  let navItems = [
+  // Add new route for Shop & Try
+  const navLinks = [
     { name: 'Home', path: '/' },
+    { name: 'Outfits', path: '/outfits' },
+    { name: 'Wardrobe', path: '/wardrobe' },
+    { name: 'Calendar', path: '/calendar' },
+    { name: 'Shop & Try', path: '/shop' },
   ];
-  
-  if (user) {
-    navItems = [
-      ...navItems,
-      { name: 'My Wardrobe', path: '/my-wardrobe' },
-      { name: 'Mix & Match', path: '/mix-and-match' },
-      { name: 'Style Planner', path: '/style-planner' },
-      { name: 'Fitting Room', path: '/fitting-room' },
-      { name: 'Shop & Try', path: '/shop-and-try' },
-      { name: 'Settings', path: '/settings' },
-    ];
-  }
-
-  const getCurrentPageName = () => {
-    const currentItem = navItems.find(item => item.path === location.pathname);
-    return currentItem ? currentItem.name : '';
-  };
 
   return (
-    <header 
-      className={cn(
-        "fixed top-0 left-0 right-0 transition-all duration-500 py-2 sm:py-4",
-        isScrolled 
-          ? "bg-purple-900/95 shadow-lg border-b border-white/10" 
-          : "bg-[rgba(50,0,80,0.5)] backdrop-blur-md border-transparent text-white",
-        "z-[100]"
-      )}
+    <header
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        (showBackground || isMenuOpen) ? 'bg-slate-900/90 backdrop-blur-md border-b border-white/10' : 'bg-transparent'
+      }`}
     >
-      <div className="container mx-auto px-3 md:px-6 flex items-center justify-between">
-        {isMobile && (
-          <div className="text-white font-medium tracking-wide">{getCurrentPageName()}</div>
-        )}
-
-        {!isMobile && (
-          <DesktopNavigation 
-            navItems={navItems} 
-            currentPath={location.pathname} 
-            isScrolled={isScrolled}
-          />
-        )}
-
+      <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         <div className="flex items-center">
-          {!isMobile && <WeatherDisplay weather={weather} isScrolled={isScrolled} />}
-          
-          <UserMenu isScrolled={isScrolled} />
+          <Link to="/" className="font-bold text-xl text-white flex items-center">
+            <img src="/favicon.ico" alt="Logo" className="w-8 h-8 mr-2" />
+            <span className="hidden sm:inline">Olivia Bloom</span>
+          </Link>
+        </div>
 
+        {!isMobile && <DesktopNavigation links={navLinks} activeLink={isActiveLink} />}
+
+        <div className="flex items-center gap-2">
+          {!isMobile && !isHomePage && <WeatherDisplay />}
+          <UserMenu />
+          
           {isMobile && (
             <Button
               variant="ghost"
               size="icon"
-              className={cn(
-                "ml-2 transition-all duration-300",
-                isScrolled ? "text-white hover:text-white/80" : "text-white hover:bg-white/10"
-              )}
-              onClick={toggleMenu}
-              aria-label="Toggle mobile menu"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-label="Toggle menu"
             >
-              <Menu className="h-5 w-5" />
+              <div className="w-6 flex flex-col items-end">
+                <span
+                  className={`block h-0.5 bg-white transition-all duration-300 ${
+                    isMenuOpen ? 'w-6 -rotate-45 translate-y-1' : 'w-6'
+                  }`}
+                ></span>
+                <span
+                  className={`block h-0.5 bg-white mt-1.5 transition-all duration-300 ${
+                    isMenuOpen ? 'opacity-0' : 'w-4'
+                  }`}
+                ></span>
+                <span
+                  className={`block h-0.5 bg-white mt-1.5 transition-all duration-300 ${
+                    isMenuOpen ? 'w-6 rotate-45 -translate-y-1' : 'w-5'
+                  }`}
+                ></span>
+              </div>
             </Button>
           )}
         </div>
+      </div>
 
-        <MobileMenu 
+      {isMobile && (
+        <MobileMenu
           isOpen={isMenuOpen}
           onClose={() => setIsMenuOpen(false)}
-          navItems={navItems}
-          currentPath={location.pathname}
-          weather={weather}
-          onSignOut={handleSignOut}
+          links={navLinks}
+          activeLink={isActiveLink}
         />
-      </div>
+      )}
     </header>
   );
 };
