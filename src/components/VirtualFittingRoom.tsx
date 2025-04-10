@@ -1,7 +1,8 @@
+
 import { ClothingItem, Outfit } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { Download, Share2, Heart } from 'lucide-react';
+import { Download, Share2, Heart, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -41,7 +42,7 @@ const VirtualFittingRoom = ({
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'virtual-try-on.png';
+      a.download = 'fitting-room-preview.png';
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
@@ -61,10 +62,10 @@ const VirtualFittingRoom = ({
       if (navigator.share) {
         const response = await fetch(finalImage);
         const blob = await response.blob();
-        const file = new File([blob], 'virtual-try-on.png', { type: 'image/png' });
+        const file = new File([blob], 'fitting-room-preview.png', { type: 'image/png' });
         
         await navigator.share({
-          title: 'My Virtual Try-On',
+          title: 'My Fitting Room Preview',
           text: 'Check out how this outfit looks on me!',
           files: [file]
         });
@@ -117,7 +118,7 @@ const VirtualFittingRoom = ({
     return (
       <div className={`neo-blur border border-white/10 rounded-lg p-3 sm:p-6 h-full flex flex-col items-center justify-center text-center ${className}`}>
         <div className="text-white/70 text-sm sm:text-base">
-          Upload a photo and select an outfit to see the result
+          Upload a photo and select an outfit to see the preview
         </div>
       </div>
     );
@@ -129,7 +130,7 @@ const VirtualFittingRoom = ({
         <div className="space-y-3 sm:space-y-4">
           <Skeleton className="w-full aspect-square rounded-lg bg-white/5" />
           <div className="flex justify-center">
-            <p className="text-white/70 text-sm">Processing your virtual try-on...</p>
+            <p className="text-white/70 text-sm">Creating your preview...</p>
           </div>
         </div>
       ) : finalImage ? (
@@ -146,7 +147,7 @@ const VirtualFittingRoom = ({
               <OliviaImageBadge isVisible={isOliviaImage} />
               <img 
                 src={finalImage} 
-                alt="Virtual try-on result" 
+                alt="Fitting room preview" 
                 className="w-full rounded-lg shadow-xl"
               />
               

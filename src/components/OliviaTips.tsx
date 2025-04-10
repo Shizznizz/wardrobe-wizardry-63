@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, X, Sparkles, ArrowRight } from 'lucide-react';
+import { MessageCircle, X, Sparkles, ArrowRight, MinusCircle, PlusCircle } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Party } from '@/components/ui/icons';
@@ -17,12 +17,14 @@ const OliviaTips = ({ position = 'top-right' }: OliviaTipsProps) => {
   const [showTips, setShowTips] = useState(false);
   const [currentTipIndex, setCurrentTipIndex] = useState(0);
   const [hasCompletedTips, setHasCompletedTips] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(false);
+  const [hasScrolledTrigger, setHasScrolledTrigger] = useState(false);
   const isMobile = useIsMobile();
   
   const tips = [
     {
-      title: "Welcome to Your Fashion Showroom!",
-      message: "Try uploading a photo of yourself and see how our recommended outfits look on you. It's like having your own personal fitting room!",
+      title: "Welcome to Your Fashion Journey!",
+      message: "Try mixing and matching different clothing items to create outfits that fit your style and the weather conditions.",
       icon: <Sparkles className="h-4 w-4 text-amber-300" />,
     },
     {
@@ -32,10 +34,48 @@ const OliviaTips = ({ position = 'top-right' }: OliviaTipsProps) => {
     },
     {
       title: "Share Your Looks",
-      message: "Once you find an outfit you love, download or share it with friends to get their opinion before adding it to your wardrobe.",
+      message: "Once you find an outfit you love, preview it in the Fitting Room or share it with friends to get their opinion before adding it to your wardrobe.",
       icon: <Party className="h-4 w-4 text-emerald-300" />,
     },
   ];
+
+  // Store tip progress in local storage
+  useEffect(() => {
+    const storedProgress = localStorage.getItem('oliviaTipsProgress');
+    if (storedProgress) {
+      const { index, completed } = JSON.parse(storedProgress);
+      setCurrentTipIndex(index);
+      setHasCompletedTips(completed);
+    }
+    
+    // Set up scroll trigger for first-time users
+    if (!localStorage.getItem('oliviaTipsShown')) {
+      const handleScroll = () => {
+        if (!hasScrolledTrigger) {
+          const scrollPosition = window.scrollY;
+          const pageHeight = document.body.scrollHeight;
+          const triggerPoint = pageHeight * 0.3;
+          
+          if (scrollPosition > triggerPoint) {
+            setShowTips(true);
+            setHasScrolledTrigger(true);
+            window.removeEventListener('scroll', handleScroll);
+          }
+        }
+      };
+      
+      window.addEventListener('scroll', handleScroll);
+      return () => window.removeEventListener('scroll', handleScroll);
+    }
+  }, [hasScrolledTrigger]);
+
+  // Save progress when tips change
+  useEffect(() => {
+    localStorage.setItem('oliviaTipsProgress', JSON.stringify({
+      index: currentTipIndex,
+      completed: hasCompletedTips
+    }));
+  }, [currentTipIndex, hasCompletedTips]);
 
   const getPositionClasses = () => {
     // Adjust position for mobile devices
@@ -56,6 +96,7 @@ const OliviaTips = ({ position = 'top-right' }: OliviaTipsProps) => {
     if (currentTipIndex === tips.length - 1) {
       setShowTips(false);
       setHasCompletedTips(true);
+      localStorage.setItem('oliviaTipsShown', 'true');
     } else {
       setCurrentTipIndex(prevIndex => prevIndex + 1);
     }
@@ -67,6 +108,7 @@ const OliviaTips = ({ position = 'top-right' }: OliviaTipsProps) => {
     } else {
       setShowTips(false);
       setHasCompletedTips(true);
+      localStorage.setItem('oliviaTipsShown', 'true');
     }
   };
 
@@ -74,8 +116,23 @@ const OliviaTips = ({ position = 'top-right' }: OliviaTipsProps) => {
     setShowTips(false);
   };
 
+  const handleMinimize = () => {
+    setIsMinimized(!isMinimized);
+  };
+
   const handleAvatarClick = () => {
     if (hasCompletedTips) {
+      const storedProgress = localStorage.getItem('oliviaTipsProgress');
+      if (storedProgress) {
+        const { completed } = JSON.parse(storedProgress);
+        if (completed) {
+          // Ask if they want to continue from where they left off
+          if (confirm("Would you like to continue the tips from where you left off?")) {
+            setHasCompletedTips(false);
+            setShowTips(true);
+          }
+        }
+      }
       return;
     }
     setShowTips(true);
@@ -120,13 +177,24 @@ const OliviaTips = ({ position = 'top-right' }: OliviaTipsProps) => {
             transition={{ type: "spring", stiffness: 500, damping: 30 }}
             className="max-w-xs"
           >
-            <div className="relative p-5 rounded-xl bg-slate-900/90 text-white backdrop-blur-sm shadow-lg border border-white/20">
-              <button 
-                onClick={handleClose} 
-                className="absolute top-2 right-2 p-1 rounded-full hover:bg-white/10 transition-colors"
-              >
-                <X className="h-4 w-4 text-white/80" />
-              </button>
+            <div className="relative p-5 rounded-xl bg-slate-900/90 text-white backdrop-blur-sm shadow-lg shadow-black/20 border border-white/20">
+              <div className="absolute top-2 right-2 flex space-x-1">
+                <button 
+                  onClick={handleMinimize} 
+                  className="p-1 rounded-full hover:bg-white/10 transition-colors"
+                >
+                  {isMinimized ? 
+                    <PlusCircle className="h-4 w-4 text-white/80" /> :
+                    <MinusCircle className="h-4 w-4 text-white/80" />
+                  }
+                </button>
+                <button 
+                  onClick={handleClose} 
+                  className="p-1 rounded-full hover:bg-white/10 transition-colors"
+                >
+                  <X className="h-4 w-4 text-white/80" />
+                </button>
+              </div>
               
               <div className="flex items-start gap-3">
                 <Avatar className="h-10 w-10 border-2 border-white/30 shadow-md">
@@ -143,31 +211,43 @@ const OliviaTips = ({ position = 'top-right' }: OliviaTipsProps) => {
                     </span>
                   </div>
                   
-                  <div className="mb-3">
-                    <h5 className="text-sm font-medium mb-1">{tips[currentTipIndex].title}</h5>
-                    <p className="text-sm text-white/90">{tips[currentTipIndex].message}</p>
-                  </div>
-                  
-                  <div className="flex gap-2 justify-end">
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={handleGotIt}
-                      className="text-xs h-8 bg-white/10 border-white/10 hover:bg-white/20 hover:text-white text-white/90"
-                    >
-                      Got it!
-                    </Button>
-                    
-                    {currentTipIndex < tips.length - 1 && (
-                      <Button 
-                        size="sm" 
-                        onClick={handleNextTip}
-                        className="text-xs h-8 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+                  <AnimatePresence mode="wait">
+                    {!isMinimized && (
+                      <motion.div
+                        key={currentTipIndex}
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="mb-3"
                       >
-                        Next Tip
-                      </Button>
+                        <h5 className="text-sm font-medium mb-1">{tips[currentTipIndex].title}</h5>
+                        <p className="text-sm text-white/90">{tips[currentTipIndex].message}</p>
+                      </motion.div>
                     )}
-                  </div>
+                  </AnimatePresence>
+                  
+                  {!isMinimized && (
+                    <div className="flex gap-2 justify-end">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={handleGotIt}
+                        className="text-xs h-8 bg-white/10 border-white/10 hover:bg-white/20 hover:text-white text-white/90"
+                      >
+                        Got it!
+                      </Button>
+                      
+                      {currentTipIndex < tips.length - 1 && (
+                        <Button 
+                          size="sm" 
+                          onClick={handleNextTip}
+                          className="text-xs h-8 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+                        >
+                          Next Tip
+                        </Button>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
