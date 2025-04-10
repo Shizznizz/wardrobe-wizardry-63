@@ -1,10 +1,10 @@
-
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { Heart, Briefcase, Coffee, MinusCircle, Flame, Truck } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Moon, Sun, Sparkles, Coffee, Music, Leaf, Heart, Clock } from 'lucide-react';
 import { ClothingItem } from '@/lib/types';
+import { toast } from 'sonner';
 
 interface StyleMoodSelectorProps {
   isPremiumUser: boolean;
@@ -12,14 +12,11 @@ interface StyleMoodSelectorProps {
   onUpgradeToPremium: () => void;
 }
 
-interface MoodOption {
+interface Mood {
+  id: string;
   name: string;
   icon: React.ReactNode;
   color: string;
-}
-
-interface MoodOutfit extends ClothingItem {
-  brand: string;
   description: string;
 }
 
@@ -29,36 +26,97 @@ const StyleMoodSelector = ({
   onUpgradeToPremium
 }: StyleMoodSelectorProps) => {
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
+  const [outfitItems, setOutfitItems] = useState<ClothingItem[]>([]);
   
-  const moods: MoodOption[] = [
-    { name: "Romantic", icon: <Heart className="h-4 w-4" />, color: "from-pink-500 to-red-400" },
-    { name: "Power Boss", icon: <Briefcase className="h-4 w-4" />, color: "from-indigo-500 to-blue-400" },
-    { name: "Cozy", icon: <Coffee className="h-4 w-4" />, color: "from-amber-500 to-yellow-400" },
-    { name: "Minimal", icon: <MinusCircle className="h-4 w-4" />, color: "from-slate-500 to-gray-400" },
-    { name: "Festival", icon: <Flame className="h-4 w-4" />, color: "from-purple-500 to-pink-400" },
-    { name: "Streetstyle", icon: <Truck className="h-4 w-4" />, color: "from-emerald-500 to-green-400" }
+  const moods: Mood[] = [
+    {
+      id: 'romantic',
+      name: 'Romantic',
+      icon: <Heart className="h-5 w-5" />,
+      color: 'from-pink-500 to-red-400',
+      description: 'Soft, feminine pieces with floral patterns and delicate details'
+    },
+    {
+      id: 'power-boss',
+      name: 'Power Boss',
+      icon: <Coffee className="h-5 w-5" />,
+      color: 'from-blue-500 to-indigo-500',
+      description: 'Structured blazers, tailored pants, and confidence-boosting pieces'
+    },
+    {
+      id: 'cozy',
+      name: 'Cozy',
+      icon: <Moon className="h-5 w-5" />,
+      color: 'from-amber-500 to-yellow-400',
+      description: 'Comfortable knits, soft fabrics, and layered warmth'
+    },
+    {
+      id: 'minimal',
+      name: 'Minimal',
+      icon: <Leaf className="h-5 w-5" />,
+      color: 'from-gray-500 to-gray-400',
+      description: 'Clean lines, neutral colors, and timeless silhouettes'
+    },
+    {
+      id: 'festival',
+      name: 'Festival',
+      icon: <Music className="h-5 w-5" />,
+      color: 'from-purple-500 to-violet-400',
+      description: 'Bold, expressive pieces with vibrant colors and unique textures'
+    },
+    {
+      id: 'streetstyle',
+      name: 'Streetstyle',
+      icon: <Sparkles className="h-5 w-5" />,
+      color: 'from-green-500 to-teal-400',
+      description: 'Urban-inspired looks with edgy details and comfortable appeal'
+    },
+    {
+      id: 'date-night',
+      name: 'Date Night',
+      icon: <Heart className="h-5 w-5" />,
+      color: 'from-red-500 to-pink-400',
+      description: 'Alluring yet tasteful pieces perfect for special evenings'
+    },
+    {
+      id: 'y2k-rewind',
+      name: 'Y2K Rewind',
+      icon: <Clock className="h-5 w-5" />,
+      color: 'from-cyan-500 to-blue-400',
+      description: 'Nostalgic 2000s-inspired fashion with a modern twist'
+    }
   ];
   
-  // Sample outfits based on mood
-  const moodOutfits: Record<string, MoodOutfit[]> = {
-    "Romantic": [
+  const moodOutfits: Record<string, ClothingItem[]> = {
+    'romantic': [
       {
         id: 'romantic-1',
-        name: 'Floral Maxi Dress',
+        name: 'Floral Wrap Dress',
         type: 'dress',
         seasons: ['spring', 'summer'],
         color: 'pink',
         material: 'silk',
-        occasions: ['date', 'casual'],
-        imageUrl: 'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?auto=format&fit=crop&q=80&w=300&h=400',
+        occasions: ['casual', 'date'],
+        imageUrl: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&q=80&w=300&h=400',
         favorite: false,
         timesWorn: 0,
-        dateAdded: new Date(),
-        brand: 'Free People',
-        description: 'Soft, flowing fabric with delicate floral pattern'
+        dateAdded: new Date()
+      },
+      {
+        id: 'romantic-2',
+        name: 'Lace Blouse',
+        type: 'top',
+        seasons: ['spring', 'summer', 'autumn'],
+        color: 'white',
+        material: 'cotton',
+        occasions: ['casual', 'date'],
+        imageUrl: 'https://images.unsplash.com/photo-1561052967-61fc91e48d79?auto=format&fit=crop&q=80&w=300&h=400',
+        favorite: false,
+        timesWorn: 0,
+        dateAdded: new Date()
       }
     ],
-    "Power Boss": [
+    'power-boss': [
       {
         id: 'boss-1',
         name: 'Structured Blazer Suit',
@@ -75,7 +133,7 @@ const StyleMoodSelector = ({
         description: 'Powerful silhouette with strong shoulders'
       }
     ],
-    "Cozy": [
+    'cozy': [
       {
         id: 'cozy-1',
         name: 'Oversized Cardigan',
@@ -92,7 +150,7 @@ const StyleMoodSelector = ({
         description: 'Chunky knit that feels like a warm hug'
       }
     ],
-    "Minimal": [
+    'minimal': [
       {
         id: 'minimal-1',
         name: 'Tailored White Shirt',
@@ -109,7 +167,7 @@ const StyleMoodSelector = ({
         description: 'Clean lines with perfect proportions'
       }
     ],
-    "Festival": [
+    'festival': [
       {
         id: 'festival-1',
         name: 'Fringe Suede Vest',
@@ -126,7 +184,7 @@ const StyleMoodSelector = ({
         description: 'Statement piece with movement and texture'
       }
     ],
-    "Streetstyle": [
+    'streetstyle': [
       {
         id: 'street-1',
         name: 'Oversized Graphic Hoodie',
@@ -142,11 +200,80 @@ const StyleMoodSelector = ({
         brand: 'Supreme',
         description: 'Urban cool with statement graphics'
       }
+    ],
+    'date-night': [
+      {
+        id: 'date-1',
+        name: 'Black Slip Dress',
+        type: 'dress',
+        seasons: ['all'],
+        color: 'black',
+        material: 'silk',
+        occasions: ['date', 'party'],
+        imageUrl: 'https://images.unsplash.com/photo-1566174053879-31528523f8ae?auto=format&fit=crop&q=80&w=300&h=400',
+        favorite: false,
+        timesWorn: 0,
+        dateAdded: new Date()
+      },
+      {
+        id: 'date-2',
+        name: 'Red Statement Top',
+        type: 'top',
+        seasons: ['all'],
+        color: 'red',
+        material: 'polyester',
+        occasions: ['date', 'party'],
+        imageUrl: 'https://images.unsplash.com/photo-1588117260148-b47818741c74?auto=format&fit=crop&q=80&w=300&h=400',
+        favorite: false,
+        timesWorn: 0,
+        dateAdded: new Date()
+      }
+    ],
+    'y2k-rewind': [
+      {
+        id: 'y2k-1',
+        name: 'Low-Rise Jeans',
+        type: 'pants',
+        seasons: ['all'],
+        color: 'blue',
+        material: 'denim',
+        occasions: ['casual'],
+        imageUrl: 'https://images.unsplash.com/photo-1584370848010-d7fe6bc767ec?auto=format&fit=crop&q=80&w=300&h=400',
+        favorite: false,
+        timesWorn: 0,
+        dateAdded: new Date()
+      },
+      {
+        id: 'y2k-2',
+        name: 'Baby Tee',
+        type: 'top',
+        seasons: ['spring', 'summer'],
+        color: 'pink',
+        material: 'cotton',
+        occasions: ['casual'],
+        imageUrl: 'https://images.unsplash.com/photo-1578966857993-128d94339476?auto=format&fit=crop&q=80&w=300&h=400',
+        favorite: false,
+        timesWorn: 0,
+        dateAdded: new Date()
+      }
     ]
   };
   
-  const handleMoodSelect = (mood: string) => {
-    setSelectedMood(mood);
+  const handleMoodSelect = (moodId: string) => {
+    if (!isPremiumUser) {
+      onUpgradeToPremium();
+      return;
+    }
+    
+    setSelectedMood(moodId);
+    const moodItems = moodOutfits[moodId] || [];
+    setOutfitItems(moodItems);
+    
+    toast.success(`Showing "${moods.find(m => m.id === moodId)?.name}" style suggestions`);
+  };
+  
+  const handleTryItem = (item: ClothingItem) => {
+    onTryItem(item);
   };
   
   return (
@@ -154,7 +281,7 @@ const StyleMoodSelector = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="mt-16"
+      className="relative mb-16"
     >
       <div className="flex items-center mb-6">
         <div className="h-px flex-grow bg-gradient-to-r from-transparent via-purple-500/30 to-transparent"></div>
@@ -164,61 +291,70 @@ const StyleMoodSelector = ({
         <div className="h-px flex-grow bg-gradient-to-r from-purple-500/30 via-transparent to-transparent"></div>
       </div>
       
-      <div className="grid grid-cols-3 md:grid-cols-6 gap-3 mb-8">
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 sm:gap-4 mb-8">
         {moods.map((mood) => (
-          <Button
-            key={mood.name}
-            onClick={() => handleMoodSelect(mood.name)}
-            className={`h-auto py-3 flex flex-col items-center bg-gradient-to-br ${mood.color} hover:opacity-90 ${selectedMood === mood.name ? 'ring-2 ring-white' : ''}`}
+          <motion.div
+            key={mood.id}
+            whileHover={{ y: -5, transition: { duration: 0.2 } }}
+            className="relative"
           >
-            <span className="mb-1">{mood.icon}</span>
-            <span className="text-xs">{mood.name}</span>
-          </Button>
+            <Button
+              variant="outline"
+              className={`w-full h-full py-6 flex flex-col items-center justify-center gap-2 border border-white/10 bg-slate-800/40 hover:bg-slate-700/40 backdrop-blur-sm 
+                ${selectedMood === mood.id ? 'ring-2 ring-purple-500 border-transparent' : ''}`}
+              onClick={() => handleMoodSelect(mood.id)}
+            >
+              <div className={`p-2 rounded-full bg-gradient-to-r ${mood.color}`}>
+                {mood.icon}
+              </div>
+              <span className="text-sm font-medium">{mood.name}</span>
+            </Button>
+            
+            {!isPremiumUser && (
+              <div className="absolute top-1 right-1">
+                <span className="bg-purple-500 text-white text-xs px-1 py-0.5 rounded">PRO</span>
+              </div>
+            )}
+          </motion.div>
         ))}
       </div>
       
-      {selectedMood && moodOutfits[selectedMood] && (
+      {selectedMood && outfitItems.length > 0 && (
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
         >
-          {moodOutfits[selectedMood].map((outfit) => (
-            <Card key={outfit.id} className="border-0 shadow-soft bg-gradient-to-br from-slate-800/80 to-slate-900/80 border border-white/10 backdrop-blur-lg overflow-hidden">
-              <div className="aspect-[3/4] relative overflow-hidden">
-                <img 
-                  src={outfit.imageUrl} 
-                  alt={outfit.name} 
-                  className="w-full h-full object-cover"
-                />
+          {outfitItems.map((item) => (
+            <motion.div
+              key={item.id}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Card className="border-0 shadow-soft bg-gradient-to-br from-slate-800/80 to-slate-900/80 border border-white/10 backdrop-blur-lg overflow-hidden h-full">
+                <div className="relative aspect-[3/4] overflow-hidden">
+                  <img 
+                    src={item.imageUrl} 
+                    alt={item.name}
+                    className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                  />
+                </div>
                 
-                {!isPremiumUser && (
-                  <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center">
-                    <p className="text-white font-medium text-center mb-2">Premium Feature</p>
-                    <Button 
-                      size="sm"
-                      onClick={onUpgradeToPremium}
-                      className="bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90"
-                    >
-                      Unlock Now
-                    </Button>
-                  </div>
-                )}
-              </div>
-              
-              <CardContent className="p-4">
-                <h3 className="font-semibold text-white">{outfit.name}</h3>
-                <p className="text-sm text-white/70 mb-3">{outfit.description}</p>
-                
-                <Button 
-                  onClick={() => onTryItem(outfit)}
-                  disabled={!isPremiumUser}
-                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:opacity-90"
-                >
-                  Try This Mood
-                </Button>
-              </CardContent>
-            </Card>
+                <CardContent className="p-4 space-y-3">
+                  <h3 className="font-medium text-white truncate">{item.name}</h3>
+                  
+                  <Button 
+                    size="sm"
+                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:opacity-90"
+                    onClick={() => handleTryItem(item)}
+                  >
+                    Try on Olivia
+                  </Button>
+                </CardContent>
+              </Card>
+            </motion.div>
           ))}
         </motion.div>
       )}

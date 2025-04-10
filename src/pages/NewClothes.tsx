@@ -21,12 +21,15 @@ import HelpTipsSection from '@/components/new-clothes/HelpTipsSection';
 import PersonalizedStyleCarousel from '@/components/shop-try/PersonalizedStyleCarousel';
 import StyleMoodSelector from '@/components/shop-try/StyleMoodSelector';
 import AIStylistChat from '@/components/shop-try/AIStylistChat';
-import StylePollSection from '@/components/shop-try/StylePollSection';
-import FashionDropsRadar from '@/components/shop-try/FashionDropsRadar';
 import TryOnLoadingAnimation from '@/components/shop-try/TryOnLoadingAnimation';
 import BeforeAfterToggle from '@/components/shop-try/BeforeAfterToggle';
 import ChallengeParticipationCount from '@/components/shop-try/ChallengeParticipationCount';
 import { defaultOutfitTips } from '@/components/outfits/OutfitTips';
+
+// New components
+import ShopTryExplainer from '@/components/shop-try/ShopTryExplainer';
+import EditorsPicks from '@/components/shop-try/EditorsPicks';
+import FloatingOliviaWidget from '@/components/shop-try/FloatingOliviaWidget';
 
 const NewClothes = () => {
   const { isAuthenticated } = useAuth();
@@ -46,6 +49,9 @@ const NewClothes = () => {
   const [oliviaMood, setOliviaMood] = useState<'happy' | 'thinking' | 'neutral'>('neutral');
   const [stylingTip, setStylingTip] = useState<string | null>(null);
   const [challengeParticipantCount] = useState<number>(347); // For demo purposes
+
+  // Add new state for floating chat
+  const [showFloatingChat, setShowFloatingChat] = useState(false);
 
   const isMobile = useIsMobile();
 
@@ -269,6 +275,23 @@ const NewClothes = () => {
     document.getElementById('gallery-section')?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  // New handler for opening chat
+  const handleOpenChat = () => {
+    setShowFloatingChat(true);
+    toast.info("Olivia is ready to chat about your style!");
+  };
+
+  // New handler for clothing items from Editor's Picks
+  const handleTryEditorsPick = (imageUrl: string) => {
+    if (!userPhoto) {
+      toast.info("Please upload a photo first or select Olivia as a model");
+      return;
+    }
+    
+    setClothingPhoto(imageUrl);
+    toast.success("Editor's pick selected! Ready to try on.");
+  };
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -296,6 +319,9 @@ const NewClothes = () => {
           variants={containerVariants}
         >
           <HeroSection onStartStyling={() => document.getElementById('upload-section')?.scrollIntoView({ behavior: 'smooth' })} />
+
+          {/* New 3-step visual explainer */}
+          <ShopTryExplainer />
 
           <div id="upload-section">
             <UploadPanel 
@@ -346,16 +372,24 @@ const NewClothes = () => {
             />
           )}
           
+          {/* New Affiliate Products section */}
+          <EditorsPicks 
+            isPremiumUser={isPremiumUser || isAuthenticated}
+            onTryItem={handleTryEditorsPick}
+            onUpgradeToPremium={handleShowPremiumPopup}
+          />
+          
+          {/* Updated Style Mood Selector with new moods */}
+          <StyleMoodSelector
+            isPremiumUser={isPremiumUser || isAuthenticated}
+            onTryItem={handleTryOnTrendingItem}
+            onUpgradeToPremium={handleShowPremiumPopup}
+          />
+          
           <PersonalizedStyleCarousel
             isPremiumUser={isPremiumUser || isAuthenticated}
             onTryItem={handleTryOnTrendingItem}
             onStyleTips={(item) => toast.info(`Style tips for ${item.name}`)}
-            onUpgradeToPremium={handleShowPremiumPopup}
-          />
-          
-          <StyleMoodSelector
-            isPremiumUser={isPremiumUser || isAuthenticated}
-            onTryItem={handleTryOnTrendingItem}
             onUpgradeToPremium={handleShowPremiumPopup}
           />
           
@@ -366,32 +400,6 @@ const NewClothes = () => {
             onUpgradeToPremium={handleShowPremiumPopup}
           />
           
-          <StylePollSection
-            isPremiumUser={isPremiumUser || isAuthenticated}
-            onUpgradeToPremium={handleShowPremiumPopup}
-          />
-          
-          <FashionDropsRadar
-            isPremiumUser={isPremiumUser || isAuthenticated}
-            onUpgradeToPremium={handleShowPremiumPopup}
-          />
-          
-          <StylingChallengeSection 
-            isPremiumUser={isPremiumUser || isAuthenticated}
-            onParticipate={() => toast.info("Taking you to the Style Challenge page...")}
-            onUpgradeToPremium={handleShowPremiumPopup}
-            customSlot={
-              <ChallengeParticipationCount
-                participantCount={challengeParticipantCount}
-                onShowSubmissions={handleShowSubmissions}
-              />
-            }
-          />
-          
-          <div id="gallery-section">
-            {/* Gallery will go here */}
-          </div>
-          
           <PremiumFeatureSection 
             isPremiumUser={isPremiumUser || isAuthenticated}
             onUpgradeToPremium={handleUpgradeToPremium} 
@@ -399,10 +407,21 @@ const NewClothes = () => {
         </motion.div>
       </main>
       
-      <AIStylistChat
+      {/* New floating Olivia widget (replaces fixed AI Stylist Chat) */}
+      <FloatingOliviaWidget
         isPremiumUser={isPremiumUser || isAuthenticated}
         onUpgradeToPremium={handleShowPremiumPopup}
+        onOpenChat={handleOpenChat}
       />
+      
+      {/* Only show AIStylistChat when explicitly opened */}
+      {showFloatingChat && (
+        <AIStylistChat
+          isPremiumUser={isPremiumUser || isAuthenticated}
+          onUpgradeToPremium={handleShowPremiumPopup}
+          onClose={() => setShowFloatingChat(false)}
+        />
+      )}
       
       <OliviaImageGallery 
         isOpen={showOliviaImageGallery}
