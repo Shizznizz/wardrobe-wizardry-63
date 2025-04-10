@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { RefreshCw, ThumbsUp, ThumbsDown, Edit, Thermometer, MapPin, ArrowRight } from 'lucide-react';
@@ -22,13 +21,15 @@ interface RecommendedOutfitProps {
   clothingItems: ClothingItem[];
   onRefreshOutfit: () => void;
   onOutfitAddedToCalendar?: (log: OutfitLog) => void;
+  onFeedbackAction?: (feedbackType: string, outfit: Outfit) => void;
 }
 
 const RecommendedOutfit = ({ 
   outfit, 
   clothingItems, 
   onRefreshOutfit,
-  onOutfitAddedToCalendar 
+  onOutfitAddedToCalendar,
+  onFeedbackAction
 }: RecommendedOutfitProps) => {
   const [currentWeather, setCurrentWeather] = useState<WeatherInfo | null>(null);
   const [selectedOccasion, setSelectedOccasion] = useState<string | null>(null);
@@ -39,7 +40,6 @@ const RecommendedOutfit = ({
   const { user } = useAuth();
   const [generatedTags, setGeneratedTags] = useState<string[]>([]);
 
-  // Initialize location from saved preferences
   useEffect(() => {
     if (savedLocation && !isLoading) {
       setLocation({
@@ -49,12 +49,10 @@ const RecommendedOutfit = ({
     }
   }, [savedLocation, isLoading]);
 
-  // Generate tags based on weather and outfit
   useEffect(() => {
     if (currentWeather && outfit) {
       const tags: string[] = [];
       
-      // Weather-based tags
       if (currentWeather.temperature < 5) tags.push("Cold");
       else if (currentWeather.temperature < 15) tags.push("Cool");
       else if (currentWeather.temperature < 25) tags.push("Mild");
@@ -65,18 +63,15 @@ const RecommendedOutfit = ({
       if (currentWeather.condition.toLowerCase().includes('cloud')) tags.push("Cloudy");
       if (currentWeather.condition.toLowerCase().includes('sun')) tags.push("Sunny");
       
-      // Outfit-based tags
       if (outfit.seasons.includes('winter')) tags.push("Layered");
       if (outfit.seasons.includes('summer')) tags.push("Light");
       if (outfit.occasions.includes('formal')) tags.push("Elegant");
       if (outfit.occasions.includes('casual')) tags.push("Casual");
       
-      // Add some lifestyle tags
       if (selectedOccasion === 'Party') tags.push("Weekend");
       if (selectedOccasion === 'Work') tags.push("Professional");
       if (selectedOccasion === 'Date') tags.push("Stylish");
       
-      // Ensure uniqueness
       setGeneratedTags([...new Set(tags)]);
     }
   }, [currentWeather, outfit, selectedOccasion]);
@@ -89,10 +84,16 @@ const RecommendedOutfit = ({
     setSelectedOccasion(occasion);
     toast.success(`Occasion set to: ${occasion}`);
     
-    // Generate a new outfit recommendation after a slight delay
     setTimeout(() => {
       handleRefreshOutfit();
     }, 300);
+    
+    if (onFeedbackAction) {
+      onFeedbackAction('occasion-change', {
+        ...outfit,
+        occasions: [occasion]
+      });
+    }
   };
 
   const handleRefreshOutfit = () => {
@@ -111,7 +112,6 @@ const RecommendedOutfit = ({
   const handleLikeOutfit = async () => {
     setIsSubmittingFeedback(true);
     try {
-      // Record user feedback
       if (user) {
         await supabase
           .from('outfit_feedback')
@@ -129,7 +129,10 @@ const RecommendedOutfit = ({
         duration: 2000
       });
       
-      // Flash animation to acknowledge
+      if (onFeedbackAction) {
+        onFeedbackAction('like', outfit);
+      }
+      
       const element = document.getElementById(`outfit-${outfit.id}`);
       if (element) {
         element.classList.add('bg-green-500/10');
@@ -147,7 +150,6 @@ const RecommendedOutfit = ({
   const handleDislikeOutfit = async () => {
     setIsSubmittingFeedback(true);
     try {
-      // Record user feedback
       if (user) {
         await supabase
           .from('outfit_feedback')
@@ -165,9 +167,12 @@ const RecommendedOutfit = ({
         duration: 2000
       });
       
-      // Generate a new outfit after slight delay
+      if (onFeedbackAction) {
+        onFeedbackAction('dislike', outfit);
+      }
+      
       setTimeout(() => {
-        handleRefreshOutfit();
+        onRefreshOutfit();
       }, 800);
     } catch (error) {
       console.error('Error saving outfit feedback:', error);
@@ -179,18 +184,24 @@ const RecommendedOutfit = ({
   const handleMakeWarmer = () => {
     toast.success("Making your outfit warmer...");
     
-    // Generate a new outfit after slight delay
+    if (onFeedbackAction) {
+      onFeedbackAction('warmer', outfit);
+    }
+    
     setTimeout(() => {
-      handleRefreshOutfit();
+      onRefreshOutfit();
     }, 500);
   };
   
   const handleChangeTop = () => {
     toast.success("Finding alternative top options...");
     
-    // Generate a new outfit after slight delay
+    if (onFeedbackAction) {
+      onFeedbackAction('change-top', outfit);
+    }
+    
     setTimeout(() => {
-      handleRefreshOutfit();
+      onRefreshOutfit();
     }, 500);
   };
 
@@ -242,7 +253,7 @@ const RecommendedOutfit = ({
               onWeatherChange={handleWeatherChange} 
               city={location.city}
               country={location.country}
-              savePreferences={false} // We handle preferences in EnhancedLocationSelector
+              savePreferences={false}
             />
           </div>
           
@@ -297,7 +308,6 @@ const RecommendedOutfit = ({
             onChangeTop={handleChangeTop}
           />
           
-          {/* Tags from Olivia */}
           {generatedTags.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mt-4 mb-2">
               {generatedTags.map((tag, index) => (
@@ -312,9 +322,7 @@ const RecommendedOutfit = ({
             </div>
           )}
           
-          {/* Olivia's Thoughts Section - Enhanced with visual separation */}
           <div className="mt-4 p-4 bg-purple-900/30 border border-purple-500/20 rounded-lg shadow-md relative">
-            {/* Add a speech bubble pointer */}
             <div className="absolute top-0 left-4 w-3 h-3 -mt-1.5 transform rotate-45 bg-purple-900/30 border-l border-t border-purple-500/20"></div>
             
             <div className="flex items-center mb-2">
@@ -336,7 +344,6 @@ const RecommendedOutfit = ({
             </p>
           </div>
           
-          {/* Feedback Buttons */}
           <div className="mt-4 flex flex-wrap gap-2">
             <Button 
               variant="outline" 
