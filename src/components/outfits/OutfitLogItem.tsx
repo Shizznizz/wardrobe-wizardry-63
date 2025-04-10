@@ -24,6 +24,7 @@ interface OutfitLogItemProps {
   outfitName: string;
   onDelete?: () => void;
   onView?: () => void;
+  onEdit?: () => void;
 }
 
 // Mapping of activities to emojis
@@ -49,7 +50,7 @@ const weatherEmojis: Record<string, string> = {
   windy: '💨'
 };
 
-const OutfitLogItem = ({ log, outfitName, onDelete, onView }: OutfitLogItemProps) => {
+const OutfitLogItem = ({ log, outfitName, onDelete, onView, onEdit }: OutfitLogItemProps) => {
   const activityEmoji = log.activity ? activityEmojis[log.activity] || '📝' : '';
   const weatherEmoji = log.weatherCondition ? weatherEmojis[log.weatherCondition] || '' : '';
   const activityDisplay = log.activity === 'other' && log.customActivity ? log.customActivity : log.activity;
@@ -134,6 +135,14 @@ const OutfitLogItem = ({ log, outfitName, onDelete, onView }: OutfitLogItemProps
             className="p-1 text-xs text-red-300 hover:text-red-100"
           >
             Delete
+          </button>
+        )}
+        {onEdit && (
+          <button
+            onClick={onEdit}
+            className="p-1 text-xs text-blue-300 hover:text-blue-100"
+          >
+            Edit
           </button>
         )}
       </div>
