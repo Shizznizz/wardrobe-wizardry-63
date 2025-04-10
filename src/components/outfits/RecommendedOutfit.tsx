@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { RefreshCw, ThumbsUp, ThumbsDown, Edit, Thermometer, MapPin, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Coffee, Party, Umbrella, Sunset, Moon, TrousersIcon } from '@/components/ui/icons';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import WeatherWidget from '@/components/WeatherWidget';
 import OutfitSuggestion from '@/components/OutfitSuggestion';
 import EnhancedLocationSelector from '@/components/weather/EnhancedLocationSelector';
