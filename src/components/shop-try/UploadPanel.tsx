@@ -33,6 +33,7 @@ interface UploadPanelProps {
   onSaveLook: () => void;
   onAddItem: (item: ClothingItem) => void;
   onShowPremiumPopup: () => void;
+  customSlot?: React.ReactNode;
 }
 
 const UploadPanel = ({
@@ -55,7 +56,8 @@ const UploadPanel = ({
   onShowOliviaImageGallery,
   onSaveLook,
   onAddItem,
-  onShowPremiumPopup
+  onShowPremiumPopup,
+  customSlot
 }: UploadPanelProps) => {
   const [selectedTab, setSelectedTab] = useState<string>('upload');
   const clothingPhotoInputRef = useRef<HTMLInputElement>(null);
@@ -349,6 +351,9 @@ const UploadPanel = ({
                     onSaveLook={onSaveLook}
                     isOliviaImage={isUsingOliviaImage}
                   />
+                  
+                  {/* Custom Slot for additional components */}
+                  {customSlot}
                 </div>
               ) : isProcessing ? (
                 <div className="text-center py-12">
