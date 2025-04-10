@@ -56,10 +56,10 @@ const OutfitLogsList = ({
                 <OutfitLogItem 
                   key={log.id}
                   log={log}
-                  outfit={outfit}
+                  outfitName={outfit.name}
                   onClick={() => handleViewLog(log)}
-                  onDelete={handleDeleteLog ? onDeleteLog : undefined}
-                  onEdit={handleEditLog}
+                  onDelete={() => onDeleteLog(log.id)} // Fix: Added a proper callback function with the log.id parameter
+                  onEdit={handleEditLog ? () => handleEditLog(log) : undefined}
                 />
               );
             })}

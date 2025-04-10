@@ -8,7 +8,7 @@ import { format } from 'date-fns';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { OutfitLog } from './OutfitLogItem';
-import { Outfit } from '@/lib/types';
+import { Outfit, TimeOfDay } from '@/lib/types';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -53,7 +53,7 @@ const AddToCalendarButton = ({
       const newLog: Partial<OutfitLog> = {
         outfitId: outfit.id,
         date: selectedDate,
-        timeOfDay: 'day',
+        timeOfDay: 'morning' as TimeOfDay, // Changed from 'day' to 'morning' to match TimeOfDay enum
         notes: '',
         weatherCondition: '',
         temperature: ''
@@ -68,7 +68,7 @@ const AddToCalendarButton = ({
             user_id: user.id,
             outfit_id: outfit.id,
             date: selectedDate.toISOString(),
-            time_of_day: 'day',
+            time_of_day: 'morning', // Changed from 'day' to 'morning'
             notes: '',
             weather_condition: '',
             temperature: ''
@@ -86,7 +86,7 @@ const AddToCalendarButton = ({
           id: data.id,
           outfitId: data.outfit_id,
           date: new Date(data.date),
-          timeOfDay: data.time_of_day,
+          timeOfDay: data.time_of_day as TimeOfDay,
           notes: data.notes,
           weatherCondition: data.weather_condition,
           temperature: data.temperature

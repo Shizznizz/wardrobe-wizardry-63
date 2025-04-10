@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Outfit, Activity } from '@/lib/types';
+import { Outfit, Activity, TimeOfDay } from '@/lib/types';
 import { OutfitLog } from '../OutfitLogItem';
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
@@ -83,7 +83,7 @@ const OutfitLogForm = ({ isOpen, onClose, outfits, selectedDate, onSubmit }: Out
     onSubmit({
       outfitId: values.outfitId,
       date: values.date,
-      timeOfDay: values.timeOfDay,
+      timeOfDay: values.timeOfDay as TimeOfDay, // Add explicit cast to TimeOfDay
       notes: values.notes,
       weatherCondition: values.weatherCondition,
       temperature: values.temperature,
