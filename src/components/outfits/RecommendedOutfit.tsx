@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { RefreshCw, ThumbsUp, ThumbsDown, Edit, Thermometer, MapPin } from 'lucide-react';
+import { RefreshCw, ThumbsUp, ThumbsDown, Edit, Thermometer, MapPin, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Coffee, Party, Umbrella, Sunset, Moon, TrousersIcon } from '@/components/ui/icons';
 import WeatherWidget from '@/components/WeatherWidget';
@@ -14,6 +14,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import AddToCalendarButton from './AddToCalendarButton';
 import { OutfitLog } from './OutfitLogItem';
+import { Badge } from '@/components/ui/badge';
 
 interface RecommendedOutfitProps {
   outfit: Outfit;
@@ -35,6 +36,7 @@ const RecommendedOutfit = ({
   const { savedLocation, isLoading } = useLocationStorage();
   const [isSubmittingFeedback, setIsSubmittingFeedback] = useState(false);
   const { user } = useAuth();
+  const [generatedTags, setGeneratedTags] = useState<string[]>([]);
 
   // Initialize location from saved preferences
   useEffect(() => {
@@ -45,6 +47,38 @@ const RecommendedOutfit = ({
       });
     }
   }, [savedLocation, isLoading]);
+
+  // Generate tags based on weather and outfit
+  useEffect(() => {
+    if (currentWeather && outfit) {
+      const tags: string[] = [];
+      
+      // Weather-based tags
+      if (currentWeather.temperature < 5) tags.push("Cold");
+      else if (currentWeather.temperature < 15) tags.push("Cool");
+      else if (currentWeather.temperature < 25) tags.push("Mild");
+      else tags.push("Warm");
+      
+      if (currentWeather.condition.toLowerCase().includes('rain')) tags.push("Rainy");
+      if (currentWeather.condition.toLowerCase().includes('snow')) tags.push("Snowy");
+      if (currentWeather.condition.toLowerCase().includes('cloud')) tags.push("Cloudy");
+      if (currentWeather.condition.toLowerCase().includes('sun')) tags.push("Sunny");
+      
+      // Outfit-based tags
+      if (outfit.seasons.includes('winter')) tags.push("Layered");
+      if (outfit.seasons.includes('summer')) tags.push("Light");
+      if (outfit.occasions.includes('formal')) tags.push("Elegant");
+      if (outfit.occasions.includes('casual')) tags.push("Casual");
+      
+      // Add some lifestyle tags
+      if (selectedOccasion === 'Party') tags.push("Weekend");
+      if (selectedOccasion === 'Work') tags.push("Professional");
+      if (selectedOccasion === 'Date') tags.push("Stylish");
+      
+      // Ensure uniqueness
+      setGeneratedTags([...new Set(tags)]);
+    }
+  }, [currentWeather, outfit, selectedOccasion]);
 
   const handleWeatherChange = (weather: WeatherInfo) => {
     setCurrentWeather(weather);
@@ -262,10 +296,35 @@ const RecommendedOutfit = ({
             onChangeTop={handleChangeTop}
           />
           
-          {/* New: AI Reasoning Section */}
-          <div className="mt-4 p-3 bg-purple-900/20 border border-purple-500/20 rounded-lg">
-            <h4 className="text-sm font-medium text-purple-300 mb-2">Olivia's Thoughts</h4>
-            <p className="text-sm text-white/80">
+          {/* Tags from Olivia */}
+          {generatedTags.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 mt-4 mb-2">
+              {generatedTags.map((tag, index) => (
+                <Badge 
+                  key={index}
+                  variant="outline" 
+                  className="bg-purple-500/10 border-purple-500/20 text-purple-200 text-xs"
+                >
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+          )}
+          
+          {/* Olivia's Thoughts Section - Enhanced with visual separation */}
+          <div className="mt-4 p-4 bg-purple-900/30 border border-purple-500/20 rounded-lg shadow-md relative">
+            {/* Add a speech bubble pointer */}
+            <div className="absolute top-0 left-4 w-3 h-3 -mt-1.5 transform rotate-45 bg-purple-900/30 border-l border-t border-purple-500/20"></div>
+            
+            <div className="flex items-center mb-2">
+              <Avatar className="h-6 w-6 mr-2 border border-purple-400/30">
+                <AvatarImage src="/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png" alt="Olivia Bloom" />
+                <AvatarFallback className="bg-gradient-to-r from-purple-600 to-pink-500 text-white">OB</AvatarFallback>
+              </Avatar>
+              <h4 className="text-sm font-medium text-purple-300">Olivia's Thoughts</h4>
+            </div>
+            
+            <p className="text-sm text-white/80 pl-8">
               {selectedOccasion ? 
                 `This outfit is perfect for a ${selectedOccasion.toLowerCase()} setting in ${currentWeather?.temperature ? `${currentWeather.temperature}°C weather` : 'current weather conditions'}. The colors complement each other and the style balances comfort with appropriate formality. ` 
                 : 

@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, Sparkles, X, ArrowRight } from 'lucide-react';
+import { MessageCircle, Sparkles, X, ArrowRight, MinusCircle, PlusCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
@@ -58,7 +58,12 @@ const OutfitTips = ({
   currentTipIndex,
   onNextTip
 }: OutfitTipsProps) => {
+  const [isMinimized, setIsMinimized] = useState(false);
   const isLastTip = currentTipIndex === tips.length - 1;
+
+  const handleToggleMinimize = () => {
+    setIsMinimized(!isMinimized);
+  };
 
   return (
     <motion.div 
@@ -68,14 +73,25 @@ const OutfitTips = ({
       transition={{ type: "spring", stiffness: 500, damping: 30 }}
       className="max-w-xs"
     >
-      <Card className="glass-dark border-white/10 overflow-hidden relative group backdrop-blur-md bg-slate-900/90 shadow-lg">
+      <Card className="glass-dark border-white/10 overflow-hidden relative group backdrop-blur-md bg-slate-900/90 shadow-lg shadow-black/20">
         <CardContent className="p-6">
-          <button 
-            onClick={onClose} 
-            className="absolute top-2 right-2 p-1 rounded-full hover:bg-white/10 transition-colors"
-          >
-            <X className="h-4 w-4 text-white/80" />
-          </button>
+          <div className="absolute top-2 right-2 flex space-x-1">
+            <button 
+              onClick={handleToggleMinimize} 
+              className="p-1 rounded-full hover:bg-white/10 transition-colors"
+            >
+              {isMinimized ? 
+                <PlusCircle className="h-3.5 w-3.5 text-white/80" /> :
+                <MinusCircle className="h-3.5 w-3.5 text-white/80" />
+              }
+            </button>
+            <button 
+              onClick={onClose} 
+              className="p-1 rounded-full hover:bg-white/10 transition-colors"
+            >
+              <X className="h-3.5 w-3.5 text-white/80" />
+            </button>
+          </div>
           
           <div className="flex items-start gap-3 mb-3">
             <Avatar className="h-10 w-10 border-2 border-purple-400/30">
@@ -92,36 +108,40 @@ const OutfitTips = ({
           </div>
           
           <AnimatePresence mode="wait">
-            <motion.div
-              key={currentTipIndex}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="mb-4"
-            >
-              <h4 className="text-sm font-medium mb-1 text-white">{tips[currentTipIndex].title}</h4>
-              <p className="text-sm text-white/90">{tips[currentTipIndex].content}</p>
-            </motion.div>
+            {!isMinimized && (
+              <motion.div
+                key={currentTipIndex}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="mb-4"
+              >
+                <h4 className="text-sm font-medium mb-1 text-white">{tips[currentTipIndex].title}</h4>
+                <p className="text-sm text-white/90">{tips[currentTipIndex].content}</p>
+              </motion.div>
+            )}
           </AnimatePresence>
           
           <div className="flex justify-between items-center">
             <span className="text-xs text-white/60">
               Tip {currentTipIndex + 1}/{tips.length}
             </span>
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={onNextTip}
-                className="text-xs border-purple-400/30 text-white hover:bg-white/10 transition-all duration-300 hover:border-purple-400/50"
+            {!isMinimized && (
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
-                {isLastTip ? "Close" : "Next Tip"}
-                {!isLastTip && <ArrowRight className="ml-1 h-3 w-3" />}
-              </Button>
-            </motion.div>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={onNextTip}
+                  className="text-xs border-purple-400/30 text-white hover:bg-white/10 transition-all duration-300 hover:border-purple-400/50"
+                >
+                  {isLastTip ? "Close" : "Next Tip"}
+                  {!isLastTip && <ArrowRight className="ml-1 h-3 w-3" />}
+                </Button>
+              </motion.div>
+            )}
           </div>
         </CardContent>
       </Card>

@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HelpCircle } from 'lucide-react';
+import { HelpCircle, MinusCircle, PlusCircle } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -14,6 +14,7 @@ interface OliviaHelpAvatarProps {
 const OliviaHelpAvatar = ({ position = 'top-right' }: OliviaHelpAvatarProps) => {
   const [showTips, setShowTips] = useState(false);
   const [currentTipIndex, setCurrentTipIndex] = useState(0);
+  const [isMinimized, setIsMinimized] = useState(false);
   
   const tips = [
     {
@@ -51,6 +52,10 @@ const OliviaHelpAvatar = ({ position = 'top-right' }: OliviaHelpAvatarProps) => 
       case 'top-right': return 'top-24 right-6';
       default: return 'top-24 right-6';
     }
+  };
+
+  const handleToggleMinimize = () => {
+    setIsMinimized(!isMinimized);
   };
 
   const handleAvatarClick = () => {
