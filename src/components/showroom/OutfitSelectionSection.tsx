@@ -1,10 +1,11 @@
+
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Outfit, ClothingItem } from '@/lib/types';
-import OutfitCollection from './OutfitCollection';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Card } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
+import OutfitCollection from '@/components/outfits/OutfitCollection';
 
 interface OutfitSelectionSectionProps {
   fashionCollections: any[];
