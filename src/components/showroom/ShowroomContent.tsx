@@ -9,7 +9,6 @@ import PremiumFeaturesSection from './PremiumFeaturesSection';
 import IntroductionSlider from './IntroductionSlider';
 import { Button } from '@/components/ui/button';
 import { Sparkles } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
 
 interface ShowroomContentProps {
   userPhoto: string | null;
@@ -46,9 +45,6 @@ const ShowroomContent = ({
   onSuggestAnotherOutfit,
   onUpgradeToPremium
 }: ShowroomContentProps) => {
-  const { isAuthenticated } = useAuth();
-  const effectivePremiumUser = isPremiumUser || isAuthenticated;
-  
   return (
     <div className="w-full mx-auto space-y-16">
       <div className="text-center mb-8">
@@ -116,7 +112,7 @@ const ShowroomContent = ({
         fashionCollections={fashionCollections}
         clothingItems={clothingItems}
         selectedOutfit={selectedOutfit}
-        isPremiumUser={effectivePremiumUser}
+        isPremiumUser={isPremiumUser}
         onSelectOutfit={onSelectOutfit}
       />
       
@@ -155,7 +151,7 @@ const ShowroomContent = ({
         )}
       </div>
       
-      {!effectivePremiumUser && (
+      {!isPremiumUser && (
         <PremiumFeaturesSection 
           onUpgradeToPremium={onUpgradeToPremium} 
         />
