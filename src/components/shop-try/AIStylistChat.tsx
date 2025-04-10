@@ -181,7 +181,7 @@ const AIStylistChat = ({
                 >
                   {message.sender === 'ai' && (
                     <div className="mr-2 flex-shrink-0">
-                      <OliviaMoodAvatar mood="happy" size="xs" />
+                      <OliviaMoodAvatar mood="happy" size="sm" />
                     </div>
                   )}
                   

@@ -12,7 +12,9 @@ export type ClothingType =
   | 'sneakers'
   | 'boots'
   | 'accessories'
-  | 'other';
+  | 'other'
+  | 'blouse'
+  | 'top';
 
 export type ClothingSeason = 
   | 'spring' 
@@ -106,6 +108,8 @@ export interface ClothingItem {
   timesWorn: number;
   lastWorn?: Date;
   dateAdded: Date;
+  brand?: string;           // Add brand property
+  description?: string;     // Add description property
 }
 
 export interface Outfit {
