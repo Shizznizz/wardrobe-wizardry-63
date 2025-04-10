@@ -4,7 +4,7 @@ import { X, ArrowRight, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
-interface OutfitTip {
+export interface OutfitTip {
   id: number;
   title: string;
   content: string;
@@ -18,6 +18,35 @@ interface OutfitTipsProps {
   currentTipIndex: number;
   onNextTip: () => void;
 }
+
+// Define and export the default outfit tips
+export const defaultOutfitTips: OutfitTip[] = [
+  {
+    id: 1,
+    title: "Upload Your Photo",
+    content: "Start by uploading a full-body photo of yourself. This will be the base for trying on new clothes."
+  },
+  {
+    id: 2,
+    title: "Select Clothing Items",
+    content: "Upload photos of clothing items you're interested in trying on. You can see how they look on you before purchasing."
+  },
+  {
+    id: 3,
+    title: "Create Complete Outfits",
+    content: "After trying on your main item, add more pieces to create complete looks with accessories and layers."
+  },
+  {
+    id: 4,
+    title: "Get Styling Recommendations",
+    content: "Check out the recommendations section for outfit ideas that complement your selected items."
+  },
+  {
+    id: 5,
+    title: "Save and Share",
+    content: "Found the perfect look? Save it to your wardrobe or share it with friends to get their opinion!"
+  }
+];
 
 const OutfitTips = ({
   tips,
