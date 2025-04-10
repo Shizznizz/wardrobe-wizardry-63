@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Outfit, ClothingItem } from '@/lib/types';
@@ -19,6 +18,7 @@ interface OutfitGridProps {
   onToggleFavorite: (id: string) => void;
   clothingItems: ClothingItem[];
   onOutfitAddedToCalendar?: (log: OutfitLog) => void;
+  onSelectOutfit?: (outfit: Outfit) => void;
 }
 
 const OutfitGrid = ({ 
@@ -27,7 +27,8 @@ const OutfitGrid = ({
   onDelete, 
   onToggleFavorite, 
   clothingItems,
-  onOutfitAddedToCalendar 
+  onOutfitAddedToCalendar,
+  onSelectOutfit 
 }: OutfitGridProps) => {
   const [expandedOutfit, setExpandedOutfit] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -44,7 +45,13 @@ const OutfitGrid = ({
   };
 
   const handlePreviewInFittingRoom = (outfit: Outfit) => {
-    // Save the selected outfit to localStorage for retrieval in the Fitting Room
+    // If onSelectOutfit is provided, use it (for direct preview in same page)
+    if (onSelectOutfit) {
+      onSelectOutfit(outfit);
+      return;
+    }
+    
+    // Otherwise use the original navigation behavior
     localStorage.setItem('previewOutfit', JSON.stringify(outfit));
     toast.success('Taking you to the Fitting Room to preview this look...');
     navigate('/fitting-room');
@@ -143,7 +150,6 @@ const OutfitGrid = ({
               </div>
               
               <div className="space-y-2">
-                {/* Preview in Fitting Room Button */}
                 <Button 
                   variant="default"
                   size="sm"
@@ -154,7 +160,6 @@ const OutfitGrid = ({
                   Preview in Fitting Room
                 </Button>
                 
-                {/* Add to Calendar Button */}
                 <AddToCalendarButton 
                   outfit={outfit} 
                   fullWidth={true}
