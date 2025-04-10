@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -9,11 +10,14 @@ import OliviaImageGallery from '@/components/outfits/OliviaImageGallery';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 
-import NewClothesHeader from '@/components/new-clothes/NewClothesHeader';
-import TryOnSection from '@/components/new-clothes/TryOnSection';
-import PreviewResultSection from '@/components/new-clothes/PreviewResultSection';
-import RelatedContentSection from '@/components/new-clothes/RelatedContentSection';
-import PremiumFeaturesSection from '@/components/new-clothes/PremiumFeaturesSection';
+// Import new section components
+import HeroSection from '@/components/shop-try/HeroSection';
+import UploadPanel from '@/components/shop-try/UploadPanel';
+import StyleFeedbackSection from '@/components/shop-try/StyleFeedbackSection';
+import TrendingNowSection from '@/components/shop-try/TrendingNowSection';
+import StylingChallengeSection from '@/components/shop-try/StylingChallengeSection';
+import PremiumFeatureSection from '@/components/shop-try/PremiumFeatureSection';
+import OliviaMoodAvatar from '@/components/shop-try/OliviaMoodAvatar';
 import HelpTipsSection from '@/components/new-clothes/HelpTipsSection';
 import { defaultOutfitTips } from '@/components/outfits/OutfitTips';
 
@@ -32,6 +36,8 @@ const NewClothes = () => {
   const [currentTipIndex, setCurrentTipIndex] = useState(0);
   const [predictionId, setPredictionId] = useState<string | null>(null);
   const [generationError, setGenerationError] = useState<string | null>(null);
+  const [oliviaMood, setOliviaMood] = useState<'happy' | 'thinking' | 'neutral'>('neutral');
+  const [stylingTip, setStylingTip] = useState<string | null>(null);
 
   const isMobile = useIsMobile();
 
@@ -66,11 +72,26 @@ const NewClothes = () => {
           setPredictionId(null);
           setIsProcessing(false);
           toast.success("AI-generated try-on is ready!");
+          
+          // Set Olivia's mood based on the outcome
+          setOliviaMood('happy');
+          
+          // Generate a random styling tip
+          const tips = [
+            "Love this fit with high-rise jeans! Want a rec?",
+            "A cropped jacket would complete this. Shall I suggest one?",
+            "This color really enhances your features! Try pairing with gold accessories.",
+            "This silhouette works so well for your body type!",
+            "Perfect for casual outings. Want to see dressier options?"
+          ];
+          setStylingTip(tips[Math.floor(Math.random() * tips.length)]);
+          
           clearInterval(pollInterval);
         }
       } catch (err) {
         console.error("Error polling for prediction:", err);
         toast.error("Error checking generation status");
+        setOliviaMood('thinking');
       }
     }, 3000);
 
@@ -97,26 +118,25 @@ const NewClothes = () => {
       setUserPhoto(event.target?.result as string);
       setFinalImage(null);
       setIsUsingOliviaImage(false);
+      setStylingTip(null);
     };
     reader.readAsDataURL(file);
   };
 
-  const handleClothingPhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        setClothingPhoto(event.target?.result as string);
-        setFinalImage(null);
-      };
-      reader.readAsDataURL(file);
-    }
+  const handleClothingPhotoUpload = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setClothingPhoto(event.target?.result as string);
+      setFinalImage(null);
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSelectOliviaImage = (imageSrc: string) => {
     setUserPhoto(imageSrc);
     setFinalImage(null);
     setIsUsingOliviaImage(true);
+    setStylingTip(null);
   };
 
   const handleTryOn = async () => {
@@ -127,6 +147,8 @@ const NewClothes = () => {
 
     setIsProcessing(true);
     setFinalImage(null);
+    setStylingTip(null);
+    setOliviaMood('thinking');
 
     try {
       const promptText = "a photorealistic image of a person wearing the provided white t-shirt";
@@ -147,6 +169,18 @@ const NewClothes = () => {
 
       if (data?.generatedImageUrl) {
         setFinalImage(data.generatedImageUrl);
+        setOliviaMood('happy');
+        
+        // Generate a random styling tip
+        const tips = [
+          "Love this fit with high-rise jeans! Want a rec?",
+          "A cropped jacket would complete this. Shall I suggest one?",
+          "This color really enhances your features! Try pairing with gold accessories.",
+          "This silhouette works so well for your body type!",
+          "Perfect for casual outings. Want to see dressier options?"
+        ];
+        setStylingTip(tips[Math.floor(Math.random() * tips.length)]);
+        
         toast.success("AI-generated try-on ready!");
       } else if (data?.predictionId) {
         setPredictionId(data.predictionId);
@@ -159,6 +193,7 @@ const NewClothes = () => {
     } catch (error) {
       console.error("Error in AI try-on:", error);
       setGenerationError(String(error));
+      setOliviaMood('thinking');
       toast.error("Failed to generate virtual try-on");
     } finally {
       setIsProcessing(false);
@@ -168,6 +203,21 @@ const NewClothes = () => {
   const handleAddItem = (item: ClothingItem) => {
     setSelectedItems(prev => [...prev, item]);
     toast.success(`Added ${item.name} to your outfit!`);
+  };
+
+  const handleTryOnTrendingItem = (item: ClothingItem) => {
+    if (!isPremiumUser && !isAuthenticated) {
+      setShowSubscriptionPopup(true);
+      return;
+    }
+    
+    // For now, just show a placeholder behavior
+    toast.success(`Preparing to try on ${item.name}...`);
+    setClothingPhoto(item.imageUrl);
+    
+    if (!userPhoto) {
+      toast.info("Please upload a photo first or select Olivia as a model");
+    }
   };
 
   const handleUpgradeToPremium = () => {
@@ -186,12 +236,18 @@ const NewClothes = () => {
     setPredictionId(null);
     setSelectedItems([]);
     setIsUsingOliviaImage(false);
+    setStylingTip(null);
     toast.success('Photos cleared');
   };
 
   const handleSaveLook = () => {
     if (!finalImage) {
       toast.error('Create a look first!');
+      return;
+    }
+    
+    if (!isPremiumUser && !isAuthenticated) {
+      setShowSubscriptionPopup(true);
       return;
     }
     
@@ -205,6 +261,15 @@ const NewClothes = () => {
       setShowHelpTips(false);
       setCurrentTipIndex(0);
     }
+  };
+
+  const handleParticipateInChallenge = () => {
+    if (!isPremiumUser && !isAuthenticated) {
+      setShowSubscriptionPopup(true);
+      return;
+    }
+    
+    toast.success('Taking you to the Style Challenge page...');
   };
 
   const containerVariants = {
@@ -226,50 +291,68 @@ const NewClothes = () => {
         onNextTip={handleNextTip}
       />
       
-      <main className="container mx-auto px-4 pt-24 pb-16 max-w-full">
+      <main className="container mx-auto px-4 pt-24 pb-16 max-w-6xl">
         <motion.div 
-          className="space-y-8"
+          className="space-y-16"
           initial="hidden"
           animate="visible"
           variants={containerVariants}
         >
-          <NewClothesHeader />
+          <HeroSection onStartStyling={() => document.getElementById('upload-section')?.scrollIntoView({ behavior: 'smooth' })} />
 
-          <motion.div variants={containerVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <TryOnSection 
+          <div id="upload-section">
+            <UploadPanel 
               userPhoto={userPhoto}
               clothingPhoto={clothingPhoto}
               isProcessing={isProcessing}
               isUsingOliviaImage={isUsingOliviaImage}
+              finalImage={finalImage}
+              mockOutfit={finalImage ? mockOutfit : null}
+              selectedItems={selectedItems}
+              generationError={generationError}
+              isPremiumUser={isPremiumUser || isAuthenticated}
+              oliviaMood={oliviaMood}
+              stylingTip={stylingTip}
               onUserPhotoUpload={handleUserPhotoUpload}
+              onClothingPhotoUpload={handleClothingPhotoUpload}
               onClearUserPhoto={() => {
                 setUserPhoto(null);
                 setIsUsingOliviaImage(false);
               }}
-              onClothingPhotoUpload={handleClothingPhotoUpload}
               onClearPhotos={clearPhotos}
               onTryOn={handleTryOn}
               onShowOliviaImageGallery={() => setShowOliviaImageGallery(true)}
-            />
-            
-            <PreviewResultSection 
-              finalImage={finalImage}
-              outfit={finalImage ? mockOutfit : null}
-              clothingItems={selectedItems}
-              isProcessing={isProcessing}
-              userPhoto={userPhoto}
-              clothingPhoto={clothingPhoto}
-              isOliviaImage={isUsingOliviaImage}
-              isPremiumUser={isPremiumUser || isAuthenticated}
               onSaveLook={handleSaveLook}
               onAddItem={handleAddItem}
               onShowPremiumPopup={handleShowPremiumPopup}
             />
-          </motion.div>
+          </div>
           
-          <RelatedContentSection finalImage={finalImage} />
+          {finalImage && stylingTip && (
+            <StyleFeedbackSection 
+              stylingTip={stylingTip}
+              isPremiumUser={isPremiumUser || isAuthenticated}
+              onSuggestSimilar={() => toast.info("Olivia is finding similar styles for you...")}
+              onSaveLook={handleSaveLook}
+              onShowStylingOptions={() => toast.info("Exploring styling options...")}
+              onUpgradeToPremium={handleShowPremiumPopup}
+            />
+          )}
           
-          <PremiumFeaturesSection 
+          <TrendingNowSection 
+            isPremiumUser={isPremiumUser || isAuthenticated}
+            onTryItem={handleTryOnTrendingItem}
+            onStyleTips={(item) => toast.info(`Style tips for ${item.name}`)}
+            onUpgradeToPremium={handleShowPremiumPopup}
+          />
+          
+          <StylingChallengeSection 
+            isPremiumUser={isPremiumUser || isAuthenticated}
+            onParticipate={handleParticipateInChallenge}
+            onUpgradeToPremium={handleShowPremiumPopup}
+          />
+          
+          <PremiumFeatureSection 
             isPremiumUser={isPremiumUser || isAuthenticated}
             onUpgradeToPremium={handleUpgradeToPremium} 
           />
