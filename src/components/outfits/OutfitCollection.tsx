@@ -15,6 +15,7 @@ interface OutfitCollectionProps {
   onToggleFavorite: (id: string) => void;
   clothingItems: ClothingItem[];
   onOutfitAddedToCalendar?: (log: OutfitLog) => void;
+  onSelectOutfit?: (outfit: Outfit) => void;
 }
 
 const OutfitCollection = ({ 
@@ -24,7 +25,8 @@ const OutfitCollection = ({
   onDeleteOutfit, 
   onToggleFavorite, 
   clothingItems,
-  onOutfitAddedToCalendar
+  onOutfitAddedToCalendar,
+  onSelectOutfit
 }: OutfitCollectionProps) => {
   const isMobile = useIsMobile();
   
@@ -63,6 +65,7 @@ const OutfitCollection = ({
         onToggleFavorite={onToggleFavorite}
         clothingItems={clothingItems}
         onOutfitAddedToCalendar={onOutfitAddedToCalendar}
+        onSelectOutfit={onSelectOutfit}
       />
       
       <div className="mt-6 flex justify-center">

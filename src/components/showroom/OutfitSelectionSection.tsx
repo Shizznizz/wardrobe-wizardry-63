@@ -74,6 +74,7 @@ const OutfitSelectionSection = ({
             onDeleteOutfit={() => {}}
             onToggleFavorite={() => {}}
             onOutfitAddedToCalendar={() => {}}
+            onSelectOutfit={handleOutfitSelection}
           />
         </div>
       ))}
