@@ -1,4 +1,5 @@
 
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,6 +13,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import {
   Select,
@@ -20,10 +22,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Outfit } from '@/lib/types';
+import { Outfit, Activity } from '@/lib/types';
 import { OutfitLog } from '../OutfitLogItem';
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+import { CalendarIcon, Calendar as CalendarIcon2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const OutfitLogSchema = z.object({
   outfitId: z.string({
@@ -38,6 +51,9 @@ const OutfitLogSchema = z.object({
   notes: z.string().optional(),
   weatherCondition: z.string().optional(),
   temperature: z.string().optional(),
+  activity: z.string().optional(),
+  customActivity: z.string().optional(),
+  askForAiSuggestion: z.boolean().optional().default(false),
 });
 
 interface OutfitLogFormProps {
@@ -49,15 +65,21 @@ interface OutfitLogFormProps {
 }
 
 const OutfitLogForm = ({ isOpen, onClose, outfits, selectedDate, onSubmit }: OutfitLogFormProps) => {
+  const [showCustomActivity, setShowCustomActivity] = useState(false);
+  const isFutureDate = selectedDate ? selectedDate > new Date() : false;
+
   const form = useForm<z.infer<typeof OutfitLogSchema>>({
     resolver: zodResolver(OutfitLogSchema),
     defaultValues: {
       date: selectedDate || new Date(),
       notes: "",
+      askForAiSuggestion: false,
     },
   });
 
   const handleSubmit = (values: z.infer<typeof OutfitLogSchema>) => {
+    const activity = values.activity === 'other' ? values.customActivity : values.activity;
+    
     onSubmit({
       outfitId: values.outfitId,
       date: values.date,
@@ -65,15 +87,26 @@ const OutfitLogForm = ({ isOpen, onClose, outfits, selectedDate, onSubmit }: Out
       notes: values.notes,
       weatherCondition: values.weatherCondition,
       temperature: values.temperature,
+      activity: activity as Activity,
+      customActivity: values.customActivity,
+      askForAiSuggestion: values.askForAiSuggestion,
     });
+    
     form.reset();
     onClose();
+  };
+
+  const handleActivityChange = (value: string) => {
+    form.setValue("activity", value);
+    setShowCustomActivity(value === "other");
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="bg-slate-900 border-purple-500/30 text-white">
-        <h2 className="text-xl font-bold mb-4">Log an Outfit</h2>
+        <h2 className="text-xl font-bold mb-4">
+          {isFutureDate ? "Plan an Outfit" : "Log an Outfit"}
+        </h2>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
             <FormField
@@ -92,6 +125,43 @@ const OutfitLogForm = ({ isOpen, onClose, outfits, selectedDate, onSubmit }: Out
                       ))}
                     </SelectContent>
                   </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="date"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Date</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant={"outline"}
+                        className={cn(
+                          "w-full justify-start text-left font-normal border-purple-500/30 bg-slate-800",
+                          !field.value && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {field.value ? (
+                          format(field.value, "PPP")
+                        ) : (
+                          <span>Pick a date</span>
+                        )}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0 bg-slate-900 border-purple-500/30">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
                   <FormMessage />
                 </FormItem>
               )}
@@ -118,6 +188,51 @@ const OutfitLogForm = ({ isOpen, onClose, outfits, selectedDate, onSubmit }: Out
                 </FormItem>
               )}
             />
+            
+            <FormField
+              control={form.control}
+              name="activity"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Occasion/Activity</FormLabel>
+                  <Select onValueChange={handleActivityChange} defaultValue={field.value}>
+                    <SelectTrigger className="border-purple-500/30 bg-slate-800">
+                      <SelectValue placeholder="Select occasion" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-slate-900 border-purple-500/30">
+                      <SelectItem value="casual">Casual</SelectItem>
+                      <SelectItem value="work">Work</SelectItem>
+                      <SelectItem value="formal">Formal</SelectItem>
+                      <SelectItem value="party">Party</SelectItem>
+                      <SelectItem value="date">Date night</SelectItem>
+                      <SelectItem value="interview">Job interview</SelectItem>
+                      <SelectItem value="presentation">Presentation</SelectItem>
+                      <SelectItem value="dinner">Dinner</SelectItem>
+                      <SelectItem value="other">Other (custom)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            {showCustomActivity && (
+              <FormField
+                control={form.control}
+                name="customActivity"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Custom Activity</FormLabel>
+                    <Input 
+                      {...field} 
+                      placeholder="Specify occasion"
+                      className="border-purple-500/30 bg-slate-800"
+                    />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
             
             <FormField
               control={form.control}
@@ -181,12 +296,35 @@ const OutfitLogForm = ({ isOpen, onClose, outfits, selectedDate, onSubmit }: Out
               )}
             />
             
+            {isFutureDate && (
+              <FormField
+                control={form.control}
+                name="askForAiSuggestion"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border border-purple-500/30 p-4">
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                    <div className="space-y-1 leading-none">
+                      <FormLabel>
+                        Ask Olivia for outfit advice for this event
+                      </FormLabel>
+                      <FormDescription className="text-slate-400">
+                        Olivia will generate a suggestion based on weather, location, and your preferences
+                      </FormDescription>
+                    </div>
+                  </FormItem>
+                )}
+              />
+            )}
+            
             <div className="flex justify-end space-x-2 pt-2">
               <Button type="button" variant="outline" onClick={onClose} className="border-purple-500/30">
                 Cancel
               </Button>
               <Button type="submit" className="bg-purple-600 hover:bg-purple-700">
-                Save Log
+                {isFutureDate ? "Plan Outfit" : "Save Log"}
               </Button>
             </div>
           </form>

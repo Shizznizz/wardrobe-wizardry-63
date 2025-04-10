@@ -1,3 +1,4 @@
+
 export type ClothingType = 
   | 'shirt'
   | 'jeans'
@@ -57,7 +58,11 @@ export type ClothingOccasion =
   | 'everyday'
   | 'special'
   | 'vacation'
-  | 'date';
+  | 'date'
+  | 'interview'
+  | 'presentation'
+  | 'dinner'
+  | 'other';
 
 export type TimeOfDay =
   | 'morning'
@@ -71,7 +76,11 @@ export type Activity =
   | 'sport'
   | 'party'
   | 'date'
-  | 'formal';
+  | 'formal'
+  | 'interview'
+  | 'presentation'
+  | 'dinner'
+  | 'other';
 
 export type PersonalityTag =
   | 'minimalist'
@@ -102,14 +111,14 @@ export interface ClothingItem {
   color: ClothingColor;
   material: ClothingMaterial;
   seasons: ClothingSeason[];
-  occasions: ClothingOccasion[]; // New field for occasions
+  occasions: ClothingOccasion[]; 
   imageUrl: string;
   favorite: boolean;
   timesWorn: number;
   lastWorn?: Date;
   dateAdded: Date;
-  brand?: string;           // Add brand property
-  description?: string;     // Add description property
+  brand?: string;
+  description?: string;
 }
 
 export interface Outfit {
@@ -135,23 +144,40 @@ export interface WeatherInfo {
   windSpeed?: number;
   humidity?: number;
   feelsLike?: number;
-  unit?: string; // Add the missing unit property
+  unit?: string;
 }
 
 export interface UserPreferences {
   favoriteColors: ClothingColor[];
   favoriteStyles: string[];
-  styles?: string[]; // Add the missing styles property 
-  personalityTags?: PersonalityTag[]; // User's preferred style tags
+  styles?: string[];
+  personalityTags?: PersonalityTag[];
   seasonalPreferences: {
     [key in ClothingSeason]: {
       enabled: boolean;
       temperatureRange: [number, number];
-      timeOfYear?: [number, number]; // New property for early/mid/late season
+      timeOfYear?: [number, number];
     }
   };
   outfitReminders: boolean;
   reminderTime: string; // "HH:MM" format
-  occasionPreferences?: string[]; // New field for occasion preferences
-  climatePreferences?: string[]; // Updated to just string[] to accommodate new climate types
+  occasionPreferences?: string[];
+  climatePreferences?: string[];
+}
+
+export interface OutfitLogExtended {
+  id: string;
+  outfitId: string;
+  date: Date;
+  timeOfDay: TimeOfDay;
+  notes?: string;
+  weatherCondition?: string;
+  temperature?: string;
+  activity?: Activity;
+  customActivity?: string;
+  askForAiSuggestion?: boolean;
+  aiSuggested?: boolean;
+  aiSuggestionFeedback?: 'positive' | 'negative' | null;
+  occasionEmoji?: string; // For displaying emoji based on occasion
+  thumbnailUrl?: string; // For displaying a tiny outfit image
 }

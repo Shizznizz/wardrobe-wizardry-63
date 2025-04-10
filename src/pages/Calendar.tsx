@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -9,6 +10,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import EnhancedLocationSelector from '@/components/weather/EnhancedLocationSelector';
 import { useLocationStorage } from '@/hooks/useLocationStorage';
 import { format } from 'date-fns';
+import ScrollToTop from '@/components/ScrollToTop';
 
 const Calendar = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -87,9 +89,10 @@ const Calendar = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white overflow-x-hidden max-w-[100vw]">
+      <ScrollToTop />
       <Header />
       
-      <main className="w-full px-4 sm:px-6 md:px-8 pt-24 pb-20 max-w-7xl mx-auto overflow-hidden">
+      <main className="w-full px-4 sm:px-6 md:px-8 pt-24 pb-32 max-w-7xl mx-auto overflow-hidden">
         <motion.div 
           className="space-y-8 md:space-y-10"
           initial="hidden"
@@ -126,7 +129,7 @@ const Calendar = () => {
                 outfits={outfits}
                 clothingItems={items}
                 onAddLog={(log) => {
-                  toast.success(`Outfit logged for ${format(new Date(log.date), 'MMMM d, yyyy')}`);
+                  toast.success(`Outfit ${log.date > new Date() ? 'planned' : 'logged'} for ${format(new Date(log.date), 'MMMM d, yyyy')}`);
                 }}
               />
             </motion.div>

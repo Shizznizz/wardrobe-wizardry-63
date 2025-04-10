@@ -15,12 +15,17 @@ import DateSelector from './calendar/DateSelector';
 import OutfitLogsList from './calendar/OutfitLogsList';
 import WardrobeRecommendations from './calendar/WardrobeRecommendations';
 import MonthlyCalendarView from './calendar/MonthlyCalendarView';
+import WeekView from './calendar/WeekView';
 import OutfitLogForm from './calendar/OutfitLogForm';
 import OutfitStatsTab from './calendar/OutfitStatsTab';
 import { useCalendarState } from '@/hooks/useCalendarState';
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import SummonOliviaButton from './SummonOliviaButton';
+import AIStylistChat from '@/components/shop-try/AIStylistChat';
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Calendar as CalendarIcon, CalendarDays, Calendar } from 'lucide-react';
 
 interface OutfitCalendarProps {
   outfits: Outfit[];
@@ -45,6 +50,8 @@ const OutfitLogSchema = z.object({
 
 const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProps) => {
   const [selectedTab, setSelectedTab] = useState('calendar');
+  const [calendarView, setCalendarView] = useState<'month' | 'week'>('month');
+  const [showOliviaChat, setShowOliviaChat] = useState(false);
   
   const {
     selectedDate,
@@ -140,12 +147,16 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
     );
   };
 
+  const handleToggleOliviaChat = () => {
+    setShowOliviaChat(!showOliviaChat);
+  };
+
   return (
     <motion.section
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="space-y-6"
+      className="space-y-6 relative"
     >
       <div className="mb-8">
         <Tabs defaultValue={selectedTab} onValueChange={setSelectedTab} className="w-full">
@@ -161,6 +172,19 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
           </TabsList>
         
           <TabsContent value="calendar">
+            <div className="flex justify-center mb-4">
+              <ToggleGroup type="single" value={calendarView} onValueChange={(value) => value && setCalendarView(value as 'month' | 'week')}>
+                <ToggleGroupItem value="month" aria-label="Month view" className="px-3 py-1">
+                  <CalendarIcon className="h-4 w-4 mr-2" />
+                  Month
+                </ToggleGroupItem>
+                <ToggleGroupItem value="week" aria-label="Week view" className="px-3 py-1">
+                  <CalendarDays className="h-4 w-4 mr-2" />
+                  Week
+                </ToggleGroupItem>
+              </ToggleGroup>
+            </div>
+            
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <DateSelector 
                 selectedDate={selectedDate}
@@ -186,13 +210,24 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
                 seasonalSuggestions={getSeasonalSuggestions(outfits, clothingItems)}
               />
               
-              <MonthlyCalendarView
-                currentMonth={currentMonth}
-                selectedDate={selectedDate}
-                setSelectedDate={setSelectedDate}
-                getLogsForDay={getLogsForDay}
-                getOutfitById={getOutfitById}
-              />
+              {calendarView === 'month' ? (
+                <MonthlyCalendarView
+                  currentMonth={currentMonth}
+                  selectedDate={selectedDate}
+                  setSelectedDate={setSelectedDate}
+                  getLogsForDay={getLogsForDay}
+                  getOutfitById={getOutfitById}
+                />
+              ) : (
+                <WeekView
+                  currentDate={selectedDate || new Date()}
+                  selectedDate={selectedDate}
+                  setSelectedDate={setSelectedDate}
+                  getLogsForDay={getLogsForDay}
+                  getOutfitById={getOutfitById}
+                  handleOpenLogDialog={handleOpenLogDialog}
+                />
+              )}
             </div>
           </TabsContent>
           
@@ -216,11 +251,48 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
         selectedDate={selectedDate}
         onSubmit={onSubmitLog}
       />
+      
+      <div className="fixed bottom-6 left-6 z-40 flex items-center">
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.3 }}
+          className="mr-4 hidden md:block"
+        >
+          <img 
+            src="/lovable-uploads/e29a1d16-e806-4664-a744-c1f7b25262ed.png" 
+            alt="Olivia" 
+            className="w-14 h-14 rounded-full object-cover border-2 border-purple-500 shadow-lg"
+          />
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.5 }}
+          className="bg-slate-800/90 backdrop-blur-sm rounded-lg p-3 border border-purple-500/30 shadow-lg max-w-xs"
+        >
+          <p className="text-sm text-white mb-2">Not sure what to wear? Don't panic – I'm here to help!</p>
+          <button 
+            onClick={handleToggleOliviaChat}
+            className="bg-gradient-to-r from-purple-600 to-pink-500 text-white text-sm px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity"
+          >
+            Chat with Olivia
+          </button>
+        </motion.div>
+      </div>
+      
+      {showOliviaChat && (
+        <AIStylistChat
+          isPremiumUser={true}
+          onUpgradeToPremium={() => {}}
+          onClose={() => setShowOliviaChat(false)}
+        />
+      )}
     </motion.section>
   );
 };
 
 // Add missing imports
-import { Calendar, BarChart3 } from 'lucide-react';
+import { Calendar as BarChart3 } from 'lucide-react';
 
 export default OutfitCalendar;
