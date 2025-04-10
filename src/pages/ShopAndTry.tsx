@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -124,7 +125,7 @@ const ShopAndTry = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white overflow-x-hidden">
+    <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white w-full overflow-x-hidden">
       <Header />
       
       <main className="container mx-auto px-4 pt-24 pb-16 max-w-7xl">
