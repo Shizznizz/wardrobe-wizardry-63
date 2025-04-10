@@ -64,7 +64,7 @@ const PersonalizedStyleCarousel = ({
       name: 'Statement Earrings',
       type: 'accessories',
       seasons: ['all'],
-      color: 'gold',
+      color: 'yellow', // Changed from "gold" to "yellow" which is a valid ClothingColor
       material: 'other',
       occasions: ['party', 'special'],
       imageUrl: 'https://images.unsplash.com/photo-1589128777073-263566ae5e4d?auto=format&fit=crop&q=80&w=300&h=400',
