@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
@@ -67,10 +66,8 @@ const ShowroomContent = ({
         </motion.p>
       </div>
       
-      {/* Introduction Slider - replaces the static explanation section */}
       <IntroductionSlider />
       
-      {/* New CTA Button */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}

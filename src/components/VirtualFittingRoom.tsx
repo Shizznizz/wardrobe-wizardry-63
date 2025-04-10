@@ -1,4 +1,3 @@
-
 import { ClothingItem, Outfit } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
@@ -14,10 +13,10 @@ interface VirtualFittingRoomProps {
   clothingItems: ClothingItem[];
   isProcessing: boolean;
   userPhoto?: string | null;
-  clothingPhoto?: string | null; // Add optional clothing photo prop
+  clothingPhoto?: string | null;
   className?: string;
   onSaveLook?: () => void;
-  isOliviaImage?: boolean; // New prop to indicate if using Olivia's image
+  isOliviaImage?: boolean;
 }
 
 const VirtualFittingRoom = ({ 
@@ -78,10 +77,8 @@ const VirtualFittingRoom = ({
     }
   };
 
-  // Get a subset of clothing items to show as miniatures
   const previewItems = clothingItems.slice(0, isMobile ? 3 : 4);
 
-  // Display user photo if provided, otherwise show the usual content
   if (userPhoto && !finalImage && !isProcessing) {
     return (
       <div className={`neo-blur border border-white/10 rounded-lg p-3 sm:p-4 h-full ${className}`}>
@@ -176,7 +173,6 @@ const VirtualFittingRoom = ({
             </motion.div>
           </AnimatePresence>
           
-          {/* Outfit miniatures */}
           {previewItems.length > 0 && (
             <div className="py-2 sm:py-3">
               <h4 className="text-white/80 text-xs sm:text-sm font-medium mb-1 sm:mb-2">Related items:</h4>
@@ -200,9 +196,7 @@ const VirtualFittingRoom = ({
             </div>
           )}
           
-          {/* Action buttons */}
           <div className={`flex flex-wrap gap-2 ${isMobile ? 'flex-col' : 'justify-end'}`}>
-            {/* Save Look button */}
             <Button 
               variant="default" 
               size={isMobile ? "default" : "sm"}
@@ -213,7 +207,6 @@ const VirtualFittingRoom = ({
               Save Look
             </Button>
             
-            {/* Share button - only show if Web Share API is supported */}
             {navigator.share && (
               <Button 
                 variant="outline" 
@@ -226,7 +219,6 @@ const VirtualFittingRoom = ({
               </Button>
             )}
             
-            {/* Download button */}
             <Button 
               variant="outline" 
               size={isMobile ? "default" : "sm"}

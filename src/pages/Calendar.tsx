@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -9,6 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { useIsMobile } from '@/hooks/use-mobile';
 import EnhancedLocationSelector from '@/components/weather/EnhancedLocationSelector';
 import { useLocationStorage } from '@/hooks/useLocationStorage';
+import { format } from 'date-fns';
 
 const Calendar = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -19,7 +19,6 @@ const Calendar = () => {
   const isMobile = useIsMobile();
   const { savedLocation } = useLocationStorage();
 
-  // Initialize location from saved preferences
   useEffect(() => {
     if (savedLocation && !locationUpdated) {
       setLocation({
@@ -30,7 +29,6 @@ const Calendar = () => {
     }
   }, [savedLocation]);
 
-  // Load items from localStorage on initial render
   useEffect(() => {
     const loadItems = () => {
       setIsLoading(true);
@@ -39,25 +37,19 @@ const Calendar = () => {
         if (savedItems) {
           setItems(JSON.parse(savedItems));
         } else {
-          // Use sample items as fallback
           setItems(sampleClothingItems);
-          // Save sample items to localStorage for future use
           localStorage.setItem('wardrobeItems', JSON.stringify(sampleClothingItems));
         }
         
-        // Load outfits as well
         const savedOutfits = localStorage.getItem('wardrobeOutfits');
         if (savedOutfits) {
           setOutfits(JSON.parse(savedOutfits));
         } else {
-          // Use sample outfits as fallback
           setOutfits(sampleOutfits);
-          // Save sample outfits to localStorage for future use
           localStorage.setItem('wardrobeOutfits', JSON.stringify(sampleOutfits));
         }
       } catch (error) {
         console.error("Failed to load wardrobe data:", error);
-        // Fallback to sample data
         setItems(sampleClothingItems);
         setOutfits(sampleOutfits);
       } finally {
@@ -144,8 +136,5 @@ const Calendar = () => {
     </div>
   );
 };
-
-// Add missing imports
-import { format } from 'date-fns';
 
 export default Calendar;

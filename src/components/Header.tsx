@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu } from 'lucide-react';
@@ -54,7 +53,6 @@ const Header = ({ weather }: HeaderProps) => {
     setIsMenuOpen(prevState => !prevState);
   };
 
-  // Navigation items with updated names
   let navItems = [
     { name: 'Home', path: '/' },
   ];
@@ -62,16 +60,15 @@ const Header = ({ weather }: HeaderProps) => {
   if (user) {
     navItems = [
       ...navItems,
-      { name: 'My Wardrobe', path: '/wardrobe' },
-      { name: 'Mix & Match', path: '/outfits' },
-      { name: 'Style Planner', path: '/calendar' },
-      { name: 'Fitting Room', path: '/showroom' },
-      { name: 'Shop & Try', path: '/new-clothes' },
+      { name: 'My Wardrobe', path: '/my-wardrobe' },
+      { name: 'Mix & Match', path: '/mix-and-match' },
+      { name: 'Style Planner', path: '/style-planner' },
+      { name: 'Fitting Room', path: '/fitting-room' },
+      { name: 'Shop & Try', path: '/shop-and-try' },
       { name: 'Settings', path: '/settings' },
     ];
   }
 
-  // Get current page name for mobile display
   const getCurrentPageName = () => {
     const currentItem = navItems.find(item => item.path === location.pathname);
     return currentItem ? currentItem.name : '';
@@ -88,12 +85,10 @@ const Header = ({ weather }: HeaderProps) => {
       )}
     >
       <div className="container mx-auto px-3 md:px-6 flex items-center justify-between">
-        {/* Mobile: Current page name */}
         {isMobile && (
           <div className="text-white font-medium tracking-wide">{getCurrentPageName()}</div>
         )}
 
-        {/* Desktop Navigation */}
         {!isMobile && (
           <DesktopNavigation 
             navItems={navItems} 
@@ -107,7 +102,6 @@ const Header = ({ weather }: HeaderProps) => {
           
           <UserMenu isScrolled={isScrolled} />
 
-          {/* Mobile: Menu button */}
           {isMobile && (
             <Button
               variant="ghost"

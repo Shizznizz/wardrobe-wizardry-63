@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, Calendar, Shirt, Palette, Smartphone, Image, FileText, Home } from 'lucide-react';
@@ -17,7 +18,7 @@ const Footer = () => {
           <nav className="px-2 py-3 border-t border-white/10 bg-black/20 backdrop-blur-lg sticky bottom-0 z-30">
             <ul className="flex justify-between items-center px-2">
               <li>
-                <Link to="/calendar" className="flex flex-col items-center gap-1">
+                <Link to="/style-planner" className="flex flex-col items-center gap-1">
                   <div className="w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-br from-blue-500/10 to-blue-500/5 border border-blue-400/10">
                     <Calendar className="h-4 w-4 text-blue-300 transition-all hover:text-blue-200" />
                   </div>
@@ -25,7 +26,7 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/wardrobe" className="flex flex-col items-center gap-1">
+                <Link to="/my-wardrobe" className="flex flex-col items-center gap-1">
                   <div className="w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-br from-pink-500/10 to-pink-500/5 border border-pink-400/10">
                     <Shirt className="h-4 w-4 text-pink-300 transition-all hover:text-pink-200" />
                   </div>
@@ -33,7 +34,7 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/outfits" className="flex flex-col items-center gap-1">
+                <Link to="/mix-and-match" className="flex flex-col items-center gap-1">
                   <div className="w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-br from-purple-500/10 to-purple-500/5 border border-purple-400/10">
                     <Palette className="h-4 w-4 text-purple-300 transition-all hover:text-purple-200" />
                   </div>
@@ -41,15 +42,15 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/virtual-try-on" className="flex flex-col items-center gap-1">
+                <Link to="/shop-and-try" className="flex flex-col items-center gap-1">
                   <div className="w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border border-emerald-400/10">
                     <Smartphone className="h-4 w-4 text-emerald-300 transition-all hover:text-emerald-200" />
                   </div>
-                  <span className="text-[10px] text-emerald-300/70">Try-On</span>
+                  <span className="text-[10px] text-emerald-300/70">Shop & Try</span>
                 </Link>
               </li>
               <li>
-                <Link to="/showroom" className="flex flex-col items-center gap-1">
+                <Link to="/fitting-room" className="flex flex-col items-center gap-1">
                   <div className="w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-br from-violet-500/10 to-violet-500/5 border border-violet-400/10">
                     <Image className="h-4 w-4 text-violet-300 transition-all hover:text-violet-200" />
                   </div>
@@ -100,7 +101,6 @@ const Footer = () => {
               </button>
             </div>
             
-            {/* Additional divider before the designer credit */}
             <div className="w-full h-px bg-gradient-to-r from-transparent via-white/5 to-transparent"></div>
             
             <div className="mt-3 text-center">
@@ -151,25 +151,25 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/wardrobe" className="text-slate-300 hover:text-white flex items-center space-x-1 opacity-80 hover:opacity-100 transition-all">
+                <Link to="/my-wardrobe" className="text-slate-300 hover:text-white flex items-center space-x-1 opacity-80 hover:opacity-100 transition-all">
                   <Shirt className="h-3 w-3" />
                   <span>My Wardrobe</span>
                 </Link>
               </li>
               <li>
-                <Link to="/outfits" className="text-slate-300 hover:text-white flex items-center space-x-1 opacity-80 hover:opacity-100 transition-all">
+                <Link to="/mix-and-match" className="text-slate-300 hover:text-white flex items-center space-x-1 opacity-80 hover:opacity-100 transition-all">
                   <Palette className="h-3 w-3" />
                   <span>Mix & Match</span>
                 </Link>
               </li>
               <li>
-                <Link to="/virtual-try-on" className="text-slate-300 hover:text-white flex items-center space-x-1 opacity-80 hover:opacity-100 transition-all">
+                <Link to="/shop-and-try" className="text-slate-300 hover:text-white flex items-center space-x-1 opacity-80 hover:opacity-100 transition-all">
                   <Smartphone className="h-3 w-3" />
-                  <span>Try-On</span>
+                  <span>Shop & Try</span>
                 </Link>
               </li>
               <li>
-                <Link to="/showroom" className="text-slate-300 hover:text-white flex items-center space-x-1 opacity-80 hover:opacity-100 transition-all">
+                <Link to="/fitting-room" className="text-slate-300 hover:text-white flex items-center space-x-1 opacity-80 hover:opacity-100 transition-all">
                   <Image className="h-3 w-3" />
                   <span>Fitting Room</span>
                 </Link>

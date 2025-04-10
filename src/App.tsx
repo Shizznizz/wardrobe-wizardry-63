@@ -15,11 +15,10 @@ import Outfits from "./pages/Outfits";
 import Settings from "./pages/Settings";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
-import VirtualTryOn from "./pages/VirtualTryOn";
 import NewClothes from "./pages/NewClothes";
 import Showroom from "./pages/Showroom";
 import Preferences from './pages/Preferences';
-import Calendar from './pages/Calendar'; // Import the Calendar page
+import Calendar from './pages/Calendar';
 
 const queryClient = new QueryClient();
 
@@ -48,15 +47,24 @@ const AppRoutes = () => {
               <Index />
               <LegalDisclaimer />
             </>} />
-            <Route path="/wardrobe" element={<ProtectedRoute><Wardrobe /></ProtectedRoute>} />
-            <Route path="/outfits" element={<ProtectedRoute><Outfits /></ProtectedRoute>} />
-            <Route path="/calendar" element={<ProtectedRoute><Calendar /></ProtectedRoute>} /> {/* Style Planner route */}
-            <Route path="/showroom" element={<ProtectedRoute><Showroom /></ProtectedRoute>} />
-            <Route path="/new-clothes" element={<ProtectedRoute><NewClothes /></ProtectedRoute>} />
-            <Route path="/virtual-try-on" element={<ProtectedRoute><VirtualTryOn /></ProtectedRoute>} />
+            {/* Updated routes with proper page names */}
+            <Route path="/my-wardrobe" element={<ProtectedRoute><Wardrobe /></ProtectedRoute>} />
+            <Route path="/mix-and-match" element={<ProtectedRoute><Outfits /></ProtectedRoute>} />
+            <Route path="/style-planner" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
+            <Route path="/fitting-room" element={<ProtectedRoute><Showroom /></ProtectedRoute>} />
+            <Route path="/shop-and-try" element={<ProtectedRoute><NewClothes /></ProtectedRoute>} />
             <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
             <Route path="/preferences" element={<ProtectedRoute><Preferences /></ProtectedRoute>} />
             <Route path="/auth" element={<Auth />} />
+            
+            {/* Redirects from old to new routes */}
+            <Route path="/wardrobe" element={<Navigate to="/my-wardrobe" replace />} />
+            <Route path="/outfits" element={<Navigate to="/mix-and-match" replace />} />
+            <Route path="/calendar" element={<Navigate to="/style-planner" replace />} />
+            <Route path="/showroom" element={<Navigate to="/fitting-room" replace />} />
+            <Route path="/new-clothes" element={<Navigate to="/shop-and-try" replace />} />
+            <Route path="/virtual-try-on" element={<Navigate to="/shop-and-try" replace />} />
+            
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>
