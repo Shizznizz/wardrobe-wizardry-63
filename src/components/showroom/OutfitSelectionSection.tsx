@@ -31,6 +31,11 @@ const OutfitSelectionSection = ({
     !collection.premium || effectivePremiumUser
   );
 
+  // Function to handle outfit selection and forward it to parent component
+  const handleOutfitSelection = (outfit: Outfit) => {
+    onSelectOutfit(outfit);
+  };
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
@@ -68,7 +73,7 @@ const OutfitSelectionSection = ({
             onEditOutfit={() => {}}
             onDeleteOutfit={() => {}}
             onToggleFavorite={() => {}}
-            onSelectOutfit={onSelectOutfit}
+            onOutfitAddedToCalendar={() => {}}
           />
         </div>
       ))}
