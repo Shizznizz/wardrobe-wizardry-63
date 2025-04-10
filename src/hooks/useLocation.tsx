@@ -16,11 +16,15 @@ export function useLocation() {
   const [locationChangedManually, setLocationChangedManually] = useState(false);
   const initialLoadRef = useRef(true);
   const prevLocationRef = useRef({ country: '', city: '' });
+  const loadedRef = useRef(false);
   const { user } = useAuth();
 
-  // Load saved location preference when component mounts
+  // Load saved location preference when component mounts - only once
   useEffect(() => {
-    loadSavedLocation();
+    if (!loadedRef.current) {
+      loadSavedLocation();
+      loadedRef.current = true;
+    }
   }, [user]);
 
   // Load location from Supabase or localStorage
@@ -86,14 +90,20 @@ export function useLocation() {
         setUsingSavedPreference(false);
         
         if (isNewLocation) {
-          toast.success(`Location detected: ${location.city ? location.city + ', ' : ''}${getCountryName(location.country)}`);
+          toast.success(`Location detected: ${location.city ? location.city + ', ' : ''}${getCountryName(location.country)}`, {
+            duration: 3000, // Shorter toast duration
+          });
         }
       } else {
-        toast.error("Couldn't detect your location. Please select manually.");
+        toast.error("Couldn't detect your location. Please select manually.", {
+          duration: 3000, // Shorter toast duration
+        });
       }
     } catch (error) {
       console.error('Location detection error:', error);
-      toast.error("Couldn't access your location. Please check your browser permissions.");
+      toast.error("Couldn't access your location. Please check your browser permissions.", {
+        duration: 3000, // Shorter toast duration
+      });
     } finally {
       setIsDetecting(false);
     }
@@ -104,7 +114,9 @@ export function useLocation() {
     // Validate the location first
     const validation = validateLocation(country, city);
     if (!validation.isValid) {
-      toast.error(validation.message || 'Please select a valid location');
+      toast.error(validation.message || 'Please select a valid location', {
+        duration: 3000, // Shorter toast duration
+      });
       return false;
     }
     
@@ -133,7 +145,9 @@ export function useLocation() {
 
         if (error) {
           console.error('Error saving location to Supabase:', error);
-          toast.error('Failed to save location preference');
+          toast.error('Failed to save location preference', {
+            duration: 3000, // Shorter toast duration
+          });
           setIsSavingPreference(false);
           return false;
         }
@@ -147,13 +161,17 @@ export function useLocation() {
       
       // Only show toast if actually changed
       if (isLocationChanged) {
-        toast.success('Location preference saved');
+        toast.success('Location preference saved', {
+          duration: 3000, // Shorter toast duration
+        });
       }
       
       return true;
     } catch (error) {
       console.error('Failed to save location:', error);
-      toast.error('Failed to save location preference');
+      toast.error('Failed to save location preference', {
+        duration: 3000, // Shorter toast duration
+      });
       return false;
     } finally {
       setIsSavingPreference(false);
@@ -173,7 +191,9 @@ export function useLocation() {
     setHasChanges(true);
     
     if (wasPopulated) {
-      toast.success('Location cleared');
+      toast.success('Location cleared', {
+        duration: 3000, // Shorter toast duration
+      });
     }
   };
 

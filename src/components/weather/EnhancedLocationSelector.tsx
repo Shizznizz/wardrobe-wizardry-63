@@ -35,7 +35,7 @@ const EnhancedLocationSelector = ({
   onLocationChange,
   initialCity,
   initialCountry,
-  showToasts = true
+  showToasts = false
 }: EnhancedLocationSelectorProps) => {
   const {
     country,
@@ -55,23 +55,27 @@ const EnhancedLocationSelector = ({
   const isMobile = useIsMobile();
   const [availableCities, setAvailableCities] = useState<string[]>([]);
   const [citySearch, setCitySearch] = useState('');
+  const [initialSetupDone, setInitialSetupDone] = useState(false);
   
-  // Initial setup from props
+  // Initial setup from props - only run once
   useEffect(() => {
-    if (initialCountry && !country) {
-      handleCountryChange(initialCountry);
+    if (!initialSetupDone) {
+      if (initialCountry && !country) {
+        handleCountryChange(initialCountry);
+      }
+      if (initialCity && !city) {
+        handleCityChange(initialCity);
+      }
+      setInitialSetupDone(true);
     }
-    if (initialCity && !city) {
-      handleCityChange(initialCity);
-    }
-  }, [initialCountry, initialCity]);
+  }, [initialCountry, initialCity, initialSetupDone]);
   
-  // Notify parent component when location changes
+  // Notify parent component when location changes, but only after manual change
   useEffect(() => {
-    if (onLocationChange && country) {
+    if (onLocationChange && country && locationChangedManually) {
       onLocationChange(city, country);
     }
-  }, [city, country, onLocationChange]);
+  }, [city, country, onLocationChange, locationChangedManually]);
   
   // Load available cities when country changes
   useEffect(() => {

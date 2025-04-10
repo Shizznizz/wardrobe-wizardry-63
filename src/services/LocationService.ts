@@ -1,3 +1,4 @@
+
 // Service to handle geolocation and city search functionality
 import { countries } from '@/data/countries';
 
@@ -133,8 +134,21 @@ export const getCitiesByCountry = (countryCode: string, searchQuery: string = ''
     .map(city => city.name);
 };
 
+// Cache for geolocation result to prevent multiple API calls
+let locationCache: { city: string; country: string } | null = null;
+let lastGeolocationTimestamp = 0;
+const GEOLOCATION_CACHE_TIME = 5 * 60 * 1000; // 5 minutes
+
 export const getCurrentLocation = (): Promise<{ city: string; country: string } | null> => {
   return new Promise((resolve, reject) => {
+    // Use cached location if available and not expired
+    const now = Date.now();
+    if (locationCache && (now - lastGeolocationTimestamp) < GEOLOCATION_CACHE_TIME) {
+      console.log("Using cached geolocation result");
+      resolve(locationCache);
+      return;
+    }
+
     if (!navigator.geolocation) {
       reject(new Error('Geolocation is not supported by your browser'));
       return;
@@ -161,10 +175,16 @@ export const getCurrentLocation = (): Promise<{ city: string; country: string } 
             const countryName = result.country;
             const country = countries.find(c => c.name === countryName);
             
-            resolve({
+            const location = {
               city: result.city || result.town || result.village || '',
               country: country ? country.code : ''
-            });
+            };
+            
+            // Cache the location result
+            locationCache = location;
+            lastGeolocationTimestamp = now;
+            
+            resolve(location);
           } else {
             resolve(null);
           }

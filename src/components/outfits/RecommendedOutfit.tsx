@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { RefreshCw, ThumbsUp, ThumbsDown, Edit, Thermometer, MapPin, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -39,13 +39,15 @@ const RecommendedOutfit = ({
   const [isSubmittingFeedback, setIsSubmittingFeedback] = useState(false);
   const { user } = useAuth();
   const [generatedTags, setGeneratedTags] = useState<string[]>([]);
+  const locationUpdatedOnceRef = useRef(false);
 
   useEffect(() => {
-    if (savedLocation && !isLoading) {
+    if (savedLocation && !isLoading && !locationUpdatedOnceRef.current) {
       setLocation({
         country: savedLocation.country,
         city: savedLocation.city
       });
+      locationUpdatedOnceRef.current = true;
     }
   }, [savedLocation, isLoading]);
 
@@ -82,7 +84,9 @@ const RecommendedOutfit = ({
 
   const handleSelectOccasion = (occasion: string) => {
     setSelectedOccasion(occasion);
-    toast.success(`Occasion set to: ${occasion}`);
+    toast.success(`Occasion set to: ${occasion}`, {
+      duration: 3000
+    });
     
     setTimeout(() => {
       handleRefreshOutfit();
@@ -101,12 +105,13 @@ const RecommendedOutfit = ({
     setTimeout(() => setShowRotatingView(false), 1000);
     onRefreshOutfit();
     
-    toast.success("Finding the perfect outfit for you...");
+    toast.success("Finding the perfect outfit for you...", {
+      duration: 3000
+    });
   };
 
   const handleLocationChange = (city: string, country: string) => {
     setLocation({ city, country });
-    toast.success(`Location updated to ${city}, ${country}`);
   };
 
   const handleLikeOutfit = async () => {
@@ -246,6 +251,7 @@ const RecommendedOutfit = ({
             onLocationChange={handleLocationChange}
             initialCity={location.city}
             initialCountry={location.country}
+            showToasts={false}
           />
           
           <div className="mt-4">
@@ -254,6 +260,7 @@ const RecommendedOutfit = ({
               city={location.city}
               country={location.country}
               savePreferences={false}
+              showToasts={false}
             />
           </div>
           

@@ -1,6 +1,5 @@
 
 import { useState, useEffect, useRef } from 'react';
-import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { WeatherInfo } from '@/lib/types';
 import { toast } from 'sonner';
@@ -65,6 +64,7 @@ const WeatherWidget = ({
       }
     };
 
+    // Only save preferences if city or country actually changed
     if (city !== locationRef.current.city || country !== locationRef.current.country) {
       saveUserPreferences();
     }
@@ -80,6 +80,11 @@ const WeatherWidget = ({
     }
 
     const fetchWeather = async () => {
+      // Avoid fetching weather if we've already fetched it for this location
+      if (fetchedRef.current && !hasLocationChanged) {
+        return;
+      }
+      
       if (!city || !country) {
         if (!weather) {
           const randomWeather = generateRandomWeather();
@@ -93,10 +98,6 @@ const WeatherWidget = ({
         return;
       }
 
-      if (fetchedRef.current) {
-        return;
-      }
-      
       setIsLoading(true);
       setError(null);
       
@@ -111,7 +112,10 @@ const WeatherWidget = ({
 
         // Only show toast if explicitly enabled AND location has changed
         if (showToasts && hasLocationChanged) {
-          toast.success(`Weather updated for ${weatherData.city}`);
+          toast.success(`Weather updated for ${weatherData.city}`, {
+            // Add shorter duration to avoid toast staying too long
+            duration: 3000
+          });
         }
         
         fetchedRef.current = true;
@@ -130,7 +134,9 @@ const WeatherWidget = ({
           }
           
           if (showToasts) {
-            toast.error("Couldn't fetch real weather data, using estimates instead");
+            toast.error("Couldn't fetch real weather data, using estimates instead", {
+              duration: 3000
+            });
           }
         }
       } finally {
@@ -142,6 +148,8 @@ const WeatherWidget = ({
     
     // Update previous location after fetch is completed
     prevLocationRef.current = { city, country };
+    
+    // No interval-based updates or polling - only fetch when props change
   }, [city, country, onWeatherChange, showToasts]);
 
   return (
