@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -43,7 +42,7 @@ import {
   Thermometer,
   Tag,
   X,
-  SwipeVertical
+  MoveVertical
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -92,14 +91,12 @@ const OutfitLogForm = ({ isOpen, onClose, outfits, selectedDate, onSubmit }: Out
     },
   });
 
-  // Set the date when selectedDate changes
   useEffect(() => {
     if (selectedDate) {
       form.setValue("date", selectedDate);
     }
   }, [selectedDate, form]);
 
-  // Hide the swipe hint after 5 seconds
   useEffect(() => {
     if (isOpen && showHint) {
       const timer = setTimeout(() => {
@@ -160,7 +157,7 @@ const OutfitLogForm = ({ isOpen, onClose, outfits, selectedDate, onSubmit }: Out
         
         {isMobile && showHint && (
           <div className="flex items-center justify-center bg-slate-800/80 rounded-md p-2 mb-2 text-sm">
-            <SwipeVertical className="h-4 w-4 mr-2 text-purple-400" />
+            <MoveVertical className="h-4 w-4 mr-2 text-purple-400" />
             <span>Swipe down to close</span>
           </div>
         )}
@@ -343,7 +340,7 @@ const OutfitLogForm = ({ isOpen, onClose, outfits, selectedDate, onSubmit }: Out
                         </SelectTrigger>
                         <SelectContent className="bg-slate-900 border-purple-500/30">
                           <SelectItem value="cold">Cold (Below 40°F / 5°C)</SelectItem>
-                          <SelectItem value="cool">Cool (40-60°F / 5-15°C)</SelectItem>
+                          <SelectItem value="cool">Cool (40-60°F / 15-24°C)</SelectItem>
                           <SelectItem value="mild">Mild (60-75°F / 15-24°C)</SelectItem>
                           <SelectItem value="warm">Warm (75-85°F / 24-30°C)</SelectItem>
                           <SelectItem value="hot">Hot (Above 85°F / 30°C)</SelectItem>
