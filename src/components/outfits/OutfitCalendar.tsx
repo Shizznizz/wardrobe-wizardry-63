@@ -25,6 +25,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Calendar as CalendarIcon, CalendarDays, BarChart3 } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import OliviaAssistantSection from './OliviaAssistantSection';
+import DayDetailView from './calendar/DayDetailView';
 
 interface OutfitCalendarProps {
   outfits: Outfit[];
@@ -196,6 +197,15 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
                     getOutfitById={getOutfitById}
                     handleOpenLogDialog={handleOpenLogDialog}
                   />
+                  
+                  {selectedDate && (
+                    <DayDetailView
+                      selectedDate={selectedDate}
+                      outfitLogs={outfitLogsOnDate}
+                      getOutfitById={getOutfitById}
+                      handleOpenLogDialog={handleOpenLogDialog}
+                    />
+                  )}
                   
                   <WardrobeRecommendations
                     rarelyWornOutfits={rarelyWornOutfits}

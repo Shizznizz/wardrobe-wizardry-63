@@ -8,6 +8,7 @@ import { Plus, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useMemo, useState } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface WeekViewProps {
   currentDate: Date;
@@ -31,6 +32,15 @@ const activityEmojis: Record<string, string> = {
   dinner: '🍽️',
   sport: '🏃',
   other: '📝'
+};
+
+// Mapping of weather conditions to emojis
+const weatherEmojis: Record<string, string> = {
+  sunny: '☀️',
+  cloudy: '☁️',
+  rainy: '🌧️',
+  snowy: '❄️',
+  windy: '💨'
 };
 
 const WeekView = ({
@@ -75,6 +85,11 @@ const WeekView = ({
     const endDateStr = format(weekDates[6], 'MMMM d, yyyy');
     return `${startDateStr} - ${endDateStr}`;
   }, [weekDates]);
+  
+  // Handle day selection and highlight
+  const handleDaySelect = (day: Date) => {
+    setSelectedDate(day);
+  };
   
   // Handle drag and drop of outfit logs
   const handleDragEnd = (result: any) => {
@@ -139,13 +154,14 @@ const WeekView = ({
                 <div 
                   key={dateStr}
                   className={`
-                    border rounded-lg 
+                    border rounded-lg cursor-pointer
                     ${isMobile ? 'p-1 min-h-[100px]' : 'p-2 min-h-[120px]'}
-                    ${isCurrentDay ? 'border-purple-500' : 'border-slate-700'} 
-                    ${isSelectedDay ? 'bg-slate-700/30' : 'bg-slate-800/20'}
+                    ${isCurrentDay ? 'border-purple-500' : isSelectedDay ? 'border-pink-500' : 'border-slate-700'} 
+                    ${isSelectedDay ? 'bg-slate-700/50' : isCurrentDay ? 'bg-slate-700/30' : 'bg-slate-800/20'}
+                    hover:bg-slate-700/40 hover:border-purple-400/70
                     transition-all duration-200 touch-manipulation
                   `}
-                  onClick={() => setSelectedDate(day)}
+                  onClick={() => handleDaySelect(day)}
                 >
                   <div className="text-center mb-1">
                     <div className={`text-xs text-slate-400 ${isMobile ? 'mb-0' : 'mb-1'}`}>
@@ -153,7 +169,8 @@ const WeekView = ({
                     </div>
                     <div className={`
                       font-semibold rounded-full mx-auto w-7 h-7 flex items-center justify-center
-                      ${isCurrentDay ? 'bg-purple-600 text-white' : ''}
+                      ${isCurrentDay ? 'bg-purple-600 text-white' : 
+                        isSelectedDay ? 'bg-pink-600 text-white' : ''}
                     `}>
                       {format(day, 'd')}
                     </div>
@@ -189,6 +206,10 @@ const WeekView = ({
                                     ${isFutureDay ? 'border-dashed' : ''}
                                     ${log.aiSuggested ? 'border-l-4 border-l-purple-500' : ''}
                                   `}
+                                  onClick={(e) => {
+                                    // Prevent propagation to parent div
+                                    e.stopPropagation();
+                                  }}
                                 >
                                   <div className="flex items-center gap-1 overflow-hidden">
                                     {activityEmoji && <span className="flex-shrink-0">{activityEmoji}</span>}
