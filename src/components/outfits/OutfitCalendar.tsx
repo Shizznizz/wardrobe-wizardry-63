@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
@@ -82,7 +81,6 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
     },
   });
 
-  // Set default view to week on mobile devices
   useEffect(() => {
     if (isMobile) {
       setCalendarView('week');
@@ -153,7 +151,6 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
             </div>
             
             <div className={`grid grid-cols-1 ${isMobile ? 'gap-4' : 'md:grid-cols-3 gap-6'}`}>
-              {/* Grid area 1: Only show date selector and outfit logs list in month view or on desktop */}
               {(!isMobile || calendarView === 'month') && (
                 <>
                   <DateSelector 
@@ -175,17 +172,13 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
                 </>
               )}
               
-              {/* Only show recommendations in month view or on desktop */}
-              {(!isMobile || calendarView === 'month') && (
-                <WardrobeRecommendations
-                  rarelyWornOutfits={rarelyWornOutfits}
-                  frequentlyWornOutfits={frequentlyWornOutfits}
-                  handleSelectOutfit={handleSelectOutfit}
-                  seasonalSuggestions={getSeasonalSuggestions(outfits, clothingItems)}
-                />
-              )}
+              <WardrobeRecommendations
+                rarelyWornOutfits={rarelyWornOutfits}
+                frequentlyWornOutfits={frequentlyWornOutfits}
+                handleSelectOutfit={handleSelectOutfit}
+                seasonalSuggestions={getSeasonalSuggestions(outfits, clothingItems)}
+              />
               
-              {/* Week view is always full width and takes priority on mobile */}
               {calendarView === 'week' && (
                 <WeekView
                   currentDate={selectedDate || new Date()}
@@ -196,8 +189,6 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
                   handleOpenLogDialog={handleOpenLogDialog}
                 />
               )}
-              
-              {/* Removed the duplicate MonthlyCalendarView */}
             </div>
           </TabsContent>
           
@@ -262,7 +253,6 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
   );
 };
 
-// Add missing imports
 import { Calendar as BarChart3 } from 'lucide-react';
 
 export default OutfitCalendar;
