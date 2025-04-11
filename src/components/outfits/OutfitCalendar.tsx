@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
 import { Plus } from 'lucide-react';
@@ -14,7 +14,6 @@ import OutfitLogItem, { OutfitLog } from './OutfitLogItem';
 import DateSelector from './calendar/DateSelector';
 import OutfitLogsList from './calendar/OutfitLogsList';
 import WardrobeRecommendations from './calendar/WardrobeRecommendations';
-import MonthlyCalendarView from './calendar/MonthlyCalendarView';
 import WeekView from './calendar/WeekView';
 import OutfitLogForm from './calendar/OutfitLogForm';
 import OutfitStatsTab from './calendar/OutfitStatsTab';
@@ -25,7 +24,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import SummonOliviaButton from './SummonOliviaButton';
 import AIStylistChat from '@/components/shop-try/AIStylistChat';
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { Calendar as CalendarIcon, CalendarDays, Calendar } from 'lucide-react';
+import { Calendar as CalendarIcon, CalendarDays } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface OutfitCalendarProps {
   outfits: Outfit[];
@@ -52,6 +52,7 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
   const [selectedTab, setSelectedTab] = useState('calendar');
   const [calendarView, setCalendarView] = useState<'month' | 'week'>('month');
   const [showOliviaChat, setShowOliviaChat] = useState(false);
+  const isMobile = useIsMobile();
   
   const {
     selectedDate,
@@ -81,6 +82,13 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
     },
   });
 
+  // Set default view to week on mobile devices
+  useEffect(() => {
+    if (isMobile) {
+      setCalendarView('week');
+    }
+  }, [isMobile]);
+
   const onSubmitLog = async (values: Omit<OutfitLog, 'id'>) => {
     const newLog = await addOutfitLog(values);
     
@@ -97,28 +105,6 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
 
   const frequentlyWornOutfits = getFrequentlyWornOutfits(outfits);
 
-  const getDatesWithOutfits = () => {
-    return outfitLogs
-      .filter(log => {
-        const logMonth = new Date(log.date).getMonth();
-        const logYear = new Date(log.date).getFullYear();
-        return logMonth === currentMonth.getMonth() && logYear === currentMonth.getFullYear();
-      })
-      .map(log => {
-        return {
-          date: new Date(log.date),
-          logs: [log],
-          hasLogs: true
-        };
-      });
-  };
-
-  const datesWithOutfits = getDatesWithOutfits();
-
-  const getClothingItemById = (id: string) => {
-    return clothingItems.find(item => item.id === id);
-  };
-
   const getOutfitById = (id: string) => {
     return outfits.find(outfit => outfit.id === id);
   };
@@ -126,25 +112,6 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
   const handleSelectOutfit = (outfitId: string) => {
     handleOpenLogDialog(selectedDate);
     form.setValue('outfitId', outfitId);
-  };
-
-  const renderCalendarDay = (date: Date) => {
-    const logs = getLogsForDay(date);
-    if (logs.length === 0) return null;
-    
-    return (
-      <div className="absolute bottom-0 left-0 right-0 flex justify-center">
-        {logs.length > 0 && (
-          <div className="h-1.5 w-1.5 rounded-full bg-purple-500 mb-1 mr-0.5" />
-        )}
-        {logs.length > 1 && (
-          <div className="h-1.5 w-1.5 rounded-full bg-blue-500 mb-1 mr-0.5" />
-        )}
-        {logs.length > 2 && (
-          <div className="h-1.5 w-1.5 rounded-full bg-pink-500 mb-1" />
-        )}
-      </div>
-    );
   };
 
   const handleToggleOliviaChat = () => {
@@ -162,7 +129,7 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
         <Tabs defaultValue={selectedTab} onValueChange={setSelectedTab} className="w-full">
           <TabsList className="grid w-full md:w-1/2 mx-auto grid-cols-2 mb-6">
             <TabsTrigger value="calendar" className="flex items-center gap-2">
-              <Calendar className="h-4 w-4" />
+              <CalendarIcon className="h-4 w-4" />
               Calendar
             </TabsTrigger>
             <TabsTrigger value="stats" className="flex items-center gap-2">
@@ -185,40 +152,41 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
               </ToggleGroup>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <DateSelector 
-                selectedDate={selectedDate}
-                onSelectDate={setSelectedDate}
-                outfitLogs={outfitLogs}
-                currentMonth={currentMonth}
-                onMonthChange={setCurrentMonth}
-              />
+            <div className={`grid grid-cols-1 ${isMobile ? 'gap-4' : 'md:grid-cols-3 gap-6'}`}>
+              {/* Grid area 1: Only show date selector and outfit logs list in month view or on desktop */}
+              {(!isMobile || calendarView === 'month') && (
+                <>
+                  <DateSelector 
+                    selectedDate={selectedDate}
+                    onSelectDate={setSelectedDate}
+                    outfitLogs={outfitLogs}
+                    currentMonth={currentMonth}
+                    onMonthChange={setCurrentMonth}
+                  />
+                  
+                  <OutfitLogsList 
+                    selectedDate={selectedDate}
+                    outfitLogsOnDate={outfitLogsOnDate}
+                    getOutfitById={getOutfitById}
+                    handleViewLog={handleViewLog}
+                    handleOpenLogDialog={handleOpenLogDialog}
+                    handleDeleteLog={deleteOutfitLog}
+                  />
+                </>
+              )}
               
-              <OutfitLogsList 
-                selectedDate={selectedDate}
-                outfitLogsOnDate={outfitLogsOnDate}
-                getOutfitById={getOutfitById}
-                handleViewLog={handleViewLog}
-                handleOpenLogDialog={handleOpenLogDialog}
-                handleDeleteLog={deleteOutfitLog}
-              />
-              
-              <WardrobeRecommendations
-                rarelyWornOutfits={rarelyWornOutfits}
-                frequentlyWornOutfits={frequentlyWornOutfits}
-                handleSelectOutfit={handleSelectOutfit}
-                seasonalSuggestions={getSeasonalSuggestions(outfits, clothingItems)}
-              />
-              
-              {calendarView === 'month' ? (
-                <MonthlyCalendarView
-                  currentMonth={currentMonth}
-                  selectedDate={selectedDate}
-                  setSelectedDate={setSelectedDate}
-                  getLogsForDay={getLogsForDay}
-                  getOutfitById={getOutfitById}
+              {/* Only show recommendations in month view or on desktop */}
+              {(!isMobile || calendarView === 'month') && (
+                <WardrobeRecommendations
+                  rarelyWornOutfits={rarelyWornOutfits}
+                  frequentlyWornOutfits={frequentlyWornOutfits}
+                  handleSelectOutfit={handleSelectOutfit}
+                  seasonalSuggestions={getSeasonalSuggestions(outfits, clothingItems)}
                 />
-              ) : (
+              )}
+              
+              {/* Week view is always full width and takes priority on mobile */}
+              {calendarView === 'week' && (
                 <WeekView
                   currentDate={selectedDate || new Date()}
                   selectedDate={selectedDate}
@@ -228,6 +196,8 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
                   handleOpenLogDialog={handleOpenLogDialog}
                 />
               )}
+              
+              {/* Removed the duplicate MonthlyCalendarView */}
             </div>
           </TabsContent>
           

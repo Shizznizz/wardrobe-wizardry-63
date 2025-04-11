@@ -53,7 +53,7 @@ const AddToCalendarButton = ({
       const newLog: Partial<OutfitLog> = {
         outfitId: outfit.id,
         date: selectedDate,
-        timeOfDay: 'morning' as TimeOfDay, // Changed from 'day' to 'morning' to match TimeOfDay enum
+        timeOfDay: 'morning' as TimeOfDay, // Using a valid TimeOfDay value
         notes: '',
         weatherCondition: '',
         temperature: ''
@@ -68,7 +68,7 @@ const AddToCalendarButton = ({
             user_id: user.id,
             outfit_id: outfit.id,
             date: selectedDate.toISOString(),
-            time_of_day: 'morning', // Changed from 'day' to 'morning'
+            time_of_day: 'morning', // Using a valid time_of_day value
             notes: '',
             weather_condition: '',
             temperature: ''
