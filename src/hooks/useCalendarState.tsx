@@ -1,8 +1,9 @@
+
 import { useState, useEffect } from 'react';
 import { OutfitLog } from '@/components/outfits/OutfitLogItem';
 import { Outfit, ClothingItem } from '@/lib/types';
 import { startOfMonth, endOfMonth, isSameDay, format } from 'date-fns';
-import { supabase, getOutfitLogs, saveOutfitLog as saveSBOutfitLog, deleteOutfitLog as deleteSBOutfitLog } from '@/integrations/supabase/client';
+import { supabase, getOutfitLogs, saveOutfitLog as saveSBOutfitLog, updateOutfitLog as updateSBOutfitLog, deleteOutfitLog as deleteSBOutfitLog } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 
@@ -105,6 +106,47 @@ export function useCalendarState(initialOutfits: Outfit[], initialClothingItems:
     }
   };
   
+  // Update an existing outfit log
+  const updateOutfitLog = async (id: string, updates: Partial<OutfitLog>) => {
+    try {
+      if (user) {
+        // Update in Supabase
+        const { success, data, error } = await updateSBOutfitLog(user.id, id, updates);
+        
+        if (!success || error) {
+          console.error('Error updating outfit log:', error);
+          toast.error('Failed to update outfit log');
+          return false;
+        }
+        
+        if (data) {
+          // Update in state
+          setOutfitLogs(prev => prev.map(log => log.id === id ? data : log));
+          toast.success('Outfit log updated successfully');
+          return true;
+        }
+      } else {
+        // For non-logged in users, update in localStorage
+        const updatedLogs = outfitLogs.map(log => {
+          if (log.id === id) {
+            return { ...log, ...updates };
+          }
+          return log;
+        });
+        
+        setOutfitLogs(updatedLogs);
+        localStorage.setItem('outfitLogs', JSON.stringify(updatedLogs));
+        
+        toast.success('Outfit log updated successfully');
+        return true;
+      }
+    } catch (error) {
+      console.error('Failed to update outfit log:', error);
+      toast.error('Failed to update outfit log');
+      return false;
+    }
+  };
+  
   // Delete an outfit log
   const deleteOutfitLog = async (id: string) => {
     try {
@@ -128,7 +170,6 @@ export function useCalendarState(initialOutfits: Outfit[], initialClothingItems:
         localStorage.setItem('outfitLogs', JSON.stringify(updatedLogs));
       }
       
-      toast.success('Outfit log deleted');
       return true;
     } catch (error) {
       console.error('Failed to delete outfit log:', error);
@@ -142,6 +183,30 @@ export function useCalendarState(initialOutfits: Outfit[], initialClothingItems:
     return outfitLogs.filter(log => 
       log.date && isSameDay(new Date(log.date), day)
     );
+  };
+  
+  // Handle opening the log dialog
+  const handleOpenLogDialog = (date?: Date) => {
+    setSelectedDate(date || selectedDate);
+    setSelectedLog(null); // Reset selected log when opening dialog for a new entry
+    setIsLogDialogOpen(true);
+  };
+  
+  // Handle closing the log dialog
+  const handleCloseLogDialog = () => {
+    setIsLogDialogOpen(false);
+    setSelectedLog(null);
+  };
+  
+  // Handle viewing a log
+  const handleViewLog = (log: OutfitLog) => {
+    setSelectedLog(log);
+  };
+  
+  // Handle editing a log
+  const handleEditLog = (log: OutfitLog) => {
+    setSelectedLog(log);
+    setIsLogDialogOpen(true);
   };
   
   // Get rarely worn outfits (not worn in the past 30 days)
@@ -201,23 +266,6 @@ export function useCalendarState(initialOutfits: Outfit[], initialClothingItems:
     return getRarelyWornOutfits(seasonalOutfits).slice(0, 5);
   };
   
-  // Handle opening the log dialog
-  const handleOpenLogDialog = (date?: Date) => {
-    setSelectedDate(date || selectedDate);
-    setIsLogDialogOpen(true);
-  };
-  
-  // Handle closing the log dialog
-  const handleCloseLogDialog = () => {
-    setIsLogDialogOpen(false);
-    setSelectedLog(null);
-  };
-  
-  // Handle viewing a log
-  const handleViewLog = (log: OutfitLog) => {
-    setSelectedLog(log);
-  };
-  
   return {
     selectedDate,
     setSelectedDate,
@@ -230,7 +278,9 @@ export function useCalendarState(initialOutfits: Outfit[], initialClothingItems:
     handleOpenLogDialog,
     handleCloseLogDialog,
     handleViewLog,
+    handleEditLog,
     addOutfitLog,
+    updateOutfitLog,
     deleteOutfitLog,
     getLogsForDay,
     getRarelyWornOutfits,

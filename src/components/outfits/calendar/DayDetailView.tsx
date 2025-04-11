@@ -2,16 +2,21 @@
 import { format } from 'date-fns';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Plus, Pencil, Trash2 } from "lucide-react";
 import { OutfitLog } from '../OutfitLogItem';
 import { Outfit } from '@/lib/types';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
+import { toast } from 'sonner';
 
 interface DayDetailViewProps {
   selectedDate: Date;
   outfitLogs: OutfitLog[];
   getOutfitById: (id: string) => Outfit | undefined;
   handleOpenLogDialog: (date: Date) => void;
+  handleEditLog: (log: OutfitLog) => void;
+  handleDeleteLog: (logId: string) => Promise<boolean>;
 }
 
 // Mapping of activities to emojis
@@ -41,10 +46,31 @@ const DayDetailView = ({
   selectedDate, 
   outfitLogs, 
   getOutfitById, 
-  handleOpenLogDialog 
+  handleOpenLogDialog,
+  handleEditLog,
+  handleDeleteLog
 }: DayDetailViewProps) => {
   const formattedDate = format(selectedDate, 'EEEE, MMMM d');
   const hasLogs = outfitLogs && outfitLogs.length > 0;
+  const [logToDelete, setLogToDelete] = useState<OutfitLog | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  
+  const confirmDelete = async () => {
+    if (!logToDelete) return;
+    
+    setIsDeleting(true);
+    try {
+      const success = await handleDeleteLog(logToDelete.id);
+      if (success) {
+        toast.success("Outfit log deleted successfully");
+      } else {
+        toast.error("Failed to delete outfit log");
+      }
+    } finally {
+      setIsDeleting(false);
+      setLogToDelete(null);
+    }
+  };
   
   return (
     <AnimatePresence mode="wait">
@@ -72,8 +98,29 @@ const DayDetailView = ({
                   const activityName = log.activity === 'other' && log.customActivity ? log.customActivity : log.activity;
                   
                   return (
-                    <div key={log.id} className="p-3 rounded-lg bg-slate-700/50 border border-slate-600">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div key={log.id} className="p-3 rounded-lg bg-slate-700/50 border border-slate-600 relative">
+                      <div className="absolute top-2 right-2 flex space-x-2">
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-6 w-6 text-purple-300 hover:text-purple-100 hover:bg-slate-600/50"
+                          onClick={() => handleEditLog(log)}
+                          title="Edit outfit log"
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-6 w-6 text-red-300 hover:text-red-100 hover:bg-slate-600/50"
+                          onClick={() => setLogToDelete(log)}
+                          title="Delete outfit log"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pr-16">
                         <div>
                           <p className="flex items-center text-white">
                             <span className="font-semibold mr-2">Look:</span> 
@@ -145,6 +192,30 @@ const DayDetailView = ({
           </CardContent>
         </Card>
       </motion.div>
+      
+      <AlertDialog open={!!logToDelete} onOpenChange={(open) => !open && setLogToDelete(null)}>
+        <AlertDialogContent className="bg-slate-800 border-purple-500/20 text-white">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Outfit Log</AlertDialogTitle>
+            <AlertDialogDescription className="text-purple-200">
+              Are you sure you want to delete this outfit log for {logToDelete ? format(logToDelete.date, 'MMMM d, yyyy') : ''}?
+              This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting} className="bg-slate-700 hover:bg-slate-600 text-white border-slate-600">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              disabled={isDeleting}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              {isDeleting ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AnimatePresence>
   );
 };

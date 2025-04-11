@@ -68,7 +68,9 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
     handleOpenLogDialog,
     handleCloseLogDialog,
     handleViewLog,
+    handleEditLog,
     addOutfitLog,
+    updateOutfitLog,
     deleteOutfitLog,
     getLogsForDay,
     getRarelyWornOutfits,
@@ -96,10 +98,19 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
       return;
     }
     
-    const newLog = await addOutfitLog(values);
-    
-    if (newLog && onAddLog) {
-      onAddLog(values);
+    let result;
+    if (selectedLog) {
+      // Update existing log
+      result = await updateOutfitLog(selectedLog.id, values);
+      if (result && onAddLog) {
+        onAddLog({...values, id: selectedLog.id} as any);
+      }
+    } else {
+      // Create new log
+      result = await addOutfitLog(values);
+      if (result && onAddLog) {
+        onAddLog(values);
+      }
     }
   };
 
@@ -212,6 +223,8 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
                       outfitLogs={outfitLogsOnDate}
                       getOutfitById={getOutfitById}
                       handleOpenLogDialog={handleOpenLogDialog}
+                      handleEditLog={handleEditLog}
+                      handleDeleteLog={deleteOutfitLog}
                     />
                   )}
                   
@@ -245,6 +258,8 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
         outfits={outfits}
         selectedDate={selectedDate}
         onSubmit={onSubmitLog}
+        editMode={!!selectedLog}
+        initialData={selectedLog}
       />
       
       <OliviaAssistantSection onChatClick={() => console.log("Chat with Olivia clicked")} />

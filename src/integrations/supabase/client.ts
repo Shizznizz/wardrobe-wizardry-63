@@ -145,6 +145,62 @@ export const saveOutfitLog = async (userId: string, log: Omit<OutfitLog, 'id'>) 
   }
 };
 
+// Function to update an outfit log
+export const updateOutfitLog = async (userId: string, logId: string, updates: Partial<OutfitLog>) => {
+  try {
+    if (!userId || !logId) {
+      console.error('Missing user ID or log ID for updating outfit log');
+      return { success: false, error: 'Missing required information' };
+    }
+
+    // Prepare the update data
+    const updateData: Record<string, any> = {};
+    
+    if (updates.outfitId !== undefined) updateData.outfit_id = updates.outfitId;
+    if (updates.date !== undefined) updateData.date = updates.date.toISOString();
+    if (updates.timeOfDay !== undefined) updateData.time_of_day = updates.timeOfDay;
+    if (updates.notes !== undefined) updateData.notes = updates.notes || null;
+    if (updates.weatherCondition !== undefined) updateData.weather_condition = updates.weatherCondition || null;
+    if (updates.temperature !== undefined) updateData.temperature = updates.temperature || null;
+    if (updates.activity !== undefined) updateData.activity = updates.activity || null;
+    if (updates.customActivity !== undefined) updateData.custom_activity = updates.customActivity || null;
+    if (updates.aiSuggested !== undefined) updateData.ai_suggested = updates.aiSuggested;
+
+    // Update the outfit log
+    const { data, error } = await supabase
+      .from('outfit_logs')
+      .update(updateData)
+      .eq('id', logId)
+      .eq('user_id', userId)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error updating outfit log:', error);
+      return { success: false, error };
+    }
+
+    // Convert the returned data to the application format
+    const updatedLog: OutfitLog = {
+      id: data.id,
+      outfitId: data.outfit_id,
+      date: new Date(data.date),
+      timeOfDay: data.time_of_day,
+      notes: data.notes,
+      weatherCondition: data.weather_condition,
+      temperature: data.temperature,
+      activity: data.activity,
+      customActivity: data.custom_activity,
+      aiSuggested: data.ai_suggested
+    };
+
+    return { success: true, data: updatedLog };
+  } catch (err) {
+    console.error('Error in updateOutfitLog:', err);
+    return { success: false, error: err };
+  }
+};
+
 // Function to get outfit logs for a user
 export const getOutfitLogs = async (userId: string) => {
   try {
