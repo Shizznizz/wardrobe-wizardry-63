@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { OutfitLog } from '@/components/outfits/OutfitLogItem';
 import { Outfit, ClothingItem } from '@/lib/types';
 import { startOfMonth, endOfMonth, isSameDay, format } from 'date-fns';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, getOutfitLogs, saveOutfitLog as saveSBOutfitLog, deleteOutfitLog as deleteSBOutfitLog } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 
@@ -15,38 +15,21 @@ export function useCalendarState(initialOutfits: Outfit[], initialClothingItems:
   const [selectedLog, setSelectedLog] = useState<OutfitLog | null>(null);
   const { user } = useAuth();
   
-  // Load outfit logs from localStorage or Supabase on component mount
+  // Load outfit logs from Supabase on component mount
   useEffect(() => {
     loadOutfitLogs();
   }, [user]);
-  
-  // Load outfit logs for the current month whenever the month changes
-  useEffect(() => {
-    if (currentMonth) {
-      loadOutfitLogsForMonth(currentMonth);
-    }
-  }, [currentMonth]);
   
   const loadOutfitLogs = async () => {
     setIsLoading(true);
     
     try {
-      // For logged in users, fetch from Supabase
+      // For logged-in users, fetch from Supabase
       if (user) {
-        const { data, error } = await supabase
-          .from('outfit_logs')
-          .select('*')
-          .eq('user_id', user.id)
-          .order('date', { ascending: false });
-          
-        if (!error && data) {
-          // Convert string dates to Date objects
-          const formattedLogs = data.map(log => ({
-            ...log,
-            date: new Date(log.date)
-          })) as OutfitLog[];
-          
-          setOutfitLogs(formattedLogs);
+        const { success, data, error } = await getOutfitLogs(user.id);
+        
+        if (success && data) {
+          setOutfitLogs(data);
         } else if (error) {
           console.error('Error loading outfit logs:', error);
           // Fallback to localStorage
@@ -82,84 +65,25 @@ export function useCalendarState(initialOutfits: Outfit[], initialClothingItems:
     }
   };
   
-  const loadOutfitLogsForMonth = async (month: Date) => {
-    if (!user) return;
-    
-    const monthStart = startOfMonth(month);
-    const monthEnd = endOfMonth(month);
-    
-    setIsLoading(true);
-    
-    try {
-      const { data, error } = await supabase
-        .from('outfit_logs')
-        .select('*')
-        .eq('user_id', user.id)
-        .gte('date', monthStart.toISOString())
-        .lte('date', monthEnd.toISOString());
-        
-      if (!error && data) {
-        // Process the data and merge with existing logs
-        const newLogs = data.map(log => ({
-          ...log,
-          date: new Date(log.date)
-        })) as OutfitLog[];
-        
-        // Update only the logs for this month, keep other months intact
-        setOutfitLogs(prev => {
-          const filteredPrev = prev.filter(log => {
-            return log.date < monthStart || log.date > monthEnd;
-          });
-          return [...filteredPrev, ...newLogs];
-        });
-      }
-    } catch (error) {
-      console.error('Failed to load outfit logs for month:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  
   // Add a new outfit log
   const addOutfitLog = async (log: Omit<OutfitLog, 'id'>) => {
     try {
       if (user) {
         // Add to Supabase
-        const { data, error } = await supabase
-          .from('outfit_logs')
-          .insert({
-            user_id: user.id,
-            outfit_id: log.outfitId,
-            date: log.date.toISOString(),
-            time_of_day: log.timeOfDay,
-            notes: log.notes || null,
-            weather_condition: log.weatherCondition || null,
-            temperature: log.temperature || null
-          })
-          .select()
-          .single();
-          
-        if (error) {
+        const { success, data, error } = await saveSBOutfitLog(user.id, log);
+        
+        if (!success || error) {
           console.error('Error adding outfit log:', error);
           toast.error('Failed to save outfit log');
           return null;
         }
         
-        // Format the log with a Date object
-        const newLog: OutfitLog = {
-          id: data.id,
-          outfitId: data.outfit_id,
-          date: new Date(data.date),
-          timeOfDay: data.time_of_day,
-          notes: data.notes,
-          weatherCondition: data.weather_condition,
-          temperature: data.temperature
-        };
-        
-        // Add to state
-        setOutfitLogs(prev => [...prev, newLog]);
-        toast.success(`Outfit logged for ${format(log.date, 'MMMM d, yyyy')}`);
-        return newLog;
+        if (data) {
+          // Add to state
+          setOutfitLogs(prev => [...prev, data]);
+          toast.success(`Outfit logged for ${format(log.date, 'MMMM d, yyyy')}`);
+          return data;
+        }
       } else {
         // For non-logged in users, save to localStorage
         const newLog: OutfitLog = {
@@ -186,12 +110,9 @@ export function useCalendarState(initialOutfits: Outfit[], initialClothingItems:
     try {
       if (user) {
         // Delete from Supabase
-        const { error } = await supabase
-          .from('outfit_logs')
-          .delete()
-          .eq('id', id);
-          
-        if (error) {
+        const { success, error } = await deleteSBOutfitLog(user.id, id);
+        
+        if (!success || error) {
           console.error('Error deleting outfit log:', error);
           toast.error('Failed to delete outfit log');
           return false;

@@ -26,6 +26,8 @@ import { Calendar as CalendarIcon, CalendarDays, BarChart3 } from 'lucide-react'
 import { useIsMobile } from '@/hooks/use-mobile';
 import OliviaAssistantSection from './OliviaAssistantSection';
 import DayDetailView from './calendar/DayDetailView';
+import { useAuth } from '@/hooks/useAuth';
+import { toast } from 'sonner';
 
 interface OutfitCalendarProps {
   outfits: Outfit[];
@@ -52,6 +54,7 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
   const [selectedTab, setSelectedTab] = useState('calendar');
   const [calendarView, setCalendarView] = useState<'month' | 'week'>('month');
   const isMobile = useIsMobile();
+  const { isAuthenticated } = useAuth();
   
   const {
     selectedDate,
@@ -88,6 +91,11 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
   }, [isMobile]);
 
   const onSubmitLog = async (values: Omit<OutfitLog, 'id'>) => {
+    if (!values.outfitId) {
+      toast.error("Please select an outfit");
+      return;
+    }
+    
     const newLog = await addOutfitLog(values);
     
     if (newLog && onAddLog) {

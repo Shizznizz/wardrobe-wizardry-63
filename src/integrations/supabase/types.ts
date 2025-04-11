@@ -9,6 +9,54 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      outfit_logs: {
+        Row: {
+          activity: string | null
+          ai_suggested: boolean | null
+          created_at: string
+          custom_activity: string | null
+          date: string
+          id: string
+          notes: string | null
+          outfit_id: string
+          temperature: string | null
+          time_of_day: string
+          updated_at: string
+          user_id: string
+          weather_condition: string | null
+        }
+        Insert: {
+          activity?: string | null
+          ai_suggested?: boolean | null
+          created_at?: string
+          custom_activity?: string | null
+          date: string
+          id?: string
+          notes?: string | null
+          outfit_id: string
+          temperature?: string | null
+          time_of_day: string
+          updated_at?: string
+          user_id: string
+          weather_condition?: string | null
+        }
+        Update: {
+          activity?: string | null
+          ai_suggested?: boolean | null
+          created_at?: string
+          custom_activity?: string | null
+          date?: string
+          id?: string
+          notes?: string | null
+          outfit_id?: string
+          temperature?: string | null
+          time_of_day?: string
+          updated_at?: string
+          user_id?: string
+          weather_condition?: string | null
+        }
+        Relationships: []
+      }
       user_preferences: {
         Row: {
           climate_preferences: string[] | null
