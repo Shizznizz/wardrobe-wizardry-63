@@ -8,6 +8,13 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const outfitSuggestions = [
   "Try your beige trench coat with black ankle boots and a white blouse — perfect balance of cozy and chic.",
@@ -35,6 +42,28 @@ const eventSuggestions = [
   { value: 'shopping-trip', label: 'Shopping Trip', temp: '18°C', icon: 'shirt' }
 ];
 
+const moodOptions = [
+  { value: 'happy', label: 'Happy' },
+  { value: 'relaxed', label: 'Relaxed' },
+  { value: 'energetic', label: 'Energetic' },
+  { value: 'formal', label: 'Formal' },
+  { value: 'casual', label: 'Casual' },
+  { value: 'creative', label: 'Creative' },
+];
+
+const locationOptions = [
+  { value: 'indoor', label: 'Indoor' },
+  { value: 'outdoor', label: 'Outdoor' },
+  { value: 'mixed', label: 'Mixed (Indoor & Outdoor)' },
+];
+
+const timeOptions = [
+  { value: 'morning', label: 'Morning' },
+  { value: 'afternoon', label: 'Afternoon' },
+  { value: 'evening', label: 'Evening' },
+  { value: 'night', label: 'Night' },
+];
+
 const getRandomSuggestion = () => {
   const randomIndex = Math.floor(Math.random() * outfitSuggestions.length);
   return outfitSuggestions[randomIndex];
@@ -47,6 +76,9 @@ const StyleSituation = () => {
   const [typedText, setTypedText] = useState('');
   const [open, setOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<string>('');
+  const [mood, setMood] = useState<string>('');
+  const [location, setLocation] = useState<string>('');
+  const [timeOfDay, setTimeOfDay] = useState<string>('');
   const isMobile = useIsMobile();
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -110,7 +142,7 @@ const StyleSituation = () => {
         What are you dressing for today?
       </h3>
       
-      <form onSubmit={handleSubmit} className="space-y-3">
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div className="relative">
           <Popover open={open} onOpenChange={setOpen}>
             <div className={`flex ${isMobile ? 'flex-col' : 'items-center'} gap-3`}>
@@ -184,6 +216,56 @@ const StyleSituation = () => {
               </Command>
             </PopoverContent>
           </Popover>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div>
+            <label className="text-xs text-white/70 mb-1 block">Mood</label>
+            <Select value={mood} onValueChange={setMood}>
+              <SelectTrigger className="bg-slate-800/60 border-coral-500/30 text-white">
+                <SelectValue placeholder="Select mood" />
+              </SelectTrigger>
+              <SelectContent className="bg-slate-900 border-coral-500/30">
+                {moodOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div>
+            <label className="text-xs text-white/70 mb-1 block">Location</label>
+            <Select value={location} onValueChange={setLocation}>
+              <SelectTrigger className="bg-slate-800/60 border-coral-500/30 text-white">
+                <SelectValue placeholder="Select location" />
+              </SelectTrigger>
+              <SelectContent className="bg-slate-900 border-coral-500/30">
+                {locationOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div>
+            <label className="text-xs text-white/70 mb-1 block">Time of Day</label>
+            <Select value={timeOfDay} onValueChange={setTimeOfDay}>
+              <SelectTrigger className="bg-slate-800/60 border-coral-500/30 text-white">
+                <SelectValue placeholder="Select time" />
+              </SelectTrigger>
+              <SelectContent className="bg-slate-900 border-coral-500/30">
+                {timeOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </form>
       
