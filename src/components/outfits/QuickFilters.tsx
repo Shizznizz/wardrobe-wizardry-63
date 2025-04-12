@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { Filter, Tag, Calendar, Check, Shirt, Sun, Wind, Palette, Party } from 'lucide-react';
+import { Filter, Tag, Calendar, Check, Shirt, Sun, Wind, Palette, PartyPopper } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Toggle } from '@/components/ui/toggle';
 import { ScrollArea } from '@/components/ui/scroll-area';
