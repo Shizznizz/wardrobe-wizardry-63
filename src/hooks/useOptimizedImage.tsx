@@ -67,7 +67,7 @@ export const useOptimizedImage = (
     // Attributes to spread onto the img element
     imgProps: {
       src: optimizedSrc,
-      loading: lazyLoad && !priority ? 'lazy' : undefined,
+      loading: lazyLoad && !priority ? 'lazy' : 'eager',
       style: !isLoaded ? { backgroundColor: placeholderColor } : undefined,
       onLoad: () => setIsLoaded(true),
       onError: () => setError('Failed to load image')

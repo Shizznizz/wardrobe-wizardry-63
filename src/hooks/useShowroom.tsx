@@ -23,11 +23,14 @@ export const useShowroom = () => {
     isPremiumUser,
     userPhoto,
     finalImage,
+    setFinalImage,
     isUsingOliviaImage,
     isUploadLoading,
     oliviaSuggestion,
+    setOliviaSuggestion,
     selectedOutfit,
     isProcessingTryOn,
+    setIsProcessingTryOn,
     handleUserPhotoUpload,
     handleSelectOliviaImage,
     handleTryOnOutfit,
@@ -39,6 +42,7 @@ export const useShowroom = () => {
   const {
     fashionCollections,
     selectedItems,
+    setSelectedItems,
     handleAddItem,
     handleTryOnTrendingItem,
     handleSuggestAnotherOutfit,
@@ -178,6 +182,21 @@ export const useShowroom = () => {
     toast.info("Olivia is ready to chat about your style!");
   };
 
+  // Added missing methods for Showroom.tsx
+  const resetSelection = () => {
+    setSelectedOutfit(null);
+    setClothingPhoto(null);
+    clearPhotos();
+  };
+
+  const handlePreviewNow = () => {
+    if (userPhoto && selectedOutfit) {
+      document.getElementById('preview-section')?.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      toast.info("Please select a photo and outfit first");
+    }
+  };
+
   return {
     isPremiumUser: isPremiumUser || isAuthenticated,
     showTips,
@@ -200,6 +219,10 @@ export const useShowroom = () => {
     showFloatingChat,
     generationError,
     challengeParticipantCount,
+    
+    // Added missing methods
+    resetSelection,
+    handlePreviewNow,
     
     handleSelectOliviaImage,
     handleSelectOutfit,

@@ -10,7 +10,7 @@ interface PerformanceMetrics {
   pageLoadTime: number | null; // Total page load time
 }
 
-// Define types for web performance observer entries
+// Define custom types for web performance observer entries
 interface PerformanceEntryWithProcessingStart extends PerformanceEntry {
   processingStart?: number;
 }
@@ -34,7 +34,7 @@ export const usePerformanceMonitor = (pageName: string) => {
   });
   
   useEffect(() => {
-    if (!window.performance || !window.performance.timing) {
+    if (typeof window === 'undefined' || !window.performance || !window.performance.timing) {
       console.warn('Performance API not supported in this browser');
       return;
     }
@@ -61,41 +61,47 @@ export const usePerformanceMonitor = (pageName: string) => {
     };
     
     // Largest Contentful Paint
-    const lcpObserver = new PerformanceObserver((entryList) => {
-      const entries = entryList.getEntries();
-      const lastEntry = entries[entries.length - 1];
-      
-      if (lastEntry) {
-        metrics.current.LCP = lastEntry.startTime;
-        console.info(`[Performance] ${pageName} - LCP: ${lastEntry.startTime}ms`);
-      }
-    });
-    
-    // First Input Delay
-    const fidObserver = new PerformanceObserver((entryList) => {
-      const firstEntry = entryList.getEntries()[0] as PerformanceEntryWithProcessingStart;
-      
-      if (firstEntry && firstEntry.processingStart !== undefined) {
-        metrics.current.FID = firstEntry.processingStart - firstEntry.startTime;
-        console.info(`[Performance] ${pageName} - FID: ${metrics.current.FID}ms`);
-      }
-    });
-    
-    // Cumulative Layout Shift
-    const clsObserver = new PerformanceObserver((entryList) => {
-      let clsValue = 0;
-      
-      for (const entry of entryList.getEntries() as LayoutShiftEntry[]) {
-        if (!entry.hadRecentInput) {
-          clsValue += entry.value || 0;
-        }
-      }
-      
-      metrics.current.CLS = clsValue;
-      console.info(`[Performance] ${pageName} - CLS: ${clsValue}`);
-    });
+    let lcpObserver: PerformanceObserver;
+    let fidObserver: PerformanceObserver;
+    let clsObserver: PerformanceObserver;
     
     try {
+      // Largest Contentful Paint
+      lcpObserver = new PerformanceObserver((entryList) => {
+        const entries = entryList.getEntries();
+        const lastEntry = entries[entries.length - 1];
+        
+        if (lastEntry) {
+          metrics.current.LCP = lastEntry.startTime;
+          console.info(`[Performance] ${pageName} - LCP: ${lastEntry.startTime}ms`);
+        }
+      });
+      
+      // First Input Delay
+      fidObserver = new PerformanceObserver((entryList) => {
+        const firstEntry = entryList.getEntries()[0] as PerformanceEntryWithProcessingStart;
+        
+        if (firstEntry && typeof firstEntry.processingStart !== 'undefined') {
+          metrics.current.FID = firstEntry.processingStart - firstEntry.startTime;
+          console.info(`[Performance] ${pageName} - FID: ${metrics.current.FID}ms`);
+        }
+      });
+      
+      // Cumulative Layout Shift
+      clsObserver = new PerformanceObserver((entryList) => {
+        let clsValue = 0;
+        
+        for (const entry of entryList.getEntries()) {
+          const layoutShiftEntry = entry as LayoutShiftEntry;
+          if (!layoutShiftEntry.hadRecentInput && typeof layoutShiftEntry.value !== 'undefined') {
+            clsValue += layoutShiftEntry.value;
+          }
+        }
+        
+        metrics.current.CLS = clsValue;
+        console.info(`[Performance] ${pageName} - CLS: ${clsValue}`);
+      });
+      
       // Register observers
       lcpObserver.observe({ type: 'largest-contentful-paint', buffered: true });
       fidObserver.observe({ type: 'first-input', buffered: true });
@@ -118,9 +124,9 @@ export const usePerformanceMonitor = (pageName: string) => {
     
     return () => {
       // Disconnect observers on cleanup
-      lcpObserver.disconnect();
-      fidObserver.disconnect();
-      clsObserver.disconnect();
+      if (lcpObserver) lcpObserver.disconnect();
+      if (fidObserver) fidObserver.disconnect();
+      if (clsObserver) clsObserver.disconnect();
     };
   }, [pageName]);
   

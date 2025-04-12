@@ -44,9 +44,9 @@ const OptimizedImage = ({
     }
   };
 
-  // Extract loading from imgProps to fix TypeScript error
+  // Convert loading to the correct type
   const { loading, ...safeImgProps } = imgProps;
-
+  
   return (
     <div className={cn("relative overflow-hidden", aspectRatio, containerClassName)}>
       {(!isLoaded && showSkeleton) && (
@@ -59,6 +59,7 @@ const OptimizedImage = ({
         {...safeImgProps}
         {...props}
         alt={alt}
+        src={imgProps.src || ''}
         loading={loading as "lazy" | "eager" | undefined}
         className={cn(
           "object-cover w-full h-full transition-opacity duration-300",

@@ -1,80 +1,132 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import WeekView from './WeekView';
-import DayDetailView from './DayDetailView';
-import WardrobeRecommendations from './WardrobeRecommendations';
+import { addDays, format, startOfWeek, endOfWeek, isSameDay } from 'date-fns';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { ClothingItem, Outfit } from '@/lib/types';
 import { OutfitLog } from '@/components/outfits/OutfitLogItem';
-import { Outfit, ClothingItem } from '@/lib/types';
 
 interface WeekViewContainerProps {
-  selectedDate: Date | null;
-  setSelectedDate: (date: Date) => void;
-  outfitLogsOnDate: OutfitLog[];
-  rarelyWornOutfits: Outfit[];
-  frequentlyWornOutfits: Outfit[];
-  getOutfitById: (id: string) => Outfit | undefined;
-  getLogsForDay: (date: Date) => OutfitLog[];
-  handleOpenLogDialog: (date: Date) => void;
-  handleEditLog: (log: OutfitLog) => void;
-  handleDeleteLog: (id: string) => void;
-  handleSelectOutfit: (outfitId: string) => void;
-  getSeasonalSuggestions: (outfits: Outfit[], clothingItems: ClothingItem[]) => any;
+  currentDate: Date;
+  selectedDate: Date;
   outfits: Outfit[];
   clothingItems: ClothingItem[];
+  outfitLogs: OutfitLog[];
+  onDateClick: (date: Date) => void;
+  onLogDelete: (logId: string) => Promise<boolean>;
 }
 
-const WeekViewContainer = ({
-  selectedDate,
-  setSelectedDate,
-  outfitLogsOnDate,
-  rarelyWornOutfits,
-  frequentlyWornOutfits,
-  getOutfitById,
-  getLogsForDay,
-  handleOpenLogDialog,
-  handleEditLog,
-  handleDeleteLog,
-  handleSelectOutfit,
-  getSeasonalSuggestions,
-  outfits,
-  clothingItems
+const WeekViewContainer = ({ 
+  currentDate, 
+  selectedDate, 
+  outfits, 
+  clothingItems, 
+  outfitLogs, 
+  onDateClick,
+  onLogDelete
 }: WeekViewContainerProps) => {
+  const weekStart = startOfWeek(currentDate, { weekStartsOn: 0 });
+  const weekEnd = endOfWeek(currentDate, { weekStartsOn: 0 });
+  
+  // Generate array of dates for the week
+  const daysInWeek = [];
+  let day = weekStart;
+  
+  while (day <= weekEnd) {
+    daysInWeek.push(day);
+    day = addDays(day, 1);
+  }
+
+  // Filter logs for the current week
+  const weekLogs = outfitLogs.filter(log => {
+    const logDate = new Date(log.date);
+    return logDate >= weekStart && logDate <= weekEnd;
+  });
+
+  const handleLogDeleteWrapper = async (logId: string): Promise<boolean> => {
+    try {
+      await onLogDelete(logId);
+      return true;
+    } catch (error) {
+      console.error("Error deleting log:", error);
+      return false;
+    }
+  };
+
   return (
     <motion.div
-      key="week-view"
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
-      transition={{ duration: 0.3 }}
-      className="grid grid-cols-1 gap-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="h-full flex flex-col"
     >
-      <WeekView
-        currentDate={selectedDate || new Date()}
-        selectedDate={selectedDate}
-        setSelectedDate={setSelectedDate}
-        getLogsForDay={getLogsForDay}
-        getOutfitById={getOutfitById}
-        handleOpenLogDialog={handleOpenLogDialog}
-      />
+      <div className="flex justify-between mb-4">
+        {daysInWeek.map((date) => (
+          <Button
+            key={date.toISOString()}
+            onClick={() => onDateClick(date)}
+            variant={isSameDay(date, selectedDate) ? "default" : "outline"}
+            className={`
+              flex-1 flex flex-col items-center justify-center h-auto py-2
+              ${isSameDay(date, new Date()) ? 'border-primary' : ''}
+            `}
+          >
+            <span className="text-xs font-medium mb-1">{format(date, 'EEE')}</span>
+            <span className={`text-lg ${isSameDay(date, selectedDate) ? 'font-bold' : ''}`}>
+              {format(date, 'd')}
+            </span>
+          </Button>
+        ))}
+      </div>
       
-      {selectedDate && (
-        <DayDetailView
-          selectedDate={selectedDate}
-          outfitLogs={outfitLogsOnDate}
-          getOutfitById={getOutfitById}
-          handleOpenLogDialog={handleOpenLogDialog}
-          handleEditLog={handleEditLog}
-          handleDeleteLog={handleDeleteLog}
-        />
-      )}
-      
-      <WardrobeRecommendations
-        rarelyWornOutfits={rarelyWornOutfits}
-        frequentlyWornOutfits={frequentlyWornOutfits}
-        handleSelectOutfit={handleSelectOutfit}
-        seasonalSuggestions={getSeasonalSuggestions(outfits, clothingItems)}
-      />
+      <ScrollArea className="flex-grow">
+        <div className="grid grid-cols-7 gap-2 h-full">
+          {daysInWeek.map(date => {
+            const dayLogs = weekLogs.filter(log => isSameDay(new Date(log.date), date));
+            
+            return (
+              <div 
+                key={date.toISOString()} 
+                className={`
+                  flex flex-col space-y-2 p-2 border rounded-md min-h-[300px]
+                  ${isSameDay(date, selectedDate) ? 'border-primary bg-primary/5' : 'border-gray-200'}
+                `}
+                onClick={() => onDateClick(date)}
+              >
+                {dayLogs.length === 0 ? (
+                  <div className="text-center text-gray-400 text-xs mt-4">
+                    No outfits logged
+                  </div>
+                ) : (
+                  dayLogs.map(log => (
+                    <div 
+                      key={log.id} 
+                      className="p-2 bg-card rounded-md border border-border text-xs"
+                    >
+                      <div className="font-medium">{log.occasion || 'Outfit'}</div>
+                      <div className="text-gray-400 mt-1">{log.notes || 'No notes'}</div>
+                      <div className="flex justify-end mt-1">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-6 px-2 text-xs hover:bg-destructive/10"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleLogDeleteWrapper(log.id);
+                          }}
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </ScrollArea>
     </motion.div>
   );
 };

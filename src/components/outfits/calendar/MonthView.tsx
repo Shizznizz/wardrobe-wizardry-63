@@ -1,83 +1,91 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import DateSelector from './DateSelector';
-import OutfitLogsList from './OutfitLogsList';
-import WardrobeRecommendations from './WardrobeRecommendations';
-import { OutfitLog } from '@/components/outfits/OutfitLogItem';
-import { Outfit, ClothingItem } from '@/lib/types';
+import { format, startOfMonth, getDaysInMonth, getDay, addDays, isSameDay, isToday } from 'date-fns';
+import { Outfit } from '@/lib/types';
+import { Button } from '@/components/ui/button';
 
 interface MonthViewProps {
-  selectedDate: Date | null;
-  setSelectedDate: (date: Date) => void;
-  currentMonth: Date;
-  setCurrentMonth: (date: Date) => void;
-  outfitLogs: OutfitLog[];
-  outfitLogsOnDate: OutfitLog[];
-  rarelyWornOutfits: Outfit[];
-  frequentlyWornOutfits: Outfit[];
-  getOutfitById: (id: string) => Outfit | undefined;
-  handleViewLog: (log: OutfitLog) => void;
-  handleOpenLogDialog: (date: Date) => void;
-  handleDeleteLog: (id: string) => void;
-  handleSelectOutfit: (outfitId: string) => void;
-  getSeasonalSuggestions: (outfits: Outfit[], clothingItems: ClothingItem[]) => any;
+  currentDate: Date;
   outfits: Outfit[];
-  clothingItems: ClothingItem[];
-  isMobile: boolean;
+  outfitLogs: any[];
+  onDateClick: (date: Date) => void;
+  onLogDelete: (id: string) => Promise<boolean>;
 }
 
-const MonthView = ({
-  selectedDate,
-  setSelectedDate,
-  currentMonth,
-  setCurrentMonth,
-  outfitLogs,
-  outfitLogsOnDate,
-  rarelyWornOutfits,
-  frequentlyWornOutfits,
-  getOutfitById,
-  handleViewLog,
-  handleOpenLogDialog,
-  handleDeleteLog,
-  handleSelectOutfit,
-  getSeasonalSuggestions,
-  outfits,
-  clothingItems,
-  isMobile
-}: MonthViewProps) => {
+const MonthView = ({ currentDate, outfits, outfitLogs, onDateClick, onLogDelete }: MonthViewProps) => {
+  const startOfCurrentMonth = startOfMonth(currentDate);
+  const daysInMonth = getDaysInMonth(startOfCurrentMonth);
+  const startDay = getDay(startOfCurrentMonth);
+  
+  // Array to hold all days in the current month view (including padding days)
+  const daysArray = Array.from({ length: 42 }, (_, i) => {
+    const dayOffset = i - startDay;
+    const currentDayDate = addDays(startOfCurrentMonth, dayOffset);
+    return {
+      date: currentDayDate,
+      isCurrentMonth: dayOffset >= 0 && dayOffset < daysInMonth,
+      hasOutfit: outfitLogs.some(log => isSameDay(new Date(log.date), currentDayDate)),
+      outfitCount: outfitLogs.filter(log => isSameDay(new Date(log.date), currentDayDate)).length
+    };
+  });
+  
+  // Break days into weeks for rendering
+  const weeks = [];
+  for (let i = 0; i < daysArray.length; i += 7) {
+    weeks.push(daysArray.slice(i, i + 7));
+  }
+
+  const handleLogDeleteWrapper = async (id: string): Promise<boolean> => {
+    try {
+      await onLogDelete(id);
+      return true;
+    } catch (error) {
+      console.error("Error deleting log:", error);
+      return false;
+    }
+  };
+
   return (
     <motion.div 
-      key="month-view"
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
-      transition={{ duration: 0.3 }}
-      className={`grid grid-cols-1 ${isMobile ? 'gap-4' : 'md:grid-cols-3 gap-6'}`}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="w-full"
     >
-      <DateSelector 
-        selectedDate={selectedDate}
-        onSelectDate={setSelectedDate}
-        outfitLogs={outfitLogs}
-        currentMonth={currentMonth}
-        onMonthChange={setCurrentMonth}
-      />
+      <div className="grid grid-cols-7 gap-1 mb-2 text-center">
+        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+          <div key={day} className="text-xs font-medium text-gray-400 py-1">
+            {day}
+          </div>
+        ))}
+      </div>
       
-      <OutfitLogsList 
-        selectedDate={selectedDate}
-        outfitLogsOnDate={outfitLogsOnDate}
-        getOutfitById={getOutfitById}
-        handleViewLog={handleViewLog}
-        handleOpenLogDialog={handleOpenLogDialog}
-        handleDeleteLog={handleDeleteLog}
-      />
-      
-      <WardrobeRecommendations
-        rarelyWornOutfits={rarelyWornOutfits}
-        frequentlyWornOutfits={frequentlyWornOutfits}
-        handleSelectOutfit={handleSelectOutfit}
-        seasonalSuggestions={getSeasonalSuggestions(outfits, clothingItems)}
-      />
+      <div className="space-y-1">
+        {weeks.map((week, weekIndex) => (
+          <div key={weekIndex} className="grid grid-cols-7 gap-1">
+            {week.map((day, dayIndex) => (
+              <Button
+                key={`${weekIndex}-${dayIndex}`}
+                variant={isToday(day.date) ? "default" : day.isCurrentMonth ? "outline" : "ghost"}
+                className={`
+                  p-1 h-auto min-h-[70px] flex flex-col items-center justify-center relative
+                  ${day.isCurrentMonth ? 'text-white' : 'text-gray-400 opacity-40'}
+                  ${day.hasOutfit && day.isCurrentMonth ? 'bg-primary/10 hover:bg-primary/20' : ''}
+                `}
+                onClick={() => onDateClick(day.date)}
+              >
+                <span className="text-xs">{format(day.date, 'd')}</span>
+                {day.outfitCount > 0 && (
+                  <span className="text-xs mt-1 bg-primary text-primary-foreground px-1.5 py-0.5 rounded-full">
+                    {day.outfitCount}
+                  </span>
+                )}
+              </Button>
+            ))}
+          </div>
+        ))}
+      </div>
     </motion.div>
   );
 };
