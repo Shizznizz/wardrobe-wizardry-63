@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { SendHorizontal, Sparkles, Calendar, CalendarDays, X, Wand2 } from 'lucide-react';
