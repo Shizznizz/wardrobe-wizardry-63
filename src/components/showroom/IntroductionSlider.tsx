@@ -1,203 +1,105 @@
 
-import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
-import { Button } from '@/components/ui/button';
+import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { useSwipeable } from 'react-swipeable';
+import { Button } from '@/components/ui/button';
 
-const slides = [
+const sliderContent = [
   {
-    id: 'intro',
-    title: 'Meet Olivia',
-    message: "Hi there! I'm Olivia, your AI stylist. Let me show you how our virtual try-on works—it's quick, stylish, and all about you!",
-    image: 'https://aaiyxtbovepseasghtth.supabase.co/storage/v1/object/public/showroom//b0ded1113f8a48d6b701139b735395c6.png',
-    imageSide: 'right',
+    title: "Upload Your Photo",
+    description: "Start by uploading a full-body photo or choose from our sample images.",
+    icon: "📸"
   },
   {
-    id: 'outfit',
-    title: 'Choose the Clothing',
-    message: "Here's a top we found online. Watch what happens when we apply it to your body or mine—this is your space to get creative!",
-    image: 'https://aaiyxtbovepseasghtth.supabase.co/storage/v1/object/public/showroom//Black%20t-shirt.jpeg',
-    imageSide: 'left',
+    title: "Choose Your Style",
+    description: "Browse through our curated clothing collections and find your perfect look.",
+    icon: "👗"
   },
   {
-    id: 'result',
-    title: 'See the Magic',
-    message: "Here's how it looks after styling! Olivia (or you) is now wearing the new outfit. Try it out with any piece of clothing from the internet or your own wardrobe!",
-    image: 'https://aaiyxtbovepseasghtth.supabase.co/storage/v1/object/public/showroom//Work%20(1).png',
-    imageSide: 'right',
-  },
+    title: "See the Magic",
+    description: "Our AI technology will show you exactly how the outfit looks on you!",
+    icon: "✨"
+  }
 ];
 
-export default function IntroductionSlider() {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [autoplay, setAutoplay] = useState(true);
-  const carouselRef = useRef(null);
-
-  // Autoplay functionality
-  useEffect(() => {
-    if (!autoplay) return;
-    
-    const interval = setInterval(() => {
-      setActiveIndex((current) => (current === slides.length - 1 ? 0 : current + 1));
-    }, 5000);
-    
-    return () => clearInterval(interval);
-  }, [autoplay]);
-
-  // Pause autoplay on hover
-  const handleMouseEnter = () => setAutoplay(false);
-  const handleMouseLeave = () => setAutoplay(true);
-
-  // Handle swipe gestures for mobile
-  const handlers = useSwipeable({
-    onSwipedLeft: () => {
-      setActiveIndex((current) => (current === slides.length - 1 ? 0 : current + 1));
-    },
-    onSwipedRight: () => {
-      setActiveIndex((current) => (current === 0 ? slides.length - 1 : current - 1));
-    },
-    preventScrollOnSwipe: true,
-    trackMouse: false
-  });
-
+const IntroductionSlider = () => {
+  const [activeSlide, setActiveSlide] = useState(0);
+  
+  const nextSlide = () => {
+    setActiveSlide((prev) => (prev === sliderContent.length - 1 ? 0 : prev + 1));
+  };
+  
+  const prevSlide = () => {
+    setActiveSlide((prev) => (prev === 0 ? sliderContent.length - 1 : prev - 1));
+  };
+  
   return (
-    <div 
-      className="w-full max-w-5xl mx-auto mb-16 mt-4 relative"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      {...handlers}
-      ref={carouselRef}
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.2 }}
+      className="bg-gradient-to-r from-indigo-950/40 to-purple-950/40 rounded-xl border border-white/10 overflow-hidden shadow-lg backdrop-blur-md"
     >
-      <Carousel
-        className="w-full"
-        setApi={(api) => {
-          api?.on('select', () => {
-            setActiveIndex(api.selectedScrollSnap());
-          });
-          // Allow external navigation
-          if (api) {
-            api.scrollTo(activeIndex);
-          }
-        }}
-        opts={{
-          align: 'start',
-          loop: true,
-        }}
-      >
-        <CarouselContent>
-          {slides.map((slide, index) => (
-            <CarouselItem key={slide.id} className="w-full">
-              <div className="flex flex-col-reverse md:flex-row items-center justify-between w-full p-4 md:p-8 rounded-xl relative overflow-hidden">
-                {/* Gradient background */}
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-900/40 via-slate-900/60 to-slate-950/80 rounded-xl backdrop-blur-sm border border-white/5"></div>
-                
-                {/* Text content */}
-                <motion.div 
-                  className={cn(
-                    "z-10 flex-1 p-6 text-center md:text-left",
-                    slide.imageSide === 'right' ? 'md:pr-8' : 'md:pl-8 md:order-2'
-                  )}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.2 }}
-                >
-                  <h3 className="text-xl md:text-2xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-blue-300 to-purple-300">
-                    {slide.title}
-                  </h3>
-                  <p className="text-white/90 text-base md:text-lg leading-relaxed">
-                    {slide.message}
-                  </p>
-                  
-                  {index === slides.length - 1 && (
-                    <Button 
-                      className="mt-4 bg-gradient-to-r from-pink-500 to-purple-600 hover:opacity-90"
-                      onClick={() => {
-                        // Scroll to photo upload section
-                        document.getElementById('photo-section')?.scrollIntoView({ behavior: 'smooth' });
-                      }}
-                    >
-                      Try It Now
-                    </Button>
-                  )}
-                </motion.div>
-                
-                {/* Image */}
-                <motion.div 
-                  className={cn(
-                    "relative flex-1 flex justify-center items-center p-4",
-                    slide.imageSide === 'right' ? 'md:order-2' : 'md:order-1'
-                  )}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <div className="relative w-full max-w-xs md:max-w-sm mx-auto">
-                    {/* Decorative glow effect */}
-                    <div className="absolute inset-0 bg-gradient-to-tr from-pink-500/20 to-purple-600/20 rounded-full blur-xl"></div>
-                    
-                    {/* The image */}
-                    <div className={cn(
-                      "relative w-full aspect-[3/4] overflow-hidden rounded-xl",
-                      slide.id === 'outfit' && "border-2 border-purple-400/30 shadow-lg shadow-purple-500/20"
-                    )}>
-                      <img 
-                        src={slide.image} 
-                        alt={slide.title}
-                        className="w-full h-full object-cover object-center"
-                      />
-                    </div>
-                  </div>
-                </motion.div>
-              </div>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
+      <div className="p-6 relative">
+        <div className="absolute top-1/2 left-4 -translate-y-1/2">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="h-8 w-8 rounded-full bg-black/20 text-white hover:bg-black/30 hover:text-white"
+            onClick={prevSlide}
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </Button>
+        </div>
         
-        {/* Dot indicators showing the current slide */}
-        <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-20">
-          {slides.map((_, index) => (
+        <div className="absolute top-1/2 right-4 -translate-y-1/2">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="h-8 w-8 rounded-full bg-black/20 text-white hover:bg-black/30 hover:text-white"
+            onClick={nextSlide}
+          >
+            <ChevronRight className="h-5 w-5" />
+          </Button>
+        </div>
+        
+        <div className="w-full max-w-md mx-auto px-8">
+          {sliderContent.map((slide, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ 
+                opacity: activeSlide === index ? 1 : 0,
+                x: activeSlide === index ? 0 : 20,
+                display: activeSlide === index ? 'block' : 'none'
+              }}
+              transition={{ duration: 0.4 }}
+              className="text-center"
+            >
+              <div className="text-4xl mb-4">{slide.icon}</div>
+              <h3 className="text-xl font-bold mb-2 text-white">{slide.title}</h3>
+              <p className="text-white/80 text-sm">{slide.description}</p>
+            </motion.div>
+          ))}
+        </div>
+        
+        <div className="flex justify-center gap-2 mt-4">
+          {sliderContent.map((_, index) => (
             <button
               key={index}
-              onClick={() => {
-                setActiveIndex(index);
-              }}
-              className={cn(
-                "w-2 h-2 rounded-full transition-all duration-300",
-                activeIndex === index 
-                  ? "bg-white w-6" 
-                  : "bg-white/30 hover:bg-white/50"
-              )}
+              onClick={() => setActiveSlide(index)}
+              className={`h-2 rounded-full transition-all ${
+                activeSlide === index 
+                  ? 'w-8 bg-purple-500' 
+                  : 'w-2 bg-white/30 hover:bg-white/50'
+              }`}
               aria-label={`Go to slide ${index + 1}`}
             />
           ))}
         </div>
-        
-        {/* Custom navigation buttons with improved visual style */}
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-black/20 backdrop-blur-sm text-white hover:bg-black/40 border border-white/10 shadow-lg transition-all duration-300 hidden md:flex"
-          onClick={() => {
-            setActiveIndex(activeIndex === 0 ? slides.length - 1 : activeIndex - 1);
-          }}
-        >
-          <ChevronLeft className="h-5 w-5" />
-        </Button>
-        
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-black/20 backdrop-blur-sm text-white hover:bg-black/40 border border-white/10 shadow-lg transition-all duration-300 hidden md:flex"
-          onClick={() => {
-            setActiveIndex(activeIndex === slides.length - 1 ? 0 : activeIndex + 1);
-          }}
-        >
-          <ChevronRight className="h-5 w-5" />
-        </Button>
-      </Carousel>
-    </div>
+      </div>
+    </motion.div>
   );
-}
+};
+
+export default IntroductionSlider;
