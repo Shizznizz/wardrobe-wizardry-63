@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { format } from 'date-fns';
-import { Outfit } from '@/lib/types';
+import { Outfit, TimeOfDay, Activity } from '@/lib/types';
 import { OutfitLog } from '../OutfitLogItem';
 import { CalendarIcon, X } from 'lucide-react';
 
@@ -24,8 +24,8 @@ interface OutfitLogFormProps {
 }
 
 const weatherOptions = ['sunny', 'cloudy', 'rainy', 'snowy', 'windy'];
-const timeOfDayOptions = ['morning', 'afternoon', 'evening', 'night'];
-const activityOptions = ['casual', 'work', 'formal', 'party', 'date', 'interview', 'presentation', 'dinner', 'sport', 'other'];
+const timeOfDayOptions: TimeOfDay[] = ['morning', 'afternoon', 'evening', 'night'];
+const activityOptions: Activity[] = ['casual', 'work', 'formal', 'party', 'date', 'interview', 'presentation', 'dinner', 'sport', 'other'];
 
 const OutfitLogForm = ({ 
   isOpen, 
@@ -38,10 +38,10 @@ const OutfitLogForm = ({
 }: OutfitLogFormProps) => {
   const [date, setDate] = useState<Date>(selectedDate);
   const [outfitId, setOutfitId] = useState<string>('');
-  const [timeOfDay, setTimeOfDay] = useState<string>('');
+  const [timeOfDay, setTimeOfDay] = useState<TimeOfDay>('morning');
   const [weatherCondition, setWeatherCondition] = useState<string>('');
   const [temperature, setTemperature] = useState<string>('');
-  const [activity, setActivity] = useState<string>('');
+  const [activity, setActivity] = useState<Activity | ''>('');
   const [customActivity, setCustomActivity] = useState<string>('');
   const [notes, setNotes] = useState<string>('');
   const [askForAiSuggestion, setAskForAiSuggestion] = useState<boolean>(false);
@@ -52,7 +52,7 @@ const OutfitLogForm = ({
     if (initialData && editMode) {
       setDate(new Date(initialData.date));
       setOutfitId(initialData.outfitId);
-      setTimeOfDay(initialData.timeOfDay || '');
+      setTimeOfDay(initialData.timeOfDay || 'morning');
       setWeatherCondition(initialData.weatherCondition || '');
       setTemperature(initialData.temperature || '');
       setActivity(initialData.activity || '');
@@ -63,7 +63,7 @@ const OutfitLogForm = ({
       // Reset form when not in edit mode
       setDate(selectedDate);
       setOutfitId('');
-      setTimeOfDay('');
+      setTimeOfDay('morning');
       setWeatherCondition('');
       setTemperature('');
       setActivity('');
@@ -86,7 +86,7 @@ const OutfitLogForm = ({
         timeOfDay,
         weatherCondition: weatherCondition || undefined,
         temperature: temperature || undefined,
-        activity: activity || undefined,
+        activity: activity as Activity | undefined,
         customActivity: activity === 'other' ? customActivity : undefined,
         notes: notes || undefined,
         askForAiSuggestion,
@@ -102,7 +102,7 @@ const OutfitLogForm = ({
   
   const resetForm = () => {
     setOutfitId('');
-    setTimeOfDay('');
+    setTimeOfDay('morning');
     setWeatherCondition('');
     setTemperature('');
     setActivity('');
@@ -173,7 +173,7 @@ const OutfitLogForm = ({
             <Label htmlFor="timeOfDay">Time of Day</Label>
             <Select 
               value={timeOfDay} 
-              onValueChange={setTimeOfDay}
+              onValueChange={(value: string) => setTimeOfDay(value as TimeOfDay)}
             >
               <SelectTrigger className="w-full bg-slate-800 border-slate-700">
                 <SelectValue placeholder="Select time of day" />
@@ -225,7 +225,7 @@ const OutfitLogForm = ({
             <Label htmlFor="activity">Activity/Occasion (Optional)</Label>
             <Select 
               value={activity} 
-              onValueChange={setActivity}
+              onValueChange={(value: string) => setActivity(value as Activity | '')}
             >
               <SelectTrigger className="w-full bg-slate-800 border-slate-700">
                 <SelectValue placeholder="Select activity or occasion" />
