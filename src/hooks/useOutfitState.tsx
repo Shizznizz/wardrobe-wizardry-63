@@ -117,7 +117,7 @@ export function useOutfitState(initialOutfits: Outfit[], initialClothingItems: C
           return {
             ...outfit,
             timesWorn: outfit.timesWorn + 1,
-            lastWorn: log.date
+            lastWorn: new Date(log.date)
           };
         }
         return outfit;

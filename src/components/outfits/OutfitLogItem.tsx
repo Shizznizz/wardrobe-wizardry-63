@@ -16,7 +16,9 @@ export interface OutfitLog {
   customActivity?: string;
   activity?: string;
   aiSuggested?: boolean;
-  occasion?: string; // Add the occasion property that was missing
+  occasion?: string;
+  askForAiSuggestion?: boolean;
+  aiSuggestionFeedback?: 'positive' | 'negative' | null;
 }
 
 interface OutfitLogItemProps {

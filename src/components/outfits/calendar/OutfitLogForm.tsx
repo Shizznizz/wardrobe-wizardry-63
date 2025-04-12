@@ -52,10 +52,11 @@ const OutfitLogForm = ({
     if (initialData && editMode) {
       setDate(new Date(initialData.date));
       setOutfitId(initialData.outfitId);
-      setTimeOfDay(initialData.timeOfDay || 'morning');
+      // Type assertion to ensure proper types
+      setTimeOfDay(initialData.timeOfDay as TimeOfDay || 'morning');
       setWeatherCondition(initialData.weatherCondition || '');
       setTemperature(initialData.temperature || '');
-      setActivity(initialData.activity || '');
+      setActivity(initialData.activity as Activity | '' || '');
       setCustomActivity(initialData.customActivity || '');
       setNotes(initialData.notes || '');
       setAskForAiSuggestion(initialData.askForAiSuggestion || false);

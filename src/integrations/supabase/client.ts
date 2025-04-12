@@ -1,4 +1,3 @@
-
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { ClothingItem, Outfit, UserPreferences } from '@/lib/types';
 import { toast } from 'sonner';
@@ -102,7 +101,7 @@ export const saveOutfitLog = async (userId: string, log: Omit<OutfitLog, 'id'>) 
     const outfitLogData = {
       user_id: userId,
       outfit_id: log.outfitId,
-      date: log.date.toISOString(),
+      date: log.date instanceof Date ? log.date.toISOString() : log.date,
       time_of_day: log.timeOfDay,
       notes: log.notes || null,
       weather_condition: log.weatherCondition || null,
@@ -157,7 +156,7 @@ export const updateOutfitLog = async (userId: string, logId: string, updates: Pa
     const updateData: Record<string, any> = {};
     
     if (updates.outfitId !== undefined) updateData.outfit_id = updates.outfitId;
-    if (updates.date !== undefined) updateData.date = updates.date.toISOString();
+    if (updates.date !== undefined) updateData.date = updates.date instanceof Date ? updates.date.toISOString() : updates.date;
     if (updates.timeOfDay !== undefined) updateData.time_of_day = updates.timeOfDay;
     if (updates.notes !== undefined) updateData.notes = updates.notes || null;
     if (updates.weatherCondition !== undefined) updateData.weather_condition = updates.weatherCondition || null;
