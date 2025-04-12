@@ -1,87 +1,63 @@
+
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { useOutfitState } from './useOutfitState';
 import { sampleClothingItems, sampleOutfits } from '@/lib/wardrobeData';
-import { Outfit } from '@/lib/types';
+import { Outfit, ClothingItem } from '@/lib/types';
 import { useAuth } from '@/hooks/useAuth';
+import { useShowroomState } from './useShowroomState';
+import { useShowroomCollections } from './useShowroomCollections';
+import { useShowroomPopups } from './useShowroomPopups';
 
 export const useShowroom = () => {
   const { isAuthenticated } = useAuth();
-  const [isPremiumUser, setIsPremiumUser] = useState(false);
-  const [showTips, setShowTips] = useState(true);
-  const [showSubscriptionPopup, setShowSubscriptionPopup] = useState(false);
-  const [showOliviaImageGallery, setShowOliviaImageGallery] = useState(false);
-  const [isUsingOliviaImage, setIsUsingOliviaImage] = useState(false);
-  const [showStatusBar, setShowStatusBar] = useState(false);
-  const [isUploadLoading, setIsUploadLoading] = useState(false);
-  const [oliviaSuggestion, setOliviaSuggestion] = useState("");
-  
-  useEffect(() => {
-    setIsPremiumUser(isAuthenticated);
-  }, [isAuthenticated]);
+  const [generationError, setGenerationError] = useState<string | null>(null);
+  const [predictionId, setPredictionId] = useState<string | null>(null);
+  const [oliviaMood, setOliviaMood] = useState<'happy' | 'thinking' | 'neutral'>('neutral');
+  const [stylingTip, setStylingTip] = useState<string | null>(null);
+  const [challengeParticipantCount] = useState<number>(347); // For demo purposes
+  const [showFloatingChat, setShowFloatingChat] = useState(false);
+  const [clothingPhoto, setClothingPhoto] = useState<string | null>(null);
   
   const {
-    outfits,
-    clothingItems, 
-    selectedOutfit,
+    isPremiumUser,
     userPhoto,
     finalImage,
+    isUsingOliviaImage,
+    isUploadLoading,
+    oliviaSuggestion,
+    selectedOutfit,
     isProcessingTryOn,
-    handleUserPhotoChange,
-    handleClearUserPhoto,
+    handleUserPhotoUpload,
+    handleSelectOliviaImage,
     handleTryOnOutfit,
-    handleSaveOutfit
-  } = useOutfitState(sampleOutfits, sampleClothingItems);
+    handleClearUserPhoto,
+    handleSaveOutfit,
+    setSelectedOutfit
+  } = useShowroomState();
 
-  const fashionCollections = [
-    {
-      id: 'recommended',
-      name: 'Olivia\'s Picks',
-      description: 'Personalized recommendations based on your style profile',
-      outfits: sampleOutfits.slice(0, 4),
-    },
-    {
-      id: 'wardrobe',
-      name: 'Your Outfits',
-      description: 'Outfits you\'ve created and saved',
-      outfits: sampleOutfits.slice(0, 3),
-    },
-    {
-      id: 'business',
-      name: 'Business Casual',
-      description: 'Professional looks that maintain comfort and style',
-      outfits: sampleOutfits.slice(2, 6),
-      premium: true,
-    },
-    {
-      id: 'summer',
-      name: 'Summer Breeze',
-      description: 'Light and airy ensembles for warm weather',
-      outfits: sampleOutfits.slice(1, 5),
-      premium: true,
-    },
-    {
-      id: 'winter',
-      name: 'Winter Formal',
-      description: 'Elegant outfits for colder months and special occasions',
-      outfits: sampleOutfits.slice(3, 7),
-      premium: true,
-    },
-  ];
+  const {
+    fashionCollections,
+    selectedItems,
+    handleAddItem,
+    handleTryOnTrendingItem,
+    handleSuggestAnotherOutfit,
+    clothingItems
+  } = useShowroomCollections(sampleOutfits, sampleClothingItems);
 
-  useEffect(() => {
-    if (userPhoto && finalImage && !isPremiumUser && !isAuthenticated) {
-      const hasSeenPopup = sessionStorage.getItem('hasSeenSubscriptionPopup');
-      if (!hasSeenPopup) {
-        const timer = setTimeout(() => {
-          setShowSubscriptionPopup(true);
-          sessionStorage.setItem('hasSeenSubscriptionPopup', 'true');
-        }, 1500);
-        
-        return () => clearTimeout(timer);
-      }
-    }
-  }, [userPhoto, finalImage, isPremiumUser, isAuthenticated]);
+  const {
+    showTips,
+    showSubscriptionPopup,
+    showOliviaImageGallery,
+    showStatusBar,
+    setShowTips,
+    setShowSubscriptionPopup,
+    setShowOliviaImageGallery,
+    setShowStatusBar,
+    handleUpgradeToPremium,
+    handleShowPremiumPopup,
+    handleCloseSubscriptionPopup
+  } = useShowroomPopups(isPremiumUser, isAuthenticated, userPhoto, finalImage);
 
   useEffect(() => {
     if (userPhoto && selectedOutfit) {
@@ -100,17 +76,11 @@ export const useShowroom = () => {
     }
   }, [userPhoto, selectedOutfit]);
 
-  const handleSelectOliviaImage = (imageSrc: string) => {
-    setIsUploadLoading(true);
-    handleUserPhotoChange(imageSrc);
-    setIsUsingOliviaImage(true);
-    
-    setTimeout(() => {
-      setIsUploadLoading(false);
-      toast.success('Selected Olivia\'s image successfully!');
-    }, 800);
+  const handleClothingPhotoUpload = (photo: string) => {
+    setClothingPhoto(photo);
+    setFinalImage(null);
   };
-
+  
   const handleSelectOutfit = (outfit: Outfit) => {
     handleTryOnOutfit(outfit);
     
@@ -121,55 +91,91 @@ export const useShowroom = () => {
     }
   };
 
-  const handleUserPhotoUpload = (photo: string) => {
-    setIsUploadLoading(true);
-    
-    setTimeout(() => {
-      handleUserPhotoChange(photo);
-      setIsUploadLoading(false);
-    }, 800);
-  };
-
   const handleSaveLook = () => {
     if (!finalImage) {
       toast.error('Create a look first!');
       return;
     }
     
-    handleSaveOutfit(selectedOutfit!);
-    toast.success('Look saved to your wardrobe!', {
-      description: 'You can access it anytime in your personal collection.'
-    });
+    if (!isPremiumUser && !isAuthenticated) {
+      setShowSubscriptionPopup(true);
+      return;
+    }
+    
+    handleSaveOutfit();
   };
 
-  const handleUpgradeToPremium = () => {
-    toast('This would navigate to the premium subscription page', {
-      description: 'Unlock unlimited outfit swaps, priority styling, and more!'
-    });
+  const handleTryOn = async () => {
+    if (!userPhoto || !clothingPhoto) {
+      toast.error("Please upload both a photo of yourself and a clothing item");
+      return;
+    }
+
+    setIsProcessingTryOn(true);
+    setFinalImage(null);
+    setStylingTip(null);
+    setOliviaMood('thinking');
+
+    try {
+      setTimeout(() => {
+        setFinalImage(userPhoto);
+        setIsProcessingTryOn(false);
+        setOliviaMood('happy');
+        
+        // Generate a random styling tip
+        const tips = [
+          "Love this fit with high-rise jeans! Want a rec?",
+          "A cropped jacket would complete this. Shall I suggest one?",
+          "This color really enhances your features! Try pairing with gold accessories.",
+          "This silhouette works so well for your body type!",
+          "Perfect for casual outings. Want to see dressier options?"
+        ];
+        setStylingTip(tips[Math.floor(Math.random() * tips.length)]);
+        
+        toast.success("AI-generated try-on ready!");
+      }, 1500);
+    } catch (error) {
+      console.error("Error in AI try-on:", error);
+      setGenerationError(String(error));
+      setOliviaMood('thinking');
+      toast.error("Failed to generate virtual try-on");
+      setIsProcessingTryOn(false);
+    }
   };
 
-  const handleCloseSubscriptionPopup = () => {
-    setShowSubscriptionPopup(false);
-  };
-
-  const resetSelection = () => {
+  const clearPhotos = () => {
     handleClearUserPhoto();
-    setShowStatusBar(false);
+    setClothingPhoto(null);
+    setSelectedOutfit(null);
+    setPredictionId(null);
+    setSelectedItems([]);
+    setStylingTip(null);
+    toast.success('Photos cleared');
   };
 
-  const handlePreviewNow = () => {
-    if (selectedOutfit) {
-      handleTryOnOutfit(selectedOutfit);
+  const handleTryOnTrendingItemWithCheck = (item: ClothingItem) => {
+    if (!isPremiumUser && !isAuthenticated) {
+      setShowSubscriptionPopup(true);
+      return;
+    }
+    
+    const imageUrl = handleTryOnTrendingItem(item, isPremiumUser || isAuthenticated);
+    if (imageUrl) setClothingPhoto(imageUrl);
+    
+    if (!userPhoto) {
+      toast.info("Please upload a photo first or select Olivia as a model");
     }
   };
 
-  const handleSuggestAnotherOutfit = () => {
-    const recommendedOutfits = fashionCollections.find(c => c.id === 'recommended')?.outfits || [];
-    if (recommendedOutfits.length > 0) {
-      const randomOutfit = recommendedOutfits[Math.floor(Math.random() * recommendedOutfits.length)];
-      handleTryOnOutfit(randomOutfit);
-      toast.success('Olivia suggested a new outfit for you!');
-    }
+  // Wrapper for handleSuggestAnotherOutfit to use local handleTryOnOutfit
+  const suggestAnotherOutfit = () => {
+    handleSuggestAnotherOutfit(handleTryOnOutfit);
+  };
+
+  // Open chat handler
+  const handleOpenChat = () => {
+    setShowFloatingChat(true);
+    toast.info("Olivia is ready to chat about your style!");
   };
 
   return {
@@ -181,23 +187,34 @@ export const useShowroom = () => {
     showStatusBar,
     isUploadLoading,
     oliviaSuggestion,
-    outfits,
-    clothingItems,
-    selectedOutfit,
     userPhoto,
+    clothingPhoto,
     finalImage,
     isProcessingTryOn,
+    selectedOutfit,
+    selectedItems,
     fashionCollections,
+    clothingItems,
+    oliviaMood,
+    stylingTip,
+    showFloatingChat,
+    generationError,
+    challengeParticipantCount,
     
     handleSelectOliviaImage,
     handleSelectOutfit,
     handleUserPhotoUpload,
+    handleClothingPhotoUpload,
     handleSaveLook,
     handleUpgradeToPremium,
     handleCloseSubscriptionPopup,
-    resetSelection,
-    handlePreviewNow,
-    handleSuggestAnotherOutfit,
+    handleTryOn,
+    clearPhotos,
+    handleTryOnTrendingItem: handleTryOnTrendingItemWithCheck,
+    handleSuggestAnotherOutfit: suggestAnotherOutfit,
+    handleShowPremiumPopup,
+    handleOpenChat,
     setShowOliviaImageGallery,
+    setShowFloatingChat
   };
 };

@@ -8,6 +8,14 @@ interface UseOptimizedImageOptions {
   priority?: boolean;
 }
 
+interface OptimizedImageProps {
+  src: string | null;
+  loading?: 'lazy' | 'eager' | undefined;
+  style?: React.CSSProperties;
+  onLoad: () => void;
+  onError: () => void;
+}
+
 /**
  * Hook for optimized image loading with lazy loading support
  */
@@ -63,6 +71,6 @@ export const useOptimizedImage = (
       style: !isLoaded ? { backgroundColor: placeholderColor } : undefined,
       onLoad: () => setIsLoaded(true),
       onError: () => setError('Failed to load image')
-    }
+    } as OptimizedImageProps
   };
 };

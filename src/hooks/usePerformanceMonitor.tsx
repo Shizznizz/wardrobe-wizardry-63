@@ -10,6 +10,16 @@ interface PerformanceMetrics {
   pageLoadTime: number | null; // Total page load time
 }
 
+// Define types for web performance observer entries
+interface PerformanceEntryWithProcessingStart extends PerformanceEntry {
+  processingStart?: number;
+}
+
+interface LayoutShiftEntry extends PerformanceEntry {
+  hadRecentInput?: boolean;
+  value?: number;
+}
+
 /**
  * Hook to monitor and report web performance metrics
  */
@@ -63,9 +73,9 @@ export const usePerformanceMonitor = (pageName: string) => {
     
     // First Input Delay
     const fidObserver = new PerformanceObserver((entryList) => {
-      const firstEntry = entryList.getEntries()[0];
+      const firstEntry = entryList.getEntries()[0] as PerformanceEntryWithProcessingStart;
       
-      if (firstEntry) {
+      if (firstEntry && firstEntry.processingStart !== undefined) {
         metrics.current.FID = firstEntry.processingStart - firstEntry.startTime;
         console.info(`[Performance] ${pageName} - FID: ${metrics.current.FID}ms`);
       }
@@ -75,10 +85,9 @@ export const usePerformanceMonitor = (pageName: string) => {
     const clsObserver = new PerformanceObserver((entryList) => {
       let clsValue = 0;
       
-      for (const entry of entryList.getEntries()) {
+      for (const entry of entryList.getEntries() as LayoutShiftEntry[]) {
         if (!entry.hadRecentInput) {
-          // @ts-ignore - TypeScript doesn't know about the value property on LayoutShift
-          clsValue += entry.value;
+          clsValue += entry.value || 0;
         }
       }
       

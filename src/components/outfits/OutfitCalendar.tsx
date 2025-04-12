@@ -2,32 +2,24 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
-import { Plus } from 'lucide-react';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/components/ui/tabs';
-import { Outfit, ClothingItem } from '@/lib/types';
-import OutfitLogItem, { OutfitLog } from './OutfitLogItem';
-import DateSelector from './calendar/DateSelector';
-import OutfitLogsList from './calendar/OutfitLogsList';
-import WardrobeRecommendations from './calendar/WardrobeRecommendations';
-import WeekView from './calendar/WeekView';
-import OutfitLogForm from './calendar/OutfitLogForm';
-import OutfitStatsTab from './calendar/OutfitStatsTab';
-import { useCalendarState } from '@/hooks/useCalendarState';
-import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { Calendar as CalendarIcon, CalendarDays, BarChart3 } from 'lucide-react';
+import { useForm } from "react-hook-form";
 import { useIsMobile } from '@/hooks/use-mobile';
-import OliviaAssistantSection from './OliviaAssistantSection';
-import DayDetailView from './calendar/DayDetailView';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
+import { Outfit, ClothingItem } from '@/lib/types';
+import { OutfitLog } from './OutfitLogItem';
+import { useCalendarState } from '@/hooks/useCalendarState';
+
+// Import refactored components
+import CalendarTabs from './calendar/CalendarTabs';
+import ViewToggle from './calendar/ViewToggle';
+import MonthView from './calendar/MonthView';
+import WeekViewContainer from './calendar/WeekViewContainer';
+import OutfitLogForm from './calendar/OutfitLogForm';
+import OutfitStatsTab from './calendar/OutfitStatsTab';
+import OliviaAssistantSection from './OliviaAssistantSection';
 
 interface OutfitCalendarProps {
   outfits: Outfit[];
@@ -119,7 +111,6 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
   );
 
   const rarelyWornOutfits = getRarelyWornOutfits(outfits);
-
   const frequentlyWornOutfits = getFrequentlyWornOutfits(outfits);
 
   const getOutfitById = (id: string) => {
@@ -131,6 +122,56 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
     form.setValue('outfitId', outfitId);
   };
 
+  // Render calendar view based on selected view type
+  const renderCalendarView = () => {
+    return (
+      <>
+        <ViewToggle view={calendarView} onViewChange={(value) => setCalendarView(value)} />
+        
+        <AnimatePresence mode="wait">
+          {calendarView === 'month' ? (
+            <MonthView
+              selectedDate={selectedDate}
+              setSelectedDate={setSelectedDate}
+              currentMonth={currentMonth}
+              setCurrentMonth={setCurrentMonth}
+              outfitLogs={outfitLogs}
+              outfitLogsOnDate={outfitLogsOnDate}
+              rarelyWornOutfits={rarelyWornOutfits}
+              frequentlyWornOutfits={frequentlyWornOutfits}
+              getOutfitById={getOutfitById}
+              handleViewLog={handleViewLog}
+              handleOpenLogDialog={handleOpenLogDialog}
+              handleDeleteLog={deleteOutfitLog}
+              handleSelectOutfit={handleSelectOutfit}
+              getSeasonalSuggestions={getSeasonalSuggestions}
+              outfits={outfits}
+              clothingItems={clothingItems}
+              isMobile={isMobile}
+            />
+          ) : (
+            <WeekViewContainer
+              selectedDate={selectedDate}
+              setSelectedDate={setSelectedDate}
+              outfitLogsOnDate={outfitLogsOnDate}
+              rarelyWornOutfits={rarelyWornOutfits}
+              frequentlyWornOutfits={frequentlyWornOutfits}
+              getOutfitById={getOutfitById}
+              getLogsForDay={getLogsForDay}
+              handleOpenLogDialog={handleOpenLogDialog}
+              handleEditLog={handleEditLog}
+              handleDeleteLog={deleteOutfitLog}
+              handleSelectOutfit={handleSelectOutfit}
+              getSeasonalSuggestions={getSeasonalSuggestions}
+              outfits={outfits}
+              clothingItems={clothingItems}
+            />
+          )}
+        </AnimatePresence>
+      </>
+    );
+  };
+
   return (
     <motion.section
       initial={{ opacity: 0, y: 20 }}
@@ -139,107 +180,11 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
       className="space-y-6 relative"
     >
       <div className="mb-8">
-        <Tabs defaultValue={selectedTab} onValueChange={setSelectedTab} className="w-full">
-          <TabsList className="grid w-full md:w-1/2 mx-auto grid-cols-2 mb-6">
-            <TabsTrigger value="calendar" className="flex items-center gap-2">
-              <CalendarIcon className="h-4 w-4" />
-              Calendar
-            </TabsTrigger>
-            <TabsTrigger value="stats" className="flex items-center gap-2">
-              <BarChart3 className="h-4 w-4" />
-              Statistics
-            </TabsTrigger>
-          </TabsList>
-        
-          <TabsContent value="calendar">
-            <div className="flex justify-center mb-4">
-              <ToggleGroup type="single" value={calendarView} onValueChange={(value) => value && setCalendarView(value as 'month' | 'week')}>
-                <ToggleGroupItem value="month" aria-label="Month view" className="px-3 py-1">
-                  <CalendarIcon className="h-4 w-4 mr-2" />
-                  Month
-                </ToggleGroupItem>
-                <ToggleGroupItem value="week" aria-label="Week view" className="px-3 py-1">
-                  <CalendarDays className="h-4 w-4 mr-2" />
-                  Week
-                </ToggleGroupItem>
-              </ToggleGroup>
-            </div>
-            
-            <AnimatePresence mode="wait">
-              {calendarView === 'month' ? (
-                <motion.div 
-                  key="month-view"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.3 }}
-                  className={`grid grid-cols-1 ${isMobile ? 'gap-4' : 'md:grid-cols-3 gap-6'}`}
-                >
-                  <DateSelector 
-                    selectedDate={selectedDate}
-                    onSelectDate={setSelectedDate}
-                    outfitLogs={outfitLogs}
-                    currentMonth={currentMonth}
-                    onMonthChange={setCurrentMonth}
-                  />
-                  
-                  <OutfitLogsList 
-                    selectedDate={selectedDate}
-                    outfitLogsOnDate={outfitLogsOnDate}
-                    getOutfitById={getOutfitById}
-                    handleViewLog={handleViewLog}
-                    handleOpenLogDialog={handleOpenLogDialog}
-                    handleDeleteLog={deleteOutfitLog}
-                  />
-                  
-                  <WardrobeRecommendations
-                    rarelyWornOutfits={rarelyWornOutfits}
-                    frequentlyWornOutfits={frequentlyWornOutfits}
-                    handleSelectOutfit={handleSelectOutfit}
-                    seasonalSuggestions={getSeasonalSuggestions(outfits, clothingItems)}
-                  />
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="week-view"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.3 }}
-                  className="grid grid-cols-1 gap-4"
-                >
-                  <WeekView
-                    currentDate={selectedDate || new Date()}
-                    selectedDate={selectedDate}
-                    setSelectedDate={setSelectedDate}
-                    getLogsForDay={getLogsForDay}
-                    getOutfitById={getOutfitById}
-                    handleOpenLogDialog={handleOpenLogDialog}
-                  />
-                  
-                  {selectedDate && (
-                    <DayDetailView
-                      selectedDate={selectedDate}
-                      outfitLogs={outfitLogsOnDate}
-                      getOutfitById={getOutfitById}
-                      handleOpenLogDialog={handleOpenLogDialog}
-                      handleEditLog={handleEditLog}
-                      handleDeleteLog={deleteOutfitLog}
-                    />
-                  )}
-                  
-                  <WardrobeRecommendations
-                    rarelyWornOutfits={rarelyWornOutfits}
-                    frequentlyWornOutfits={frequentlyWornOutfits}
-                    handleSelectOutfit={handleSelectOutfit}
-                    seasonalSuggestions={getSeasonalSuggestions(outfits, clothingItems)}
-                  />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </TabsContent>
-          
-          <TabsContent value="stats">
+        <CalendarTabs
+          selectedTab={selectedTab}
+          setSelectedTab={setSelectedTab}
+          calendarContent={renderCalendarView()}
+          statsContent={
             <OutfitStatsTab 
               outfits={outfits}
               outfitLogs={outfitLogs}
@@ -248,8 +193,8 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
               selectedDate={selectedDate}
               form={form}
             />
-          </TabsContent>
-        </Tabs>
+          }
+        />
       </div>
 
       <OutfitLogForm
