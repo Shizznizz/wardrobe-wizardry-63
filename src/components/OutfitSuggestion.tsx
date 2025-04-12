@@ -25,6 +25,8 @@ interface OutfitSuggestionProps {
   onDislike?: () => void;
   onMakeWarmer?: () => void;
   onChangeTop?: () => void;
+  hideActions?: boolean;
+  size?: 'small' | 'medium' | 'large';
 }
 
 const OutfitSuggestion = ({ 
@@ -38,7 +40,9 @@ const OutfitSuggestion = ({
   onLike,
   onDislike,
   onMakeWarmer,
-  onChangeTop
+  onChangeTop,
+  hideActions = false,
+  size = 'medium'
 }: OutfitSuggestionProps) => {
   const navigate = useNavigate();
   
@@ -92,7 +96,7 @@ const OutfitSuggestion = ({
             <motion.img 
               src={displayData.image} 
               alt={displayData.title}
-              className="w-full rounded-xl object-cover h-64 md:h-80"
+              className={`w-full rounded-xl object-cover ${size === 'small' ? 'h-40 md:h-48' : 'h-64 md:h-80'}`}
               initial={{ scale: 0.95 }}
               animate={{ scale: 1 }}
               transition={{ duration: 0.5 }}
@@ -154,7 +158,7 @@ const OutfitSuggestion = ({
       )}
       
       {/* Show outfit feedback buttons when not in quiz mode */}
-      {(onLike || onDislike || onMakeWarmer || onChangeTop) && (
+      {!hideActions && (onLike || onDislike || onMakeWarmer || onChangeTop) && (
         <div className="flex flex-wrap gap-2 justify-center">
           {onLike && (
             <Button

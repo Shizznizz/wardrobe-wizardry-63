@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -20,6 +19,7 @@ import { useOliviaAssistant } from '@/hooks/useOliviaAssistant';
 import EnhancedStyleContext from '@/components/outfits/EnhancedStyleContext';
 import OutfitGroupsSection from '@/components/outfits/OutfitGroupsSection';
 import QuickFilters from '@/components/outfits/QuickFilters';
+import { ClothingSeason } from '@/lib/types';
 
 const Outfits = () => {
   const navigate = useNavigate();
@@ -56,22 +56,19 @@ const Outfits = () => {
     summonOlivia
   } = useOliviaAssistant();
 
-  // Handle when an outfit is added to the calendar
   const handleOutfitAddedToCalendar = (log: OutfitLog) => {
     addOutfitLog(log);
     toast.success(`Outfit added to calendar for ${new Date(log.date).toLocaleDateString()}`);
     // Optional: navigate to calendar with the date pre-selected
     // navigate(`/calendar?date=${new Date(log.date).toISOString().split('T')[0]}`);
   };
-  
-  // Set location updated flag when location is saved
+
   useEffect(() => {
     if (savedLocation && !locationUpdated) {
       setLocationUpdated(true);
     }
   }, [savedLocation]);
   
-  // Show initial recommendation when outfits load
   useEffect(() => {
     if (outfits.length > 0 && !hideTips) {
       const timeoutId = setTimeout(() => {
@@ -82,22 +79,18 @@ const Outfits = () => {
     }
   }, [outfits, hideTips, showOutfitRecommendation]);
   
-  // Handle feedback actions from RecommendedOutfit component
   const handleFeedbackAction = (feedbackType: string, outfit: any) => {
     showFeedbackResponse(feedbackType, outfit);
     
-    // For some feedback types, we'll also refresh the outfit
     if (['dislike', 'warmer', 'change-top'].includes(feedbackType)) {
       handleRefreshOutfit();
     }
   };
   
-  // Filter handling
   const handleFilterChange = (filters: string[]) => {
     setActiveFilters(filters);
   };
   
-  // Toggle owned items only
   const toggleOwnedOnly = () => {
     setShowOwnedOnly(!showOwnedOnly);
     toast.success(showOwnedOnly 
@@ -115,33 +108,27 @@ const Outfits = () => {
     }
   };
 
-  // Group outfits by temperature range or style
   const groupedOutfits = outfits.reduce((groups, outfit) => {
-    // Apply filters if any are active
     if (activeFilters.length > 0) {
       const matchesFilters = activeFilters.some(filter => 
-        outfit.seasons.includes(filter) || 
+        outfit.seasons.includes(filter as ClothingSeason) || 
         outfit.occasions.includes(filter) ||
-        outfit.colors.includes(filter)
+        (outfit.colors && outfit.colors.includes(filter))
       );
       
       if (!matchesFilters) return groups;
     }
     
-    // Apply owned only filter if active
     if (showOwnedOnly) {
-      // Logic to check if user owns at least one item in the outfit
-      // This is just a placeholder - actual implementation would check against user's wardrobe
-      const userOwnsItems = Math.random() > 0.5; // Placeholder logic
+      const userOwnsItems = Math.random() > 0.5;
       if (!userOwnsItems) return groups;
     }
     
-    // Determine group based on temperature or style
     let group = 'Other';
     
-    if (outfit.tags?.includes('casual') || outfit.occasions.includes('casual')) {
+    if (outfit.tags && outfit.tags.includes('casual') || outfit.occasions.includes('casual')) {
       group = 'Casual & Comfortable';
-    } else if (outfit.tags?.includes('formal') || outfit.occasions.includes('formal')) {
+    } else if (outfit.tags && outfit.tags.includes('formal') || outfit.occasions.includes('formal')) {
       group = 'Elegant & Formal';
     } else if (outfit.seasons.includes('summer')) {
       group = 'Summer Ready';
@@ -204,7 +191,6 @@ const Outfits = () => {
             clothingItems={clothingItems}
             onRefreshOutfit={() => {
               handleRefreshOutfit();
-              // Show assistant message after refreshing outfit
               setTimeout(() => {
                 showOutfitRecommendation(outfits[0], 'current');
               }, 500);
@@ -218,7 +204,6 @@ const Outfits = () => {
               groupedOutfits={groupedOutfits}
               onToggleFavorite={(id) => {
                 handleToggleFavorite(id);
-                // Find the outfit that was favorited
                 const outfit = outfits.find(o => o.id === id);
                 if (outfit) {
                   if (outfit.favorite) {
@@ -237,7 +222,6 @@ const Outfits = () => {
               onDeleteOutfit={handleDeleteOutfit}
               onToggleFavorite={(id) => {
                 handleToggleFavorite(id);
-                // Find the outfit that was favorited
                 const outfit = outfits.find(o => o.id === id);
                 if (outfit) {
                   if (outfit.favorite) {
@@ -266,7 +250,6 @@ const Outfits = () => {
         </motion.div>
       </main>
       
-      {/* Optimized Olivia Assistant */}
       <OptimizedOliviaAssistant
         show={assistantState.show}
         message={assistantState.message}
@@ -280,7 +263,6 @@ const Outfits = () => {
         setHideTipsPreference={setHideTips}
       />
       
-      {/* Summon Olivia Button */}
       <SummonOliviaButton
         position="bottom-right"
         onSummon={summonOlivia}

@@ -1,11 +1,10 @@
-
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { 
   Sun, Cloud, Snowflake, Wind, 
-  Tag, Filter, Briefcase, Party, 
+  Tag, Filter, Briefcase, PartyPopper, 
   Heart, Database, Shirt
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -30,7 +29,7 @@ const QuickFilters = ({ onFilterChange, toggleOwnedOnly, showOwnedOnly }: QuickF
   const occasionFilters = [
     { id: 'casual', name: 'Casual', icon: <Shirt className="h-4 w-4 text-teal-400" /> },
     { id: 'work', name: 'Work', icon: <Briefcase className="h-4 w-4 text-blue-400" /> },
-    { id: 'party', name: 'Party', icon: <Party className="h-4 w-4 text-purple-400" /> },
+    { id: 'party', name: 'Party', icon: <PartyPopper className="h-4 w-4 text-purple-400" /> },
     { id: 'formal', name: 'Formal', icon: <Tag className="h-4 w-4 text-pink-400" /> },
   ];
   

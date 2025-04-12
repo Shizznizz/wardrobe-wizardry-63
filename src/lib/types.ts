@@ -1,4 +1,3 @@
-
 export type ClothingType = 
   | 'shirt'
   | 'jeans'
@@ -133,6 +132,8 @@ export interface Outfit {
   dateAdded: Date;
   personalityTags?: PersonalityTag[]; // New field for personality tags
   colorScheme?: string; // Description of the color scheme
+  tags?: string[]; // Added tags field for filtering
+  colors?: string[]; // Added colors field for filtering
 }
 
 export interface WeatherInfo {
