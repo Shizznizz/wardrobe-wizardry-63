@@ -131,10 +131,12 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
         <AnimatePresence mode="wait">
           {calendarView === 'month' ? (
             <MonthView
+              currentDate={currentMonth}
               selectedDate={selectedDate}
               setSelectedDate={setSelectedDate}
               currentMonth={currentMonth}
               setCurrentMonth={setCurrentMonth}
+              outfits={outfits}
               outfitLogs={outfitLogs}
               outfitLogsOnDate={outfitLogsOnDate}
               rarelyWornOutfits={rarelyWornOutfits}
@@ -145,26 +147,18 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
               handleDeleteLog={deleteOutfitLog}
               handleSelectOutfit={handleSelectOutfit}
               getSeasonalSuggestions={getSeasonalSuggestions}
-              outfits={outfits}
               clothingItems={clothingItems}
               isMobile={isMobile}
             />
           ) : (
             <WeekViewContainer
+              currentDate={currentMonth}
               selectedDate={selectedDate}
-              setSelectedDate={setSelectedDate}
-              outfitLogsOnDate={outfitLogsOnDate}
-              rarelyWornOutfits={rarelyWornOutfits}
-              frequentlyWornOutfits={frequentlyWornOutfits}
-              getOutfitById={getOutfitById}
-              getLogsForDay={getLogsForDay}
-              handleOpenLogDialog={handleOpenLogDialog}
-              handleEditLog={handleEditLog}
-              handleDeleteLog={deleteOutfitLog}
-              handleSelectOutfit={handleSelectOutfit}
-              getSeasonalSuggestions={getSeasonalSuggestions}
               outfits={outfits}
               clothingItems={clothingItems}
+              outfitLogs={outfitLogs}
+              onDateClick={setSelectedDate}
+              onLogDelete={deleteOutfitLog}
             />
           )}
         </AnimatePresence>

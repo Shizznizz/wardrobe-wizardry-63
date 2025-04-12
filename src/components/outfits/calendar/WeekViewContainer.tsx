@@ -10,9 +10,20 @@ import { OutfitLog } from '@/components/outfits/OutfitLogItem';
 interface WeekViewContainerProps {
   currentDate: Date;
   selectedDate: Date;
+  setSelectedDate?: (date: Date) => void;  // Made optional since some places might not pass it
   outfits: Outfit[];
   clothingItems: ClothingItem[];
   outfitLogs: OutfitLog[];
+  outfitLogsOnDate?: OutfitLog[];
+  rarelyWornOutfits?: Outfit[];
+  frequentlyWornOutfits?: Outfit[];
+  getOutfitById?: (id: string) => Outfit | undefined;
+  getLogsForDay?: (day: Date) => OutfitLog[];
+  handleOpenLogDialog?: (date: Date) => void;
+  handleEditLog?: (log: OutfitLog) => void;
+  handleDeleteLog?: (id: string) => Promise<boolean>;
+  handleSelectOutfit?: (outfitId: string) => void;
+  getSeasonalSuggestions?: (outfits: Outfit[], clothingItems: ClothingItem[]) => Outfit[];
   onDateClick: (date: Date) => void;
   onLogDelete: (logId: string) => Promise<boolean>;
 }
@@ -24,7 +35,8 @@ const WeekViewContainer = ({
   clothingItems, 
   outfitLogs, 
   onDateClick,
-  onLogDelete
+  onLogDelete,
+  setSelectedDate
 }: WeekViewContainerProps) => {
   const weekStart = startOfWeek(currentDate, { weekStartsOn: 0 });
   const weekEnd = endOfWeek(currentDate, { weekStartsOn: 0 });
@@ -54,6 +66,13 @@ const WeekViewContainer = ({
     }
   };
 
+  const handleDateClick = (date: Date) => {
+    if (setSelectedDate) {
+      setSelectedDate(date);
+    }
+    onDateClick(date);
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -65,7 +84,7 @@ const WeekViewContainer = ({
         {daysInWeek.map((date) => (
           <Button
             key={date.toISOString()}
-            onClick={() => onDateClick(date)}
+            onClick={() => handleDateClick(date)}
             variant={isSameDay(date, selectedDate) ? "default" : "outline"}
             className={`
               flex-1 flex flex-col items-center justify-center h-auto py-2
@@ -92,7 +111,7 @@ const WeekViewContainer = ({
                   flex flex-col space-y-2 p-2 border rounded-md min-h-[300px]
                   ${isSameDay(date, selectedDate) ? 'border-primary bg-primary/5' : 'border-gray-200'}
                 `}
-                onClick={() => onDateClick(date)}
+                onClick={() => handleDateClick(date)}
               >
                 {dayLogs.length === 0 ? (
                   <div className="text-center text-gray-400 text-xs mt-4">
@@ -104,7 +123,7 @@ const WeekViewContainer = ({
                       key={log.id} 
                       className="p-2 bg-card rounded-md border border-border text-xs"
                     >
-                      <div className="font-medium">{log.occasion || 'Outfit'}</div>
+                      <div className="font-medium">{log.timeOfDay || 'Outfit'}</div>
                       <div className="text-gray-400 mt-1">{log.notes || 'No notes'}</div>
                       <div className="flex justify-end mt-1">
                         <Button 

@@ -1,151 +1,121 @@
 
+import React from 'react';
 import { format } from 'date-fns';
-import { Activity, TimeOfDay } from '@/lib/types';
+import { Pencil, Trash2, Calendar } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 export interface OutfitLog {
   id: string;
   outfitId: string;
-  date: Date;
-  timeOfDay: TimeOfDay;
+  date: Date | string;
+  timeOfDay: string;
   notes?: string;
   weatherCondition?: string;
   temperature?: string;
-  activity?: Activity;
   customActivity?: string;
-  askForAiSuggestion?: boolean;
+  activity?: string;
   aiSuggested?: boolean;
-  aiSuggestionFeedback?: 'positive' | 'negative' | null;
-  occasionEmoji?: string;
-  thumbnailUrl?: string;
+  occasion?: string; // Add the occasion property that was missing
 }
 
 interface OutfitLogItemProps {
   log: OutfitLog;
   outfitName: string;
-  onDelete?: () => void;
+  className?: string;
   onView?: () => void;
   onEdit?: () => void;
+  onDelete?: () => void;
 }
 
-// Mapping of activities to emojis
-const activityEmojis: Record<string, string> = {
-  casual: '👕',
-  work: '💼',
-  formal: '👔',
-  party: '🎉',
-  date: '❤️',
-  interview: '🎓',
-  presentation: '📊',
-  dinner: '🍽️',
-  sport: '🏃',
-  other: '📝'
-};
-
-// Mapping of weather conditions to emojis
-const weatherEmojis: Record<string, string> = {
-  sunny: '☀️',
-  cloudy: '☁️',
-  rainy: '🌧️',
-  snowy: '❄️',
-  windy: '💨'
-};
-
-const OutfitLogItem = ({ log, outfitName, onDelete, onView, onEdit }: OutfitLogItemProps) => {
-  const activityEmoji = log.activity ? activityEmojis[log.activity] || '📝' : '';
-  const weatherEmoji = log.weatherCondition ? weatherEmojis[log.weatherCondition] || '' : '';
-  const activityDisplay = log.activity === 'other' && log.customActivity ? log.customActivity : log.activity;
-  
-  // Determine if this is a future planned outfit
-  const isFuturePlanned = new Date(log.date) > new Date();
+const OutfitLogItem = ({
+  log,
+  outfitName,
+  className,
+  onView,
+  onEdit,
+  onDelete
+}: OutfitLogItemProps) => {
+  const formattedDate = format(new Date(log.date), 'MMMM d, yyyy');
   
   return (
-    <div className="p-3 bg-slate-800/50 border border-purple-500/30 rounded-lg mb-2 relative">
+    <div
+      className={cn(
+        "bg-card border border-border rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow",
+        className
+      )}
+    >
       <div className="flex justify-between items-start">
         <div>
-          <h3 className="font-medium text-white flex items-center">
-            {activityEmoji && <span className="mr-2">{activityEmoji}</span>}
-            {outfitName}
-            {log.aiSuggested && <span className="ml-2 px-1.5 py-0.5 text-xs bg-purple-600/50 rounded-full">AI Suggested</span>}
-          </h3>
-          <p className="text-sm text-gray-300">
-            {format(new Date(log.date), 'MMMM d, yyyy')} • {log.timeOfDay}
-            {activityDisplay && <span className="ml-1">• {activityDisplay}</span>}
-          </p>
-          
-          {(log.weatherCondition || log.temperature) && (
-            <p className="text-sm text-gray-400 mt-1">
-              {weatherEmoji} {log.weatherCondition}
-              {log.weatherCondition && log.temperature && ' • '}
-              {log.temperature}
-            </p>
+          <h4 className="font-medium text-sm">{outfitName}</h4>
+          <div className="flex items-center mt-1 text-xs text-muted-foreground">
+            <Calendar className="h-3 w-3 mr-1" />
+            <span>{formattedDate}</span>
+          </div>
+        </div>
+        <div className="flex space-x-1">
+          {onEdit && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6"
+              onClick={onEdit}
+            >
+              <Pencil className="h-3 w-3" />
+            </Button>
           )}
-          
-          {log.notes && (
-            <p className="text-sm text-gray-300 mt-2 italic">"{log.notes}"</p>
-          )}
-          
-          {isFuturePlanned && log.askForAiSuggestion && !log.aiSuggested && (
-            <div className="mt-2 p-2 bg-purple-800/20 rounded text-xs text-purple-200">
-              Olivia will suggest an outfit for this planned event
-            </div>
-          )}
-          
-          {log.aiSuggested && (
-            <div className="mt-2 flex items-center space-x-2">
-              <span className="text-sm text-gray-300">Was this suggestion helpful?</span>
-              <button 
-                className={`p-1 rounded ${log.aiSuggestionFeedback === 'positive' ? 'bg-green-600' : 'bg-slate-700'}`}
-                onClick={() => {/* Handle feedback logic */}}
-              >
-                👍
-              </button>
-              <button 
-                className={`p-1 rounded ${log.aiSuggestionFeedback === 'negative' ? 'bg-red-600' : 'bg-slate-700'}`}
-                onClick={() => {/* Handle feedback logic */}}
-              >
-                👎
-              </button>
-            </div>
+          {onDelete && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6 text-destructive hover:text-destructive/80"
+              onClick={onDelete}
+            >
+              <Trash2 className="h-3 w-3" />
+            </Button>
           )}
         </div>
+      </div>
+      
+      <div className="mt-2 text-xs">
+        {log.timeOfDay && (
+          <div className="flex justify-between mb-1">
+            <span className="text-muted-foreground">Time:</span>
+            <span>{log.timeOfDay}</span>
+          </div>
+        )}
         
-        {log.thumbnailUrl && (
-          <div className="h-12 w-12 rounded overflow-hidden">
-            <img 
-              src={log.thumbnailUrl} 
-              alt={outfitName} 
-              className="h-full w-full object-cover"
-            />
+        {log.occasion && (
+          <div className="flex justify-between mb-1">
+            <span className="text-muted-foreground">Occasion:</span>
+            <span>{log.occasion}</span>
+          </div>
+        )}
+        
+        {log.weatherCondition && (
+          <div className="flex justify-between mb-1">
+            <span className="text-muted-foreground">Weather:</span>
+            <span>{log.weatherCondition} {log.temperature && `(${log.temperature})`}</span>
           </div>
         )}
       </div>
       
-      <div className="absolute top-2 right-2 flex space-x-1">
-        {onView && (
-          <button
-            onClick={onView}
-            className="p-1 text-xs text-purple-300 hover:text-purple-100"
-          >
-            View
-          </button>
-        )}
-        {onDelete && (
-          <button
-            onClick={onDelete}
-            className="p-1 text-xs text-red-300 hover:text-red-100"
-          >
-            Delete
-          </button>
-        )}
-        {onEdit && (
-          <button
-            onClick={onEdit}
-            className="p-1 text-xs text-blue-300 hover:text-blue-100"
-          >
-            Edit
-          </button>
-        )}
-      </div>
+      {log.notes && (
+        <div className="mt-2 pt-2 border-t border-border text-xs">
+          <p className="text-muted-foreground">{log.notes}</p>
+        </div>
+      )}
+      
+      {onView && (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="w-full mt-2 h-7 text-xs"
+          onClick={onView}
+        >
+          View Details
+        </Button>
+      )}
     </div>
   );
 };

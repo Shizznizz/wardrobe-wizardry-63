@@ -7,13 +7,36 @@ import { Button } from '@/components/ui/button';
 
 interface MonthViewProps {
   currentDate: Date;
+  selectedDate: Date;
+  setSelectedDate: (date: Date) => void;
+  currentMonth: Date;
+  setCurrentMonth: (date: Date) => void;
   outfits: Outfit[];
   outfitLogs: any[];
-  onDateClick: (date: Date) => void;
-  onLogDelete: (id: string) => Promise<boolean>;
+  outfitLogsOnDate: any[];
+  rarelyWornOutfits: Outfit[];
+  frequentlyWornOutfits: Outfit[];
+  getOutfitById: (id: string) => Outfit | undefined;
+  handleViewLog: (log: any) => void;
+  handleOpenLogDialog: (date: Date) => void;
+  handleDeleteLog: (id: string) => Promise<boolean>;
+  handleSelectOutfit: (outfitId: string) => void;
+  getSeasonalSuggestions: (outfits: Outfit[], clothingItems: any[]) => Outfit[];
+  clothingItems: any[];
+  isMobile: boolean;
 }
 
-const MonthView = ({ currentDate, outfits, outfitLogs, onDateClick, onLogDelete }: MonthViewProps) => {
+const MonthView = ({ 
+  currentDate, 
+  selectedDate,
+  setSelectedDate,
+  currentMonth,
+  setCurrentMonth,
+  outfits, 
+  outfitLogs, 
+  handleOpenLogDialog, 
+  handleDeleteLog 
+}: MonthViewProps) => {
   const startOfCurrentMonth = startOfMonth(currentDate);
   const daysInMonth = getDaysInMonth(startOfCurrentMonth);
   const startDay = getDay(startOfCurrentMonth);
@@ -38,7 +61,7 @@ const MonthView = ({ currentDate, outfits, outfitLogs, onDateClick, onLogDelete 
 
   const handleLogDeleteWrapper = async (id: string): Promise<boolean> => {
     try {
-      await onLogDelete(id);
+      await handleDeleteLog(id);
       return true;
     } catch (error) {
       console.error("Error deleting log:", error);
@@ -73,7 +96,7 @@ const MonthView = ({ currentDate, outfits, outfitLogs, onDateClick, onLogDelete 
                   ${day.isCurrentMonth ? 'text-white' : 'text-gray-400 opacity-40'}
                   ${day.hasOutfit && day.isCurrentMonth ? 'bg-primary/10 hover:bg-primary/20' : ''}
                 `}
-                onClick={() => onDateClick(day.date)}
+                onClick={() => setSelectedDate(day.date)}
               >
                 <span className="text-xs">{format(day.date, 'd')}</span>
                 {day.outfitCount > 0 && (

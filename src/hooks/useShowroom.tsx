@@ -224,6 +224,7 @@ export const useShowroom = () => {
     resetSelection,
     handlePreviewNow,
     
+    // Add these exported methods
     handleSelectOliviaImage,
     handleSelectOutfit,
     handleUserPhotoUpload,
@@ -238,6 +239,12 @@ export const useShowroom = () => {
     handleShowPremiumPopup,
     handleOpenChat,
     setShowOliviaImageGallery,
-    setShowFloatingChat
+    setShowFloatingChat,
+    
+    // Add the missing setters that were causing errors
+    setFinalImage,
+    setOliviaSuggestion,
+    setIsProcessingTryOn,
+    setSelectedItems
   };
 };

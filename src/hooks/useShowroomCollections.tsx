@@ -69,6 +69,7 @@ export const useShowroomCollections = (sampleOutfits: Outfit[], sampleClothingIt
   return {
     fashionCollections,
     selectedItems,
+    setSelectedItems,  // Ensure this is exposed
     handleAddItem,
     handleTryOnTrendingItem,
     handleSuggestAnotherOutfit,
