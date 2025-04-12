@@ -17,11 +17,16 @@ import { useLocationStorage } from '@/hooks/useLocationStorage';
 import OptimizedOliviaAssistant from '@/components/outfits/OptimizedOliviaAssistant';
 import SummonOliviaButton from '@/components/outfits/SummonOliviaButton';
 import { useOliviaAssistant } from '@/hooks/useOliviaAssistant';
+import EnhancedStyleContext from '@/components/outfits/EnhancedStyleContext';
+import OutfitGroupsSection from '@/components/outfits/OutfitGroupsSection';
+import QuickFilters from '@/components/outfits/QuickFilters';
 
 const Outfits = () => {
   const navigate = useNavigate();
   const [locationUpdated, setLocationUpdated] = useState(false);
   const { savedLocation } = useLocationStorage();
+  const [activeFilters, setActiveFilters] = useState<string[]>([]);
+  const [showOwnedOnly, setShowOwnedOnly] = useState(false);
   
   const {
     outfits,
@@ -87,6 +92,21 @@ const Outfits = () => {
     }
   };
   
+  // Filter handling
+  const handleFilterChange = (filters: string[]) => {
+    setActiveFilters(filters);
+  };
+  
+  // Toggle owned items only
+  const toggleOwnedOnly = () => {
+    setShowOwnedOnly(!showOwnedOnly);
+    toast.success(showOwnedOnly 
+      ? "Showing all outfits" 
+      : "Showing only outfits with items you own", 
+      { duration: 2000 }
+    );
+  };
+  
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -94,6 +114,48 @@ const Outfits = () => {
       transition: { staggerChildren: 0.05 }
     }
   };
+
+  // Group outfits by temperature range or style
+  const groupedOutfits = outfits.reduce((groups, outfit) => {
+    // Apply filters if any are active
+    if (activeFilters.length > 0) {
+      const matchesFilters = activeFilters.some(filter => 
+        outfit.seasons.includes(filter) || 
+        outfit.occasions.includes(filter) ||
+        outfit.colors.includes(filter)
+      );
+      
+      if (!matchesFilters) return groups;
+    }
+    
+    // Apply owned only filter if active
+    if (showOwnedOnly) {
+      // Logic to check if user owns at least one item in the outfit
+      // This is just a placeholder - actual implementation would check against user's wardrobe
+      const userOwnsItems = Math.random() > 0.5; // Placeholder logic
+      if (!userOwnsItems) return groups;
+    }
+    
+    // Determine group based on temperature or style
+    let group = 'Other';
+    
+    if (outfit.tags?.includes('casual') || outfit.occasions.includes('casual')) {
+      group = 'Casual & Comfortable';
+    } else if (outfit.tags?.includes('formal') || outfit.occasions.includes('formal')) {
+      group = 'Elegant & Formal';
+    } else if (outfit.seasons.includes('summer')) {
+      group = 'Summer Ready';
+    } else if (outfit.seasons.includes('winter')) {
+      group = 'Winter Warmth';
+    }
+    
+    if (!groups[group]) {
+      groups[group] = [];
+    }
+    
+    groups[group].push(outfit);
+    return groups;
+  }, {} as Record<string, typeof outfits>);
 
   return (
     <div className={`min-h-screen bg-gradient-to-b ${weatherBackground} text-white transition-colors duration-700 overflow-x-hidden`}>
@@ -106,12 +168,37 @@ const Outfits = () => {
           animate="visible"
           variants={containerVariants}
         >
-          <div className="flex flex-col lg:flex-row items-center gap-6 mb-12">
+          <div className="flex flex-col lg:flex-row items-start gap-6 mb-12">
             <OutfitHero />
             
-            <StyleSituation />
+            <div className="w-full lg:w-3/5">
+              <EnhancedStyleContext />
+            </div>
           </div>
+          
+          {!selectedOutfit && !hideTips && (
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-purple-900/30 border border-purple-500/20 rounded-lg p-4 text-center mb-8"
+            >
+              <p className="text-white/90 flex items-center justify-center">
+                <img 
+                  src="/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png" 
+                  alt="Olivia" 
+                  className="w-6 h-6 rounded-full border border-purple-400/30 mr-2" 
+                />
+                <span>Stuck on what to wear? Describe your day and I'll suggest the perfect outfit for you!</span>
+              </p>
+            </motion.div>
+          )}
       
+          <QuickFilters 
+            onFilterChange={handleFilterChange} 
+            toggleOwnedOnly={toggleOwnedOnly} 
+            showOwnedOnly={showOwnedOnly}
+          />
+          
           <RecommendedOutfit 
             outfit={outfits[0]} 
             clothingItems={clothingItems}
@@ -126,24 +213,42 @@ const Outfits = () => {
             onFeedbackAction={handleFeedbackAction}
           />
           
-          <OutfitCollection 
-            outfits={outfits}
-            onCreateOutfit={handleCreateOutfit}
-            onEditOutfit={handleEditOutfit}
-            onDeleteOutfit={handleDeleteOutfit}
-            onToggleFavorite={(id) => {
-              handleToggleFavorite(id);
-              // Find the outfit that was favorited
-              const outfit = outfits.find(o => o.id === id);
-              if (outfit) {
-                if (outfit.favorite) {
-                  showOutfitSaved(outfit);
+          {Object.keys(groupedOutfits).length > 0 ? (
+            <OutfitGroupsSection 
+              groupedOutfits={groupedOutfits}
+              onToggleFavorite={(id) => {
+                handleToggleFavorite(id);
+                // Find the outfit that was favorited
+                const outfit = outfits.find(o => o.id === id);
+                if (outfit) {
+                  if (outfit.favorite) {
+                    showOutfitSaved(outfit);
+                  }
                 }
-              }
-            }}
-            clothingItems={clothingItems}
-            onOutfitAddedToCalendar={handleOutfitAddedToCalendar}
-          />
+              }}
+              onOutfitAddedToCalendar={handleOutfitAddedToCalendar}
+              clothingItems={clothingItems}
+            />
+          ) : (
+            <OutfitCollection 
+              outfits={outfits}
+              onCreateOutfit={handleCreateOutfit}
+              onEditOutfit={handleEditOutfit}
+              onDeleteOutfit={handleDeleteOutfit}
+              onToggleFavorite={(id) => {
+                handleToggleFavorite(id);
+                // Find the outfit that was favorited
+                const outfit = outfits.find(o => o.id === id);
+                if (outfit) {
+                  if (outfit.favorite) {
+                    showOutfitSaved(outfit);
+                  }
+                }
+              }}
+              clothingItems={clothingItems}
+              onOutfitAddedToCalendar={handleOutfitAddedToCalendar}
+            />
+          )}
           
           <RecommendedOutfits className="pt-8" />
           

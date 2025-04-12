@@ -1,9 +1,11 @@
+
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { RefreshCw, ThumbsUp, ThumbsDown, Edit, Thermometer, MapPin, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Coffee, Party, Umbrella, Sunset, Moon, TrousersIcon } from '@/components/ui/icons';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import WeatherWidget from '@/components/WeatherWidget';
 import OutfitSuggestion from '@/components/OutfitSuggestion';
 import EnhancedLocationSelector from '@/components/weather/EnhancedLocationSelector';
@@ -40,6 +42,7 @@ const RecommendedOutfit = ({
   const { user } = useAuth();
   const [generatedTags, setGeneratedTags] = useState<string[]>([]);
   const locationUpdatedOnceRef = useRef(false);
+  const [oliviaThoughtsExpanded, setOliviaThoughtsExpanded] = useState(true);
 
   useEffect(() => {
     if (savedLocation && !isLoading && !locationUpdatedOnceRef.current) {
@@ -216,6 +219,12 @@ const RecommendedOutfit = ({
     }
   };
 
+  const handleSaveToWardrobe = () => {
+    toast.success(`${outfit.name} has been saved to your wardrobe`, {
+      description: "You can access it anytime from your wardrobe collection."
+    });
+  };
+
   return (
     <motion.section variants={{
       hidden: { y: 20, opacity: 0 },
@@ -291,7 +300,7 @@ const RecommendedOutfit = ({
             </div>
           </div>
           
-          <div className="mt-4">
+          <div className="mt-4 space-y-2">
             <AddToCalendarButton
               outfit={outfit}
               variant="default"
@@ -299,6 +308,14 @@ const RecommendedOutfit = ({
               className="bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90"
               onSuccess={handleOutfitAddedToCalendar}
             />
+            
+            <Button 
+              variant="outline" 
+              className="w-full border-green-500/30 hover:bg-green-500/10 text-green-300"
+              onClick={handleSaveToWardrobe}
+            >
+              Save to My Wardrobe
+            </Button>
           </div>
         </div>
         
@@ -329,27 +346,52 @@ const RecommendedOutfit = ({
             </div>
           )}
           
-          <div className="mt-4 p-4 bg-purple-900/30 border border-purple-500/20 rounded-lg shadow-md relative">
-            <div className="absolute top-0 left-4 w-3 h-3 -mt-1.5 transform rotate-45 bg-purple-900/30 border-l border-t border-purple-500/20"></div>
-            
-            <div className="flex items-center mb-2">
-              <Avatar className="h-6 w-6 mr-2 border border-purple-400/30">
-                <AvatarImage src="/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png" alt="Olivia Bloom" />
-                <AvatarFallback className="bg-gradient-to-r from-purple-600 to-pink-500 text-white">OB</AvatarFallback>
-              </Avatar>
-              <h4 className="text-sm font-medium text-purple-300">Olivia's Thoughts</h4>
+          <Collapsible open={oliviaThoughtsExpanded} onOpenChange={setOliviaThoughtsExpanded} className="mt-4">
+            <div className="p-4 bg-purple-900/30 border border-purple-500/20 rounded-lg shadow-md relative">
+              <div className="absolute top-0 left-4 w-3 h-3 -mt-1.5 transform rotate-45 bg-purple-900/30 border-l border-t border-purple-500/20"></div>
+              
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center">
+                  <Avatar className="h-6 w-6 mr-2 border border-purple-400/30">
+                    <AvatarImage src="/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png" alt="Olivia Bloom" />
+                    <AvatarFallback className="bg-gradient-to-r from-purple-600 to-pink-500 text-white">OB</AvatarFallback>
+                  </Avatar>
+                  <h4 className="text-sm font-medium text-purple-300">Olivia's Thoughts</h4>
+                </div>
+                
+                <CollapsibleTrigger asChild>
+                  <Button variant="ghost" size="sm" className="h-6 w-6 p-0 text-white/70 hover:text-white hover:bg-white/10">
+                    {oliviaThoughtsExpanded ? '-' : '+'}
+                  </Button>
+                </CollapsibleTrigger>
+              </div>
+              
+              <CollapsibleContent>
+                <p className="text-sm text-white/80 pl-8">
+                  {selectedOccasion ? 
+                    `This outfit is perfect for a ${selectedOccasion.toLowerCase()} setting in ${currentWeather?.temperature ? `${currentWeather.temperature}°C weather` : 'current weather conditions'}. The colors complement each other and the style balances comfort with appropriate formality. ` 
+                    : 
+                    `I've selected this outfit based on your style preferences and the current weather. The combination offers versatility while ensuring comfort throughout the day.`
+                  }
+                  {currentWeather?.condition?.toLowerCase().includes('rain') && ` I've included weather-appropriate items to keep you dry in the rain.`}
+                  {currentWeather?.temperature && currentWeather.temperature < 10 && ` The layering will help you stay warm in these cooler temperatures.`}
+                </p>
+                
+                <div className="mt-3 pl-8 pt-3 border-t border-purple-500/20">
+                  <h5 className="text-xs font-medium text-purple-300 mb-1">Why This Works:</h5>
+                  <ul className="text-xs text-white/80 list-disc pl-4 space-y-1">
+                    <li>The color palette is cohesive and flattering for your complexion</li>
+                    <li>These pieces can easily transition between different settings</li>
+                    <li>The silhouette is on-trend but has timeless appeal</li>
+                    {currentWeather?.temperature && currentWeather.temperature < 15 ? 
+                      <li>Layering pieces allow you to adjust to temperature changes</li> :
+                      <li>Breathable fabrics will keep you comfortable all day</li>
+                    }
+                  </ul>
+                </div>
+              </CollapsibleContent>
             </div>
-            
-            <p className="text-sm text-white/80 pl-8">
-              {selectedOccasion ? 
-                `This outfit is perfect for a ${selectedOccasion.toLowerCase()} setting in ${currentWeather?.temperature ? `${currentWeather.temperature}°C weather` : 'current weather conditions'}. The colors complement each other and the style balances comfort with appropriate formality. ` 
-                : 
-                `I've selected this outfit based on your style preferences and the current weather. The combination offers versatility while ensuring comfort throughout the day.`
-              }
-              {currentWeather?.condition?.toLowerCase().includes('rain') && ` I've included weather-appropriate items to keep you dry in the rain.`}
-              {currentWeather?.temperature && currentWeather.temperature < 10 && ` The layering will help you stay warm in these cooler temperatures.`}
-            </p>
-          </div>
+          </Collapsible>
           
           <div className="mt-4 flex flex-wrap gap-2">
             <Button 
