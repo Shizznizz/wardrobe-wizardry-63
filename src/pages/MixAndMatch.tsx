@@ -20,7 +20,10 @@ const MixAndMatch = () => {
     setWeather({
       temperature: weatherData.temperature,
       condition: weatherData.condition,
-      date: new Date(),
+      icon: weatherData.condition.toLowerCase().includes('cloud') ? 'cloud' :
+            weatherData.condition.toLowerCase().includes('rain') ? 'rain' :
+            weatherData.condition.toLowerCase().includes('snow') ? 'snow' :
+            'sun',
       location: {
         city: 'San Francisco',
         country: 'USA'
