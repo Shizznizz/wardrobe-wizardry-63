@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -24,10 +23,8 @@ const MixAndMatch = () => {
             weatherData.condition.toLowerCase().includes('rain') ? 'rain' :
             weatherData.condition.toLowerCase().includes('snow') ? 'snow' :
             'sun',
-      location: {
-        city: 'San Francisco',
-        country: 'USA'
-      }
+      city: 'San Francisco',
+      country: 'USA'
     });
   };
   
