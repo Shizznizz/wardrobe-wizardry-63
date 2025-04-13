@@ -1,4 +1,3 @@
-
 import { ClothingItem, Outfit, UserPreferences, ClothingOccasion } from './types';
 
 export const sampleClothingItems: ClothingItem[] = [
@@ -213,3 +212,30 @@ export const sampleUserPreferences: UserPreferences = {
   outfitReminders: true,
   reminderTime: '07:30'
 };
+
+export const sampleOutfitLogs: OutfitLog[] = [
+  {
+    id: '1',
+    outfitId: '1',
+    date: new Date('2023-04-10'),
+    timeOfDay: 'morning',
+    notes: 'Comfortable for a casual day',
+    weatherCondition: 'sunny',
+    temperature: '22',
+    activity: 'casual',
+    aiSuggested: false,
+    occasionEmoji: '☀️',
+  },
+  {
+    id: '2',
+    outfitId: '2',
+    date: new Date('2023-04-05'),
+    timeOfDay: 'evening',
+    notes: 'Wore for dinner with friends',
+    weatherCondition: 'clear',
+    temperature: '18',
+    activity: 'dinner',
+    aiSuggested: true,
+    occasionEmoji: '🍽️',
+  }
+];

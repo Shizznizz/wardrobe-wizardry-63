@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -8,7 +9,7 @@ import OliviaBloomAssistant from '@/components/OliviaBloomAssistant';
 import OliviaTips from '@/components/OliviaTips';
 import UploadModal from '@/components/UploadModal';
 import { ClothingItem, ClothingType, Outfit, OutfitLog } from '@/lib/types';
-import { sampleClothingItems, sampleOutfits, sampleUserPreferences } from '@/lib/wardrobeData';
+import { sampleClothingItems, sampleOutfits, sampleUserPreferences, sampleOutfitLogs } from '@/lib/wardrobeData';
 import { toast } from 'sonner';
 import { Confetti } from '@/components/ui/confetti';
 import { cn } from "@/lib/utils";
@@ -28,7 +29,8 @@ import {
   Clock,
   CloudSun,
   Layers,
-  Puzzle
+  Puzzle,
+  Heart
 } from 'lucide-react';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Card, CardContent } from '@/components/ui/card';
@@ -56,11 +58,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import ClothingItemDetail from '@/components/wardrobe/ClothingItemDetail';
 
 const Wardrobe = () => {
   const [clothingItems, setClothingItems] = useState<ClothingItem[]>(sampleClothingItems);
   const [outfits, setOutfits] = useState<Outfit[]>(sampleOutfits);
+  const [outfitLogs, setOutfitLogs] = useState<OutfitLog[]>(sampleOutfitLogs || []);
   const [showConfetti, setShowConfetti] = useState(false);
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
   const [isGridView, setIsGridView] = useState(true);
@@ -83,7 +87,7 @@ const Wardrobe = () => {
     if (user) {
       toast({
         title: "Welcome back!",
-        description: `Hi ${user.name}, your wardrobe is ready.`,
+        description: `Hi ${user.email}, your wardrobe is ready.`,
       });
     }
   }, [user]);
@@ -166,8 +170,8 @@ const Wardrobe = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-950 text-white">
-      <Confetti isVisible={showConfetti} />
-      <Header title="My Wardrobe">
+      {showConfetti && <Confetti />}
+      <Header>
         <div className="space-x-2">
           <Button variant="outline" size="icon" onClick={() => setIsMultiSelectMode(!isMultiSelectMode)}>
             {isMultiSelectMode ? <X className="h-4 w-4" /> : <Grid3X3 className="h-4 w-4" />}
@@ -223,14 +227,23 @@ const Wardrobe = () => {
         </motion.div>
       </div>
 
-      <UploadModal open={uploadModalOpen} onClose={() => setUploadModalOpen(false)} onSuccess={handleUploadSuccess} />
-      <OutfitMatchModal isOpen={isMatching} onClose={() => setIsMatching(false)} item={itemToMatch} />
+      <UploadModal onUpload={handleUploadSuccess} open={uploadModalOpen} onClose={() => setUploadModalOpen(false)} />
+      <OutfitMatchModal open={isMatching} onOpenChange={setIsMatching} item={itemToMatch} allItems={clothingItems} />
       
       {/* Clothing Item Detail Modal */}
       {selectedClothingItem && (
         <Dialog open={isClothingDetailOpen} onOpenChange={setIsClothingDetailOpen}>
           <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-2xl">
-            <ClothingItemDetail item={selectedClothingItem} onClose={() => setIsClothingDetailOpen(false)} />
+            <ClothingItemDetail 
+              item={selectedClothingItem} 
+              outfits={outfits}
+              logs={outfitLogs}
+              isOpen={isClothingDetailOpen}
+              onClose={() => setIsClothingDetailOpen(false)}
+              onEdit={handleEditItem}
+              onDelete={handleDeleteItem}
+              onToggleFavorite={toggleFavorite}
+            />
           </DialogContent>
         </Dialog>
       )}
