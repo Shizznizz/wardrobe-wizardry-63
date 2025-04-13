@@ -16,9 +16,10 @@ interface HeaderProps {
     temperature: number;
     condition: string;
   };
+  children?: React.ReactNode;
 }
 
-const Header = ({ weather }: HeaderProps) => {
+const Header = ({ weather, children }: HeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
@@ -116,6 +117,8 @@ const Header = ({ weather }: HeaderProps) => {
               <Menu className="h-5 w-5" />
             </Button>
           )}
+          
+          {children}
         </div>
 
         <MobileMenu 
