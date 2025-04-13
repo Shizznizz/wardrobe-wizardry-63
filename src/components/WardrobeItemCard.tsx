@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useState, memo } from 'react';
 import OptimizedImage from '@/components/ui/optimized-image';
+import { toast } from 'sonner';
 
 interface WardrobeItemCardProps {
   item: ClothingItem;
@@ -54,8 +55,16 @@ const WardrobeItemCard = ({
   const handleConfirmDelete = () => {
     if (onDeleteItem) {
       onDeleteItem(item.id);
+      toast.success(`${item.name} has been removed from your wardrobe`);
     }
     setDeleteConfirmOpen(false);
+  };
+
+  const handleEditClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onEditItem) {
+      onEditItem(item);
+    }
   };
 
   return (
@@ -116,10 +125,7 @@ const WardrobeItemCard = ({
           {onEditItem && (
             <button
               className="absolute bottom-2 right-12 rounded-full w-8 h-8 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-all duration-300 group-hover:bg-black/60"
-              onClick={(e) => {
-                e.stopPropagation();
-                onEditItem(item);
-              }}
+              onClick={handleEditClick}
             >
               <Edit className="w-4 h-4 text-white hover:text-blue-400" />
             </button>
