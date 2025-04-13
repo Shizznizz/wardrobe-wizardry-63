@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -47,6 +47,7 @@ const AppRoutes = () => {
               <Index />
               <LegalDisclaimer />
             </>} />
+            {/* Updated routes with proper page names */}
             <Route path="/my-wardrobe" element={<ProtectedRoute><Wardrobe /></ProtectedRoute>} />
             <Route path="/mix-and-match" element={<ProtectedRoute><Outfits /></ProtectedRoute>} />
             <Route path="/style-planner" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
@@ -56,6 +57,7 @@ const AppRoutes = () => {
             <Route path="/preferences" element={<ProtectedRoute><Preferences /></ProtectedRoute>} />
             <Route path="/auth" element={<Auth />} />
             
+            {/* Redirects from old to new routes */}
             <Route path="/wardrobe" element={<Navigate to="/my-wardrobe" replace />} />
             <Route path="/outfits" element={<Navigate to="/mix-and-match" replace />} />
             <Route path="/calendar" element={<Navigate to="/style-planner" replace />} />

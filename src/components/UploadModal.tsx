@@ -1,5 +1,6 @@
+
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Camera, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
@@ -11,13 +12,11 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface UploadModalProps {
   onUpload: (item: any) => void;
-  open: boolean;
-  onClose: () => void;
-  onSuccess?: (item: any) => void;
   buttonText?: string;
 }
 
-const UploadModal = ({ onUpload, open, onClose, onSuccess, buttonText = "Add Item" }: UploadModalProps) => {
+const UploadModal = ({ onUpload, buttonText = "Add Item" }: UploadModalProps) => {
+  const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
   const [type, setType] = useState<ClothingType | ''>('');
   const [color, setColor] = useState<ClothingColor | ''>('');
@@ -34,11 +33,13 @@ const UploadModal = ({ onUpload, open, onClose, onSuccess, buttonText = "Add Ite
   const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/jpg', 'image/png'];
 
   const handleImageChange = (file: File) => {
+    // Validate file type
     if (!ALLOWED_FILE_TYPES.includes(file.type)) {
       toast.error('Invalid file type. Please upload a PNG, JPG, or JPEG image.');
       return;
     }
 
+    // Validate file size
     if (file.size > MAX_FILE_SIZE) {
       toast.error(`File size too large. Maximum allowed size is ${MAX_FILE_SIZE / (1024 * 1024)}MB.`);
       return;
@@ -68,10 +69,12 @@ const UploadModal = ({ onUpload, open, onClose, onSuccess, buttonText = "Add Ite
   const validateForm = (): string[] => {
     const errors: string[] = [];
 
+    // Check for special characters in name (alphanumeric, spaces, and basic punctuation allowed)
     if (name && !/^[a-zA-Z0-9\s.,'-]*$/.test(name)) {
       errors.push("Name contains invalid characters. Please use only letters, numbers, and basic punctuation.");
     }
 
+    // Required fields check
     if (!name) errors.push("Name is required");
     if (!type) errors.push("Category is required");
     if (!imagePreview) errors.push("Image is required");
@@ -85,19 +88,23 @@ const UploadModal = ({ onUpload, open, onClose, onSuccess, buttonText = "Add Ite
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Validate form
     const errors = validateForm();
     if (errors.length > 0) {
       setValidationErrors(errors);
       return;
     }
 
+    // Clear previous errors
     setValidationErrors([]);
     setIsSubmitting(true);
     setIsLoading(true);
     
     try {
+      // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       
+      // Create new item
       const newItem = {
         id: Date.now().toString(),
         name,
@@ -108,16 +115,14 @@ const UploadModal = ({ onUpload, open, onClose, onSuccess, buttonText = "Add Ite
         imageUrl: imagePreview,
         favorite,
         timesWorn: 0,
-        occasions: [],
+        occasions: [], // Adding empty array for occasions to prevent errors
         dateAdded: new Date()
       };
       
       onUpload(newItem);
-      if (onSuccess) {
-        onSuccess(newItem);
-      }
       toast.success('Item added to your wardrobe!');
       
+      // Reset form
       setName('');
       setType('');
       setColor('');
@@ -127,7 +132,7 @@ const UploadModal = ({ onUpload, open, onClose, onSuccess, buttonText = "Add Ite
       setImagePreview(null);
       setImageFile(null);
       
-      onClose();
+      setOpen(false);
     } catch (error) {
       console.error("Upload error:", error);
       toast.error('Error adding item. Please try again.');
@@ -138,7 +143,13 @@ const UploadModal = ({ onUpload, open, onClose, onSuccess, buttonText = "Add Ite
   };
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button className="space-x-2 group">
+          <span>{buttonText}</span>
+          <Camera className="h-4 w-4 transition-transform group-hover:scale-110" />
+        </Button>
+      </DialogTrigger>
       <DialogContent className="sm:max-w-md max-h-[90vh] overflow-hidden">
         <DialogHeader>
           <DialogTitle className="text-center">Add Clothing Item</DialogTitle>
@@ -188,7 +199,7 @@ const UploadModal = ({ onUpload, open, onClose, onSuccess, buttonText = "Add Ite
         </ScrollArea>
 
         <DialogFooter className="mt-4">
-          <Button type="button" variant="outline" onClick={onClose}>
+          <Button type="button" variant="outline" onClick={() => setOpen(false)}>
             Cancel
           </Button>
           <Button 

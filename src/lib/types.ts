@@ -1,3 +1,4 @@
+
 export type ClothingType = 
   | 'shirt'
   | 'jeans'
@@ -134,7 +135,6 @@ export interface Outfit {
   colorScheme?: string; // Description of the color scheme
   tags?: string[]; // Added tags field for filtering
   colors?: string[]; // Added colors field for filtering
-  imageUrl?: string; // Adding imageUrl property for outfit thumbnails
 }
 
 export interface WeatherInfo {
@@ -167,21 +167,6 @@ export interface UserPreferences {
   climatePreferences?: string[];
 }
 
-export interface OutfitLog {
-  id: string;
-  outfitId: string;
-  date: Date;
-  timeOfDay: TimeOfDay;
-  notes?: string;
-  weatherCondition?: string;
-  temperature?: string;
-  activity?: Activity;
-  customActivity?: string;
-  aiSuggested?: boolean;
-  occasionEmoji?: string;
-  thumbnailUrl?: string;
-}
-
 export interface OutfitLogExtended {
   id: string;
   outfitId: string;
@@ -195,6 +180,6 @@ export interface OutfitLogExtended {
   askForAiSuggestion?: boolean;
   aiSuggested?: boolean;
   aiSuggestionFeedback?: 'positive' | 'negative' | null;
-  occasionEmoji?: string;
-  thumbnailUrl?: string;
+  occasionEmoji?: string; // For displaying emoji based on occasion
+  thumbnailUrl?: string; // For displaying a tiny outfit image
 }

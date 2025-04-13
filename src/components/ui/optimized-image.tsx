@@ -14,8 +14,8 @@ interface OptimizedImageProps extends React.ImgHTMLAttributes<HTMLImageElement> 
   priority?: boolean;
   showSkeleton?: boolean;
   skeletonClassName?: string;
-  threshold?: number;
-  debounceLoad?: number;
+  threshold?: number; // Intersection observer threshold
+  debounceLoad?: number; // Debounce time for loading in ms
 }
 
 const OptimizedImage = ({
@@ -30,19 +30,14 @@ const OptimizedImage = ({
   skeletonClassName,
   threshold = 0.1,
   debounceLoad = 100,
-  width, // Explicitly destructure width
   ...props
 }: OptimizedImageProps) => {
   const [imgSrc, setImgSrc] = useState(src);
   const [isInView, setIsInView] = useState(priority);
-  
-  // Convert width to a number if it's a string, or use 300 as default
-  const normalizedWidth = typeof width === 'string' ? parseInt(width, 10) : width || 300;
-  
   const { isLoaded, error, imgProps } = useOptimizedImage(isInView ? imgSrc : null, {
     lazyLoad: !priority,
     priority,
-    quality: normalizedWidth < 300 ? 'low' : 'medium'
+    quality: props.width && props.width < 300 ? 'low' : 'medium'
   });
 
   useEffect(() => {

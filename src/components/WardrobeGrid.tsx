@@ -1,3 +1,4 @@
+
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 import { ClothingItem } from '@/lib/types';
@@ -23,21 +24,19 @@ interface WardrobeGridProps {
   onMatchItem: (item: ClothingItem) => void;
   onDeleteItem?: (id: string) => void;
   onEditItem?: (item: ClothingItem) => void;
-  onItemClick?: (item: ClothingItem) => void;
   compactView?: boolean;
   selectable?: boolean;
   selectedItems?: string[];
   onToggleSelect?: (id: string) => void;
-  onCreateOutfit?: (name: string, itemIds: string[]) => void;
+  onCreateOutfit?: (outfitName: string, itemIds: string[]) => void;
 }
 
-const WardrobeGrid = ({ 
-  items, 
-  onToggleFavorite, 
-  onMatchItem, 
+const WardrobeGrid = ({
+  items,
+  onToggleFavorite,
+  onMatchItem,
   onDeleteItem,
   onEditItem,
-  onItemClick,
   compactView = false,
   selectable = false,
   selectedItems = [],
@@ -89,7 +88,7 @@ const WardrobeGrid = ({
   }
 
   return (
-    <div className="space-y-6">
+    <>
       <div className="flex justify-end mb-4">
         <div className="bg-slate-800/40 rounded-lg p-1 flex">
           <Button
@@ -143,7 +142,6 @@ const WardrobeGrid = ({
                 onMatchItem={onMatchItem}
                 onDeleteItem={onDeleteItem}
                 onEditItem={handleEditItem}
-                onItemClick={onItemClick}
                 compactView={compactView}
                 selectable={selectable}
                 isSelected={selectedItems.includes(item.id)}
@@ -410,7 +408,7 @@ const WardrobeGrid = ({
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   );
 };
 
