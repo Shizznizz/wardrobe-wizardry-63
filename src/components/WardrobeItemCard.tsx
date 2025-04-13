@@ -100,7 +100,10 @@ const WardrobeItemCard = ({
           <div className="absolute top-2 right-2 flex gap-2">
             <button
               className="rounded-full w-8 h-8 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-all duration-300 group-hover:bg-black/60"
-              onClick={() => onToggleFavorite(item.id)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleFavorite(item.id);
+              }}
             >
               <Heart
                 className={cn(
@@ -116,6 +119,8 @@ const WardrobeItemCard = ({
             <button
               className="absolute bottom-2 right-2 rounded-full w-8 h-8 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-all duration-300 group-hover:bg-black/60"
               onClick={handleDeleteClick}
+              aria-label="Delete item"
+              title="Delete item"
             >
               <Trash2 className="w-4 h-4 text-white hover:text-red-400" />
             </button>
@@ -126,6 +131,8 @@ const WardrobeItemCard = ({
             <button
               className="absolute bottom-2 right-12 rounded-full w-8 h-8 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-all duration-300 group-hover:bg-black/60"
               onClick={handleEditClick}
+              aria-label="Edit item"
+              title="Edit item"
             >
               <Edit className="w-4 h-4 text-white hover:text-blue-400" />
             </button>

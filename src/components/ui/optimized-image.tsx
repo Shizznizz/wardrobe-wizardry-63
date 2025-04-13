@@ -36,7 +36,7 @@ const OptimizedImage = ({
   const [isInView, setIsInView] = useState(priority);
   
   // Fix for TypeScript error - convert width to number before comparison
-  const imageQuality = props.width && typeof props.width === 'number' && props.width < 300 ? 'low' : 'medium';
+  const imageQuality = typeof props.width === 'number' && props.width < 300 ? 'low' : 'medium';
   
   const { isLoaded, error, imgProps } = useOptimizedImage(isInView ? imgSrc : null, {
     lazyLoad: !priority,

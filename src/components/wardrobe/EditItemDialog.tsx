@@ -12,6 +12,7 @@ import {
 import { Button } from '@/components/ui/button';
 import ImageUploader from '@/components/wardrobe/ImageUploader';
 import ClothingDetailsForm from '@/components/wardrobe/ClothingDetailsForm';
+import { toast } from 'sonner';
 
 interface EditItemDialogProps {
   item: ClothingItem | null;
@@ -82,6 +83,7 @@ const EditItemDialog = ({ item, isOpen, onClose, onSave }: EditItemDialogProps) 
     };
     
     onSave(updatedItem);
+    toast.success(`${name} has been updated`);
     onClose();
   };
   
