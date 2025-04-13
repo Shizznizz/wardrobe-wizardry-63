@@ -161,7 +161,6 @@ const ClothingItemDetail = ({
           className: "text-green-300"
         };
       case 'jacket':
-      case 'coat':
         return {
           tip: currentSeason === 'summer' 
             ? "Keep this item ready for cool summer evenings." 
@@ -315,7 +314,7 @@ const ClothingItemDetail = ({
                         <div key={log.id} className="bg-slate-800/40 p-3 rounded-lg">
                           <div className="flex justify-between">
                             <p className="text-sm font-medium">{format(new Date(log.date), 'MMM d, yyyy')}</p>
-                            <p className="text-xs text-gray-400">{log.time_of_day || 'All day'}</p>
+                            <p className="text-xs text-gray-400">{log.timeOfDay || 'All day'}</p>
                           </div>
                           {outfit && <p className="text-sm text-purple-300">Outfit: {outfit.name}</p>}
                           {log.weatherCondition && (
@@ -333,7 +332,7 @@ const ClothingItemDetail = ({
                           )}
                           {log.activity && (
                             <p className="text-xs text-gray-400 mt-1">
-                              Activity: {log.custom_activity || log.activity}
+                              Activity: {log.customActivity || log.activity}
                             </p>
                           )}
                         </div>
@@ -426,7 +425,7 @@ const ClothingItemDetail = ({
                   <ul className="space-y-1.5 text-sm text-gray-300">
                     <li>• {item.type === 'top' || item.type === 'shirt' ? 'Dark jeans or trousers' : 'Neutral shirts or blouses'}</li>
                     <li>• {item.color === 'black' ? 'White or bright color accents' : 'Black base pieces for contrast'}</li>
-                    <li>• Accessorize with {item.color === 'neutral' ? 'bold' : 'subtle'} jewelry</li>
+                    <li>• Accessorize with subtle jewelry</li>
                   </ul>
                 </div>
                 
