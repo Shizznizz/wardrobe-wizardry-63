@@ -85,9 +85,8 @@ const Wardrobe = () => {
 
   useEffect(() => {
     if (user) {
-      toast({
-        description: `Hi ${user?.email}, your wardrobe is ready.`,
-      });
+      // Fix: use the toast function correctly without 'description' property
+      toast(`Hi ${user?.email}, your wardrobe is ready.`);
     }
   }, [user]);
 
@@ -170,6 +169,7 @@ const Wardrobe = () => {
   return (
     <div className="flex flex-col min-h-screen bg-slate-950 text-white">
       {showConfetti && <Confetti />}
+      {/* Fix: use Header component with proper structure for children */}
       <Header>
         <div className="space-x-2">
           <Button variant="outline" size="icon" onClick={() => setIsMultiSelectMode(!isMultiSelectMode)}>
