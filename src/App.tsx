@@ -1,4 +1,5 @@
 
+import React from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,6 +11,7 @@ import ScrollToTop from "./components/ScrollToTop";
 import Footer from "./components/Footer";
 import LegalDisclaimer from "./components/LegalDisclaimer";
 import Index from "./pages/Index";
+// Corrected import for Wardrobe
 import Wardrobe from "./pages/Wardrobe";
 import Outfits from "./pages/Outfits";
 import Settings from "./pages/Settings";
