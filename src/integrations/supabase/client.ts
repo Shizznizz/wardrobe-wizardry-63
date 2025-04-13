@@ -1,3 +1,4 @@
+
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { ClothingItem, Outfit, UserPreferences } from '@/lib/types';
 import { toast } from 'sonner';
@@ -8,6 +9,60 @@ export const supabase = createClient(
   'https://aaiyxtbovepseasghtth.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFhaXl4dGJvdmVwc2Vhc2dodHRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI0NzcxNDMsImV4cCI6MjA1ODA1MzE0M30.Pq66ZdBT_ZEBnPbXkDe-SVMnMvqoNjcuTo05GcPabL0'
 );
+
+// Cache configuration
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes in milliseconds
+const CACHE_PREFIX = 'stylebloom_cache_';
+
+// Function to get cached data
+const getCachedData = <T>(key: string): { data: T | null, timestamp: number } | null => {
+  try {
+    const cacheKey = `${CACHE_PREFIX}${key}`;
+    const cachedItem = localStorage.getItem(cacheKey);
+    
+    if (!cachedItem) return null;
+    
+    const { data, timestamp } = JSON.parse(cachedItem);
+    const now = Date.now();
+    
+    // Check if cache is still valid
+    if (now - timestamp < CACHE_DURATION) {
+      return { data, timestamp };
+    }
+    
+    // Clear expired cache
+    localStorage.removeItem(cacheKey);
+    return null;
+  } catch (err) {
+    console.error('Error reading from cache:', err);
+    return null;
+  }
+};
+
+// Function to set cached data
+const setCachedData = <T>(key: string, data: T): void => {
+  try {
+    const cacheKey = `${CACHE_PREFIX}${key}`;
+    const cacheItem = {
+      data,
+      timestamp: Date.now()
+    };
+    
+    localStorage.setItem(cacheKey, JSON.stringify(cacheItem));
+  } catch (err) {
+    console.error('Error writing to cache:', err);
+  }
+};
+
+// Function to invalidate cache for a specific key
+const invalidateCache = (key: string): void => {
+  try {
+    const cacheKey = `${CACHE_PREFIX}${key}`;
+    localStorage.removeItem(cacheKey);
+  } catch (err) {
+    console.error('Error invalidating cache:', err);
+  }
+};
 
 // Function to save user preferences
 export const saveUserPreferences = async (userId: string, preferences: UserPreferences) => {
@@ -34,6 +89,9 @@ export const saveUserPreferences = async (userId: string, preferences: UserPrefe
       console.error('Error saving preferences:', error);
       return { success: false, error };
     }
+    
+    // Invalidate user preferences cache
+    invalidateCache(`user_preferences_${userId}`);
 
     return { success: true };
   } catch (err) {
@@ -42,9 +100,23 @@ export const saveUserPreferences = async (userId: string, preferences: UserPrefe
   }
 };
 
-// Function to get user preferences
+// Function to get user preferences with caching
 export const getUserPreferences = async (userId: string) => {
   try {
+    if (!userId) {
+      console.error('No user ID provided for fetching preferences');
+      return { success: false, error: 'Authentication required' };
+    }
+    
+    // Try to get cached data first
+    const cacheKey = `user_preferences_${userId}`;
+    const cachedData = getCachedData<UserPreferences>(cacheKey);
+    
+    if (cachedData?.data) {
+      console.log('Using cached user preferences');
+      return { success: true, data: cachedData.data };
+    }
+
     const { data, error } = await supabase
       .from('user_preferences')
       .select('*')
@@ -81,6 +153,9 @@ export const getUserPreferences = async (userId: string) => {
       reminderTime: data.reminder_time || '08:00',
       // Map any other fields
     };
+    
+    // Cache the preferences
+    setCachedData(cacheKey, preferences);
 
     return { success: true, data: preferences };
   } catch (err) {
@@ -136,6 +211,9 @@ export const saveOutfitLog = async (userId: string, log: Omit<OutfitLog, 'id'>) 
       customActivity: data.custom_activity,
       aiSuggested: data.ai_suggested
     };
+    
+    // Invalidate outfit logs cache
+    invalidateCache(`outfit_logs_${userId}`);
 
     return { success: true, data: savedLog };
   } catch (err) {
@@ -156,7 +234,13 @@ export const updateOutfitLog = async (userId: string, logId: string, updates: Pa
     const updateData: Record<string, any> = {};
     
     if (updates.outfitId !== undefined) updateData.outfit_id = updates.outfitId;
-    if (updates.date !== undefined) updateData.date = updates.date instanceof Date ? updates.date.toISOString() : updates.date;
+    if (updates.date !== undefined) {
+      updateData.date = updates.date instanceof Date 
+        ? updates.date.toISOString() 
+        : typeof updates.date === 'string' 
+          ? updates.date 
+          : new Date(updates.date).toISOString();
+    }
     if (updates.timeOfDay !== undefined) updateData.time_of_day = updates.timeOfDay;
     if (updates.notes !== undefined) updateData.notes = updates.notes || null;
     if (updates.weatherCondition !== undefined) updateData.weather_condition = updates.weatherCondition || null;
@@ -192,6 +276,9 @@ export const updateOutfitLog = async (userId: string, logId: string, updates: Pa
       customActivity: data.custom_activity,
       aiSuggested: data.ai_suggested
     };
+    
+    // Invalidate outfit logs cache
+    invalidateCache(`outfit_logs_${userId}`);
 
     return { success: true, data: updatedLog };
   } catch (err) {
@@ -200,19 +287,35 @@ export const updateOutfitLog = async (userId: string, logId: string, updates: Pa
   }
 };
 
-// Function to get outfit logs for a user
-export const getOutfitLogs = async (userId: string) => {
+// Function to get outfit logs for a user with pagination and caching
+export const getOutfitLogs = async (userId: string, page = 1, pageSize = 20) => {
   try {
     if (!userId) {
       console.error('No user ID provided for fetching outfit logs');
       return { success: false, error: 'Authentication required' };
     }
+    
+    // Calculate the range for pagination
+    const from = (page - 1) * pageSize;
+    const to = from + pageSize - 1;
+    
+    // Try to get cached data first if it's the first page
+    if (page === 1) {
+      const cacheKey = `outfit_logs_${userId}`;
+      const cachedData = getCachedData<OutfitLog[]>(cacheKey);
+      
+      if (cachedData?.data) {
+        console.log('Using cached outfit logs');
+        return { success: true, data: cachedData.data };
+      }
+    }
 
-    const { data, error } = await supabase
+    const { data, error, count } = await supabase
       .from('outfit_logs')
-      .select('*')
+      .select('*', { count: 'exact' })
       .eq('user_id', userId)
-      .order('date', { ascending: false });
+      .order('date', { ascending: false })
+      .range(from, to);
 
     if (error) {
       console.error('Error fetching outfit logs:', error);
@@ -232,8 +335,22 @@ export const getOutfitLogs = async (userId: string) => {
       customActivity: log.custom_activity,
       aiSuggested: log.ai_suggested
     }));
+    
+    // Cache only the first page results
+    if (page === 1) {
+      setCachedData(`outfit_logs_${userId}`, outfitLogs);
+    }
 
-    return { success: true, data: outfitLogs };
+    return { 
+      success: true, 
+      data: outfitLogs,
+      pagination: {
+        totalCount: count,
+        totalPages: Math.ceil((count || 0) / pageSize),
+        currentPage: page,
+        pageSize
+      }
+    };
   } catch (err) {
     console.error('Error in getOutfitLogs:', err);
     return { success: false, error: err };
@@ -258,6 +375,9 @@ export const deleteOutfitLog = async (userId: string, logId: string) => {
       console.error('Error deleting outfit log:', error);
       return { success: false, error };
     }
+    
+    // Invalidate outfit logs cache
+    invalidateCache(`outfit_logs_${userId}`);
 
     return { success: true };
   } catch (err) {

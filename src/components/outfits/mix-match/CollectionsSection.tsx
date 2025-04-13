@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Outfit, ClothingItem } from '@/lib/types';
 import { 
@@ -12,6 +12,7 @@ import {
 import OutfitCollectionPreview from '@/components/outfits/OutfitCollectionPreview';
 import { Card } from '@/components/ui/card';
 import { motion } from 'framer-motion';
+import OptimizedImage from '@/components/ui/optimized-image';
 
 interface CollectionsSectionProps {
   personalOutfits: Outfit[];
@@ -49,7 +50,7 @@ const CollectionsSection = ({
       >
         <CarouselContent className="-ml-4">
           {outfits.map((outfit) => (
-            <CarouselItem key={outfit.id} className="pl-4 basis-full sm:basis-1/2">
+            <CarouselItem key={outfit.id} className="pl-4 basis-full sm:basis-1/2 md:basis-1/3">
               <motion.div
                 whileHover={{ y: -5 }}
                 className="h-full"
@@ -66,10 +67,12 @@ const CollectionsSection = ({
                               className="overflow-hidden rounded-md bg-slate-800"
                             >
                               {item?.imageUrl ? (
-                                <img 
+                                <OptimizedImage 
                                   src={item.imageUrl} 
                                   alt={item.name} 
                                   className="h-full w-full object-cover"
+                                  showSkeleton={true}
+                                  fallbackSrc="/placeholder.svg"
                                 />
                               ) : (
                                 <div className="flex items-center justify-center h-full text-gray-400 text-xs">
@@ -121,7 +124,7 @@ const CollectionsSection = ({
   );
 
   return (
-    <>
+    <Suspense fallback={<div className="animate-pulse bg-slate-800/50 h-64 rounded-lg"></div>}>
       {isMobile ? (
         // Mobile view with carousels
         <div className="mt-8">
@@ -160,7 +163,7 @@ const CollectionsSection = ({
           </section>
         </>
       )}
-    </>
+    </Suspense>
   );
 };
 

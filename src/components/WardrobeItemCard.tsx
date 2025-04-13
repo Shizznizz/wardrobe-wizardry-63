@@ -18,7 +18,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useState } from 'react';
+import { useState, memo } from 'react';
+import OptimizedImage from '@/components/ui/optimized-image';
 
 interface WardrobeItemCardProps {
   item: ClothingItem;
@@ -77,10 +78,13 @@ const WardrobeItemCard = ({
         )}
 
         <div className="relative aspect-square overflow-hidden">
-          <img
+          <OptimizedImage
             src={item.imageUrl}
             alt={item.name}
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            showSkeleton={true}
+            aspectRatio="aspect-square"
+            fallbackSrc="/placeholder.svg"
           />
           
           {/* Fixed top-right action buttons */}
@@ -218,4 +222,5 @@ const WardrobeItemCard = ({
   );
 };
 
-export default WardrobeItemCard;
+// Use React.memo to prevent unnecessary re-renders
+export default memo(WardrobeItemCard);
