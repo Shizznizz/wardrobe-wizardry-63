@@ -1,4 +1,4 @@
-import { ClothingItem, Outfit, UserPreferences, ClothingOccasion } from './types';
+import { ClothingItem, Outfit, UserPreferences, ClothingOccasion, OutfitLog } from './types';
 
 export const sampleClothingItems: ClothingItem[] = [
   {

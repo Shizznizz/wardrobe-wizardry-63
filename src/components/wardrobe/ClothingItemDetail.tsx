@@ -44,6 +44,33 @@ export interface ClothingItemDetailProps {
   onToggleFavorite: (id: string) => void;
 }
 
+function getStylingTips(item: ClothingItem) {
+  let tip = '';
+  let className = '';
+  
+  if (item.type === 'shirt' || item.type === 'top' || item.type === 'blouse') {
+    tip = `This ${item.color} ${item.type} works best with contrasting bottoms. Try pairing with dark jeans or trousers for a balanced look.`;
+    className = 'text-blue-300';
+  } else if (item.type === 'jeans' || item.type === 'pants' || item.type === 'skirt') {
+    tip = `${item.color.charAt(0).toUpperCase() + item.color.slice(1)} ${item.type} pairs well with neutral tops. Add a statement accessory for a pop of color.`;
+    className = 'text-indigo-300';
+  } else if (item.type === 'dress') {
+    tip = `This ${item.color} dress is perfect for ${item.seasons.join(' and ')}. Layer with a light jacket for cooler evenings.`;
+    className = 'text-purple-300';
+  } else if (item.type === 'jacket' || item.type === 'hoodie' || item.type === 'sweater') {
+    tip = `This ${item.color} ${item.type} is great for layering. Try it over a simple tee with your favorite jeans for an effortless look.`;
+    className = 'text-pink-300';
+  } else if (item.type === 'shoes' || item.type === 'sneakers' || item.type === 'boots') {
+    tip = `These ${item.color} ${item.type} add a great finishing touch to most outfits. They work especially well with ${item.color === 'black' ? 'colorful' : 'monochrome'} ensembles.`;
+    className = 'text-green-300';
+  } else {
+    tip = `This ${item.color} ${item.type} is versatile and can be styled in multiple ways. Experiment with different combinations to find your favorite look.`;
+    className = 'text-yellow-300';
+  }
+  
+  return { tip, className };
+}
+
 const ClothingItemDetail = ({
   item,
   outfits,
@@ -131,7 +158,7 @@ const ClothingItemDetail = ({
     return 'winter';
   }
 
-  const stylingTip = getStylingTips();
+  const stylingTip = getStylingTips(item);
 
   return (
     <>

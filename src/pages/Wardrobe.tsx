@@ -86,8 +86,7 @@ const Wardrobe = () => {
   useEffect(() => {
     if (user) {
       toast({
-        title: "Welcome back!",
-        description: `Hi ${user.email}, your wardrobe is ready.`,
+        description: `Hi ${user?.email}, your wardrobe is ready.`,
       });
     }
   }, [user]);
