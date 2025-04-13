@@ -1,7 +1,6 @@
-
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, X, Sparkles, ArrowRight, MinusCircle, PlusCircle } from 'lucide-react';
+import { MessageCircle, X, Sparkles, MinusCircle, PlusCircle } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Party } from '@/components/ui/icons';
@@ -23,23 +22,22 @@ const OliviaTips = ({ position = 'top-right' }: OliviaTipsProps) => {
   
   const tips = [
     {
-      title: "Welcome to Your Fashion Journey!",
-      message: "Try mixing and matching different clothing items to create outfits that fit your style and the weather conditions.",
+      title: "Build Your Digital Wardrobe",
+      message: "Take a moment to add all your clothes. The more complete your wardrobe is, the smarter I can help with outfit ideas, suggestions, and style advice.",
       icon: <Sparkles className="h-4 w-4 text-amber-300" />,
     },
     {
-      title: "Try Outfit Swapping",
-      message: "Select different collections to explore a variety of looks. Each collection features outfits perfect for different occasions and seasons.",
-      icon: <ArrowRight className="h-4 w-4 text-blue-300" />,
-    },
-    {
-      title: "Share Your Looks",
-      message: "Once you find an outfit you love, preview it in the Fitting Room or share it with friends to get their opinion before adding it to your wardrobe.",
+      title: "One-Time Setup, Ongoing Ease",
+      message: "Adding your items might take a little time now, but once it's done, it's easy to maintain. Just add new clothes when you buy them.",
       icon: <Party className="h-4 w-4 text-emerald-300" />,
     },
+    {
+      title: "Unlock the Power of Mix & Match",
+      message: "Once your wardrobe is complete, head to the Mix & Match page. I'll suggest personalized outfits based on your style, the weather, and the occasion.",
+      icon: <MessageCircle className="h-4 w-4 text-blue-300" />,
+    }
   ];
 
-  // Store tip progress in local storage
   useEffect(() => {
     const storedProgress = localStorage.getItem('oliviaTipsProgress');
     if (storedProgress) {
@@ -48,7 +46,6 @@ const OliviaTips = ({ position = 'top-right' }: OliviaTipsProps) => {
       setHasCompletedTips(completed);
     }
     
-    // Set up scroll trigger for first-time users
     if (!localStorage.getItem('oliviaTipsShown')) {
       const handleScroll = () => {
         if (!hasScrolledTrigger) {
@@ -69,7 +66,6 @@ const OliviaTips = ({ position = 'top-right' }: OliviaTipsProps) => {
     }
   }, [hasScrolledTrigger]);
 
-  // Save progress when tips change
   useEffect(() => {
     localStorage.setItem('oliviaTipsProgress', JSON.stringify({
       index: currentTipIndex,
@@ -78,16 +74,15 @@ const OliviaTips = ({ position = 'top-right' }: OliviaTipsProps) => {
   }, [currentTipIndex, hasCompletedTips]);
 
   const getPositionClasses = () => {
-    // Adjust position for mobile devices
     if (isMobile && position === 'top-right') {
-      return 'top-36 right-6'; // Move avatar lower on mobile
+      return 'top-36 right-6';
     }
     
     switch(position) {
       case 'top-left': return 'top-24 left-6';
       case 'bottom-right': return 'bottom-24 right-6';
       case 'bottom-left': return 'bottom-16 left-6';
-      case 'top-right': return 'top-28 right-6'; // Default position - moved down slightly
+      case 'top-right': return 'top-28 right-6';
       default: return 'top-28 right-6';
     }
   };
@@ -126,7 +121,6 @@ const OliviaTips = ({ position = 'top-right' }: OliviaTipsProps) => {
       if (storedProgress) {
         const { completed } = JSON.parse(storedProgress);
         if (completed) {
-          // Ask if they want to continue from where they left off
           if (confirm("Would you like to continue the tips from where you left off?")) {
             setHasCompletedTips(false);
             setShowTips(true);
