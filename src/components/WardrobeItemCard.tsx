@@ -18,8 +18,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useState, memo } from 'react';
+import { useState, memo, useCallback } from 'react';
 import OptimizedImage from '@/components/ui/optimized-image';
+import { useToast } from "@/hooks/use-toast";
 
 interface WardrobeItemCardProps {
   item: ClothingItem;
@@ -27,6 +28,7 @@ interface WardrobeItemCardProps {
   onMatchItem: (item: ClothingItem) => void;
   onDeleteItem?: (id: string) => void;
   onEditItem?: (item: ClothingItem) => void;
+  onItemClick?: (item: ClothingItem) => void;
   compactView?: boolean;
   selectable?: boolean;
   isSelected?: boolean;
@@ -39,33 +41,57 @@ const WardrobeItemCard = ({
   onMatchItem,
   onDeleteItem,
   onEditItem,
+  onItemClick,
   compactView = false,
   selectable = false,
   isSelected = false,
   onToggleSelect
 }: WardrobeItemCardProps) => {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const { toast } = useToast();
 
   const handleDeleteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     setDeleteConfirmOpen(true);
   };
 
-  const handleConfirmDelete = () => {
+  const handleEditClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onEditItem) {
+      onEditItem(item);
+      toast({
+        title: "Edit mode",
+        description: `Now editing ${item.name}`,
+      });
+    }
+  };
+
+  const handleConfirmDelete = useCallback(() => {
     if (onDeleteItem) {
       onDeleteItem(item.id);
+      toast({
+        title: "Item removed",
+        description: `${item.name} has been removed from your wardrobe`,
+      });
     }
     setDeleteConfirmOpen(false);
-  };
+  }, [item, onDeleteItem, toast]);
+
+  const handleCardClick = useCallback(() => {
+    if (onItemClick) {
+      onItemClick(item);
+    }
+  }, [item, onItemClick]);
 
   return (
     <>
       <motion.div
         className={cn(
-          "relative group overflow-hidden rounded-xl bg-slate-800/40 border border-white/5 transition-all duration-300 hover:border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/10 flex flex-col",
+          "relative group overflow-hidden rounded-xl bg-slate-800/40 border border-white/5 transition-all duration-300 hover:border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/10 flex flex-col cursor-pointer",
           isSelected && "ring-2 ring-purple-500"
         )}
         layout
+        onClick={handleCardClick}
       >
         {selectable && (
           <div className="absolute top-2 left-2 z-20">
@@ -91,7 +117,10 @@ const WardrobeItemCard = ({
           <div className="absolute top-2 right-2 flex gap-2">
             <button
               className="rounded-full w-8 h-8 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-all duration-300 group-hover:bg-black/60"
-              onClick={() => onToggleFavorite(item.id)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleFavorite(item.id);
+              }}
             >
               <Heart
                 className={cn(
@@ -116,10 +145,7 @@ const WardrobeItemCard = ({
           {onEditItem && (
             <button
               className="absolute bottom-2 right-12 rounded-full w-8 h-8 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-all duration-300 group-hover:bg-black/60"
-              onClick={(e) => {
-                e.stopPropagation();
-                onEditItem(item);
-              }}
+              onClick={handleEditClick}
             >
               <Edit className="w-4 h-4 text-white hover:text-blue-400" />
             </button>
@@ -166,7 +192,10 @@ const WardrobeItemCard = ({
               <Button 
                 size="sm" 
                 className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white"
-                onClick={() => onMatchItem(item)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onMatchItem(item);
+                }}
               >
                 Match This
                 <ArrowRight className="ml-1 h-3.5 w-3.5" />
@@ -182,7 +211,10 @@ const WardrobeItemCard = ({
                     size="sm" 
                     variant="ghost" 
                     className="w-full text-xs p-1 h-7 bg-black/60 backdrop-blur-sm hover:bg-black/80 text-white"
-                    onClick={() => onMatchItem(item)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onMatchItem(item);
+                    }}
                   >
                     Match
                     <ArrowRight className="ml-1 h-3 w-3" />

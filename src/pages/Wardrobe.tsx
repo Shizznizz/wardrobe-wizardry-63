@@ -56,6 +56,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import ClothingItemDetail from '@/components/ClothingItemDetail';
 
 const Wardrobe = () => {
   const [items, setItems] = useState<ClothingItem[]>([]);
@@ -79,6 +80,8 @@ const Wardrobe = () => {
   const [outfits, setOutfits] = useState<Outfit[]>([]);
   const [smartFilter, setSmartFilter] = useState<string | null>(null);
   const [itemForPairing, setItemForPairing] = useState<string | null>(null);
+  const [selectedItem, setSelectedItem] = useState<ClothingItem | null>(null);
+  const [itemDetailOpen, setItemDetailOpen] = useState(false);
 
   const isMobile = useIsMobile();
   const { user } = useAuth();
@@ -255,8 +258,8 @@ const Wardrobe = () => {
         toast.success('Showing items suitable for current weather');
         break;
       case 'pairing':
-        if (itemId) {
-          const item = items.find(i => i.id === itemId);
+        if (itemForPairing) {
+          const item = items.find(i => i.id === itemForPairing);
           if (item) {
             toast.success(`Showing items that pair well with "${item.name}"`);
           }
@@ -424,6 +427,29 @@ const Wardrobe = () => {
       default:
         return null;
     }
+  };
+
+  const handleItemClick = (item: ClothingItem) => {
+    setSelectedItem(item);
+    setItemDetailOpen(true);
+  };
+
+  const handleCloseItemDetail = () => {
+    setItemDetailOpen(false);
+  };
+
+  const handleUpdateItem = (updatedItem: ClothingItem) => {
+    setItems(prev => 
+      prev.map(item => 
+        item.id === updatedItem.id ? updatedItem : item
+      )
+    );
+    
+    if (selectedItem && selectedItem.id === updatedItem.id) {
+      setSelectedItem(updatedItem);
+    }
+    
+    toast.success(`${updatedItem.name} has been updated`);
   };
 
   return (
@@ -890,6 +916,7 @@ const Wardrobe = () => {
                 onMatchItem={handleMatchItem}
                 onDeleteItem={handleDeleteItem}
                 onEditItem={handleEditItem}
+                onItemClick={handleItemClick}
                 compactView={showCompactView}
                 selectable={isSelectionMode}
                 selectedItems={selectedItems}
@@ -953,6 +980,17 @@ const Wardrobe = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      
+      <ClothingItemDetail
+        item={selectedItem}
+        outfits={outfits}
+        logs={outfitLogs || []}
+        isOpen={itemDetailOpen}
+        onClose={handleCloseItemDetail}
+        onEdit={handleUpdateItem}
+        onDelete={handleDeleteItem}
+        onToggleFavorite={handleToggleFavorite}
+      />
     </div>
   );
 };
