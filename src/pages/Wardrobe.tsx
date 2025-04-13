@@ -169,8 +169,12 @@ const Wardrobe = () => {
   return (
     <div className="flex flex-col min-h-screen bg-slate-950 text-white">
       {showConfetti && <Confetti />}
-      {/* Fix: use Header component with proper structure for children */}
-      <Header>
+      <Header
+        weather={{
+          temperature: 22,  // Example temperature
+          condition: 'Partly Cloudy'  // Example condition
+        }}
+      >
         <div className="space-x-2">
           <Button variant="outline" size="icon" onClick={() => setIsMultiSelectMode(!isMultiSelectMode)}>
             {isMultiSelectMode ? <X className="h-4 w-4" /> : <Grid3X3 className="h-4 w-4" />}
