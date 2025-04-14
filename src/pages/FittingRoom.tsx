@@ -195,13 +195,17 @@ const FittingRoom = () => {
     if (!outfit) return false;
     
     // Check seasons with proper undefined/null handling
-    if (selectedSeason && Array.isArray(outfit.seasons) && !outfit.seasons.includes(selectedSeason)) {
-      return false;
+    if (selectedSeason && Array.isArray(outfit.seasons)) {
+      if (!outfit.seasons.includes(selectedSeason)) {
+        return false;
+      }
     }
     
     // Check occasions with proper undefined/null handling
-    if (selectedOccasion && Array.isArray(outfit.occasions) && !outfit.occasions.includes(selectedOccasion)) {
-      return false;
+    if (selectedOccasion && Array.isArray(outfit.occasions)) {
+      if (!outfit.occasions.includes(selectedOccasion)) {
+        return false;
+      }
     }
     
     // Check favorites with proper undefined handling
