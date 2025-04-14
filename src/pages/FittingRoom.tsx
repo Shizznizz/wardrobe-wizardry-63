@@ -65,7 +65,7 @@ const FittingRoom = () => {
     setShowOliviaImageGallery,
   } = useShowroom();
 
-  // Make sure we have a valid array of outfits
+  // Make sure we have a valid array of outfits and handle potential undefined 
   const userOutfits = Array.isArray(outfits) ? outfits : [];
 
   useEffect(() => {
@@ -100,7 +100,7 @@ const FittingRoom = () => {
     }
   }, [triedOnCount, showOliviaTips]);
 
-  const handleOutfitPreview = (outfit) => {
+  const handleOutfitPreview = (outfit: Outfit | undefined) => {
     if (!outfit) return;
     handleSelectOutfit(outfit);
     setTriedOnCount(prev => prev + 1);
@@ -170,7 +170,9 @@ const FittingRoom = () => {
     setShowFavoritesOnly(prev => !prev);
   };
 
+  // Make the filter function more robust against undefined or null properties
   const filteredOutfits = userOutfits.filter((outfit: Outfit) => {
+    // Early return if outfit is undefined or null
     if (!outfit) return false;
     
     // Check seasons with proper undefined/null handling
@@ -190,6 +192,9 @@ const FittingRoom = () => {
     
     return true;
   });
+  
+  // Safety measure: ensure filteredOutfits is always an array
+  const safeFilteredOutfits = Array.isArray(filteredOutfits) ? filteredOutfits : [];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white overflow-x-hidden">
@@ -286,11 +291,11 @@ const FittingRoom = () => {
                 onFavoritesToggle={toggleFavorites}
               />
               
-              {!Array.isArray(filteredOutfits) || filteredOutfits.length === 0 ? (
+              {!Array.isArray(safeFilteredOutfits) || safeFilteredOutfits.length === 0 ? (
                 <NoOutfitsMessage />
               ) : (
                 <OutfitCarousel 
-                  outfits={filteredOutfits} 
+                  outfits={safeFilteredOutfits} 
                   onPreview={handleOutfitPreview} 
                   isMobile={isMobile}
                 />

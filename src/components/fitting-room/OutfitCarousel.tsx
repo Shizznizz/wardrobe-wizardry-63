@@ -54,12 +54,12 @@ const OutfitCarousel = ({ outfits = [], onPreview, isMobile }: OutfitCarouselPro
             <div className="flex space-x-4 pb-2">
               {outfits.map((outfit) => (
                 <OutfitCard 
-                  key={outfit.id} 
+                  key={outfit?.id || Math.random().toString()} 
                   outfit={outfit}
                   onPreview={onPreview}
                   isMobile={isMobile}
-                  isHovered={hoveredOutfit === outfit.id}
-                  onHover={(isHovered) => setHoveredOutfit(isHovered ? outfit.id : null)}
+                  isHovered={hoveredOutfit === outfit?.id}
+                  onHover={(isHovered) => setHoveredOutfit(isHovered ? outfit?.id || null : null)}
                 />
               ))}
             </div>
@@ -89,12 +89,12 @@ const OutfitCarousel = ({ outfits = [], onPreview, isMobile }: OutfitCarouselPro
             >
               {outfits.map((outfit) => (
                 <OutfitCard 
-                  key={outfit.id} 
+                  key={outfit?.id || Math.random().toString()} 
                   outfit={outfit}
                   onPreview={onPreview}
                   isMobile={isMobile}
-                  isHovered={hoveredOutfit === outfit.id}
-                  onHover={(isHovered) => setHoveredOutfit(isHovered ? outfit.id : null)}
+                  isHovered={hoveredOutfit === outfit?.id}
+                  onHover={(isHovered) => setHoveredOutfit(isHovered ? outfit?.id || null : null)}
                 />
               ))}
             </div>
@@ -119,13 +119,13 @@ const OutfitCarousel = ({ outfits = [], onPreview, isMobile }: OutfitCarouselPro
         <div className="mt-10 grid grid-cols-3 gap-5">
           {outfits.map((outfit) => (
             <OutfitCard 
-              key={outfit.id} 
+              key={outfit?.id || Math.random().toString()} 
               outfit={outfit}
               onPreview={onPreview}
               isMobile={isMobile}
               isGrid={true}
-              isHovered={hoveredOutfit === outfit.id}
-              onHover={(isHovered) => setHoveredOutfit(isHovered ? outfit.id : null)}
+              isHovered={hoveredOutfit === outfit?.id}
+              onHover={(isHovered) => setHoveredOutfit(isHovered ? outfit?.id || null : null)}
             />
           ))}
         </div>
@@ -151,8 +151,25 @@ const OutfitCard = ({
   isHovered = false,
   onHover
 }: OutfitCardProps) => {
-  // Safely access properties with default fallbacks
-  const { name = "Outfit", occasions = [], seasons = [] } = outfit || {};
+  // Add robust default values to prevent undefined errors
+  const { 
+    id = Math.random().toString(), 
+    name = "Outfit", 
+    occasions = [], 
+    seasons = [] 
+  } = outfit || {};
+  
+  // Create a safe version of the outfit to prevent undefined error
+  const safeOutfit = outfit || {
+    id,
+    name,
+    occasions,
+    seasons
+  };
+  
+  if (!outfit) {
+    return null; // Don't render invalid outfits
+  }
   
   return (
     <motion.div
@@ -207,7 +224,7 @@ const OutfitCard = ({
           
           <Button 
             className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 w-full group"
-            onClick={() => onPreview(outfit)}
+            onClick={() => onPreview(safeOutfit)}
           >
             <Eye className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
             Try This Look
