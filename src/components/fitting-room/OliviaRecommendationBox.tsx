@@ -15,6 +15,7 @@ const OliviaRecommendationBox = ({ weather, selectedOutfit }: OliviaRecommendati
 
   useEffect(() => {
     if (weather) {
+      // Using optional chaining and nullish coalescing for safety
       const condition = weather.condition?.toLowerCase() || 'current';
       const temperature = weather.temperature || 'comfortable';
       

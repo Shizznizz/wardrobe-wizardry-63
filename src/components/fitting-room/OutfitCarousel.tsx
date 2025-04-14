@@ -40,8 +40,8 @@ const OutfitCarousel = ({ outfits = [], onPreview, isMobile }: OutfitCarouselPro
     }
   };
   
-  // Early return with empty component if outfits is not an array
-  if (!Array.isArray(outfits)) {
+  // Early return with empty component if outfits is not an array or is empty
+  if (!Array.isArray(outfits) || outfits.length === 0) {
     return <div className="p-4 text-white/70">No outfits available.</div>;
   }
   
@@ -185,7 +185,7 @@ const OutfitCard = ({
           <h3 className="font-medium text-lg mb-2">{name}</h3>
           
           <div className="flex flex-wrap gap-1 mb-3">
-            {seasons.map(season => (
+            {Array.isArray(seasons) && seasons.map(season => (
               <Badge 
                 key={season} 
                 variant="outline" 
@@ -194,7 +194,7 @@ const OutfitCard = ({
                 {season}
               </Badge>
             ))}
-            {occasions && occasions.map(occasion => (
+            {Array.isArray(occasions) && occasions.map(occasion => (
               <Badge 
                 key={occasion} 
                 variant="outline" 

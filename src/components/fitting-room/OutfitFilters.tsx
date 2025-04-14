@@ -20,7 +20,7 @@ const OutfitFilters = ({
   onOccasionChange,
   onFavoritesToggle
 }: OutfitFiltersProps) => {
-  // Define proper typed arrays
+  // Define proper typed arrays with default values to prevent undefined errors
   const seasons: ClothingSeason[] = ['spring', 'summer', 'autumn', 'winter'];
   const occasions: ClothingOccasion[] = ['casual', 'business', 'party', 'date'];
   

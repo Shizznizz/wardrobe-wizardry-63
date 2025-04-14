@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useShowroom } from '@/hooks/useShowroom';
 import { useOutfitState } from '@/hooks/useOutfitState';
@@ -64,6 +65,7 @@ const FittingRoom = () => {
     setShowOliviaImageGallery,
   } = useShowroom();
 
+  // Make sure we have a valid array of outfits
   const userOutfits = Array.isArray(outfits) ? outfits : [];
 
   useEffect(() => {
@@ -99,6 +101,7 @@ const FittingRoom = () => {
   }, [triedOnCount, showOliviaTips]);
 
   const handleOutfitPreview = (outfit) => {
+    if (!outfit) return;
     handleSelectOutfit(outfit);
     setTriedOnCount(prev => prev + 1);
   };
@@ -169,9 +172,22 @@ const FittingRoom = () => {
 
   const filteredOutfits = userOutfits.filter((outfit: Outfit) => {
     if (!outfit) return false;
-    if (selectedSeason && (!outfit.seasons || !Array.isArray(outfit.seasons) || !outfit.seasons.includes(selectedSeason))) return false;
-    if (selectedOccasion && (!outfit.occasions || !Array.isArray(outfit.occasions) || !outfit.occasions.includes(selectedOccasion))) return false;
-    if (showFavoritesOnly && !outfit.favorite) return false;
+    
+    // Check seasons with proper undefined/null handling
+    if (selectedSeason && (!outfit.seasons || !Array.isArray(outfit.seasons) || !outfit.seasons.includes(selectedSeason))) {
+      return false;
+    }
+    
+    // Check occasions with proper undefined/null handling
+    if (selectedOccasion && (!outfit.occasions || !Array.isArray(outfit.occasions) || !outfit.occasions.includes(selectedOccasion))) {
+      return false;
+    }
+    
+    // Check favorites with proper undefined handling
+    if (showFavoritesOnly && outfit.favorite !== true) {
+      return false;
+    }
+    
     return true;
   });
 
