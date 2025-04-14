@@ -1,6 +1,6 @@
 
 import { Button } from '@/components/ui/button';
-import { Heart, SunMedium, Briefcase, Heart as HeartIcon, Moon } from 'lucide-react';
+import { Heart, SunMedium, Briefcase, Moon } from 'lucide-react';
 import { ClothingSeason, ClothingOccasion } from '@/lib/types';
 
 interface OutfitFiltersProps {
@@ -20,11 +20,15 @@ const OutfitFilters = ({
   onOccasionChange,
   onFavoritesToggle
 }: OutfitFiltersProps) => {
+  // Define proper typed arrays
+  const seasons: ClothingSeason[] = ['spring', 'summer', 'autumn', 'winter'];
+  const occasions: ClothingOccasion[] = ['casual', 'business', 'party', 'date'];
+  
   return (
     <div className="space-y-4 mb-6">
       <div className="flex flex-wrap gap-2">
         <span className="text-sm text-white/60 w-full">Season:</span>
-        {(['Spring', 'Summer', 'Autumn', 'Winter'] as ClothingSeason[]).map((season) => (
+        {seasons.map((season) => (
           <Button
             key={season}
             variant={selectedSeason === season ? "default" : "outline"}
@@ -34,14 +38,14 @@ const OutfitFilters = ({
               "bg-purple-600 hover:bg-purple-700" : 
               "border-white/20 text-white hover:bg-white/10"}
           >
-            {season}
+            {season.charAt(0).toUpperCase() + season.slice(1)}
           </Button>
         ))}
       </div>
 
       <div className="flex flex-wrap gap-2">
         <span className="text-sm text-white/60 w-full">Occasion:</span>
-        {(['Casual', 'Business', 'Party', 'Date'] as ClothingOccasion[]).map((occasion) => (
+        {occasions.map((occasion) => (
           <Button
             key={occasion}
             variant={selectedOccasion === occasion ? "default" : "outline"}
@@ -51,10 +55,10 @@ const OutfitFilters = ({
               "bg-purple-600 hover:bg-purple-700" : 
               "border-white/20 text-white hover:bg-white/10"}
           >
-            {occasion === 'Business' && <Briefcase className="w-4 h-4 mr-1" />}
-            {occasion === 'Party' && <SunMedium className="w-4 h-4 mr-1" />}
-            {occasion === 'Date' && <Moon className="w-4 h-4 mr-1" />}
-            {occasion}
+            {occasion === 'business' && <Briefcase className="w-4 h-4 mr-1" />}
+            {occasion === 'party' && <SunMedium className="w-4 h-4 mr-1" />}
+            {occasion === 'date' && <Moon className="w-4 h-4 mr-1" />}
+            {occasion.charAt(0).toUpperCase() + occasion.slice(1)}
           </Button>
         ))}
       </div>

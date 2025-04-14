@@ -7,7 +7,7 @@ import { Sun, Cloud, CloudRain, Thermometer } from 'lucide-react';
 
 interface OliviaRecommendationBoxProps {
   weather?: WeatherInfo;
-  selectedOutfit?: Outfit;
+  selectedOutfit?: Outfit | null;
 }
 
 const OliviaRecommendationBox = ({ weather, selectedOutfit }: OliviaRecommendationBoxProps) => {

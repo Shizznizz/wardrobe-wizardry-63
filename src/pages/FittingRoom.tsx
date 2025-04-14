@@ -19,11 +19,11 @@ import OutfitPreviewArea from '@/components/fitting-room/OutfitPreviewArea';
 import NoPhotoMessage from '@/components/fitting-room/NoPhotoMessage';
 import OliviaRecommendationBox from '@/components/fitting-room/OliviaRecommendationBox';
 import OutfitFilters from '@/components/fitting-room/OutfitFilters';
-import { ClothingSeason, ClothingOccasion } from '@/lib/types';
+import { ClothingSeason, ClothingOccasion, WeatherInfo } from '@/lib/types';
 
 const FittingRoom = () => {
   const isMobile = useIsMobile();
-  const { outfits } = useOutfitState(sampleOutfits, sampleClothingItems);
+  const { outfits, clothingItems } = useOutfitState(sampleOutfits, sampleClothingItems);
   const [photoSide, setPhotoSide] = useState<'left' | 'right'>('left');
   const [showOliviaHint, setShowOliviaHint] = useState(false);
   const [triedOnCount, setTriedOnCount] = useState(0);
@@ -31,6 +31,12 @@ const FittingRoom = () => {
   const [selectedSeason, setSelectedSeason] = useState<ClothingSeason | null>(null);
   const [selectedOccasion, setSelectedOccasion] = useState<ClothingOccasion | null>(null);
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+  
+  const [currentWeather, setCurrentWeather] = useState<WeatherInfo>({
+    temperature: 22,
+    condition: 'Sunny',
+    icon: 'sun'
+  });
   
   const {
     isPremiumUser,
@@ -41,13 +47,12 @@ const FittingRoom = () => {
     showStatusBar,
     isUploadLoading,
     oliviaSuggestion,
-    clothingItems,
+    clothingItems: showroomClothingItems,
     selectedOutfit,
     userPhoto,
     finalImage,
     isProcessingTryOn,
     
-    // Methods
     handleSelectOliviaImage,
     handleSelectOutfit,
     handleUserPhotoUpload,
@@ -59,15 +64,9 @@ const FittingRoom = () => {
     setShowOliviaImageGallery,
   } = useShowroom();
 
-  // Filter to only user-created outfits
-  const userOutfits = outfits.filter(outfit => 
-    // This is a placeholder filter - in a real app, you would filter based on 
-    // something that indicates the outfit was created by the user
-    outfit.name !== "AI Generated Outfit"
-  );
+  const userOutfits = outfits || [];
 
   useEffect(() => {
-    // Show Olivia's hint after 15 seconds of idle time
     const idleTimer = setTimeout(() => {
       if (userPhoto && !finalImage) {
         setShowOliviaHint(true);
@@ -77,7 +76,6 @@ const FittingRoom = () => {
     return () => clearTimeout(idleTimer);
   }, [userPhoto, finalImage]);
 
-  // Show shopping suggestion after trying on 3+ outfits
   useEffect(() => {
     if (triedOnCount >= 3 && showOliviaTips) {
       toast(
@@ -157,36 +155,32 @@ const FittingRoom = () => {
       : "Olivia's style tips are now enabled");
   };
 
-    // Filter outfits based on selected filters
-    const filteredOutfits = userOutfits.filter(outfit => {
-      if (selectedSeason && !outfit.seasons.includes(selectedSeason)) return false;
-      if (selectedOccasion && !outfit.occasions?.includes(selectedOccasion)) return false;
-      if (showFavoritesOnly && !outfit.isFavorite) return false;
-      return true;
-    });
-  
-    // Handle filter changes
-    const handleSeasonChange = (season: ClothingSeason) => {
-      setSelectedSeason(prev => prev === season ? null : season);
-    };
-  
-    const handleOccasionChange = (occasion: ClothingOccasion) => {
-      setSelectedOccasion(prev => prev === occasion ? null : occasion);
-    };
-  
-    const toggleFavorites = () => {
-      setShowFavoritesOnly(prev => !prev);
-    };
+  const handleSeasonChange = (season: ClothingSeason) => {
+    setSelectedSeason(prev => prev === season ? null : season);
+  };
+
+  const handleOccasionChange = (occasion: ClothingOccasion) => {
+    setSelectedOccasion(prev => prev === occasion ? null : occasion);
+  };
+
+  const toggleFavorites = () => {
+    setShowFavoritesOnly(prev => !prev);
+  };
+
+  const filteredOutfits = userOutfits.filter(outfit => {
+    if (selectedSeason && (!outfit.seasons || !outfit.seasons.includes(selectedSeason))) return false;
+    if (selectedOccasion && (!outfit.occasions || !outfit.occasions.includes(selectedOccasion))) return false;
+    if (showFavoritesOnly && !outfit.favorite) return false;
+    return true;
+  });
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white overflow-x-hidden">
       <Header />
       
       <main className="container mx-auto px-4 pt-20 pb-32 max-w-[1600px] relative">
-        {/* Section 1: Olivia's Welcome Message */}
         <WelcomeMessage />
         
-        {/* Toggle for Olivia Tips */}
         <div className="mt-4 flex justify-end">
           <Button 
             variant="outline" 
@@ -200,7 +194,6 @@ const FittingRoom = () => {
         </div>
         
         <div className={`mt-10 grid gap-6 ${isMobile ? 'grid-cols-1' : `grid-cols-${userPhoto && !finalImage ? '2' : '1'}`}`}>
-          {/* Section 2: Photo Upload Block */}
           <div className={`${isMobile ? '' : 
             userPhoto && !finalImage ? `${photoSide === 'left' ? 'order-first' : 'order-last'}` : ''
           } ${userPhoto && isMobile ? 'sticky top-20 z-10 bg-slate-950/70 backdrop-blur-md py-3 -mx-4 px-4' : ''}`}>
@@ -261,16 +254,26 @@ const FittingRoom = () => {
             )}
           </div>
           
-          {/* Section 3: Outfit Selection (shown when photo is selected) */}
           {userPhoto && !finalImage ? (
             <div>
-              <h2 className="text-xl font-semibold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-purple-200">Your Outfits</h2>
+              <OliviaRecommendationBox weather={currentWeather} selectedOutfit={selectedOutfit} />
               
-              {userOutfits.length === 0 ? (
+              <h2 className="text-xl font-semibold mt-6 mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-purple-200">Your Outfits</h2>
+              
+              <OutfitFilters 
+                selectedSeason={selectedSeason}
+                selectedOccasion={selectedOccasion}
+                showFavoritesOnly={showFavoritesOnly}
+                onSeasonChange={handleSeasonChange}
+                onOccasionChange={handleOccasionChange}
+                onFavoritesToggle={toggleFavorites}
+              />
+              
+              {filteredOutfits.length === 0 ? (
                 <NoOutfitsMessage />
               ) : (
                 <OutfitCarousel 
-                  outfits={userOutfits} 
+                  outfits={filteredOutfits} 
                   onPreview={handleOutfitPreview} 
                   isMobile={isMobile}
                 />
@@ -281,7 +284,6 @@ const FittingRoom = () => {
           ) : null}
         </div>
         
-        {/* Section 4: Outfit Preview Area */}
         {(finalImage || selectedOutfit) && (
           <OutfitPreviewArea
             finalImage={finalImage}
