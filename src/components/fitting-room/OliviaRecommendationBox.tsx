@@ -16,6 +16,9 @@ const OliviaRecommendationBox = ({ weather, selectedOutfit }: OliviaRecommendati
     icon: 'sun'
   };
   
+  // Ensure we have a safe condition string
+  const condition = safeWeather.condition ? safeWeather.condition.toLowerCase() : '';
+  
   return (
     <div className="bg-gradient-to-br from-purple-950 to-indigo-950 rounded-lg border border-white/10 p-4 shadow-xl">
       <div className="flex items-center mb-3">
@@ -27,9 +30,11 @@ const OliviaRecommendationBox = ({ weather, selectedOutfit }: OliviaRecommendati
       
       <div className="mt-3 flex items-center gap-6">
         <div className="flex items-center space-x-2">
-          {safeWeather.condition.toLowerCase().includes('sun') && <SunIcon className="h-5 w-5 text-yellow-400" />}
-          {safeWeather.condition.toLowerCase().includes('cloud') && <CloudIcon className="h-5 w-5 text-gray-300" />}
-          {safeWeather.condition.toLowerCase().includes('rain') && <DropletIcon className="h-5 w-5 text-blue-400" />}
+          {condition.includes('sun') && <SunIcon className="h-5 w-5 text-yellow-400" />}
+          {condition.includes('cloud') && <CloudIcon className="h-5 w-5 text-gray-300" />}
+          {condition.includes('rain') && <DropletIcon className="h-5 w-5 text-blue-400" />}
+          {!condition.includes('sun') && !condition.includes('cloud') && !condition.includes('rain') && 
+            <SunIcon className="h-5 w-5 text-yellow-400" />}
           <span className="text-sm text-white/70">{safeWeather.temperature}°C - {safeWeather.condition}</span>
         </div>
         
@@ -40,22 +45,22 @@ const OliviaRecommendationBox = ({ weather, selectedOutfit }: OliviaRecommendati
       </div>
       
       <p className="mt-3 text-sm text-white/70">
-        {getWeatherBasedSuggestion(safeWeather.condition, safeWeather.temperature)}
+        {getWeatherBasedSuggestion(condition, safeWeather.temperature)}
       </p>
     </div>
   );
 };
 
 function getWeatherBasedSuggestion(condition: string, temperature: number): string {
-  const safeCondition = condition ? condition.toLowerCase() : '';
+  // No need to check for undefined condition since we're passing a safe string now
   
-  if (safeCondition.includes('rain')) {
+  if (condition.includes('rain')) {
     return "It's raining today! Consider something with a water-resistant outer layer and don't forget an umbrella!";
-  } else if (safeCondition.includes('cloud') && temperature < 15) {
+  } else if (condition.includes('cloud') && temperature < 15) {
     return "It's cloudy and cool. A light jacket or cardigan would be perfect for this weather.";
-  } else if (safeCondition.includes('sun') && temperature > 25) {
+  } else if (condition.includes('sun') && temperature > 25) {
     return "It's sunny and warm! Light, breathable fabrics in bright colors would be ideal today.";
-  } else if (safeCondition.includes('sun') && temperature < 15) {
+  } else if (condition.includes('sun') && temperature < 15) {
     return "Sunny but cool today. Layering would be ideal - try a light sweater with a jacket you can remove if needed.";
   } else if (temperature < 5) {
     return "It's quite cold! Time for that cozy winter coat, scarf, and boots.";
