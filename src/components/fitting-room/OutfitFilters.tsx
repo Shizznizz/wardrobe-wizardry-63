@@ -1,13 +1,14 @@
 
 import { Button } from "@/components/ui/button";
 import { Heart, SunMedium, Martini } from "lucide-react";
+import { ClothingSeason, ClothingOccasion } from "@/lib/types";
 
 interface OutfitFiltersProps {
-  selectedSeason: string;
-  selectedOccasion: string;
+  selectedSeason: ClothingSeason;
+  selectedOccasion: ClothingOccasion;
   favoritesOnly: boolean;
-  onSeasonChange: (season: string) => void;
-  onOccasionChange: (occasion: string) => void;
+  onSeasonChange: (season: ClothingSeason) => void;
+  onOccasionChange: (occasion: ClothingOccasion) => void;
   onFavoritesToggle: () => void;
 }
 
@@ -19,8 +20,8 @@ const OutfitFilters = ({
   onOccasionChange,
   onFavoritesToggle
 }: OutfitFiltersProps) => {
-  const seasons = ["All", "Spring", "Summer", "Autumn", "Winter"];
-  const occasions = ["All", "Casual", "Business", "Date Night", "Party"];
+  const seasons: ClothingSeason[] = ["all", "spring", "summer", "autumn", "winter"];
+  const occasions: ClothingOccasion[] = ["casual", "business", "party", "formal"];
 
   return (
     <div className="space-y-4 mb-6">
@@ -37,7 +38,7 @@ const OutfitFilters = ({
             }
           >
             <SunMedium className="w-4 h-4 mr-1" />
-            {season}
+            {season.charAt(0).toUpperCase() + season.slice(1)}
           </Button>
         ))}
       </div>
@@ -55,7 +56,7 @@ const OutfitFilters = ({
             }
           >
             <Martini className="w-4 h-4 mr-1" />
-            {occasion}
+            {occasion.charAt(0).toUpperCase() + occasion.slice(1)}
           </Button>
         ))}
       </div>
