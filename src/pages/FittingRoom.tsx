@@ -24,6 +24,7 @@ import { ClothingSeason, ClothingOccasion, WeatherInfo, Outfit } from '@/lib/typ
 
 const FittingRoom = () => {
   const isMobile = useIsMobile();
+  // Ensure outfits and clothingItems are properly initialized with default empty arrays if undefined
   const { outfits = [], clothingItems = [] } = useOutfitState(sampleOutfits, sampleClothingItems);
   const [photoSide, setPhotoSide] = useState<'left' | 'right'>('left');
   const [showOliviaHint, setShowOliviaHint] = useState(false);

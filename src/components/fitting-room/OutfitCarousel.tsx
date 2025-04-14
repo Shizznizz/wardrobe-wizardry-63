@@ -45,6 +45,13 @@ const OutfitCarousel = ({ outfits = [], onPreview, isMobile }: OutfitCarouselPro
     return <div className="p-4 text-white/70">No outfits available.</div>;
   }
   
+  // Filter out any undefined or null outfits to prevent errors
+  const safeOutfits = outfits.filter(outfit => outfit !== undefined && outfit !== null);
+  
+  if (safeOutfits.length === 0) {
+    return <div className="p-4 text-white/70">No valid outfits available.</div>;
+  }
+  
   return (
     <div className="relative">
       {/* Mobile-optimized carousel */}
@@ -52,7 +59,7 @@ const OutfitCarousel = ({ outfits = [], onPreview, isMobile }: OutfitCarouselPro
         <div className="relative">
           <ScrollArea className="pb-4">
             <div className="flex space-x-4 pb-2">
-              {outfits.map((outfit) => (
+              {safeOutfits.map((outfit) => (
                 <OutfitCard 
                   key={outfit?.id || Math.random().toString()} 
                   outfit={outfit}
@@ -87,7 +94,7 @@ const OutfitCarousel = ({ outfits = [], onPreview, isMobile }: OutfitCarouselPro
               className="flex space-x-5 overflow-x-auto scrollbar-none py-2 pb-4 pl-2 pr-2 scroll-smooth"
               onScroll={handleScroll}
             >
-              {outfits.map((outfit) => (
+              {safeOutfits.map((outfit) => (
                 <OutfitCard 
                   key={outfit?.id || Math.random().toString()} 
                   outfit={outfit}
@@ -115,9 +122,9 @@ const OutfitCarousel = ({ outfits = [], onPreview, isMobile }: OutfitCarouselPro
       )}
       
       {/* Alternative grid view for desktop */}
-      {!isMobile && outfits.length > 3 && (
+      {!isMobile && safeOutfits.length > 3 && (
         <div className="mt-10 grid grid-cols-3 gap-5">
-          {outfits.map((outfit) => (
+          {safeOutfits.map((outfit) => (
             <OutfitCard 
               key={outfit?.id || Math.random().toString()} 
               outfit={outfit}
