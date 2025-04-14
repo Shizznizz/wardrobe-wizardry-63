@@ -1,5 +1,6 @@
+
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import Index from '@/pages/Index';
 import Auth from '@/pages/Auth';
 import Outfits from '@/pages/Outfits';
@@ -26,7 +27,7 @@ function App() {
   }
   
   return (
-    <Router>
+    <>
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/auth" element={<Auth />} />
@@ -42,7 +43,7 @@ function App() {
         <Route path="*" element={<NotFound />} />
       </Routes>
       <BackToTop />
-    </Router>
+    </>
   );
 }
 
