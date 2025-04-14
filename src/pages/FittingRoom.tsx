@@ -12,6 +12,7 @@ import OliviaSuggestionBox from '@/components/fitting-room/OliviaSuggestionBox';
 import ShowroomDialogs from '@/components/showroom/ShowroomDialogs';
 import UserPhotoSection from '@/components/showroom/UserPhotoSection';
 import OutfitPreviewArea from '@/components/fitting-room/OutfitPreviewArea';
+import { sampleClothingItems } from '@/lib/wardrobeData';
 
 const FittingRoom = () => {
   const isMobile = useIsMobile();
@@ -32,7 +33,7 @@ const FittingRoom = () => {
     finalImage,
     selectedOutfit,
     isProcessingTryOn,
-    outfits,
+    clothingItems,
     handleSelectOliviaImage,
     handleSelectOutfit,
     handleUserPhotoUpload,
@@ -44,6 +45,19 @@ const FittingRoom = () => {
     setShowOliviaImageGallery,
   } = useShowroom();
 
+  // Get outfits from the clothingItems - for this example, we'll use sample outfits
+  // In a real implementation, these would come from the useShowroom hook
+  const outfits = Array.isArray(clothingItems) ? clothingItems.map((item, index) => ({
+    id: `outfit-${index}`,
+    name: `Outfit ${index + 1}`,
+    items: [item.id],
+    occasions: item.occasions || ['casual'],
+    seasons: item.seasons || ['all'],
+    favorite: Boolean(index % 3 === 0), // Every third item is a favorite
+    timesWorn: index,
+    dateAdded: new Date(),
+  })) : [];
+
   // Filter outfits based on selected filters
   const filteredOutfits = outfits.filter(outfit => {
     if (selectedSeason !== 'All' && !outfit.seasons.includes(selectedSeason.toLowerCase())) return false;
@@ -51,6 +65,28 @@ const FittingRoom = () => {
     if (favoritesOnly && !outfit.favorite) return false;
     return true;
   });
+
+  // Handle download function for OutfitPreviewArea
+  const handleDownload = () => {
+    if (!finalImage) return;
+    const a = document.createElement('a');
+    a.href = finalImage;
+    a.download = 'fitting-room-preview.png';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
+  // Handle share function for OutfitPreviewArea
+  const handleShare = () => {
+    if (!finalImage || !navigator.share) return;
+    
+    navigator.share({
+      title: 'My Outfit',
+      text: 'Check out my outfit from Olivia Bloom!',
+      url: window.location.href
+    }).catch(err => console.error('Error sharing:', err));
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white">
@@ -82,8 +118,11 @@ const FittingRoom = () => {
                   isProcessingTryOn={isProcessingTryOn}
                   userPhoto={userPhoto}
                   isUsingOliviaImage={isUsingOliviaImage}
+                  clothingItems={clothingItems || sampleClothingItems}
                   onSaveLook={handleSaveLook}
                   onResetSelection={resetSelection}
+                  onDownload={handleDownload}
+                  onShare={handleShare}
                 />
               )}
             </div>
