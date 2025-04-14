@@ -18,13 +18,12 @@ const StyleOfTheDay = ({ outfit, onPreview }: StyleOfTheDayProps) => {
   const defaultOutfit: Outfit = {
     id: 'style-of-the-day',
     name: 'Summer Breeze',
-    description: 'Light and airy ensemble perfect for warm weather',
     items: [],
     seasons: ['summer'],
     occasions: ['casual'],
     favorite: false,
     timesWorn: 0,
-    dateAdded: new Date().toISOString(),
+    dateAdded: new Date(), // Fixed: Use Date object instead of string
   };
   
   const styleOutfit = outfit || defaultOutfit;
@@ -92,7 +91,7 @@ const StyleOfTheDay = ({ outfit, onPreview }: StyleOfTheDayProps) => {
             <div className="col-span-1 lg:col-span-7 p-6 md:p-8 flex flex-col">
               <div className="flex-1">
                 <h3 className="text-xl md:text-2xl font-semibold text-white mb-2">{styleOutfit.name}</h3>
-                <p className="text-white/70 mb-6">{styleOutfit.description || "A perfectly curated outfit selected by Olivia for today's trends and weather."}</p>
+                <p className="text-white/70 mb-6">{"A perfectly curated outfit selected by Olivia for today's trends and weather."}</p>
                 
                 <div className="flex flex-wrap gap-2 mb-6">
                   {safeSeasons.map(season => (
