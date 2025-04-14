@@ -6,21 +6,25 @@ import { sampleClothingItems, sampleOutfits } from '@/lib/wardrobeData';
 import Header from '@/components/Header';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { motion } from 'framer-motion';
-import { Share2, Download, Heart, Camera, Info, ArrowRight } from 'lucide-react';
+import { Share2, Download, Heart, Info, ArrowUp } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import VirtualFittingRoom from '@/components/VirtualFittingRoom';
 import UserPhotoSection from '@/components/showroom/UserPhotoSection';
 import ShowroomDialogs from '@/components/showroom/ShowroomDialogs';
-import OutfitCarousel from '@/components/fitting-room/OutfitCarousel';
 import WelcomeMessage from '@/components/fitting-room/WelcomeMessage';
 import NoOutfitsMessage from '@/components/fitting-room/NoOutfitsMessage';
 import OutfitPreviewArea from '@/components/fitting-room/OutfitPreviewArea';
 import NoPhotoMessage from '@/components/fitting-room/NoPhotoMessage';
+import { ClothingSeason, ClothingOccasion, WeatherInfo, Outfit } from '@/lib/types';
+
+// Import new components
 import OliviaRecommendationBox from '@/components/fitting-room/OliviaRecommendationBox';
 import OutfitFilters from '@/components/fitting-room/OutfitFilters';
-import { ClothingSeason, ClothingOccasion, WeatherInfo, Outfit } from '@/lib/types';
+import OutfitCarousel from '@/components/fitting-room/OutfitCarousel';
+import UserPhotoDisplay from '@/components/fitting-room/UserPhotoDisplay';
+import StyleOfTheDay from '@/components/fitting-room/StyleOfTheDay';
+import TrendingLooks from '@/components/fitting-room/TrendingLooks';
 
 const FittingRoom = () => {
   const isMobile = useIsMobile();
@@ -50,6 +54,7 @@ const FittingRoom = () => {
   const [selectedSeason, setSelectedSeason] = useState<ClothingSeason | null>(null);
   const [selectedOccasion, setSelectedOccasion] = useState<ClothingOccasion | null>(null);
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+  const [showScrollToTop, setShowScrollToTop] = useState(false);
   
   const [currentWeather, setCurrentWeather] = useState<WeatherInfo>({
     temperature: 22,
@@ -118,6 +123,19 @@ const FittingRoom = () => {
       );
     }
   }, [triedOnCount, showOliviaTips]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 300) {
+        setShowScrollToTop(true);
+      } else {
+        setShowScrollToTop(false);
+      }
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleOutfitPreview = (outfit: Outfit) => {
     if (!outfit) return;
@@ -188,6 +206,10 @@ const FittingRoom = () => {
   const toggleFavorites = () => {
     setShowFavoritesOnly(prev => !prev);
   };
+  
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   // Make the filter function more robust against undefined or null properties
   const filteredOutfits = userOutfits.filter((outfit) => {
@@ -238,73 +260,58 @@ const FittingRoom = () => {
           </Button>
         </div>
         
-        <div className={`mt-10 grid gap-6 ${isMobile ? 'grid-cols-1' : `grid-cols-${userPhoto && !finalImage ? '2' : '1'}`}`}>
-          <div className={`${isMobile ? '' : 
-            userPhoto && !finalImage ? `${photoSide === 'left' ? 'order-first' : 'order-last'}` : ''
-          } ${userPhoto && isMobile ? 'sticky top-20 z-10 bg-slate-950/70 backdrop-blur-md py-3 -mx-4 px-4' : ''}`}>
-            {(!userPhoto || isMobile) && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.3 }}
-                className="mb-8"
-              >
-                <h2 className="text-xl font-semibold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-purple-200">Select Your Model</h2>
-                
-                <UserPhotoSection 
-                  userPhoto={userPhoto} 
-                  isUploading={isUploadLoading}
-                  isUsingOliviaImage={isUsingOliviaImage}
-                  onUserPhotoChange={handleUserPhotoUpload}
-                  onShowOliviaImageGallery={() => setShowOliviaImageGallery(true)}
-                />
-                
-                {showOliviaHint && userPhoto && !finalImage && showOliviaTips && (
-                  <motion.div 
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mt-4 p-3 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center"
-                  >
-                    <div className="w-8 h-8 rounded-full bg-purple-500 flex-shrink-0 flex items-center justify-center mr-3">
-                      <span className="text-white text-sm">OB</span>
-                    </div>
-                    <p className="text-sm text-white/90">
-                      Want help choosing? Or just try some favorites?
-                    </p>
-                  </motion.div>
-                )}
-              </motion.div>
-            )}
+        {/* Initial Photo Upload Section */}
+        {!userPhoto && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+            className="mt-8 mb-12"
+          >
+            <h2 className="text-xl font-semibold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-purple-200">Select Your Model</h2>
             
-            {userPhoto && !isMobile && (
-              <div className="sticky top-24">
+            <UserPhotoSection 
+              userPhoto={userPhoto} 
+              isUploading={isUploadLoading}
+              isUsingOliviaImage={isUsingOliviaImage}
+              onUserPhotoChange={handleUserPhotoUpload}
+              onShowOliviaImageGallery={() => setShowOliviaImageGallery(true)}
+            />
+          </motion.div>
+        )}
+        
+        {/* Post-Photo Upload Main Section */}
+        {userPhoto && !finalImage && (
+          <div className="mt-10">
+            <motion.div 
+              className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+            >
+              {/* Left Side - User Photo Display */}
+              <div>
                 <h2 className="text-xl font-semibold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-purple-200">Your Model</h2>
-                <div className="relative rounded-lg overflow-hidden border border-white/10 shadow-lg">
-                  <img src={userPhoto} alt="Your photo" className="w-full object-cover aspect-[3/4]" />
-                  {isUsingOliviaImage && (
-                    <div className="absolute top-2 left-2 bg-purple-600/80 rounded-full py-0.5 px-2 text-xs text-white">
-                      Olivia's Image
-                    </div>
-                  )}
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="absolute bottom-2 right-2 bg-black/50 hover:bg-black/70 text-white border-white/20"
-                    onClick={resetSelection}
-                  >
-                    Change Photo
-                  </Button>
-                </div>
+                <UserPhotoDisplay 
+                  userPhoto={userPhoto}
+                  isUsingOliviaImage={isUsingOliviaImage}
+                  onResetPhoto={resetSelection}
+                />
               </div>
-            )}
-          </div>
-          
-          {userPhoto && !finalImage ? (
-            <div>
-              <OliviaRecommendationBox weather={currentWeather} selectedOutfit={selectedOutfit} />
               
-              <h2 className="text-xl font-semibold mt-6 mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-purple-200">Your Outfits</h2>
-              
+              {/* Right Side - Olivia's Suggestions */}
+              <div>
+                <h2 className="text-xl font-semibold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-purple-200">Olivia's Suggestions</h2>
+                <OliviaRecommendationBox 
+                  weather={currentWeather} 
+                  selectedOutfit={selectedOutfit}
+                  onSuggestOutfit={handleRefreshOutfit}
+                />
+              </div>
+            </motion.div>
+            
+            {/* Outfit Carousel Section */}
+            <div className="mt-14">
               <OutfitFilters 
                 selectedSeason={selectedSeason}
                 selectedOccasion={selectedOccasion}
@@ -320,15 +327,27 @@ const FittingRoom = () => {
                 <OutfitCarousel 
                   outfits={safeFilteredOutfits} 
                   onPreview={handleOutfitPreview} 
-                  isMobile={isMobile}
+                  title="Your Outfits & Collections"
                 />
               )}
             </div>
-          ) : !userPhoto ? (
-            <NoPhotoMessage />
-          ) : null}
-        </div>
+            
+            {/* Style of the Day Section */}
+            <StyleOfTheDay 
+              outfit={safeFilteredOutfits[0] || null} 
+              onPreview={handleOutfitPreview}
+            />
+            
+            {/* Trending Looks Section */}
+            <TrendingLooks onShowLogin={handleUpgradeToPremium} />
+          </div>
+        )}
         
+        {!userPhoto && (
+          <NoPhotoMessage />
+        )}
+        
+        {/* Preview Area for Selected Outfit */}
         {(finalImage || selectedOutfit) && (
           <OutfitPreviewArea
             finalImage={finalImage}
@@ -344,6 +363,25 @@ const FittingRoom = () => {
           />
         )}
       </main>
+      
+      {/* Scroll to Top Button */}
+      {showScrollToTop && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8 }}
+          className="fixed bottom-8 right-8 z-50"
+        >
+          <Button
+            variant="default"
+            size="icon"
+            onClick={scrollToTop}
+            className="rounded-full w-12 h-12 bg-purple-600 hover:bg-purple-700 shadow-lg"
+          >
+            <ArrowUp className="h-5 w-5" />
+          </Button>
+        </motion.div>
+      )}
       
       <ShowroomDialogs 
         showStatusBar={showStatusBar}
