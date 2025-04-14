@@ -1,6 +1,6 @@
 
 import { Button } from '@/components/ui/button';
-import { Heart, SunMedium, Briefcase, Moon } from 'lucide-react';
+import { Heart, SunMedium, Briefcase, Moon, Coffee } from 'lucide-react';
 import { ClothingSeason, ClothingOccasion } from '@/lib/types';
 
 interface OutfitFiltersProps {
@@ -58,6 +58,7 @@ const OutfitFilters = ({
             {occasion === 'business' && <Briefcase className="w-4 h-4 mr-1" />}
             {occasion === 'party' && <SunMedium className="w-4 h-4 mr-1" />}
             {occasion === 'date' && <Moon className="w-4 h-4 mr-1" />}
+            {occasion === 'casual' && <Coffee className="w-4 h-4 mr-1" />}
             {occasion.charAt(0).toUpperCase() + occasion.slice(1)}
           </Button>
         ))}

@@ -21,6 +21,9 @@ const OliviaRecommendationBox = ({ weather, selectedOutfit }: OliviaRecommendati
         `I've picked something special that works well for ${weather.condition.toLowerCase()} weather.`
       ];
       setSuggestion(suggestions[Math.floor(Math.random() * suggestions.length)]);
+    } else {
+      // Fallback suggestion when no weather data is available
+      setSuggestion("I've selected some stylish outfits that match your personal style. Let's find the perfect look for you today!");
     }
   }, [weather]);
 

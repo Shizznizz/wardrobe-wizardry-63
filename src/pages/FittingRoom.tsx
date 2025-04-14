@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useShowroom } from '@/hooks/useShowroom';
 import { useOutfitState } from '@/hooks/useOutfitState';
@@ -23,7 +24,7 @@ import { ClothingSeason, ClothingOccasion, WeatherInfo } from '@/lib/types';
 
 const FittingRoom = () => {
   const isMobile = useIsMobile();
-  const { outfits, clothingItems } = useOutfitState(sampleOutfits, sampleClothingItems);
+  const { outfits = [], clothingItems = [] } = useOutfitState(sampleOutfits, sampleClothingItems);
   const [photoSide, setPhotoSide] = useState<'left' | 'right'>('left');
   const [showOliviaHint, setShowOliviaHint] = useState(false);
   const [triedOnCount, setTriedOnCount] = useState(0);
@@ -167,6 +168,7 @@ const FittingRoom = () => {
     setShowFavoritesOnly(prev => !prev);
   };
 
+  // Add safe handling of undefined arrays and properties
   const filteredOutfits = userOutfits.filter(outfit => {
     if (selectedSeason && (!outfit.seasons || !outfit.seasons.includes(selectedSeason))) return false;
     if (selectedOccasion && (!outfit.occasions || !outfit.occasions.includes(selectedOccasion))) return false;
