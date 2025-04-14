@@ -190,17 +190,17 @@ const FittingRoom = () => {
   };
 
   // Make the filter function more robust against undefined or null properties
-  const filteredOutfits = userOutfits.filter((outfit: Outfit) => {
+  const filteredOutfits = userOutfits.filter((outfit) => {
     // Early return if outfit is undefined or null
     if (!outfit) return false;
     
     // Check seasons with proper undefined/null handling
-    if (selectedSeason && (!outfit.seasons || !Array.isArray(outfit.seasons) || !outfit.seasons.includes(selectedSeason))) {
+    if (selectedSeason && Array.isArray(outfit.seasons) && !outfit.seasons.includes(selectedSeason)) {
       return false;
     }
     
     // Check occasions with proper undefined/null handling
-    if (selectedOccasion && (!outfit.occasions || !Array.isArray(outfit.occasions) || !outfit.occasions.includes(selectedOccasion))) {
+    if (selectedOccasion && Array.isArray(outfit.occasions) && !outfit.occasions.includes(selectedOccasion)) {
       return false;
     }
     
