@@ -40,15 +40,18 @@ const OutfitCarousel = ({ outfits = [], onPreview, isMobile }: OutfitCarouselPro
     }
   };
   
-  // Early return with empty component if outfits is not an array or is empty
-  if (!Array.isArray(outfits) || outfits.length === 0) {
+  // Ensure outfits is always an array
+  const safeOutfits = Array.isArray(outfits) ? outfits : [];
+  
+  // Early return with empty component if outfits is an empty array
+  if (safeOutfits.length === 0) {
     return <div className="p-4 text-white/70">No outfits available.</div>;
   }
   
   // Filter out any undefined or null outfits to prevent errors
-  const safeOutfits = outfits.filter(outfit => outfit !== undefined && outfit !== null);
+  const validOutfits = safeOutfits.filter(outfit => outfit !== undefined && outfit !== null);
   
-  if (safeOutfits.length === 0) {
+  if (validOutfits.length === 0) {
     return <div className="p-4 text-white/70">No valid outfits available.</div>;
   }
   
@@ -59,7 +62,7 @@ const OutfitCarousel = ({ outfits = [], onPreview, isMobile }: OutfitCarouselPro
         <div className="relative">
           <ScrollArea className="pb-4">
             <div className="flex space-x-4 pb-2">
-              {safeOutfits.map((outfit) => (
+              {validOutfits.map((outfit) => (
                 <OutfitCard 
                   key={outfit?.id || Math.random().toString()} 
                   outfit={outfit}
@@ -94,7 +97,7 @@ const OutfitCarousel = ({ outfits = [], onPreview, isMobile }: OutfitCarouselPro
               className="flex space-x-5 overflow-x-auto scrollbar-none py-2 pb-4 pl-2 pr-2 scroll-smooth"
               onScroll={handleScroll}
             >
-              {safeOutfits.map((outfit) => (
+              {validOutfits.map((outfit) => (
                 <OutfitCard 
                   key={outfit?.id || Math.random().toString()} 
                   outfit={outfit}
@@ -122,9 +125,9 @@ const OutfitCarousel = ({ outfits = [], onPreview, isMobile }: OutfitCarouselPro
       )}
       
       {/* Alternative grid view for desktop */}
-      {!isMobile && safeOutfits.length > 3 && (
+      {!isMobile && validOutfits.length > 3 && (
         <div className="mt-10 grid grid-cols-3 gap-5">
-          {safeOutfits.map((outfit) => (
+          {validOutfits.map((outfit) => (
             <OutfitCard 
               key={outfit?.id || Math.random().toString()} 
               outfit={outfit}
@@ -158,6 +161,9 @@ const OutfitCard = ({
   isHovered = false,
   onHover
 }: OutfitCardProps) => {
+  // Skip rendering if outfit is undefined
+  if (!outfit) return null;
+  
   // Add robust default values to prevent undefined errors
   const { 
     id = Math.random().toString(), 
@@ -168,23 +174,12 @@ const OutfitCard = ({
     favorite = false,
     timesWorn = 0,
     dateAdded = new Date()
-  } = outfit || {};
+  } = outfit;
   
-  // Create a complete safe outfit object with all required properties
-  const safeOutfit: Outfit = {
-    id,
-    name,
-    occasions,
-    seasons,
-    items,
-    favorite,
-    timesWorn,
-    dateAdded
-  };
-  
-  if (!outfit) {
-    return null; // Don't render invalid outfits
-  }
+  // Ensure arrays are valid
+  const safeOccasions = Array.isArray(occasions) ? occasions : [];
+  const safeSeasons = Array.isArray(seasons) ? seasons : [];
+  const safeItems = Array.isArray(items) ? items : [];
   
   return (
     <motion.div
@@ -217,7 +212,7 @@ const OutfitCard = ({
           <h3 className="font-medium text-lg mb-2">{name}</h3>
           
           <div className="flex flex-wrap gap-1 mb-3">
-            {Array.isArray(seasons) && seasons.map(season => (
+            {safeSeasons.map(season => (
               <Badge 
                 key={season} 
                 variant="outline" 
@@ -226,7 +221,7 @@ const OutfitCard = ({
                 {season}
               </Badge>
             ))}
-            {Array.isArray(occasions) && occasions.map(occasion => (
+            {safeOccasions.map(occasion => (
               <Badge 
                 key={occasion} 
                 variant="outline" 
@@ -239,7 +234,7 @@ const OutfitCard = ({
           
           <Button 
             className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 w-full group"
-            onClick={() => onPreview(safeOutfit)}
+            onClick={() => onPreview(outfit)}
           >
             <Eye className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
             Try This Look

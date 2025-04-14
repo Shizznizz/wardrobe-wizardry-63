@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -57,6 +56,8 @@ const Outfits = () => {
     summonOlivia
   } = useOliviaAssistant();
 
+  const safeOutfits = Array.isArray(outfits) ? outfits : [];
+
   const handleOutfitAddedToCalendar = (log: OutfitLog) => {
     addOutfitLog(log);
     toast.success(`Outfit added to calendar for ${new Date(log.date).toLocaleDateString()}`);
@@ -71,14 +72,16 @@ const Outfits = () => {
   }, [savedLocation]);
   
   useEffect(() => {
-    if (outfits.length > 0 && !hideTips) {
+    if (safeOutfits.length > 0 && !hideTips) {
       const timeoutId = setTimeout(() => {
-        showOutfitRecommendation(outfits[0], 'current');
+        if (safeOutfits[0]) {
+          showOutfitRecommendation(safeOutfits[0], 'current');
+        }
       }, 1500);
       
       return () => clearTimeout(timeoutId);
     }
-  }, [outfits, hideTips, showOutfitRecommendation]);
+  }, [safeOutfits, hideTips, showOutfitRecommendation]);
   
   const handleFeedbackAction = (feedbackType: string, outfit: any) => {
     showFeedbackResponse(feedbackType, outfit);
@@ -109,12 +112,22 @@ const Outfits = () => {
     }
   };
 
-  const groupedOutfits = outfits.reduce((groups, outfit) => {
+  const groupedOutfits = safeOutfits.reduce((groups, outfit) => {
+    if (!outfit) return groups;
+    
+    const safeOutfit = {
+      ...outfit,
+      seasons: Array.isArray(outfit.seasons) ? outfit.seasons : [],
+      occasions: Array.isArray(outfit.occasions) ? outfit.occasions : [],
+      tags: Array.isArray(outfit.tags) ? outfit.tags : [],
+      colors: Array.isArray(outfit.colors) ? outfit.colors : []
+    };
+    
     if (activeFilters.length > 0) {
       const matchesFilters = activeFilters.some(filter => 
-        outfit.seasons.includes(filter as ClothingSeason) || 
-        outfit.occasions.includes(filter) ||
-        (outfit.colors && outfit.colors.includes(filter))
+        safeOutfit.seasons.includes(filter as ClothingSeason) || 
+        safeOutfit.occasions.includes(filter) ||
+        (safeOutfit.colors && safeOutfit.colors.includes(filter))
       );
       
       if (!matchesFilters) return groups;
@@ -127,13 +140,13 @@ const Outfits = () => {
     
     let group = 'Other';
     
-    if (outfit.tags && outfit.tags.includes('casual') || outfit.occasions.includes('casual')) {
+    if ((safeOutfit.tags && safeOutfit.tags.includes('casual')) || safeOutfit.occasions.includes('casual')) {
       group = 'Casual & Comfortable';
-    } else if (outfit.tags && outfit.tags.includes('formal') || outfit.occasions.includes('formal')) {
+    } else if ((safeOutfit.tags && safeOutfit.tags.includes('formal')) || safeOutfit.occasions.includes('formal')) {
       group = 'Elegant & Formal';
-    } else if (outfit.seasons.includes('summer')) {
+    } else if (safeOutfit.seasons.includes('summer')) {
       group = 'Summer Ready';
-    } else if (outfit.seasons.includes('winter')) {
+    } else if (safeOutfit.seasons.includes('winter')) {
       group = 'Winter Warmth';
     }
     
@@ -141,7 +154,7 @@ const Outfits = () => {
       groups[group] = [];
     }
     
-    groups[group].push(outfit);
+    groups[group].push(safeOutfit);
     return groups;
   }, {} as Record<string, typeof outfits>);
 

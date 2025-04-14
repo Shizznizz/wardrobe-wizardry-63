@@ -38,9 +38,12 @@ const QuickFilters = ({ onFilterChange, toggleOwnedOnly, showOwnedOnly }: QuickF
   
   const toggleFilter = (filterId: string) => {
     setActiveFilters(prev => {
-      const newFilters = prev.includes(filterId)
-        ? prev.filter(id => id !== filterId)
-        : [...prev, filterId];
+      // Ensure prev is an array
+      const safePrev = Array.isArray(prev) ? prev : [];
+      
+      const newFilters = safePrev.includes(filterId)
+        ? safePrev.filter(id => id !== filterId)
+        : [...safePrev, filterId];
       
       onFilterChange(newFilters);
       return newFilters;

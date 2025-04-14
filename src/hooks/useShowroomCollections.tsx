@@ -52,7 +52,11 @@ export const useShowroomCollections = (sampleOutfits: Outfit[] = [], sampleCloth
   const handleAddItem = (item: ClothingItem) => {
     if (!item) return;
     
-    setSelectedItems(prev => [...prev, item]);
+    setSelectedItems(prev => {
+      // Ensure prev is an array
+      const safePrev = Array.isArray(prev) ? prev : [];
+      return [...safePrev, item];
+    });
     toast.success(`Added ${item.name} to your outfit!`);
   };
 
