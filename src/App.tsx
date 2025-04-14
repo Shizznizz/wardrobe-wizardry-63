@@ -17,6 +17,7 @@ import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import NewClothes from "./pages/NewClothes";
 import Showroom from "./pages/Showroom";
+import FittingRoom from "./pages/FittingRoom";
 import Preferences from './pages/Preferences';
 import Calendar from './pages/Calendar';
 
@@ -51,7 +52,7 @@ const AppRoutes = () => {
             <Route path="/my-wardrobe" element={<ProtectedRoute><Wardrobe /></ProtectedRoute>} />
             <Route path="/mix-and-match" element={<ProtectedRoute><Outfits /></ProtectedRoute>} />
             <Route path="/style-planner" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
-            <Route path="/fitting-room" element={<ProtectedRoute><Showroom /></ProtectedRoute>} />
+            <Route path="/fitting-room" element={<ProtectedRoute><FittingRoom /></ProtectedRoute>} />
             <Route path="/shop-and-try" element={<ProtectedRoute><NewClothes /></ProtectedRoute>} />
             <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
             <Route path="/preferences" element={<ProtectedRoute><Preferences /></ProtectedRoute>} />
@@ -63,7 +64,7 @@ const AppRoutes = () => {
             <Route path="/calendar" element={<Navigate to="/style-planner" replace />} />
             <Route path="/showroom" element={<Navigate to="/fitting-room" replace />} />
             <Route path="/new-clothes" element={<Navigate to="/shop-and-try" replace />} />
-            <Route path="/virtual-try-on" element={<Navigate to="/shop-and-try" replace />} />
+            <Route path="/virtual-try-on" element={<Navigate to="/fitting-room" replace />} />
             
             <Route path="*" element={<NotFound />} />
           </Routes>
