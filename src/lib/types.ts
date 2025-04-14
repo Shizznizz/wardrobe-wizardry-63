@@ -1,3 +1,4 @@
+
 export type ClothingType = 
   | 'shirt'
   | 'jeans'
@@ -134,7 +135,6 @@ export interface Outfit {
   colorScheme?: string; // Description of the color scheme
   tags?: string[]; // Added tags field for filtering
   colors?: string[]; // Added colors field for filtering
-  imageUrl?: string; // Added imageUrl field for outfit preview image
 }
 
 export interface WeatherInfo {
