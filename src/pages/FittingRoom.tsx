@@ -25,7 +25,24 @@ import { ClothingSeason, ClothingOccasion, WeatherInfo, Outfit } from '@/lib/typ
 const FittingRoom = () => {
   const isMobile = useIsMobile();
   // Ensure outfits and clothingItems are properly initialized with default empty arrays if undefined
-  const { outfits = [], clothingItems = [] } = useOutfitState(sampleOutfits, sampleClothingItems);
+  const { 
+    outfits = [], 
+    clothingItems = [],
+    // Add other properties we need from useOutfitState with safe defaults
+    handleCreateOutfit = () => {},
+    handleEditOutfit = () => {},
+    handleSaveOutfit = () => {},
+    handleDeleteOutfit = () => {},
+    handleToggleFavorite = () => {},
+    handleWeatherChange = () => {},
+    handleShowTips = () => {},
+    handleAssistantAction = () => {},
+    handleRefreshOutfit = () => {},
+    handleUserPhotoChange = () => {},
+    handleClearUserPhoto = () => {},
+    handleTryOnOutfit = () => {}
+  } = useOutfitState(sampleOutfits || [], sampleClothingItems || []);
+  
   const [photoSide, setPhotoSide] = useState<'left' | 'right'>('left');
   const [showOliviaHint, setShowOliviaHint] = useState(false);
   const [triedOnCount, setTriedOnCount] = useState(0);
@@ -40,30 +57,31 @@ const FittingRoom = () => {
     icon: 'sun'
   });
   
+  // Ensure all destructured properties from useShowroom have fallback values
   const {
-    isPremiumUser,
-    showTips,
-    showSubscriptionPopup,
-    showOliviaImageGallery,
-    isUsingOliviaImage,
-    showStatusBar,
-    isUploadLoading,
-    oliviaSuggestion,
-    clothingItems: showroomClothingItems,
-    selectedOutfit,
-    userPhoto,
-    finalImage,
-    isProcessingTryOn,
+    isPremiumUser = false,
+    showTips = false,
+    showSubscriptionPopup = false,
+    showOliviaImageGallery = false,
+    isUsingOliviaImage = false,
+    showStatusBar = false,
+    isUploadLoading = false,
+    oliviaSuggestion = "",
+    clothingItems: showroomClothingItems = [],
+    selectedOutfit = null,
+    userPhoto = null,
+    finalImage = null,
+    isProcessingTryOn = false,
     
-    handleSelectOliviaImage,
-    handleSelectOutfit,
-    handleUserPhotoUpload,
-    handleSaveLook,
-    handleUpgradeToPremium,
-    handleCloseSubscriptionPopup,
-    resetSelection,
-    handlePreviewNow,
-    setShowOliviaImageGallery,
+    handleSelectOliviaImage = () => {},
+    handleSelectOutfit = () => {},
+    handleUserPhotoUpload = () => {},
+    handleSaveLook = () => {},
+    handleUpgradeToPremium = () => {},
+    handleCloseSubscriptionPopup = () => {},
+    resetSelection = () => {},
+    handlePreviewNow = () => {},
+    setShowOliviaImageGallery = () => {},
   } = useShowroom();
 
   // Make sure we have a valid array of outfits and handle potential undefined 

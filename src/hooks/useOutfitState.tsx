@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Outfit, ClothingItem, WeatherInfo, TimeOfDay, Activity, ClothingSeason } from '@/lib/types';
 import { OutfitLog } from '@/components/outfits/OutfitLogItem';
@@ -142,8 +143,10 @@ export function useOutfitState(initialOutfits: Outfit[] = [], initialClothingIte
   };
 
   const getLogsForDate = (date: Date) => {
+    if (!Array.isArray(outfitLogs) || outfitLogs.length === 0) return [];
+    
     return outfitLogs.filter(log => 
-      log.date instanceof Date && 
+      log && log.date instanceof Date && 
       log.date.getDate() === date.getDate() &&
       log.date.getMonth() === date.getMonth() &&
       log.date.getFullYear() === date.getFullYear()
@@ -151,7 +154,9 @@ export function useOutfitState(initialOutfits: Outfit[] = [], initialClothingIte
   };
 
   const getLogsForOutfit = (outfitId: string) => {
-    return outfitLogs.filter(log => log.outfitId === outfitId);
+    if (!Array.isArray(outfitLogs) || outfitLogs.length === 0) return [];
+    
+    return outfitLogs.filter(log => log && log.outfitId === outfitId);
   };
 
   const getRarelyWornOutfits = (days: number = 30) => {
@@ -201,8 +206,12 @@ export function useOutfitState(initialOutfits: Outfit[] = [], initialClothingIte
   const getMostWornItems = () => {
     const itemCounts: { [key: string]: number } = {};
     
+    if (!Array.isArray(outfitLogs) || outfitLogs.length === 0) return [];
+    
     outfitLogs.forEach(log => {
-      const outfit = outfits.find(o => o.id === log.outfitId);
+      if (!log) return;
+      
+      const outfit = outfits.find(o => o && o.id === log.outfitId);
       if (outfit && Array.isArray(outfit.items)) {
         outfit.items.forEach(itemId => {
           itemCounts[itemId] = (itemCounts[itemId] || 0) + 1;
@@ -223,8 +232,12 @@ export function useOutfitState(initialOutfits: Outfit[] = [], initialClothingIte
   const getSeasonalInsights = () => {
     const seasonalLogs: { [key: string]: OutfitLog[] } = {};
     
+    if (!Array.isArray(outfitLogs) || outfitLogs.length === 0) return [];
+    
     outfitLogs.forEach(log => {
-      const outfit = outfits.find(o => o.id === log.outfitId);
+      if (!log) return;
+      
+      const outfit = outfits.find(o => o && o.id === log.outfitId);
       if (outfit && Array.isArray(outfit.seasons)) {
         outfit.seasons.forEach(season => {
           if (!seasonalLogs[season]) {
@@ -239,7 +252,7 @@ export function useOutfitState(initialOutfits: Outfit[] = [], initialClothingIte
       season,
       count: logs.length,
       items: logs.flatMap(log => {
-        const outfit = outfits.find(o => o.id === log.outfitId);
+        const outfit = outfits.find(o => o && o.id === log.outfitId);
         return outfit && Array.isArray(outfit.items) ? outfit.items : [];
       })
     }));

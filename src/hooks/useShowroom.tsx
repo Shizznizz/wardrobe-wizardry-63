@@ -10,7 +10,7 @@ import { useShowroomCollections } from './useShowroomCollections';
 import { useShowroomPopups } from './useShowroomPopups';
 
 export const useShowroom = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated = false } = useAuth();
   const [generationError, setGenerationError] = useState<string | null>(null);
   const [predictionId, setPredictionId] = useState<string | null>(null);
   const [oliviaMood, setOliviaMood] = useState<'happy' | 'thinking' | 'neutral'>('neutral');
@@ -19,48 +19,51 @@ export const useShowroom = () => {
   const [showFloatingChat, setShowFloatingChat] = useState(false);
   const [clothingPhoto, setClothingPhoto] = useState<string | null>(null);
   
+  const outfitsWithDefault = Array.isArray(sampleOutfits) ? sampleOutfits : [];
+  const clothingItemsWithDefault = Array.isArray(sampleClothingItems) ? sampleClothingItems : [];
+  
   const {
-    isPremiumUser,
-    userPhoto,
-    finalImage,
-    setFinalImage,
-    isUsingOliviaImage,
-    isUploadLoading,
-    oliviaSuggestion,
-    setOliviaSuggestion,
-    selectedOutfit,
-    isProcessingTryOn,
-    setIsProcessingTryOn,
-    handleUserPhotoUpload,
-    handleSelectOliviaImage,
-    handleTryOnOutfit,
-    handleClearUserPhoto,
-    handleSaveOutfit,
-    setSelectedOutfit
+    isPremiumUser = false,
+    userPhoto = null,
+    finalImage = null,
+    setFinalImage = () => {},
+    isUsingOliviaImage = false,
+    isUploadLoading = false,
+    oliviaSuggestion = "",
+    setOliviaSuggestion = () => {},
+    selectedOutfit = null,
+    isProcessingTryOn = false,
+    setIsProcessingTryOn = () => {},
+    handleUserPhotoUpload = () => {},
+    handleSelectOliviaImage = () => {},
+    handleTryOnOutfit = () => {},
+    handleClearUserPhoto = () => {},
+    handleSaveOutfit = () => {},
+    setSelectedOutfit = () => {}
   } = useShowroomState();
 
   const {
-    fashionCollections,
-    selectedItems,
-    setSelectedItems,
-    handleAddItem,
-    handleTryOnTrendingItem,
-    handleSuggestAnotherOutfit,
-    clothingItems
-  } = useShowroomCollections(sampleOutfits, sampleClothingItems);
+    fashionCollections = [],
+    selectedItems = [],
+    setSelectedItems = () => {},
+    handleAddItem = () => {},
+    handleTryOnTrendingItem = () => "",
+    handleSuggestAnotherOutfit = () => {},
+    clothingItems = []
+  } = useShowroomCollections(outfitsWithDefault, clothingItemsWithDefault);
 
   const {
-    showTips,
-    showSubscriptionPopup,
-    showOliviaImageGallery,
-    showStatusBar,
-    setShowTips,
-    setShowSubscriptionPopup,
-    setShowOliviaImageGallery,
-    setShowStatusBar,
-    handleUpgradeToPremium,
-    handleShowPremiumPopup,
-    handleCloseSubscriptionPopup
+    showTips = false,
+    showSubscriptionPopup = false,
+    showOliviaImageGallery = false,
+    showStatusBar = false,
+    setShowTips = () => {},
+    setShowSubscriptionPopup = () => {},
+    setShowOliviaImageGallery = () => {},
+    setShowStatusBar = () => {},
+    handleUpgradeToPremium = () => {},
+    handleShowPremiumPopup = () => {},
+    handleCloseSubscriptionPopup = () => {}
   } = useShowroomPopups(isPremiumUser, isAuthenticated, userPhoto, finalImage);
 
   useEffect(() => {
@@ -78,7 +81,7 @@ export const useShowroom = () => {
     } else {
       setShowStatusBar(false);
     }
-  }, [userPhoto, selectedOutfit]);
+  }, [userPhoto, selectedOutfit, setShowStatusBar, setOliviaSuggestion]);
 
   const handleClothingPhotoUpload = (photo: string) => {
     setClothingPhoto(photo);
@@ -86,6 +89,8 @@ export const useShowroom = () => {
   };
   
   const handleSelectOutfit = (outfit: Outfit) => {
+    if (!outfit) return;
+    
     handleTryOnOutfit(outfit);
     
     if (userPhoto) {
@@ -162,6 +167,8 @@ export const useShowroom = () => {
       setShowSubscriptionPopup(true);
       return;
     }
+    
+    if (!item) return null;
     
     const imageUrl = handleTryOnTrendingItem(item, isPremiumUser || isAuthenticated);
     if (imageUrl) setClothingPhoto(imageUrl);
