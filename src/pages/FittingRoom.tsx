@@ -1,8 +1,8 @@
-
 import React, { useState } from 'react';
 import { useShowroom } from '@/hooks/useShowroom';
-import Header from '@/components/Header';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { ClothingSeason, ClothingOccasion } from '@/lib/types';
+import Header from '@/components/Header';
 import WelcomeMessage from '@/components/fitting-room/WelcomeMessage';
 import StepsGuide from '@/components/fitting-room/StepsGuide';
 import NoPhotoMessage from '@/components/fitting-room/NoPhotoMessage';
@@ -16,8 +16,8 @@ import { sampleClothingItems } from '@/lib/wardrobeData';
 
 const FittingRoom = () => {
   const isMobile = useIsMobile();
-  const [selectedSeason, setSelectedSeason] = useState('All');
-  const [selectedOccasion, setSelectedOccasion] = useState('All');
+  const [selectedSeason, setSelectedSeason] = useState<ClothingSeason>('all');
+  const [selectedOccasion, setSelectedOccasion] = useState<ClothingOccasion>('casual');
   const [favoritesOnly, setFavoritesOnly] = useState(false);
   
   const {
@@ -45,28 +45,29 @@ const FittingRoom = () => {
     setShowOliviaImageGallery,
   } = useShowroom();
 
-  // Get outfits from the clothingItems - for this example, we'll use sample outfits
-  // In a real implementation, these would come from the useShowroom hook
   const outfits = Array.isArray(clothingItems) ? clothingItems.map((item, index) => ({
     id: `outfit-${index}`,
     name: `Outfit ${index + 1}`,
     items: [item.id],
     occasions: item.occasions || ['casual'],
     seasons: item.seasons || ['all'],
-    favorite: Boolean(index % 3 === 0), // Every third item is a favorite
+    favorite: Boolean(index % 3 === 0),
     timesWorn: index,
     dateAdded: new Date(),
   })) : [];
 
-  // Filter outfits based on selected filters
   const filteredOutfits = outfits.filter(outfit => {
-    if (selectedSeason !== 'All' && !outfit.seasons.includes(selectedSeason.toLowerCase())) return false;
-    if (selectedOccasion !== 'All' && !outfit.occasions?.includes(selectedOccasion.toLowerCase())) return false;
-    if (favoritesOnly && !outfit.favorite) return false;
-    return true;
+    const seasonMatch = selectedSeason === 'all' || 
+      outfit.seasons.includes(selectedSeason as ClothingSeason);
+    
+    const occasionMatch = selectedOccasion === 'casual' || 
+      outfit.occasions.includes(selectedOccasion as ClothingOccasion);
+    
+    const favoriteMatch = !favoritesOnly || outfit.favorite;
+    
+    return seasonMatch && occasionMatch && favoriteMatch;
   });
 
-  // Handle download function for OutfitPreviewArea
   const handleDownload = () => {
     if (!finalImage) return;
     const a = document.createElement('a');
@@ -77,7 +78,6 @@ const FittingRoom = () => {
     document.body.removeChild(a);
   };
 
-  // Handle share function for OutfitPreviewArea
   const handleShare = () => {
     if (!finalImage || !navigator.share) return;
     
