@@ -1,11 +1,10 @@
-
 import React, { useEffect, useState } from 'react';
 import { useShowroom } from '@/hooks/useShowroom';
 import { useOutfitState } from '@/hooks/useOutfitState';
 import { sampleClothingItems, sampleOutfits } from '@/lib/wardrobeData';
 import Header from '@/components/Header';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Share2, Download, Heart, Camera, Info, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -18,6 +17,9 @@ import WelcomeMessage from '@/components/fitting-room/WelcomeMessage';
 import NoOutfitsMessage from '@/components/fitting-room/NoOutfitsMessage';
 import OutfitPreviewArea from '@/components/fitting-room/OutfitPreviewArea';
 import NoPhotoMessage from '@/components/fitting-room/NoPhotoMessage';
+import OliviaRecommendationBox from '@/components/fitting-room/OliviaRecommendationBox';
+import OutfitFilters from '@/components/fitting-room/OutfitFilters';
+import { ClothingSeason, ClothingOccasion } from '@/lib/types';
 
 const FittingRoom = () => {
   const isMobile = useIsMobile();
@@ -26,6 +28,9 @@ const FittingRoom = () => {
   const [showOliviaHint, setShowOliviaHint] = useState(false);
   const [triedOnCount, setTriedOnCount] = useState(0);
   const [showOliviaTips, setShowOliviaTips] = useState(true);
+  const [selectedSeason, setSelectedSeason] = useState<ClothingSeason | null>(null);
+  const [selectedOccasion, setSelectedOccasion] = useState<ClothingOccasion | null>(null);
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   
   const {
     isPremiumUser,
@@ -151,6 +156,27 @@ const FittingRoom = () => {
       ? "Olivia's style tips are now hidden" 
       : "Olivia's style tips are now enabled");
   };
+
+    // Filter outfits based on selected filters
+    const filteredOutfits = userOutfits.filter(outfit => {
+      if (selectedSeason && !outfit.seasons.includes(selectedSeason)) return false;
+      if (selectedOccasion && !outfit.occasions?.includes(selectedOccasion)) return false;
+      if (showFavoritesOnly && !outfit.isFavorite) return false;
+      return true;
+    });
+  
+    // Handle filter changes
+    const handleSeasonChange = (season: ClothingSeason) => {
+      setSelectedSeason(prev => prev === season ? null : season);
+    };
+  
+    const handleOccasionChange = (occasion: ClothingOccasion) => {
+      setSelectedOccasion(prev => prev === occasion ? null : occasion);
+    };
+  
+    const toggleFavorites = () => {
+      setShowFavoritesOnly(prev => !prev);
+    };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white overflow-x-hidden">
