@@ -6,7 +6,6 @@ import { sampleClothingItems, sampleOutfits } from '@/lib/wardrobeData';
 import Header from '@/components/Header';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Share2, Download, Heart, Camera, Info, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -18,6 +17,7 @@ import OutfitCarousel from '@/components/fitting-room/OutfitCarousel';
 import WelcomeMessage from '@/components/fitting-room/WelcomeMessage';
 import NoOutfitsMessage from '@/components/fitting-room/NoOutfitsMessage';
 import OutfitPreviewArea from '@/components/fitting-room/OutfitPreviewArea';
+import NoPhotoMessage from '@/components/fitting-room/NoPhotoMessage';
 
 const FittingRoom = () => {
   const isMobile = useIsMobile();
@@ -25,6 +25,7 @@ const FittingRoom = () => {
   const [photoSide, setPhotoSide] = useState<'left' | 'right'>('left');
   const [showOliviaHint, setShowOliviaHint] = useState(false);
   const [triedOnCount, setTriedOnCount] = useState(0);
+  const [showOliviaTips, setShowOliviaTips] = useState(true);
   
   const {
     isPremiumUser,
@@ -73,7 +74,7 @@ const FittingRoom = () => {
 
   // Show shopping suggestion after trying on 3+ outfits
   useEffect(() => {
-    if (triedOnCount >= 3) {
+    if (triedOnCount >= 3 && showOliviaTips) {
       toast(
         <div className="flex items-start">
           <div className="w-8 h-8 rounded-full bg-purple-500 flex-shrink-0 flex items-center justify-center mr-3">
@@ -92,7 +93,7 @@ const FittingRoom = () => {
         }
       );
     }
-  }, [triedOnCount]);
+  }, [triedOnCount, showOliviaTips]);
 
   const handleOutfitPreview = (outfit) => {
     handleSelectOutfit(outfit);
@@ -144,6 +145,13 @@ const FittingRoom = () => {
     }
   };
 
+  const toggleOliviaTips = () => {
+    setShowOliviaTips(!showOliviaTips);
+    toast.success(showOliviaTips 
+      ? "Olivia's style tips are now hidden" 
+      : "Olivia's style tips are now enabled");
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white overflow-x-hidden">
       <Header />
@@ -151,6 +159,19 @@ const FittingRoom = () => {
       <main className="container mx-auto px-4 pt-20 pb-32 max-w-[1600px] relative">
         {/* Section 1: Olivia's Welcome Message */}
         <WelcomeMessage />
+        
+        {/* Toggle for Olivia Tips */}
+        <div className="mt-4 flex justify-end">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={toggleOliviaTips}
+            className="bg-white/5 border-white/10 text-white/70 hover:text-white hover:bg-white/10"
+          >
+            <Info className="h-4 w-4 mr-2" />
+            {showOliviaTips ? "Hide Olivia's Tips" : "Show Olivia's Tips"}
+          </Button>
+        </div>
         
         <div className={`mt-10 grid gap-6 ${isMobile ? 'grid-cols-1' : `grid-cols-${userPhoto && !finalImage ? '2' : '1'}`}`}>
           {/* Section 2: Photo Upload Block */}
@@ -162,8 +183,9 @@ const FittingRoom = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.3 }}
+                className="mb-8"
               >
-                <h2 className="text-xl font-semibold mb-4">Select a Photo</h2>
+                <h2 className="text-xl font-semibold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-purple-200">Select Your Model</h2>
                 
                 <UserPhotoSection 
                   userPhoto={userPhoto} 
@@ -173,7 +195,7 @@ const FittingRoom = () => {
                   onShowOliviaImageGallery={() => setShowOliviaImageGallery(true)}
                 />
                 
-                {showOliviaHint && userPhoto && !finalImage && (
+                {showOliviaHint && userPhoto && !finalImage && showOliviaTips && (
                   <motion.div 
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -192,7 +214,7 @@ const FittingRoom = () => {
             
             {userPhoto && !isMobile && (
               <div className="sticky top-24">
-                <h2 className="text-xl font-semibold mb-4">Your Photo</h2>
+                <h2 className="text-xl font-semibold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-purple-200">Your Model</h2>
                 <div className="relative rounded-lg overflow-hidden border border-white/10 shadow-lg">
                   <img src={userPhoto} alt="Your photo" className="w-full object-cover aspect-[3/4]" />
                   {isUsingOliviaImage && (
@@ -214,9 +236,9 @@ const FittingRoom = () => {
           </div>
           
           {/* Section 3: Outfit Selection (shown when photo is selected) */}
-          {userPhoto && !finalImage && (
+          {userPhoto && !finalImage ? (
             <div>
-              <h2 className="text-xl font-semibold mb-4">Your Outfits</h2>
+              <h2 className="text-xl font-semibold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-purple-200">Your Outfits</h2>
               
               {userOutfits.length === 0 ? (
                 <NoOutfitsMessage />
@@ -228,7 +250,9 @@ const FittingRoom = () => {
                 />
               )}
             </div>
-          )}
+          ) : !userPhoto ? (
+            <NoPhotoMessage />
+          ) : null}
         </div>
         
         {/* Section 4: Outfit Preview Area */}
@@ -257,7 +281,7 @@ const FittingRoom = () => {
         isMobile={isMobile}
         showOliviaImageGallery={showOliviaImageGallery}
         showSubscriptionPopup={showSubscriptionPopup}
-        showTips={showTips}
+        showTips={showTips && showOliviaTips}
         onResetSelection={resetSelection}
         onPreviewNow={handlePreviewNow}
         onCloseOliviaImageGallery={() => setShowOliviaImageGallery(false)}

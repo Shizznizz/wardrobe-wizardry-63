@@ -3,7 +3,7 @@ import React, { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Outfit } from '@/lib/types';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, Eye, Tag } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Eye } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
@@ -18,6 +18,7 @@ const OutfitCarousel = ({ outfits, onPreview, isMobile }: OutfitCarouselProps) =
   const scrollRef = useRef<HTMLDivElement>(null);
   const [scrollPosition, setScrollPosition] = useState(0);
   const [maxScroll, setMaxScroll] = useState(0);
+  const [hoveredOutfit, setHoveredOutfit] = useState<string | null>(null);
   
   const handleScroll = () => {
     if (scrollRef.current) {
@@ -52,6 +53,8 @@ const OutfitCarousel = ({ outfits, onPreview, isMobile }: OutfitCarouselProps) =
                   outfit={outfit}
                   onPreview={onPreview}
                   isMobile={isMobile}
+                  isHovered={hoveredOutfit === outfit.id}
+                  onHover={(isHovered) => setHoveredOutfit(isHovered ? outfit.id : null)}
                 />
               ))}
             </div>
@@ -85,6 +88,8 @@ const OutfitCarousel = ({ outfits, onPreview, isMobile }: OutfitCarouselProps) =
                   outfit={outfit}
                   onPreview={onPreview}
                   isMobile={isMobile}
+                  isHovered={hoveredOutfit === outfit.id}
+                  onHover={(isHovered) => setHoveredOutfit(isHovered ? outfit.id : null)}
                 />
               ))}
             </div>
@@ -114,6 +119,8 @@ const OutfitCarousel = ({ outfits, onPreview, isMobile }: OutfitCarouselProps) =
               onPreview={onPreview}
               isMobile={isMobile}
               isGrid={true}
+              isHovered={hoveredOutfit === outfit.id}
+              onHover={(isHovered) => setHoveredOutfit(isHovered ? outfit.id : null)}
             />
           ))}
         </div>
@@ -127,17 +134,29 @@ interface OutfitCardProps {
   onPreview: (outfit: Outfit) => void;
   isMobile: boolean;
   isGrid?: boolean;
+  isHovered?: boolean;
+  onHover?: (isHovered: boolean) => void;
 }
 
-const OutfitCard = ({ outfit, onPreview, isMobile, isGrid = false }: OutfitCardProps) => {
+const OutfitCard = ({ 
+  outfit, 
+  onPreview, 
+  isMobile, 
+  isGrid = false, 
+  isHovered = false,
+  onHover
+}: OutfitCardProps) => {
   const { name, occasions, seasons } = outfit;
   
   return (
     <motion.div
       whileHover={{ y: -5, scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
+      onHoverStart={() => onHover && onHover(true)}
+      onHoverEnd={() => onHover && onHover(false)}
       className={cn(
-        "flex-shrink-0 bg-slate-900/60 backdrop-blur-sm rounded-lg border border-white/10 overflow-hidden shadow-md",
+        "flex-shrink-0 bg-slate-900/60 backdrop-blur-sm rounded-lg border border-white/10 overflow-hidden shadow-md transition-all duration-300",
+        isHovered && "border-purple-400/30 shadow-lg shadow-purple-900/20",
         isMobile ? "w-72" : isGrid ? "w-full" : "w-80"
       )}
     >
@@ -181,11 +200,11 @@ const OutfitCard = ({ outfit, onPreview, isMobile, isGrid = false }: OutfitCardP
           </div>
           
           <Button 
-            className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 w-full"
+            className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 w-full group"
             onClick={() => onPreview(outfit)}
           >
-            <Eye className="h-4 w-4 mr-2" />
-            Preview in Fitting Room
+            <Eye className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
+            Try This Look
           </Button>
         </div>
       </div>
