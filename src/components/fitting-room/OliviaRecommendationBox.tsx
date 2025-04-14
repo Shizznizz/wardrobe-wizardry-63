@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -11,23 +10,23 @@ interface OliviaRecommendationBoxProps {
   weather: WeatherInfo;
   selectedOutfit: Outfit | null;
   onSuggestOutfit?: () => void;
+  onFilterByTag?: (tag: string) => void;
 }
 
 const OliviaRecommendationBox = ({ 
   weather, 
   selectedOutfit,
-  onSuggestOutfit
+  onSuggestOutfit,
+  onFilterByTag
 }: OliviaRecommendationBoxProps) => {
   const [isTyping, setIsTyping] = useState(false);
   const [currentMessage, setCurrentMessage] = useState('');
   const [suggestions, setsuggestions] = useState<string[]>([]);
   
   useEffect(() => {
-    // Generate weather appropriate suggestions
     const weatherSuggestions = generateWeatherSuggestions(weather);
     setsuggestions(weatherSuggestions);
     
-    // Simulate typing effect
     setIsTyping(true);
     const randomIndex = Math.floor(Math.random() * weatherSuggestions.length);
     const message = weatherSuggestions[randomIndex];
@@ -90,6 +89,12 @@ const OliviaRecommendationBox = ({
     return suggestions;
   };
   
+  const handleTagClick = (tag: string) => {
+    if (onFilterByTag) {
+      onFilterByTag(tag);
+    }
+  };
+  
   return (
     <motion.div 
       className="glass-dark border border-white/10 rounded-xl p-4 shadow-xl shadow-purple-900/10 overflow-hidden mb-6"
@@ -132,19 +137,27 @@ const OliviaRecommendationBox = ({
               </motion.div>
             </AnimatePresence>
             
-            {/* Dynamic tag cloud */}
             <div className="flex flex-wrap gap-1 mt-3">
               {!isTyping && (
                 <>
-                  <Badge className="bg-purple-500/20 text-purple-200 border-purple-500/30 text-xs">
+                  <Badge 
+                    onClick={() => handleTagClick('today')}
+                    className="bg-purple-500/20 text-purple-200 border-purple-500/30 text-xs cursor-pointer hover:bg-purple-500/30 transition-colors"
+                  >
                     <Calendar className="h-3 w-3 mr-1" />
                     Today's Look
                   </Badge>
-                  <Badge className="bg-blue-500/20 text-blue-200 border-blue-500/30 text-xs">
+                  <Badge 
+                    onClick={() => handleTagClick('weather')}
+                    className="bg-blue-500/20 text-blue-200 border-blue-500/30 text-xs cursor-pointer hover:bg-blue-500/30 transition-colors"
+                  >
                     {getWeatherIcon()}
                     Weather-Ready
                   </Badge>
-                  <Badge className="bg-pink-500/20 text-pink-200 border-pink-500/30 text-xs">
+                  <Badge 
+                    onClick={() => handleTagClick('style')}
+                    className="bg-pink-500/20 text-pink-200 border-pink-500/30 text-xs cursor-pointer hover:bg-pink-500/30 transition-colors"
+                  >
                     <Shirt className="h-3 w-3 mr-1" />
                     Style Match
                   </Badge>
