@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Sparkles, TrendingUp, Award, Star, Lightbulb, SquareArrowOutUpRight } from 'lucide-react';
@@ -23,12 +22,10 @@ const StyleOfTheDay = ({ outfit, onPreview }: StyleOfTheDayProps) => {
     occasions: ['casual'],
     favorite: false,
     timesWorn: 0,
-    dateAdded: new Date(), // Fixed: Use Date object instead of string
+    dateAdded: new Date(),
   };
   
   const styleOutfit = outfit || defaultOutfit;
-  
-  // Ensure seasons and occasions are arrays
   const safeSeasons = Array.isArray(styleOutfit.seasons) ? styleOutfit.seasons : [];
   const safeOccasions = Array.isArray(styleOutfit.occasions) ? styleOutfit.occasions : [];
   

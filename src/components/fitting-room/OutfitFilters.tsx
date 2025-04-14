@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Heart, SunMedium, Briefcase, Moon, Coffee, Sparkles, Filter, ChevronDown, X } from 'lucide-react';
@@ -27,7 +26,6 @@ const OutfitFilters = ({
   onFavoritesToggle,
   className
 }: OutfitFiltersProps) => {
-  // Define proper typed arrays with default values to prevent undefined errors
   const seasons: ClothingSeason[] = ['spring', 'summer', 'autumn', 'winter'];
   const occasions: ClothingOccasion[] = ['casual', 'business', 'party', 'date'];
   
@@ -137,9 +135,12 @@ const OutfitFilters = ({
             transition={{ duration: 0.2 }}
             className="overflow-hidden"
           >
-            <div className="p-4 space-y-4">
-              <div className="space-y-2">
-                <span className="text-xs text-white/60">Season:</span>
+            <div className={cn(
+              "p-4 space-y-4 md:space-y-0 md:flex md:items-center md:gap-6",
+              "transition-all duration-200"
+            )}>
+              <div className="space-y-2 md:flex-grow">
+                <span className="text-xs text-white/60 block md:mb-2">Season:</span>
                 <div className="flex flex-wrap gap-2">
                   {seasons.map((season) => (
                     <Button
@@ -161,8 +162,8 @@ const OutfitFilters = ({
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <span className="text-xs text-white/60">Occasion:</span>
+              <div className="space-y-2 md:flex-grow">
+                <span className="text-xs text-white/60 block md:mb-2">Occasion:</span>
                 <div className="flex flex-wrap gap-2">
                   {occasions.map((occasion) => (
                     <Button
@@ -189,7 +190,7 @@ const OutfitFilters = ({
                 size="sm"
                 onClick={onFavoritesToggle}
                 className={cn(
-                  "text-xs h-8",
+                  "text-xs h-8 md:self-end",
                   showFavoritesOnly ? 
                     "bg-pink-600 hover:bg-pink-700 text-white" : 
                     "border-white/20 text-white hover:bg-white/10 hover:text-white"
