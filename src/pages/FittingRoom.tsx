@@ -100,7 +100,7 @@ const FittingRoom = () => {
     }
   }, [triedOnCount, showOliviaTips]);
 
-  const handleOutfitPreview = (outfit: Outfit | undefined) => {
+  const handleOutfitPreview = (outfit: Outfit) => {
     if (!outfit) return;
     handleSelectOutfit(outfit);
     setTriedOnCount(prev => prev + 1);

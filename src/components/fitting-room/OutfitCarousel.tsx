@@ -156,15 +156,23 @@ const OutfitCard = ({
     id = Math.random().toString(), 
     name = "Outfit", 
     occasions = [], 
-    seasons = [] 
+    seasons = [],
+    items = [],
+    favorite = false,
+    timesWorn = 0,
+    dateAdded = new Date()
   } = outfit || {};
   
-  // Create a safe version of the outfit to prevent undefined error
-  const safeOutfit = outfit || {
+  // Create a complete safe outfit object with all required properties
+  const safeOutfit: Outfit = {
     id,
     name,
     occasions,
-    seasons
+    seasons,
+    items,
+    favorite,
+    timesWorn,
+    dateAdded
   };
   
   if (!outfit) {
