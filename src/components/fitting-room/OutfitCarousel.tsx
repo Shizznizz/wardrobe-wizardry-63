@@ -14,7 +14,7 @@ interface OutfitCarouselProps {
   isMobile: boolean;
 }
 
-const OutfitCarousel = ({ outfits, onPreview, isMobile }: OutfitCarouselProps) => {
+const OutfitCarousel = ({ outfits = [], onPreview, isMobile }: OutfitCarouselProps) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [scrollPosition, setScrollPosition] = useState(0);
   const [maxScroll, setMaxScroll] = useState(0);
@@ -39,6 +39,11 @@ const OutfitCarousel = ({ outfits, onPreview, isMobile }: OutfitCarouselProps) =
       scrollRef.current.scrollBy({ left: -300, behavior: 'smooth' });
     }
   };
+  
+  // Early return with empty component if outfits is not an array
+  if (!Array.isArray(outfits)) {
+    return <div className="p-4 text-white/70">No outfits available.</div>;
+  }
   
   return (
     <div className="relative">
@@ -146,7 +151,8 @@ const OutfitCard = ({
   isHovered = false,
   onHover
 }: OutfitCardProps) => {
-  const { name, occasions, seasons } = outfit;
+  // Safely access properties with default fallbacks
+  const { name = "Outfit", occasions = [], seasons = [] } = outfit || {};
   
   return (
     <motion.div

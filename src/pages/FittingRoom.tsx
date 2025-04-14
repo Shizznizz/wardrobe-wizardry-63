@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useShowroom } from '@/hooks/useShowroom';
 import { useOutfitState } from '@/hooks/useOutfitState';
@@ -20,7 +19,7 @@ import OutfitPreviewArea from '@/components/fitting-room/OutfitPreviewArea';
 import NoPhotoMessage from '@/components/fitting-room/NoPhotoMessage';
 import OliviaRecommendationBox from '@/components/fitting-room/OliviaRecommendationBox';
 import OutfitFilters from '@/components/fitting-room/OutfitFilters';
-import { ClothingSeason, ClothingOccasion, WeatherInfo } from '@/lib/types';
+import { ClothingSeason, ClothingOccasion, WeatherInfo, Outfit } from '@/lib/types';
 
 const FittingRoom = () => {
   const isMobile = useIsMobile();
@@ -65,7 +64,7 @@ const FittingRoom = () => {
     setShowOliviaImageGallery,
   } = useShowroom();
 
-  const userOutfits = outfits || [];
+  const userOutfits = Array.isArray(outfits) ? outfits : [];
 
   useEffect(() => {
     const idleTimer = setTimeout(() => {
@@ -168,10 +167,10 @@ const FittingRoom = () => {
     setShowFavoritesOnly(prev => !prev);
   };
 
-  // Add safe handling of undefined arrays and properties
-  const filteredOutfits = userOutfits.filter(outfit => {
-    if (selectedSeason && (!outfit.seasons || !outfit.seasons.includes(selectedSeason))) return false;
-    if (selectedOccasion && (!outfit.occasions || !outfit.occasions.includes(selectedOccasion))) return false;
+  const filteredOutfits = userOutfits.filter((outfit: Outfit) => {
+    if (!outfit) return false;
+    if (selectedSeason && (!outfit.seasons || !Array.isArray(outfit.seasons) || !outfit.seasons.includes(selectedSeason))) return false;
+    if (selectedOccasion && (!outfit.occasions || !Array.isArray(outfit.occasions) || !outfit.occasions.includes(selectedOccasion))) return false;
     if (showFavoritesOnly && !outfit.favorite) return false;
     return true;
   });
@@ -271,7 +270,7 @@ const FittingRoom = () => {
                 onFavoritesToggle={toggleFavorites}
               />
               
-              {filteredOutfits.length === 0 ? (
+              {!Array.isArray(filteredOutfits) || filteredOutfits.length === 0 ? (
                 <NoOutfitsMessage />
               ) : (
                 <OutfitCarousel 

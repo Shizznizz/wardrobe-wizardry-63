@@ -15,10 +15,13 @@ const OliviaRecommendationBox = ({ weather, selectedOutfit }: OliviaRecommendati
 
   useEffect(() => {
     if (weather) {
+      const condition = weather.condition?.toLowerCase() || 'current';
+      const temperature = weather.temperature || 'comfortable';
+      
       const suggestions = [
-        `Given the ${weather.condition.toLowerCase()} weather at ${weather.temperature}°C, I recommend something that combines style and comfort.`,
-        `For today's ${weather.condition.toLowerCase()} conditions, let's try an outfit that suits the temperature perfectly.`,
-        `I've picked something special that works well for ${weather.condition.toLowerCase()} weather.`
+        `Given the ${condition} weather at ${temperature}°C, I recommend something that combines style and comfort.`,
+        `For today's ${condition} conditions, let's try an outfit that suits the temperature perfectly.`,
+        `I've picked something special that works well for ${condition} weather.`
       ];
       setSuggestion(suggestions[Math.floor(Math.random() * suggestions.length)]);
     } else {
@@ -46,9 +49,9 @@ const OliviaRecommendationBox = ({ weather, selectedOutfit }: OliviaRecommendati
               {suggestion}
               {weather && (
                 <div className="flex items-center gap-2 mt-2 text-xs text-white/70">
-                  {weather.condition.toLowerCase().includes('sun') && <Sun className="w-3 h-3" />}
-                  {weather.condition.toLowerCase().includes('cloud') && <Cloud className="w-3 h-3" />}
-                  {weather.condition.toLowerCase().includes('rain') && <CloudRain className="w-3 h-3" />}
+                  {weather.condition?.toLowerCase().includes('sun') && <Sun className="w-3 h-3" />}
+                  {weather.condition?.toLowerCase().includes('cloud') && <Cloud className="w-3 h-3" />}
+                  {weather.condition?.toLowerCase().includes('rain') && <CloudRain className="w-3 h-3" />}
                   <Thermometer className="w-3 h-3" />
                   <span>{weather.temperature}°C</span>
                 </div>
