@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Outfit, ClothingItem, WeatherInfo, TimeOfDay, Activity, ClothingSeason } from '@/lib/types';
 import { OutfitLog } from '@/components/outfits/OutfitLogItem';
@@ -20,7 +19,7 @@ export function useOutfitState(initialOutfits: Outfit[] = [], initialClothingIte
 
   useEffect(() => {
     if (currentWeather) {
-      const condition = currentWeather.condition.toLowerCase();
+      const condition = (currentWeather.condition || '').toLowerCase();
       if (condition.includes('rain')) {
         setWeatherBackground("from-slate-900 to-blue-950");
       } else if (condition.includes('cloud')) {
@@ -159,25 +158,44 @@ export function useOutfitState(initialOutfits: Outfit[] = [], initialClothingIte
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - days);
     
+    if (!Array.isArray(outfits) || outfits.length === 0) return [];
+    if (!Array.isArray(outfitLogs) || outfitLogs.length === 0) {
+      return outfits; // All outfits are "rarely worn" if there are no logs
+    }
+    
     return outfits.filter(outfit => {
-      const logs = outfitLogs.filter(log => log.outfitId === outfit.id);
+      if (!outfit) return false;
+      
+      const logs = outfitLogs.filter(log => log && log.outfitId === outfit.id);
       if (logs.length === 0) return true;
       
-      const lastWorn = logs.reduce((latest, current) => 
-        new Date(latest.date) > new Date(current.date) ? latest : current
-      );
-      
-      return new Date(lastWorn.date) < cutoffDate;
+      try {
+        const lastWorn = logs.reduce((latest, current) => {
+          if (!latest || !current) return current || latest;
+          return new Date(latest.date) > new Date(current.date) ? latest : current;
+        });
+        
+        if (!lastWorn || !lastWorn.date) return true;
+        return new Date(lastWorn.date) < cutoffDate;
+      } catch (e) {
+        console.error("Error in getRarelyWornOutfits:", e);
+        return false;
+      }
     });
   };
 
   const getFrequentlyWornOutfits = (threshold: number = 5) => {
-    return outfits.map(outfit => ({
-      ...outfit,
-      logCount: outfitLogs.filter(log => log.outfitId === outfit.id).length
-    }))
-    .filter(outfit => outfit.logCount > threshold)
-    .sort((a, b) => b.logCount - a.logCount);
+    if (!Array.isArray(outfits) || outfits.length === 0) return [];
+    if (!Array.isArray(outfitLogs) || outfitLogs.length === 0) return [];
+    
+    return outfits
+      .filter(outfit => outfit !== undefined && outfit !== null)
+      .map(outfit => ({
+        ...outfit,
+        logCount: outfitLogs.filter(log => log && log.outfitId === outfit.id).length
+      }))
+      .filter(outfit => outfit.logCount > threshold)
+      .sort((a, b) => b.logCount - a.logCount);
   };
 
   const getMostWornItems = () => {
@@ -229,6 +247,8 @@ export function useOutfitState(initialOutfits: Outfit[] = [], initialClothingIte
 
   const getWeatherBasedRecommendations = () => {
     if (!currentWeather) return [];
+    if (!Array.isArray(outfits) || outfits.length === 0) return [];
+    if (!Array.isArray(outfitLogs)) return [];
     
     const temp = currentWeather.temperature;
     let recommendedSeason: ClothingSeason = 'all';
@@ -239,15 +259,15 @@ export function useOutfitState(initialOutfits: Outfit[] = [], initialClothingIte
     else recommendedSeason = 'summer';
     
     return outfits
-      .filter(outfit => 
-        Array.isArray(outfit.seasons) && 
-        (outfit.seasons.includes(recommendedSeason) || outfit.seasons.includes('all'))
-      )
+      .filter(outfit => {
+        if (!outfit || !Array.isArray(outfit.seasons)) return false;
+        return outfit.seasons.includes(recommendedSeason) || outfit.seasons.includes('all');
+      })
       .map(outfit => {
         const suitabilityScore = outfitLogs
           .filter(log => 
-            log.outfitId === outfit.id && 
-            log.weatherCondition === currentWeather.condition.toLowerCase()
+            log && log.outfitId === outfit.id && 
+            log.weatherCondition === currentWeather.condition?.toLowerCase()
           )
           .length;
         
