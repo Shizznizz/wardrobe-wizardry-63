@@ -36,7 +36,7 @@ const OliviaOutfitPick = ({ outfit, onPreview, className }: OliviaOutfitPickProp
 
         <div className="relative rounded-lg overflow-hidden mb-4 aspect-[3/4]">
           <img
-            src={outfit.imageUrl || '/placeholder.svg'}
+            src="/lovable-uploads/413b249c-e4b5-48cd-a468-d23b2a23eca2.png"
             alt={outfit.name}
             className="w-full h-full object-cover"
           />
