@@ -1,3 +1,4 @@
+
 import {
   Coffee,
   Sparkles,
@@ -7,6 +8,7 @@ import {
   PartyPopper,
   Shirt
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 // Create a TrousersIcon that uses the Shirt icon but rotated
 export const TrousersIcon = (props: any) => (
