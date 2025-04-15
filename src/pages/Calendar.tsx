@@ -11,6 +11,7 @@ import EnhancedLocationSelector from '@/components/weather/EnhancedLocationSelec
 import { useLocationStorage } from '@/hooks/useLocationStorage';
 import { format } from 'date-fns';
 import ScrollToTop from '@/components/ScrollToTop';
+import { Calendar as CalendarIcon, LineChart } from 'lucide-react';
 
 const Calendar = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -112,26 +113,35 @@ const Calendar = () => {
             </Card>
           </motion.div>
           
-          <motion.div variants={itemVariants} className="w-full max-w-md mx-auto">
-            <EnhancedLocationSelector 
-              onLocationChange={handleLocationChange}
-              initialCity={location.city}
-              initialCountry={location.country}
-            />
+          <motion.div variants={itemVariants}>
+            <div className="flex items-center gap-2 mb-4">
+              <CalendarIcon className="h-5 w-5 text-purple-400" />
+              <h2 className="text-xl font-semibold text-white">Plan Your Week</h2>
+            </div>
+            <div className="w-full max-w-md mx-auto mb-6">
+              <EnhancedLocationSelector 
+                onLocationChange={handleLocationChange}
+                initialCity={location.city}
+                initialCountry={location.country}
+              />
+            </div>
           </motion.div>
           
           {!isLoading && (
-            <motion.div 
-              variants={itemVariants} 
-              className="w-full overflow-hidden rounded-2xl shadow-xl"
-            >
-              <OutfitCalendar 
-                outfits={outfits}
-                clothingItems={items}
-                onAddLog={(log) => {
-                  toast.success(`Outfit ${log.date > new Date() ? 'planned' : 'logged'} for ${format(new Date(log.date), 'MMMM d, yyyy')}`);
-                }}
-              />
+            <motion.div variants={itemVariants}>
+              <div className="flex items-center gap-2 mb-4">
+                <LineChart className="h-5 w-5 text-purple-400" />
+                <h2 className="text-xl font-semibold text-white">Your Wardrobe Insights</h2>
+              </div>
+              <div className="w-full overflow-hidden rounded-2xl shadow-xl">
+                <OutfitCalendar 
+                  outfits={outfits}
+                  clothingItems={items}
+                  onAddLog={(log) => {
+                    toast.success(`Outfit ${log.date > new Date() ? 'planned' : 'logged'} for ${format(new Date(log.date), 'MMMM d, yyyy')}`);
+                  }}
+                />
+              </div>
             </motion.div>
           )}
         </motion.div>
