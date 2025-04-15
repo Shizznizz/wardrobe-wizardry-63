@@ -1,9 +1,11 @@
+
 import { format, startOfWeek, endOfWeek, eachDayOfInterval, isToday, isSameDay, isFuture, addWeeks, subWeeks } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { OutfitLog } from '../OutfitLogItem';
 import { Outfit } from '@/lib/types';
 import { Plus, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';  // Add this import
 import { useMemo, useState } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import DayDetailView from './DayDetailView';
