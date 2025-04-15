@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { Outfit, WeatherInfo, ClothingSeason } from '@/lib/types';
@@ -47,6 +48,11 @@ const DayDetailView = ({
   const [outfitSuccess, setOutfitSuccess] = useState(false);
   const [selectedOutfitId, setSelectedOutfitId] = useState<string | null>(null);
   const isMobile = useIsMobile();
+
+  // Add a helper function to get outfit by ID
+  const getOutfitById = (id: string): Outfit | undefined => {
+    return outfits.find(outfit => outfit.id === id);
+  };
 
   useEffect(() => {
     const getWeather = async () => {
@@ -236,9 +242,9 @@ const DayDetailView = ({
                   {selectedOutfit && (
                     <Card className="bg-slate-800/50 p-4">
                       <div className="flex items-center gap-3">
-                        {selectedOutfit.imageUrl && (
+                        {selectedOutfit.tags && selectedOutfit.tags.includes('image') && (
                           <img 
-                            src={selectedOutfit.imageUrl} 
+                            src={selectedOutfit.tags.find(tag => tag.startsWith('http'))} 
                             alt={selectedOutfit.name}
                             className="w-16 h-16 rounded-md object-cover"
                           />
@@ -326,9 +332,9 @@ const DayDetailView = ({
                             </Badge>
                           )}
                         </div>
-                        {getOutfitById(log.outfitId)?.imageUrl && (
+                        {getOutfitById(log.outfitId)?.tags?.includes('image') && (
                           <img 
-                            src={getOutfitById(log.outfitId)?.imageUrl} 
+                            src={getOutfitById(log.outfitId)?.tags?.find(tag => tag.startsWith('http'))} 
                             alt={log.outfitId}
                             className="w-full h-32 object-cover rounded-md mt-2"
                           />
