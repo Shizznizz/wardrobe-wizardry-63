@@ -13,14 +13,9 @@ interface WeekViewContainerProps {
   setSelectedDate?: (date: Date) => void;
   outfits: Outfit[];
   clothingItems: ClothingItem[];
-  outfitLogs: Outfit[];
-  outfitLogsOnDate?: OutfitLog[];
-  rarelyWornOutfits?: Outfit[];
-  frequentlyWornOutfits?: Outfit[];
+  outfitLogs: OutfitLog[];
   getOutfitById?: (id: string) => Outfit | undefined;
-  getLogsForDay?: (day: Date) => OutfitLog[];
   handleOpenLogDialog?: (date: Date) => void;
-  handleEditLog?: (log: OutfitLog) => void;
   handleDeleteLog?: (id: string) => Promise<boolean>;
   handleSelectOutfit?: (outfitId: string) => void;
   getSeasonalSuggestions?: (outfits: Outfit[], clothingItems: ClothingItem[]) => Outfit[];
@@ -49,26 +44,14 @@ const WeekViewContainer = ({
     day = addDays(day, 1);
   }
 
-  const weekLogs = outfitLogs.filter(log => {
-    const logDate = new Date(log.date);
-    return logDate >= weekStart && logDate <= weekEnd;
-  });
-
-  const handleLogDeleteWrapper = async (logId: string): Promise<boolean> => {
+  const handleLogDeleteWrapper = async (id: string): Promise<boolean> => {
     try {
-      await onLogDelete(logId);
+      await onLogDelete(id);
       return true;
     } catch (error) {
       console.error("Error deleting log:", error);
       return false;
     }
-  };
-
-  const handleDateClick = (date: Date) => {
-    if (setSelectedDate) {
-      setSelectedDate(date);
-    }
-    onDateClick(date);
   };
 
   return (
@@ -82,7 +65,7 @@ const WeekViewContainer = ({
         {daysInWeek.map((date) => (
           <Button
             key={date.toISOString()}
-            onClick={() => handleDateClick(date)}
+            onClick={() => setSelectedDate?.(date)}
             variant={isSameDay(date, selectedDate) ? "default" : "outline"}
             className={`
               flex-1 flex flex-col items-center justify-center h-auto py-2
@@ -101,7 +84,7 @@ const WeekViewContainer = ({
       <ScrollArea className="flex-grow">
         <div className="grid grid-cols-7 gap-2 h-full">
           {daysInWeek.map(date => {
-            const dayLogs = weekLogs.filter(log => isSameDay(new Date(log.date), date));
+            const dayLogs = outfitLogs.filter(log => isSameDay(new Date(log.date), date));
             
             return (
               <div 
@@ -111,25 +94,23 @@ const WeekViewContainer = ({
                   ${isSameDay(date, selectedDate) ? 'border-primary bg-primary/5' : 'border-gray-200'}
                   transition-all duration-200 hover:border-purple-500/50
                 `}
-                onClick={() => handleDateClick(date)}
+                onClick={() => setSelectedDate?.(date)}
               >
                 {dayLogs.length === 0 ? (
                   <div className="flex flex-col items-center justify-center h-full space-y-3 text-center">
                     <Shirt className="h-8 w-8 text-gray-400 animate-pulse" />
-                    <p className="text-gray-400 text-xs px-2">
-                      No outfits logged yet
-                    </p>
+                    <p className="text-gray-400 text-xs px-2">Plan with Olivia?</p>
                     <Button 
                       variant="outline" 
                       size="sm"
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleDateClick(date);
+                        onDateClick(date);
                       }}
                       className="mt-2 group hover:border-purple-500/50"
                     >
                       <Plus className="h-4 w-4 mr-1 group-hover:scale-110 transition-transform" />
-                      Log Outfit
+                      Add Outfit
                     </Button>
                   </div>
                 ) : (

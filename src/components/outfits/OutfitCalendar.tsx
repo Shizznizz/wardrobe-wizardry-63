@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
@@ -11,15 +10,6 @@ import { toast } from 'sonner';
 import { Outfit, ClothingItem } from '@/lib/types';
 import { OutfitLog } from './OutfitLogItem';
 import { useCalendarState } from '@/hooks/useCalendarState';
-
-// Import refactored components
-import CalendarTabs from './calendar/CalendarTabs';
-import ViewToggle from './calendar/ViewToggle';
-import MonthView from './calendar/MonthView';
-import WeekViewContainer from './calendar/WeekViewContainer';
-import OutfitLogForm from './calendar/OutfitLogForm';
-import OutfitStatsTab from './calendar/OutfitStatsTab';
-import OliviaAssistantSection from './OliviaAssistantSection';
 
 interface OutfitCalendarProps {
   outfits: Outfit[];
@@ -92,13 +82,11 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
     
     let result;
     if (selectedLog) {
-      // Update existing log
       result = await updateOutfitLog(selectedLog.id, values);
       if (result && onAddLog) {
         onAddLog({...values, id: selectedLog.id} as any);
       }
     } else {
-      // Create new log
       result = await addOutfitLog(values);
       if (result && onAddLog) {
         onAddLog(values);
@@ -106,23 +94,6 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
     }
   };
 
-  const outfitLogsOnDate = outfitLogs.filter(
-    log => log.date && selectedDate && format(new Date(log.date), 'yyyy-MM-dd') === format(selectedDate, 'yyyy-MM-dd')
-  );
-
-  const rarelyWornOutfits = getRarelyWornOutfits(outfits);
-  const frequentlyWornOutfits = getFrequentlyWornOutfits(outfits);
-
-  const getOutfitById = (id: string) => {
-    return outfits.find(outfit => outfit.id === id);
-  };
-
-  const handleSelectOutfit = (outfitId: string) => {
-    handleOpenLogDialog(selectedDate);
-    form.setValue('outfitId', outfitId);
-  };
-
-  // Render calendar view based on selected view type
   const renderCalendarView = () => {
     return (
       <>
@@ -138,14 +109,20 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
               setCurrentMonth={setCurrentMonth}
               outfits={outfits}
               outfitLogs={outfitLogs}
-              outfitLogsOnDate={outfitLogsOnDate}
-              rarelyWornOutfits={rarelyWornOutfits}
-              frequentlyWornOutfits={frequentlyWornOutfits}
-              getOutfitById={getOutfitById}
+              outfitLogsOnDate={outfitLogs.filter(log => 
+                log.date && selectedDate && 
+                format(new Date(log.date), 'yyyy-MM-dd') === format(selectedDate, 'yyyy-MM-dd')
+              )}
+              rarelyWornOutfits={getRarelyWornOutfits(outfits)}
+              frequentlyWornOutfits={getFrequentlyWornOutfits(outfits)}
+              getOutfitById={outfit => outfits.find(o => o.id === outfit.id)}
               handleViewLog={handleViewLog}
               handleOpenLogDialog={handleOpenLogDialog}
               handleDeleteLog={deleteOutfitLog}
-              handleSelectOutfit={handleSelectOutfit}
+              handleSelectOutfit={outfitId => {
+                handleOpenLogDialog(selectedDate);
+                form.setValue('outfitId', outfitId);
+              }}
               getSeasonalSuggestions={getSeasonalSuggestions}
               clothingItems={clothingItems}
               isMobile={isMobile}
@@ -159,6 +136,7 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
               outfitLogs={outfitLogs}
               onDateClick={setSelectedDate}
               onLogDelete={deleteOutfitLog}
+              setSelectedDate={setSelectedDate}
             />
           )}
         </AnimatePresence>
