@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
@@ -20,6 +19,8 @@ import WeekViewContainer from './calendar/WeekViewContainer';
 import OutfitLogForm from './calendar/OutfitLogForm';
 import OutfitStatsTab from './calendar/OutfitStatsTab';
 import OliviaAssistantSection from './OliviaAssistantSection';
+import { LocationType } from '@/components/weather/EnhancedLocationSelector';
+import DayDetailView from './calendar/DayDetailView';
 
 interface OutfitCalendarProps {
   outfits: Outfit[];
@@ -122,34 +123,70 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
     form.setValue('outfitId', outfitId);
   };
 
-  // Render calendar view based on selected view type
+  const handleAddOutfit = async (outfitId: string) => {
+    if (!selectedDate) return;
+    
+    const newLog = {
+      outfitId,
+      date: selectedDate,
+      timeOfDay: 'all-day',
+    };
+    
+    await addOutfitLog(newLog);
+    if (onAddLog) {
+      onAddLog(newLog);
+    }
+  };
+
+  const handleAddActivity = async (activity: string) => {
+    if (!selectedDate) return;
+    
+    const newLog = {
+      outfitId: 'activity',
+      date: selectedDate,
+      timeOfDay: 'all-day',
+      customActivity: activity,
+    };
+    
+    await addOutfitLog(newLog);
+    if (onAddLog) {
+      onAddLog(newLog);
+    }
+  };
+
   const renderCalendarView = () => {
     return (
-      <>
+      <div className="space-y-6">
         <ViewToggle view={calendarView} onViewChange={(value) => setCalendarView(value)} />
         
         <AnimatePresence mode="wait">
           {calendarView === 'month' ? (
-            <MonthView
-              currentDate={currentMonth}
-              selectedDate={selectedDate}
-              setSelectedDate={setSelectedDate}
-              currentMonth={currentMonth}
-              setCurrentMonth={setCurrentMonth}
-              outfits={outfits}
-              outfitLogs={outfitLogs}
-              outfitLogsOnDate={outfitLogsOnDate}
-              rarelyWornOutfits={rarelyWornOutfits}
-              frequentlyWornOutfits={frequentlyWornOutfits}
-              getOutfitById={getOutfitById}
-              handleViewLog={handleViewLog}
-              handleOpenLogDialog={handleOpenLogDialog}
-              handleDeleteLog={deleteOutfitLog}
-              handleSelectOutfit={handleSelectOutfit}
-              getSeasonalSuggestions={getSeasonalSuggestions}
-              clothingItems={clothingItems}
-              isMobile={isMobile}
-            />
+            <>
+              <MonthView
+                currentDate={currentMonth}
+                selectedDate={selectedDate}
+                setSelectedDate={setSelectedDate}
+                currentMonth={currentMonth}
+                setCurrentMonth={setCurrentMonth}
+                outfits={outfits}
+                outfitLogs={outfitLogs}
+                getOutfitById={getOutfitById}
+                handleViewLog={handleViewLog}
+                handleOpenLogDialog={handleOpenLogDialog}
+                handleDeleteLog={deleteOutfitLog}
+                isMobile={isMobile}
+              />
+              
+              {selectedDate && (
+                <DayDetailView
+                  selectedDate={selectedDate}
+                  outfits={outfits}
+                  outfitLogs={outfitLogsOnDate}
+                  onAddOutfit={handleAddOutfit}
+                  onAddActivity={handleAddActivity}
+                />
+              )}
+            </>
           ) : (
             <WeekViewContainer
               currentDate={currentMonth}
@@ -159,10 +196,11 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
               outfitLogs={outfitLogs}
               onDateClick={setSelectedDate}
               onLogDelete={deleteOutfitLog}
+              setSelectedDate={setSelectedDate}
             />
           )}
         </AnimatePresence>
-      </>
+      </div>
     );
   };
 

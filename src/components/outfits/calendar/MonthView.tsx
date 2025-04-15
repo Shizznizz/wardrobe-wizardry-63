@@ -1,9 +1,12 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { format, startOfMonth, getDaysInMonth, getDay, addDays, isSameDay, isToday } from 'date-fns';
+import { format, startOfMonth, getDaysInMonth, getDay, addDays, isSameDay, isToday, isSameMonth } from 'date-fns';
 import { Outfit } from '@/lib/types';
 import { Button } from '@/components/ui/button';
+import { Clothing, CalendarDays } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 
 interface MonthViewProps {
   currentDate: Date;
@@ -13,16 +16,10 @@ interface MonthViewProps {
   setCurrentMonth: (date: Date) => void;
   outfits: Outfit[];
   outfitLogs: any[];
-  outfitLogsOnDate: any[];
-  rarelyWornOutfits: Outfit[];
-  frequentlyWornOutfits: Outfit[];
   getOutfitById: (id: string) => Outfit | undefined;
   handleViewLog: (log: any) => void;
   handleOpenLogDialog: (date: Date) => void;
   handleDeleteLog: (id: string) => Promise<boolean>;
-  handleSelectOutfit: (outfitId: string) => void;
-  getSeasonalSuggestions: (outfits: Outfit[], clothingItems: any[]) => Outfit[];
-  clothingItems: any[];
   isMobile: boolean;
 }
 
@@ -31,11 +28,10 @@ const MonthView = ({
   selectedDate,
   setSelectedDate,
   currentMonth,
-  setCurrentMonth,
   outfits, 
   outfitLogs, 
-  handleOpenLogDialog, 
-  handleDeleteLog 
+  handleOpenLogDialog,
+  isMobile
 }: MonthViewProps) => {
   const startOfCurrentMonth = startOfMonth(currentDate);
   const daysInMonth = getDaysInMonth(startOfCurrentMonth);
@@ -47,41 +43,46 @@ const MonthView = ({
     const currentDayDate = addDays(startOfCurrentMonth, dayOffset);
     return {
       date: currentDayDate,
-      isCurrentMonth: dayOffset >= 0 && dayOffset < daysInMonth,
+      isCurrentMonth: isSameMonth(currentDayDate, currentMonth),
       hasOutfit: outfitLogs.some(log => isSameDay(new Date(log.date), currentDayDate)),
-      outfitCount: outfitLogs.filter(log => isSameDay(new Date(log.date), currentDayDate)).length
+      hasActivity: outfitLogs.some(log => 
+        isSameDay(new Date(log.date), currentDayDate) && 
+        (log.activity || log.customActivity)
+      ),
+      outfitCount: outfitLogs.filter(log => 
+        isSameDay(new Date(log.date), currentDayDate)
+      ).length
     };
   });
   
-  // Break days into weeks for rendering
+  // Break days into weeks and filter out weeks that are entirely in the next month
   const weeks = [];
   for (let i = 0; i < daysArray.length; i += 7) {
-    weeks.push(daysArray.slice(i, i + 7));
-  }
-
-  const handleLogDeleteWrapper = async (id: string): Promise<boolean> => {
-    try {
-      await handleDeleteLog(id);
-      return true;
-    } catch (error) {
-      console.error("Error deleting log:", error);
-      return false;
+    const week = daysArray.slice(i, i + 7);
+    if (week.some(day => day.isCurrentMonth)) {
+      weeks.push(week);
     }
-  };
+  }
 
   return (
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="w-full"
+      className="w-full space-y-4"
     >
-      <div className="grid grid-cols-7 gap-1 mb-2 text-center">
-        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-          <div key={day} className="text-xs font-medium text-gray-400 py-1">
-            {day}
-          </div>
-        ))}
+      {/* Month label */}
+      <div className="flex justify-between items-center">
+        <div className="grid grid-cols-7 gap-1 text-center text-xs font-medium text-gray-400">
+          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+            <div key={day} className="py-1">
+              {isMobile ? day.charAt(0) : day}
+            </div>
+          ))}
+        </div>
+        <div className="text-2xl font-light bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+          {format(currentMonth, 'MMMM yyyy')}
+        </div>
       </div>
       
       <div className="space-y-1">
@@ -91,19 +92,42 @@ const MonthView = ({
               <Button
                 key={`${weekIndex}-${dayIndex}`}
                 variant={isToday(day.date) ? "default" : day.isCurrentMonth ? "outline" : "ghost"}
-                className={`
-                  p-1 h-auto min-h-[70px] flex flex-col items-center justify-center relative
-                  ${day.isCurrentMonth ? 'text-white' : 'text-gray-400 opacity-40'}
+                className={cn(`
+                  p-1 h-auto min-h-[70px] flex flex-col items-center justify-between relative
+                  transition-all duration-200 group
+                  ${day.isCurrentMonth ? 'text-white hover:shadow-lg hover:scale-[1.02]' : 'text-gray-400 opacity-40'}
                   ${day.hasOutfit && day.isCurrentMonth ? 'bg-primary/10 hover:bg-primary/20' : ''}
-                `}
-                onClick={() => setSelectedDate(day.date)}
+                  ${isSameDay(day.date, selectedDate) ? 'ring-2 ring-primary ring-offset-2 ring-offset-background' : ''}
+                `)}
+                onClick={() => day.isCurrentMonth && setSelectedDate(day.date)}
+                disabled={!day.isCurrentMonth}
               >
-                <span className="text-xs">{format(day.date, 'd')}</span>
-                {day.outfitCount > 0 && (
-                  <span className="text-xs mt-1 bg-primary text-primary-foreground px-1.5 py-0.5 rounded-full">
+                <div className="flex items-center justify-between w-full px-2 pt-1">
+                  <span className={cn(
+                    "text-xs",
+                    isSameDay(day.date, selectedDate) && "font-bold"
+                  )}>
+                    {format(day.date, 'd')}
+                  </span>
+                  <div className="flex gap-0.5">
+                    {day.hasOutfit && (
+                      <Clothing className="w-3 h-3 text-primary" />
+                    )}
+                    {day.hasActivity && (
+                      <CalendarDays className="w-3 h-3 text-secondary" />
+                    )}
+                  </div>
+                </div>
+                
+                {day.outfitCount > 0 ? (
+                  <span className="text-[10px] bg-primary/20 px-1.5 py-0.5 rounded-full mt-1">
                     {day.outfitCount}
                   </span>
-                )}
+                ) : day.isCurrentMonth ? (
+                  <span className="text-[10px] text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                    Plan with Olivia?
+                  </span>
+                ) : null}
               </Button>
             ))}
           </div>
