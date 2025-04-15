@@ -1,19 +1,25 @@
+
 import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { Outfit, WeatherInfo, ClothingSeason } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from '@/components/ui/dialog';
-import { Plus, X, Check } from 'lucide-react';
+import { Plus, Sun, Cloud, CloudRain, Thermometer, Check, Shirt, MapPin, X } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { OutfitLog } from '../OutfitLogItem';
 import { Badge } from '@/components/ui/badge';
+import WeatherWidget from '@/components/WeatherWidget';
 import { fetchWeatherData, generateRandomWeather } from '@/services/WeatherService';
 import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
-import CompactWeather from './CompactWeather';
-import OutfitPreview from './OutfitPreview';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface DayDetailViewProps {
   selectedDate: Date;
@@ -123,44 +129,57 @@ const DayDetailView = ({
   const selectedOutfit = selectedOutfitId ? outfits.find(o => o.id === selectedOutfitId) : null;
 
   return (
-    <Card className="w-full mt-4 bg-card/50 backdrop-blur-sm border-primary/20">
+    <Card className="w-full mt-6 bg-card/50 backdrop-blur-sm border-primary/20">
       <CardHeader>
         <CardTitle className="flex justify-between items-center">
           <span>{format(selectedDate, 'MMMM d, yyyy')}</span>
           <div className="flex gap-2">
             {isAddingActivity ? (
-              <div className="flex items-center gap-2">
-                <Input
-                  placeholder="Enter activity..."
-                  value={activity}
-                  onChange={(e) => setActivity(e.target.value)}
-                  className="w-full max-w-[200px]"
-                />
-                <Button 
-                  onClick={handleAddActivity} 
-                  variant="outline" 
-                  size="sm"
-                  className={activitySuccess ? "bg-green-500 text-white" : ""}
-                >
-                  {activitySuccess ? <Check className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={() => {
-                    setIsAddingActivity(false);
-                    setActivity('');
-                  }}
-                >
-                  <X className="w-4 h-4" />
-                </Button>
+              <div className={`flex gap-2 items-center ${isMobile ? 'flex-col w-full' : ''}`}>
+                <div className="relative w-full">
+                  <Input
+                    placeholder="Enter activity..."
+                    value={activity}
+                    onChange={(e) => setActivity(e.target.value)}
+                    className="pr-10"
+                  />
+                  <DialogClose asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                      onClick={handleCloseActivityInput}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </DialogClose>
+                </div>
+                <div className="flex gap-2">
+                  <Button 
+                    onClick={() => {
+                      if (activity.trim()) {
+                        onAddActivity(activity.trim());
+                        setActivity('');
+                        setActivitySuccess(true);
+                        setTimeout(() => setActivitySuccess(false), 2000);
+                        setIsAddingActivity(false);
+                      }
+                    }} 
+                    variant="outline" 
+                    size="sm"
+                    className={`${activitySuccess ? "bg-green-500 text-white" : ""} ${isMobile ? "w-full" : ""}`}
+                  >
+                    {activitySuccess ? <Check className="w-4 h-4 mr-1" /> : <Plus className="w-4 h-4 mr-1" />}
+                    {activitySuccess ? "Added" : "Add"}
+                  </Button>
+                </div>
               </div>
             ) : (
               <Button 
                 variant="outline" 
                 size="sm" 
                 onClick={() => setIsAddingActivity(true)}
-                className={isMobile ? "flex-1" : ""}
+                className={isMobile ? "w-full" : ""}
               >
                 <Plus className="w-4 h-4 mr-1" />
                 Add Activity
@@ -169,27 +188,24 @@ const DayDetailView = ({
 
             <Dialog>
               <DialogTrigger asChild>
-                <Button variant="outline" size="sm" className={isMobile ? "flex-1" : ""}>
+                <Button variant="outline" size="sm" className={isMobile ? "w-full" : ""}>
                   <Plus className="w-4 h-4 mr-1" />
                   Add Outfit
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-lg">
-                <DialogHeader>
-                  <div className="flex justify-between items-center">
-                    <DialogTitle>Add Outfit</DialogTitle>
-                    <DialogClose>
-                      <Button variant="ghost" size="sm">
-                        <X className="w-4 h-4" />
-                      </Button>
-                    </DialogClose>
-                  </div>
+              <DialogContent className={`${isMobile ? "w-[95vw] max-w-lg" : ""}`}>
+                <DialogHeader className="flex justify-between items-center">
+                  <DialogTitle>Add Outfit</DialogTitle>
+                  <DialogClose asChild>
+                    <Button variant="ghost" size="sm">
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </DialogClose>
                 </DialogHeader>
-                
                 <div className="space-y-4 pt-4">
                   <Select onValueChange={(value) => setSelectedSeason(value as ClothingSeason)}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select category" />
+                      <SelectValue placeholder="Select season" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="spring">Spring</SelectItem>
@@ -199,29 +215,53 @@ const DayDetailView = ({
                     </SelectContent>
                   </Select>
 
-                  <Select
+                  <Select 
                     onValueChange={(value) => {
-                      handleAddOutfit(value);
                       setSelectedOutfitId(value);
+                      onAddOutfit(value);
                       setOutfitSuccess(true);
                       setTimeout(() => setOutfitSuccess(false), 2000);
                     }}
                     value={selectedOutfitId || undefined}
                     disabled={!selectedSeason || outfitSuccess}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className={outfitSuccess ? "border-green-500 bg-green-500/10" : ""}>
                       <SelectValue placeholder={outfitSuccess ? "Outfit Added! ✓" : "Select outfit"} />
                     </SelectTrigger>
                     <SelectContent>
-                      {filteredOutfits.map(outfit => (
-                        <SelectItem key={outfit.id} value={outfit.id}>
-                          {outfit.name}
-                        </SelectItem>
-                      ))}
+                      {outfits
+                        .filter(outfit => !selectedSeason || outfit.seasons.includes(selectedSeason))
+                        .map(outfit => (
+                          <SelectItem key={outfit.id} value={outfit.id}>
+                            {outfit.name}
+                          </SelectItem>
+                        ))}
                     </SelectContent>
                   </Select>
 
-                  {selectedOutfit && <OutfitPreview outfit={selectedOutfit} />}
+                  {selectedOutfit && (
+                    <Card className="bg-slate-800/50 p-4">
+                      <div className="flex items-center gap-3">
+                        {selectedOutfit.tags && selectedOutfit.tags.includes('image') && (
+                          <img 
+                            src={selectedOutfit.tags.find(tag => tag.startsWith('http'))} 
+                            alt={selectedOutfit.name}
+                            className="w-16 h-16 rounded-md object-cover"
+                          />
+                        )}
+                        <div>
+                          <h4 className="font-medium">{selectedOutfit.name}</h4>
+                          <div className="flex gap-1 mt-1">
+                            {selectedOutfit.seasons.map(season => (
+                              <Badge key={season} variant="secondary" className="text-xs">
+                                {season}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </Card>
+                  )}
                 </div>
               </DialogContent>
             </Dialog>
@@ -230,46 +270,86 @@ const DayDetailView = ({
       </CardHeader>
       <CardContent className="space-y-6">
         {weatherLocation?.city && (
-          <div className="flex flex-col gap-3">
-            <CompactWeather weather={weather} date={selectedDate} />
-          </div>
+          <Card className="bg-card/30 overflow-hidden">
+            <CardContent className="p-4">
+              <div className="flex items-start gap-3">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-r from-pink-400 to-purple-500 flex items-center justify-center text-white text-sm">
+                        O
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Style tips from Olivia</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <div className="flex-1 py-2 px-3 bg-gray-800/30 rounded-xl border border-white/10">
+                  <p className="text-sm text-white/90">{getWeatherMessage() || "Checking the weather forecast..."}</p>
+                </div>
+              </div>
+              {!isMobile && (
+                <div className="mt-3">
+                  <WeatherWidget
+                    city={weatherLocation.city}
+                    country={weatherLocation.country}
+                    onWeatherChange={onWeatherChange}
+                    showToasts={false}
+                    showError={false}
+                    className="bg-transparent border-none shadow-none p-0"
+                  />
+                </div>
+              )}
+            </CardContent>
+          </Card>
         )}
 
         {outfitLogs.length > 0 ? (
           <div className="space-y-3">
-            <h3 className="text-sm font-medium text-muted-foreground">Planned for this day:</h3>
-            <div className="grid gap-3">
-              {outfitLogs.map(log => (
-                <Card key={log.id} className="bg-card/30 hover:bg-card/50 transition-colors">
-                  <CardContent className="p-3">
+            <h3 className="text-sm font-medium text-muted-foreground mb-2">Planned for this day:</h3>
+            {outfitLogs.map(log => (
+              <Card key={log.id} className="bg-card/30 hover:bg-card/50 transition-colors">
+                <CardContent className="p-4 flex justify-between items-center">
+                  <div className="flex flex-col gap-2 w-full">
                     {log.outfitId === 'activity' ? (
                       <div className="flex items-center gap-2">
-                        <Badge variant="outline" className="bg-slate-700/50">
-                          Activity
-                        </Badge>
-                        <p className="text-sm">
+                        <MapPin className="w-4 h-4 text-orange-400" />
+                        <p className="font-medium">
                           {log.customActivity || log.activity || "Activity"}
                         </p>
                       </div>
                     ) : (
                       <>
-                        {getOutfitById(log.outfitId) && (
-                          <OutfitPreview 
-                            outfit={getOutfitById(log.outfitId)!} 
-                            isCompact={isMobile}
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Shirt className="w-4 h-4 text-primary" />
+                            <p className="font-medium">{log.outfitId}</p>
+                          </div>
+                          {log.activity && (
+                            <Badge variant="secondary" className="text-xs">
+                              {log.activity}
+                            </Badge>
+                          )}
+                        </div>
+                        {getOutfitById(log.outfitId)?.tags?.includes('image') && (
+                          <img 
+                            src={getOutfitById(log.outfitId)?.tags?.find(tag => tag.startsWith('http'))} 
+                            alt={log.outfitId}
+                            className="w-full h-32 object-cover rounded-md mt-2"
                           />
                         )}
                       </>
                     )}
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         ) : (
           <div className="text-center py-6 px-4 bg-gray-800/20 rounded-xl border border-white/10">
             <p className="text-muted-foreground">
-              No outfits or activities planned
+              No outfits or activities planned for this day
             </p>
             <p className="text-xs text-muted-foreground mt-1">
               Use the buttons above to add your plans
