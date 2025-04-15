@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -55,13 +54,12 @@ const timelineEvents = [
 
 const StylingTimeline = () => {
   const isMobile = useIsMobile();
-
+  
   return (
-    <div className="relative py-8">
-      {/* Timeline center line */}
+    <div className="relative py-8 overflow-x-auto scrollbar-thin scrollbar-thumb-purple-500/20 scrollbar-track-transparent">
       <div className="absolute left-1/2 transform -translate-x-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-emerald-500/50 via-blue-500/50 to-purple-500/50"></div>
       
-      <div className="relative">
+      <div className="relative min-w-[768px] md:min-w-0">
         {timelineEvents.map((event, index) => (
           <motion.div 
             key={event.id}
@@ -74,12 +72,10 @@ const StylingTimeline = () => {
             viewport={{ once: true, margin: "-100px" }}
             className={`mb-12 sm:mb-16 flex items-center ${
               isMobile ? "flex-col" : (index % 2 === 0 ? "flex-row" : "flex-row-reverse")
-            } relative z-10`}
+            } relative z-10 transform hover:scale-[1.02] transition-duration-200`}
           >
-            {/* Timeline node */}
             <div className={`${isMobile ? "absolute top-0" : "absolute"} left-1/2 transform -translate-x-1/2 w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 z-20`}></div>
             
-            {/* Content */}
             <div className={`${
               isMobile 
                 ? "w-full mt-6 text-center px-4" 
@@ -89,7 +85,6 @@ const StylingTimeline = () => {
               <h3 className="text-sm sm:text-lg font-semibold text-white mt-1">{event.title}</h3>
               <p className="text-white/70 mt-1 text-xs sm:text-sm">{event.description}</p>
               
-              {/* Olivia's Comment */}
               <div className={`mt-3 sm:mt-4 relative bg-white/10 backdrop-blur-sm rounded-lg p-3 sm:p-4 border border-white/20`}>
                 <div className="flex items-start gap-2 sm:gap-3">
                   <Avatar className="h-6 w-6 sm:h-8 sm:w-8 ring-2 ring-purple-500/50">
@@ -104,7 +99,6 @@ const StylingTimeline = () => {
                     <p className="text-xs sm:text-sm text-white/80 mt-1">{event.oliviaComment}</p>
                   </div>
                 </div>
-                {/* Speech bubble triangle - hide on mobile */}
                 {!isMobile && (
                   <div className={`absolute ${index % 2 === 0 ? "right-[-8px]" : "left-[-8px]"} top-4 w-0 h-0 
                     ${index % 2 === 0 
@@ -115,7 +109,6 @@ const StylingTimeline = () => {
               </div>
             </div>
             
-            {/* Image */}
             <div className={`${
               isMobile 
                 ? "w-full mt-4 px-4" 
@@ -124,10 +117,8 @@ const StylingTimeline = () => {
               <Card className="overflow-hidden rounded-lg border border-white/10 hover:border-white/20 transition-duration-300 neo-blur">
                 <CardContent className="p-0">
                   <div className="relative aspect-video w-full">
-                    {/* Gradient background */}
                     <div className={`absolute inset-0 bg-gradient-to-r ${event.gradient} opacity-80`}></div>
                     
-                    {/* Season themed styling */}
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="text-center p-3 sm:p-4">
                         <h4 className="text-sm sm:text-lg font-medium text-gray-800">{event.date.split(" ")[0]} Collection</h4>
@@ -141,6 +132,12 @@ const StylingTimeline = () => {
           </motion.div>
         ))}
       </div>
+      
+      {isMobile && (
+        <div className="text-xs text-white/50 text-center mt-4">
+          Scroll horizontally to see more
+        </div>
+      )}
     </div>
   );
 };

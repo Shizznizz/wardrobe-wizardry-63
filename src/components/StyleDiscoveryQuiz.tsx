@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Coffee, Sparkles, Umbrella, Sunset, Moon, Check, ArrowRight, X } from 'lucide-react';
@@ -9,6 +8,7 @@ import { cn } from '@/lib/utils';
 import QuizQuestion from './QuizQuestion';
 import OutfitSuggestion from './OutfitSuggestion';
 import { Confetti } from '@/components/ui/confetti';
+import QuizIntroMessage from './QuizIntroMessage';
 
 interface StyleDiscoveryQuizProps {
   onClose?: () => void;
@@ -132,22 +132,22 @@ const StyleDiscoveryQuiz = ({ onClose }: StyleDiscoveryQuizProps) => {
           className="rounded-xl overflow-hidden shadow-lg border border-purple-500/20 bg-gradient-to-br from-slate-900/80 to-purple-900/40 backdrop-blur-md p-6 md:p-8"
         >
           <div className="flex flex-col md:flex-row items-center gap-6">
-            <Avatar className="h-16 w-16 md:h-20 md:w-20 border-2 border-pink-400 shadow-md">
+            <Avatar className="h-16 w-16 md:h-20 md:w-20 border-2 border-pink-400 shadow-md hover:scale-105 transition-transform duration-300">
               <AvatarImage src="/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png" alt="Olivia Bloom" />
               <AvatarFallback className="bg-purple-800">OB</AvatarFallback>
             </Avatar>
             
             <div className="flex-1 text-center md:text-left">
               <h3 className="text-xl md:text-2xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-purple-400">
-                Style Discovery Quiz
+                Feeling like something fresh today?
               </h3>
               <p className="text-sm md:text-base text-blue-100 mb-5">
-                Answer a few fun questions and I'll suggest the perfect outfit for your day!
+                Take a quick quiz and I'll suggest the perfect outfit that matches your mood and plans!
               </p>
               
               <Button 
                 onClick={toggleQuiz}
-                className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white px-6 py-3 rounded-lg shadow-md hover:shadow-pink-500/20 min-h-[44px]"
+                className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white px-6 py-3 rounded-lg shadow-md hover:shadow-pink-500/20 min-h-[44px] transform hover:scale-[1.02] transition-all duration-200 active:scale-95"
               >
                 <Sparkles className="mr-2 h-4 w-4" />
                 Take the Quiz
@@ -175,8 +175,8 @@ const StyleDiscoveryQuiz = ({ onClose }: StyleDiscoveryQuizProps) => {
                     <div 
                       key={index}
                       className={cn(
-                        "h-1.5 rounded-full w-6 transition-colors",
-                        index < currentStep ? "bg-pink-500" : "bg-white/20"
+                        "h-1.5 rounded-full w-6 transition-all duration-300 transform",
+                        index < currentStep ? "bg-pink-500 scale-100" : "bg-white/20 scale-90"
                       )}
                     />
                   ))}
@@ -188,13 +188,14 @@ const StyleDiscoveryQuiz = ({ onClose }: StyleDiscoveryQuizProps) => {
               variant="ghost" 
               size="icon" 
               onClick={toggleQuiz}
-              className="text-white/70 hover:text-white min-h-[44px] min-w-[44px]"
+              className="text-white/70 hover:text-white hover:bg-white/10 min-h-[44px] min-w-[44px]"
             >
               <X className="h-5 w-5" />
             </Button>
           </div>
           
           <div className="p-5 md:p-6">
+            {!isCompleted && <QuizIntroMessage />}
             <AnimatePresence mode="wait">
               {!isCompleted ? (
                 <QuizQuestion 

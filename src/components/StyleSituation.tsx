@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { SendHorizontal, Sparkles, Calendar, CalendarDays, X, Wand2 } from 'lucide-react';
@@ -135,14 +134,14 @@ const StyleSituation = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="w-full max-w-3xl mx-auto bg-slate-900/60 backdrop-blur-sm border border-coral-500/20 rounded-xl p-3 sm:p-6 shadow-xl bg-subtle-pattern"
+      className="w-full max-w-3xl mx-auto bg-slate-900/60 backdrop-blur-sm border border-coral-500/20 rounded-xl p-3 sm:p-6 shadow-xl bg-subtle-pattern space-y-6"
     >
-      <h3 className="text-lg sm:text-xl font-semibold mb-4 text-center bg-clip-text text-transparent bg-gradient-to-r from-coral-400 to-coral-300 flex items-center justify-center gap-2">
+      <h3 className="text-lg sm:text-xl font-semibold text-center bg-clip-text text-transparent bg-gradient-to-r from-coral-400 to-coral-300 flex items-center justify-center gap-2 mb-6">
         <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-coral-400" />
-        What are you dressing for today?
+        What are you styling for today?
       </h3>
       
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-6">
         <div className="relative">
           <Popover open={open} onOpenChange={setOpen}>
             <div className={`flex ${isMobile ? 'flex-col' : 'items-center'} gap-3`}>
@@ -154,7 +153,7 @@ const StyleSituation = () => {
                       value={situation}
                       onChange={(e) => setSituation(e.target.value)}
                       placeholder={isMobile ? "Select or type an event" : "Select or type an event (e.g., 'Date Night, 15°C')"}
-                      className="flex-grow bg-slate-800/60 border-coral-500/30 text-white placeholder:text-slate-400 text-sm sm:text-base pr-10"
+                      className="flex-grow bg-slate-800/60 border-coral-500/30 text-white placeholder:text-slate-400 text-sm sm:text-base pr-10 hover:border-coral-400/50 focus:border-coral-400 transition-colors duration-200"
                       onClick={() => setOpen(true)}
                     />
                     <CalendarDays className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-coral-400" />
@@ -178,7 +177,7 @@ const StyleSituation = () => {
                 type="submit" 
                 className={`bg-gradient-to-r from-coral-500 to-coral-400 hover:from-coral-400 hover:to-coral-300 shadow-lg 
                   hover:shadow-coral transition-all duration-300 rounded-xl
-                  ${isMobile ? 'w-full py-2.5 text-sm' : 'px-4 py-2 sm:py-2.5 h-auto min-w-[150px]'}`}
+                  ${isMobile ? 'w-full py-2.5 text-sm' : 'px-4 py-2 sm:py-2.5 h-auto min-w-[150px]'} transform hover:scale-[1.02] active:scale-98 transition-all duration-200`}
                 disabled={isTyping || (!situation.trim() && !selectedEvent)}
               >
                 <Wand2 className={`${isMobile ? 'h-4 w-4 mr-1' : 'h-4 w-4 sm:h-5 sm:w-5 mr-2'}`} />
@@ -273,7 +272,7 @@ const StyleSituation = () => {
         <motion.div 
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-slate-800/40 backdrop-blur-sm rounded-lg p-3 sm:p-4 border border-coral-500/20 mt-4"
+          className="bg-slate-800/40 backdrop-blur-sm rounded-lg p-3 sm:p-4 border border-coral-500/20 mt-4 hover:border-coral-400/30 transition-colors duration-200"
         >
           <div className="flex gap-2 sm:gap-3">
             <Avatar className="h-7 w-7 sm:h-8 sm:w-8 border border-coral-500/50">
