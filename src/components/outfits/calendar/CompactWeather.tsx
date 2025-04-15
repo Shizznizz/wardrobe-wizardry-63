@@ -1,4 +1,3 @@
-
 import { WeatherInfo } from '@/lib/types';
 import { Sun, Cloud, CloudRain, CloudFog, Thermometer } from 'lucide-react';
 import {
@@ -11,9 +10,10 @@ import {
 interface CompactWeatherProps {
   weather: WeatherInfo | null;
   date: Date;
+  customTip?: string;
 }
 
-const CompactWeather = ({ weather, date }: CompactWeatherProps) => {
+const CompactWeather = ({ weather, date, customTip }: CompactWeatherProps) => {
   const getWeatherIcon = () => {
     if (!weather) return <Thermometer className="w-4 h-4" />;
     
@@ -35,6 +35,7 @@ const CompactWeather = ({ weather, date }: CompactWeatherProps) => {
   };
 
   const getOliviaTip = () => {
+    if (customTip) return customTip;
     if (!weather) return "Loading weather info...";
     
     if (weather.temperature > 25) {
