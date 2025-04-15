@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { format, startOfMonth, getDaysInMonth, getDay, addDays, isSameDay, isToday, isSameMonth } from 'date-fns';
 import { Outfit } from '@/lib/types';
 import { Button } from '@/components/ui/button';
-import { Shirt, CalendarDays } from 'lucide-react';
+import { Shirt, CalendarDays, MapPin } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
@@ -44,10 +44,10 @@ const MonthView = ({
     return {
       date: currentDayDate,
       isCurrentMonth: isSameMonth(currentDayDate, currentMonth),
-      hasOutfit: outfitLogs.some(log => isSameDay(new Date(log.date), currentDayDate)),
+      hasOutfit: outfitLogs.some(log => isSameDay(new Date(log.date), currentDayDate) && log.outfitId !== 'activity'),
       hasActivity: outfitLogs.some(log => 
         isSameDay(new Date(log.date), currentDayDate) && 
-        (log.activity || log.customActivity)
+        (log.activity || log.customActivity || log.outfitId === 'activity')
       ),
       outfitCount: outfitLogs.filter(log => 
         isSameDay(new Date(log.date), currentDayDate)
@@ -55,7 +55,7 @@ const MonthView = ({
     };
   });
   
-  // Break days into weeks and filter out weeks that are entirely in the next month
+  // Break days into weeks but only include a week if it has at least one day in the current month
   const weeks = [];
   for (let i = 0; i < daysArray.length; i += 7) {
     const week = daysArray.slice(i, i + 7);
@@ -71,7 +71,7 @@ const MonthView = ({
       exit={{ opacity: 0 }}
       className="w-full space-y-4"
     >
-      {/* Month label */}
+      {/* Month heading and weekday labels */}
       <div className="flex justify-between items-center">
         <div className="grid grid-cols-7 gap-1 text-center text-xs font-medium text-gray-400">
           {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
@@ -114,7 +114,7 @@ const MonthView = ({
                       <Shirt className="w-3 h-3 text-primary" />
                     )}
                     {day.hasActivity && (
-                      <CalendarDays className="w-3 h-3 text-secondary" />
+                      <MapPin className="w-3 h-3 text-orange-400" />
                     )}
                   </div>
                 </div>

@@ -128,6 +128,7 @@ const Calendar = () => {
               <OutfitCalendar 
                 outfits={outfits}
                 clothingItems={items}
+                location={location}
                 onAddLog={(log) => {
                   toast.success(`Outfit ${log.date > new Date() ? 'planned' : 'logged'} for ${format(new Date(log.date), 'MMMM d, yyyy')}`);
                 }}

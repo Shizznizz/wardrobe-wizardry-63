@@ -26,6 +26,7 @@ interface OutfitCalendarProps {
   outfits: Outfit[];
   clothingItems: ClothingItem[];
   onAddLog?: (log: Omit<OutfitLog, 'id'>) => void;
+  location?: { city: string; country: string };
 }
 
 // Remove the LocationType import as it's not defined in EnhancedLocationSelector
@@ -45,7 +46,7 @@ const OutfitLogSchema = z.object({
   temperature: z.string().optional(),
 });
 
-const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProps) => {
+const OutfitCalendar = ({ outfits, clothingItems, onAddLog, location }: OutfitCalendarProps) => {
   const [selectedTab, setSelectedTab] = useState('calendar');
   const [calendarView, setCalendarView] = useState<'month' | 'week'>('month');
   const isMobile = useIsMobile();
@@ -186,6 +187,7 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog }: OutfitCalendarProp
                   outfitLogs={outfitLogsOnDate}
                   onAddOutfit={handleAddOutfit}
                   onAddActivity={handleAddActivity}
+                  weatherLocation={location}
                 />
               )}
             </>
