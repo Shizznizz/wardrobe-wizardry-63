@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { addDays, format, startOfWeek, endOfWeek, isSameDay } from 'date-fns';
@@ -5,15 +6,14 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ClothingItem, Outfit } from '@/lib/types';
 import { OutfitLog } from '@/components/outfits/OutfitLogItem';
-import { Plus, Shirt } from 'lucide-react';
 
 interface WeekViewContainerProps {
   currentDate: Date;
   selectedDate: Date;
-  setSelectedDate?: (date: Date) => void;
+  setSelectedDate?: (date: Date) => void;  // Made optional since some places might not pass it
   outfits: Outfit[];
   clothingItems: ClothingItem[];
-  outfitLogs: Outfit[];
+  outfitLogs: OutfitLog[];
   outfitLogsOnDate?: OutfitLog[];
   rarelyWornOutfits?: Outfit[];
   frequentlyWornOutfits?: Outfit[];
@@ -41,6 +41,7 @@ const WeekViewContainer = ({
   const weekStart = startOfWeek(currentDate, { weekStartsOn: 0 });
   const weekEnd = endOfWeek(currentDate, { weekStartsOn: 0 });
   
+  // Generate array of dates for the week
   const daysInWeek = [];
   let day = weekStart;
   
@@ -49,6 +50,7 @@ const WeekViewContainer = ({
     day = addDays(day, 1);
   }
 
+  // Filter logs for the current week
   const weekLogs = outfitLogs.filter(log => {
     const logDate = new Date(log.date);
     return logDate >= weekStart && logDate <= weekEnd;
@@ -87,7 +89,6 @@ const WeekViewContainer = ({
             className={`
               flex-1 flex flex-col items-center justify-center h-auto py-2
               ${isSameDay(date, new Date()) ? 'border-primary' : ''}
-              transition-all duration-200 hover:scale-105
             `}
           >
             <span className="text-xs font-medium mb-1">{format(date, 'EEE')}</span>
@@ -109,28 +110,12 @@ const WeekViewContainer = ({
                 className={`
                   flex flex-col space-y-2 p-2 border rounded-md min-h-[300px]
                   ${isSameDay(date, selectedDate) ? 'border-primary bg-primary/5' : 'border-gray-200'}
-                  transition-all duration-200 hover:border-purple-500/50
                 `}
                 onClick={() => handleDateClick(date)}
               >
                 {dayLogs.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center h-full space-y-3 text-center">
-                    <Shirt className="h-8 w-8 text-gray-400 animate-pulse" />
-                    <p className="text-gray-400 text-xs px-2">
-                      No outfits logged yet
-                    </p>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDateClick(date);
-                      }}
-                      className="mt-2 group hover:border-purple-500/50"
-                    >
-                      <Plus className="h-4 w-4 mr-1 group-hover:scale-110 transition-transform" />
-                      Log Outfit
-                    </Button>
+                  <div className="text-center text-gray-400 text-xs mt-4">
+                    No outfits logged
                   </div>
                 ) : (
                   dayLogs.map(log => (
