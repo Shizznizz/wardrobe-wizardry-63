@@ -3,12 +3,12 @@ import { format, startOfWeek, endOfWeek, eachDayOfInterval, isToday, isSameDay, 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { OutfitLog } from '../OutfitLogItem';
 import { Outfit } from '@/lib/types';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { Plus, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';  // Add this import
 import { useMemo, useState } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { motion, AnimatePresence } from 'framer-motion';
+import DayDetailView from './DayDetailView';
 
 interface WeekViewProps {
   currentDate: Date;
@@ -18,30 +18,13 @@ interface WeekViewProps {
   getOutfitById: (id: string) => Outfit | undefined;
   handleOpenLogDialog: (date: Date) => void;
   moveOutfitLog?: (logId: string, fromDate: Date, toDate: Date) => void;
+  outfits: Outfit[];
+  clothingItems: any[];
+  location?: { city: string; country: string };
+  onAddOutfit: (outfitId: string) => void;
+  onAddActivity: (activity: string) => void;
+  onWeatherChange?: (weather: any) => void;
 }
-
-// Mapping of activities to emojis
-const activityEmojis: Record<string, string> = {
-  casual: '👕',
-  work: '💼',
-  formal: '👔',
-  party: '🎉',
-  date: '❤️',
-  interview: '🎓',
-  presentation: '📊',
-  dinner: '🍽️',
-  sport: '🏃',
-  other: '📝'
-};
-
-// Mapping of weather conditions to emojis
-const weatherEmojis: Record<string, string> = {
-  sunny: '☀️',
-  cloudy: '☁️',
-  rainy: '🌧️',
-  snowy: '❄️',
-  windy: '💨'
-};
 
 const WeekView = ({
   currentDate,
@@ -50,12 +33,17 @@ const WeekView = ({
   getLogsForDay,
   getOutfitById,
   handleOpenLogDialog,
-  moveOutfitLog
+  moveOutfitLog,
+  outfits,
+  clothingItems,
+  location,
+  onAddOutfit,
+  onAddActivity,
+  onWeatherChange
 }: WeekViewProps) => {
   const isMobile = useIsMobile();
   const [weekOffset, setWeekOffset] = useState(0);
   
-  // Calculate the week dates based on the current date and week offset
   const weekDates = useMemo(() => {
     const offsetDate = weekOffset === 0 ? currentDate : 
       weekOffset > 0 ? addWeeks(currentDate, weekOffset) : subWeeks(currentDate, Math.abs(weekOffset));
@@ -64,50 +52,30 @@ const WeekView = ({
     return eachDayOfInterval({ start: startDate, end: endDate });
   }, [currentDate, weekOffset]);
   
-  // Navigate to previous week
   const goToPreviousWeek = () => {
     setWeekOffset(prev => prev - 1);
   };
   
-  // Navigate to next week
   const goToNextWeek = () => {
     setWeekOffset(prev => prev + 1);
   };
   
-  // Reset to current week
   const goToCurrentWeek = () => {
     setWeekOffset(0);
   };
   
-  // Calculate the week label (e.g., "April 7 - 13, 2025")
   const weekLabel = useMemo(() => {
     const startDateStr = format(weekDates[0], 'MMMM d');
     const endDateStr = format(weekDates[6], 'MMMM d, yyyy');
     return `${startDateStr} - ${endDateStr}`;
   }, [weekDates]);
   
-  // Handle day selection and highlight
   const handleDaySelect = (day: Date) => {
     setSelectedDate(day);
   };
   
-  // Handle drag and drop of outfit logs
-  const handleDragEnd = (result: any) => {
-    if (!result.destination || !moveOutfitLog) return;
-    
-    const { draggableId, source, destination } = result;
-    const fromDateStr = source.droppableId;
-    const toDateStr = destination.droppableId;
-    
-    // Convert the date strings back to Date objects
-    const fromDate = new Date(fromDateStr);
-    const toDate = new Date(toDateStr);
-    
-    moveOutfitLog(draggableId, fromDate, toDate);
-  };
-  
   return (
-    <Card className="col-span-1 md:col-span-3 bg-slate-800/40 border-purple-500/20 shadow-lg backdrop-blur-sm">
+    <Card className="bg-slate-800/40 border-purple-500/20 shadow-lg backdrop-blur-sm">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <CardTitle className="text-xl text-purple-200">Week View</CardTitle>
@@ -141,115 +109,57 @@ const WeekView = ({
         <p className="text-sm text-purple-200/70 mt-1">{weekLabel}</p>
       </CardHeader>
       <CardContent className="px-2 py-3">
-        <DragDropContext onDragEnd={handleDragEnd}>
-          <div className={`grid grid-cols-7 gap-1 ${isMobile ? 'gap-0.5' : 'gap-2'}`}>
-            {weekDates.map(day => {
-              const dateStr = format(day, 'yyyy-MM-dd');
-              const dayLogs = getLogsForDay(day);
-              const isCurrentDay = isToday(day);
-              const isSelectedDay = selectedDate && isSameDay(day, selectedDate);
-              const isFutureDay = isFuture(day);
-              
-              return (
-                <div 
-                  key={dateStr}
+        <div className="grid grid-cols-7 gap-1">
+          {weekDates.map(day => {
+            const dateStr = format(day, 'yyyy-MM-dd');
+            const dayLogs = getLogsForDay(day);
+            const isCurrentDay = isToday(day);
+            const isSelectedDay = selectedDate && isSameDay(day, selectedDate);
+            const isFutureDay = isFuture(day);
+            
+            return (
+              <div key={dateStr} className="flex flex-col gap-1">
+                <Button 
                   className={`
-                    border rounded-lg cursor-pointer
-                    ${isMobile ? 'p-1 min-h-[100px]' : 'p-2 min-h-[120px]'}
-                    ${isCurrentDay ? 'border-purple-500' : isSelectedDay ? 'border-pink-500' : 'border-slate-700'} 
-                    ${isSelectedDay ? 'bg-slate-700/50' : isCurrentDay ? 'bg-slate-700/30' : 'bg-slate-800/20'}
-                    hover:bg-slate-700/40 hover:border-purple-400/70
-                    transition-all duration-200 touch-manipulation
+                    p-2 h-auto flex flex-col items-center rounded-lg
+                    ${isCurrentDay ? 'bg-purple-600/20 border-purple-500/30' : 
+                      isSelectedDay ? 'bg-pink-600/20 border-pink-500/30' : 
+                      'bg-slate-800/20 border-slate-700/30'}
                   `}
                   onClick={() => handleDaySelect(day)}
                 >
-                  <div className="text-center mb-1">
-                    <div className={`text-xs text-slate-400 ${isMobile ? 'mb-0' : 'mb-1'}`}>
-                      {format(day, 'EEE')}
-                    </div>
-                    <div className={`
-                      font-semibold rounded-full mx-auto w-7 h-7 flex items-center justify-center
-                      ${isCurrentDay ? 'bg-purple-600 text-white' : 
-                        isSelectedDay ? 'bg-pink-600 text-white' : ''}
-                    `}>
-                      {format(day, 'd')}
-                    </div>
-                  </div>
-                  
-                  <Droppable droppableId={dateStr}>
-                    {(provided) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.droppableProps}
-                        className={`space-y-1 ${isMobile ? 'max-h-[70px]' : 'max-h-[120px]'} overflow-y-auto scrollbar-thin`}
-                      >
-                        {dayLogs.map((log, index) => {
-                          const outfit = getOutfitById(log.outfitId);
-                          if (!outfit) return null;
-                          
-                          const activityEmoji = log.activity ? activityEmojis[log.activity] : '';
-                          
-                          return (
-                            <Draggable 
-                              key={log.id} 
-                              draggableId={log.id} 
-                              index={index}
-                              isDragDisabled={!moveOutfitLog || isMobile}
-                            >
-                              {(provided) => (
-                                <div
-                                  ref={provided.innerRef}
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
-                                  className={`
-                                    p-1 rounded text-xs bg-slate-700 border border-slate-600
-                                    ${isFutureDay ? 'border-dashed' : ''}
-                                    ${log.aiSuggested ? 'border-l-4 border-l-purple-500' : ''}
-                                  `}
-                                  onClick={(e) => {
-                                    // Prevent propagation to parent div
-                                    e.stopPropagation();
-                                  }}
-                                >
-                                  <div className="flex items-center gap-1 overflow-hidden">
-                                    {activityEmoji && <span className="flex-shrink-0">{activityEmoji}</span>}
-                                    <span className="truncate whitespace-nowrap">{outfit.name}</span>
-                                  </div>
-                                  {!isMobile && log.timeOfDay && (
-                                    <div className="text-[10px] text-slate-400 mt-0.5 truncate">
-                                      {log.timeOfDay}
-                                      {log.activity && log.activity !== 'other' && ` • ${log.activity}`}
-                                      {log.activity === 'other' && log.customActivity && ` • ${log.customActivity}`}
-                                    </div>
-                                  )}
-                                </div>
-                              )}
-                            </Draggable>
-                          );
-                        })}
-                        {provided.placeholder}
-                      </div>
-                    )}
-                  </Droppable>
-                  
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className={`w-full mt-1 h-6 text-xs text-slate-400 
-                      ${isMobile ? 'px-1' : 'mt-2'}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleOpenLogDialog(day);
-                    }}
-                  >
-                    <Plus className={`${isMobile ? 'h-3 w-3' : 'h-3 w-3 mr-1'}`} />
-                    {!isMobile && "Add"}
-                  </Button>
-                </div>
-              );
-            })}
+                  <span className="text-xs text-slate-400">{format(day, 'EEE')}</span>
+                  <span className={`
+                    text-lg font-semibold mt-1
+                    ${isCurrentDay ? 'text-purple-300' : 
+                      isSelectedDay ? 'text-pink-300' : 'text-white'}
+                  `}>
+                    {format(day, 'd')}
+                  </span>
+                  {dayLogs.length > 0 && (
+                    <Badge variant="secondary" className="mt-1 bg-slate-700/50">
+                      {dayLogs.length}
+                    </Badge>
+                  )}
+                </Button>
+              </div>
+            );
+          })}
+        </div>
+        
+        {selectedDate && (
+          <div className="mt-4">
+            <DayDetailView
+              selectedDate={selectedDate}
+              outfits={outfits}
+              outfitLogs={getLogsForDay(selectedDate)}
+              onAddOutfit={onAddOutfit}
+              onAddActivity={onAddActivity}
+              weatherLocation={location}
+              onWeatherChange={onWeatherChange}
+            />
           </div>
-        </DragDropContext>
+        )}
       </CardContent>
     </Card>
   );
