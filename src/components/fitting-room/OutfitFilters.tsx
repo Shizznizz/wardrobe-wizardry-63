@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Heart, SunMedium, Briefcase, Moon, Coffee, Sparkles, Filter, ChevronDown, X } from 'lucide-react';
+import { Heart, SunMedium, Briefcase, Moon, Coffee, Sparkles, Filter, ChevronDown, X, ChevronUp } from 'lucide-react';
 import { ClothingSeason, ClothingOccasion } from '@/lib/types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -14,6 +14,8 @@ interface OutfitFiltersProps {
   onSeasonChange: (season: ClothingSeason) => void;
   onOccasionChange: (occasion: ClothingOccasion) => void;
   onFavoritesToggle: () => void;
+  totalOutfits: number;
+  filteredOutfits: number;
   className?: string;
 }
 
@@ -24,6 +26,8 @@ const OutfitFilters = ({
   onSeasonChange,
   onOccasionChange,
   onFavoritesToggle,
+  totalOutfits,
+  filteredOutfits,
   className
 }: OutfitFiltersProps) => {
   const seasons: ClothingSeason[] = ['spring', 'summer', 'autumn', 'winter'];
@@ -31,6 +35,7 @@ const OutfitFilters = ({
   
   const isMobile = useIsMobile();
   const [expanded, setExpanded] = useState(!isMobile);
+  const [showAllFilters, setShowAllFilters] = useState(false);
   
   const clearFilters = () => {
     if (selectedSeason) {
@@ -54,9 +59,8 @@ const OutfitFilters = ({
   
   const activeCount = getActiveFiltersCount();
   
-  const toggleExpanded = () => {
-    setExpanded(!expanded);
-  };
+  const toggleExpanded = () => setExpanded(!expanded);
+  const toggleShowAllFilters = () => setShowAllFilters(!showAllFilters);
   
   const getSeasonIcon = (season: ClothingSeason) => {
     switch (season) {
@@ -88,6 +92,8 @@ const OutfitFilters = ({
     }
   };
   
+  const displayedOccasions = showAllFilters ? occasions : occasions.slice(0, 2);
+  
   return (
     <div className={cn("neo-blur backdrop-blur-sm border border-white/10 rounded-lg shadow-lg mb-6", className)}>
       <div className="px-4 py-3 flex items-center justify-between border-b border-white/5">
@@ -99,6 +105,12 @@ const OutfitFilters = ({
             <Badge className="bg-purple-500/50 text-white text-xs">
               {activeCount}
             </Badge>
+          )}
+
+          {filteredOutfits < totalOutfits && (
+            <span className="text-xs text-white/50">
+              {filteredOutfits} of {totalOutfits}
+            </span>
           )}
         </div>
         
@@ -141,7 +153,10 @@ const OutfitFilters = ({
             )}>
               <div className="space-y-2 md:flex-grow">
                 <span className="text-xs text-white/60 block md:mb-2">Season:</span>
-                <div className="flex flex-wrap gap-2">
+                <div className={cn(
+                  "grid grid-cols-2 md:flex md:flex-wrap gap-2",
+                  "md:items-center"
+                )}>
                   {seasons.map((season) => (
                     <Button
                       key={season}
@@ -149,7 +164,7 @@ const OutfitFilters = ({
                       size="sm"
                       onClick={() => onSeasonChange(season)}
                       className={cn(
-                        "text-xs h-8",
+                        "text-xs h-8 w-full md:w-auto transition-all duration-200",
                         selectedSeason === season ? 
                           "bg-purple-600 hover:bg-purple-700 text-white" : 
                           "border-white/20 text-white hover:bg-white/10 hover:text-white"
@@ -164,15 +179,18 @@ const OutfitFilters = ({
 
               <div className="space-y-2 md:flex-grow">
                 <span className="text-xs text-white/60 block md:mb-2">Occasion:</span>
-                <div className="flex flex-wrap gap-2">
-                  {occasions.map((occasion) => (
+                <div className={cn(
+                  "grid grid-cols-2 md:flex md:flex-wrap gap-2",
+                  "md:items-center"
+                )}>
+                  {displayedOccasions.map((occasion) => (
                     <Button
                       key={occasion}
                       variant={selectedOccasion === occasion ? "default" : "outline"}
                       size="sm"
                       onClick={() => onOccasionChange(occasion)}
                       className={cn(
-                        "text-xs h-8",
+                        "text-xs h-8 w-full md:w-auto transition-all duration-200",
                         selectedOccasion === occasion ? 
                           "bg-purple-600 hover:bg-purple-700 text-white" : 
                           "border-white/20 text-white hover:bg-white/10 hover:text-white"
@@ -183,6 +201,27 @@ const OutfitFilters = ({
                     </Button>
                   ))}
                 </div>
+
+                {isMobile && occasions.length > 2 && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={toggleShowAllFilters}
+                    className="w-full text-xs text-white/70 hover:text-white mt-2"
+                  >
+                    {showAllFilters ? (
+                      <>
+                        <ChevronUp className="h-3 w-3 mr-1.5" />
+                        Show Less
+                      </>
+                    ) : (
+                      <>
+                        <ChevronDown className="h-3 w-3 mr-1.5" />
+                        Show More ({occasions.length - 2} more)
+                      </>
+                    )}
+                  </Button>
+                )}
               </div>
 
               <Button
@@ -190,7 +229,7 @@ const OutfitFilters = ({
                 size="sm"
                 onClick={onFavoritesToggle}
                 className={cn(
-                  "text-xs h-8 md:self-end",
+                  "text-xs h-8 md:self-end w-full md:w-auto transition-all duration-200",
                   showFavoritesOnly ? 
                     "bg-pink-600 hover:bg-pink-700 text-white" : 
                     "border-white/20 text-white hover:bg-white/10 hover:text-white"
@@ -200,6 +239,18 @@ const OutfitFilters = ({
                 Favorites Only
               </Button>
             </div>
+
+            {filteredOutfits === 0 && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="px-4 pb-4"
+              >
+                <div className="bg-slate-900/50 rounded-lg p-3 border border-white/5 text-sm text-white/70">
+                  No outfits match the current filters. Try removing some filters.
+                </div>
+              </motion.div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

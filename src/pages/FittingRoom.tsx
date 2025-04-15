@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useShowroom } from '@/hooks/useShowroom';
 import { useOutfitState } from '@/hooks/useOutfitState';
@@ -18,21 +17,20 @@ import OutfitPreviewArea from '@/components/fitting-room/OutfitPreviewArea';
 import NoPhotoMessage from '@/components/fitting-room/NoPhotoMessage';
 import { ClothingSeason, ClothingOccasion, WeatherInfo, Outfit } from '@/lib/types';
 
-// Import new components
 import OliviaRecommendationBox from '@/components/fitting-room/OliviaRecommendationBox';
 import OutfitFilters from '@/components/fitting-room/OutfitFilters';
 import OutfitCarousel from '@/components/fitting-room/OutfitCarousel';
 import UserPhotoDisplay from '@/components/fitting-room/UserPhotoDisplay';
 import StyleOfTheDay from '@/components/fitting-room/StyleOfTheDay';
 import TrendingLooks from '@/components/fitting-room/TrendingLooks';
+import Sparkles from '@/components/fitting-room/Sparkles';
 
 const FittingRoom = () => {
   const isMobile = useIsMobile();
-  // Ensure outfits and clothingItems are properly initialized with default empty arrays if undefined
+
   const { 
     outfits = [], 
     clothingItems = [],
-    // Add other properties we need from useOutfitState with safe defaults
     handleCreateOutfit = () => {},
     handleEditOutfit = () => {},
     handleSaveOutfit = () => {},
@@ -46,7 +44,7 @@ const FittingRoom = () => {
     handleClearUserPhoto = () => {},
     handleTryOnOutfit = () => {}
   } = useOutfitState(sampleOutfits || [], sampleClothingItems || []);
-  
+
   const [photoSide, setPhotoSide] = useState<'left' | 'right'>('left');
   const [showOliviaHint, setShowOliviaHint] = useState(false);
   const [triedOnCount, setTriedOnCount] = useState(0);
@@ -61,8 +59,7 @@ const FittingRoom = () => {
     condition: 'Sunny',
     icon: 'sun'
   });
-  
-  // Ensure all destructured properties from useShowroom have fallback values
+
   const {
     isPremiumUser = false,
     showTips = false,
@@ -89,7 +86,6 @@ const FittingRoom = () => {
     setShowOliviaImageGallery = () => {},
   } = useShowroom();
 
-  // Make sure we have a valid array of outfits and handle potential undefined 
   const userOutfits = Array.isArray(outfits) ? outfits : [];
 
   useEffect(() => {
@@ -211,34 +207,43 @@ const FittingRoom = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Make the filter function more robust against undefined or null properties
+  const handleFilterByTag = (tag: string) => {
+    if (tag === 'weather') {
+      const temp = currentWeather?.temperature || 20;
+      let season: ClothingSeason = 'summer';
+      
+      if (temp < 10) season = 'winter';
+      else if (temp < 20) season = 'autumn';
+      else if (temp < 25) season = 'spring';
+      
+      handleSeasonChange(season);
+    } else if (tag === 'style') {
+      handleAssistantAction();
+    }
+  };
+
   const filteredOutfits = userOutfits.filter((outfit) => {
-    // Early return if outfit is undefined or null
     if (!outfit) return false;
     
-    // Check seasons with proper undefined/null handling
     if (selectedSeason && Array.isArray(outfit.seasons)) {
       if (!outfit.seasons.includes(selectedSeason)) {
         return false;
       }
     }
     
-    // Check occasions with proper undefined/null handling
     if (selectedOccasion && Array.isArray(outfit.occasions)) {
       if (!outfit.occasions.includes(selectedOccasion)) {
         return false;
       }
     }
     
-    // Check favorites with proper undefined handling
     if (showFavoritesOnly && outfit.favorite !== true) {
       return false;
     }
     
     return true;
   });
-  
-  // Safety measure: ensure filteredOutfits is always an array
+
   const safeFilteredOutfits = Array.isArray(filteredOutfits) ? filteredOutfits : [];
 
   return (
@@ -260,7 +265,6 @@ const FittingRoom = () => {
           </Button>
         </div>
         
-        {/* Initial Photo Upload Section */}
         {!userPhoto && (
           <motion.div
             initial={{ opacity: 0 }}
@@ -280,7 +284,6 @@ const FittingRoom = () => {
           </motion.div>
         )}
         
-        {/* Post-Photo Upload Main Section */}
         {userPhoto && !finalImage && (
           <div className="mt-10">
             <motion.div 
@@ -289,7 +292,6 @@ const FittingRoom = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
             >
-              {/* Left Side - User Photo Display */}
               <div>
                 <h2 className="text-xl font-semibold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-purple-200">Your Model</h2>
                 <UserPhotoDisplay 
@@ -299,19 +301,20 @@ const FittingRoom = () => {
                 />
               </div>
               
-              {/* Right Side - Olivia's Suggestions */}
               <div>
                 <h2 className="text-xl font-semibold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-purple-200">Olivia's Suggestions</h2>
                 <OliviaRecommendationBox 
                   weather={currentWeather} 
                   selectedOutfit={selectedOutfit}
                   onSuggestOutfit={handleRefreshOutfit}
+                  onFilterByTag={handleFilterByTag}
+                  onTryOutfit={handleOutfitPreview}
+                  outfits={safeFilteredOutfits}
                 />
               </div>
             </motion.div>
             
-            {/* Outfit Carousel Section */}
-            <div className="mt-14">
+            <div className="mt-14" id="outfits-section">
               <OutfitFilters 
                 selectedSeason={selectedSeason}
                 selectedOccasion={selectedOccasion}
@@ -319,10 +322,26 @@ const FittingRoom = () => {
                 onSeasonChange={handleSeasonChange}
                 onOccasionChange={handleOccasionChange}
                 onFavoritesToggle={toggleFavorites}
+                totalOutfits={userOutfits.length}
+                filteredOutfits={safeFilteredOutfits.length}
               />
               
               {!Array.isArray(safeFilteredOutfits) || safeFilteredOutfits.length === 0 ? (
-                <NoOutfitsMessage />
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="glass-dark border border-white/10 rounded-lg p-6 text-center"
+                >
+                  <Sparkles className="h-8 w-8 text-purple-400 mb-3 mx-auto" />
+                  <h3 className="text-lg font-medium text-white mb-2">No outfits yet</h3>
+                  <p className="text-white/70 mb-4">Would you like Olivia to create some looks for you?</p>
+                  <Button
+                    onClick={handleAssistantAction}
+                    className="bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:opacity-90"
+                  >
+                    Generate Looks
+                  </Button>
+                </motion.div>
               ) : (
                 <OutfitCarousel 
                   outfits={safeFilteredOutfits} 
@@ -332,13 +351,11 @@ const FittingRoom = () => {
               )}
             </div>
             
-            {/* Style of the Day Section */}
             <StyleOfTheDay 
               outfit={safeFilteredOutfits[0] || null} 
               onPreview={handleOutfitPreview}
             />
             
-            {/* Trending Looks Section */}
             <TrendingLooks onShowLogin={handleUpgradeToPremium} />
           </div>
         )}
@@ -347,7 +364,6 @@ const FittingRoom = () => {
           <NoPhotoMessage />
         )}
         
-        {/* Preview Area for Selected Outfit */}
         {(finalImage || selectedOutfit) && (
           <OutfitPreviewArea
             finalImage={finalImage}
@@ -364,7 +380,6 @@ const FittingRoom = () => {
         )}
       </main>
       
-      {/* Scroll to Top Button */}
       {showScrollToTop && (
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
