@@ -1,9 +1,10 @@
+
 import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { Outfit, WeatherInfo, ClothingSeason } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Plus, X, Check } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
@@ -41,6 +42,7 @@ const DayDetailView = ({
   const [activitySuccess, setActivitySuccess] = useState(false);
   const [outfitSuccess, setOutfitSuccess] = useState(false);
   const [selectedOutfitId, setSelectedOutfitId] = useState<string | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const isMobile = useIsMobile();
 
   // Add a helper function to get outfit by ID
@@ -86,6 +88,7 @@ const DayDetailView = ({
     onAddOutfit(outfitId);
     setOutfitSuccess(true);
     setTimeout(() => setOutfitSuccess(false), 2000);
+    setDialogOpen(false);
   };
   
   const filteredOutfits = selectedSeason 
@@ -147,10 +150,7 @@ const DayDetailView = ({
                 <Button 
                   variant="ghost" 
                   size="sm"
-                  onClick={() => {
-                    setIsAddingActivity(false);
-                    setActivity('');
-                  }}
+                  onClick={handleCloseActivityInput}
                 >
                   <X className="w-4 h-4" />
                 </Button>
@@ -167,7 +167,7 @@ const DayDetailView = ({
               </Button>
             )}
 
-            <Dialog>
+            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
               <DialogTrigger asChild>
                 <Button variant="outline" size="sm" className={isMobile ? "flex-1" : ""}>
                   <Plus className="w-4 h-4 mr-1" />
@@ -178,11 +178,13 @@ const DayDetailView = ({
                 <DialogHeader>
                   <div className="flex justify-between items-center">
                     <DialogTitle>Add Outfit</DialogTitle>
-                    <DialogClose>
-                      <Button variant="ghost" size="sm">
-                        <X className="w-4 h-4" />
-                      </Button>
-                    </DialogClose>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => setDialogOpen(false)}
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
                   </div>
                 </DialogHeader>
                 
