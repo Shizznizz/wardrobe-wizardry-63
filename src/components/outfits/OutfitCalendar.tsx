@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
@@ -10,6 +11,13 @@ import { toast } from 'sonner';
 import { Outfit, ClothingItem } from '@/lib/types';
 import { OutfitLog } from './OutfitLogItem';
 import { useCalendarState } from '@/hooks/useCalendarState';
+import ViewToggle from './calendar/ViewToggle';
+import MonthView from './calendar/MonthView';
+import WeekViewContainer from './calendar/WeekViewContainer';
+import CalendarTabs from './calendar/CalendarTabs';
+import OutfitStatsTab from './calendar/OutfitStatsTab';
+import OutfitLogForm from './calendar/OutfitLogForm';
+import OliviaAssistantSection from './OliviaAssistantSection';
 
 interface OutfitCalendarProps {
   outfits: Outfit[];
