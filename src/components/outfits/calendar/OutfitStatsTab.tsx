@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { OutfitLog } from '@/components/outfits/OutfitLogItem';
 import { Outfit, ClothingItem } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { UseTrendingUp, Shirt, Calendar, BarChart } from 'lucide-react';
+import { TrendingUp, Shirt, Calendar, BarChart } from 'lucide-react';
 
 interface OutfitStatsTabProps {
   outfits: Outfit[];
@@ -60,7 +59,7 @@ const OutfitStatsTab = ({
       <Card className="bg-slate-800/40 border-purple-500/20 shadow-lg backdrop-blur-sm">
         <CardHeader className="pb-2">
           <div className="flex items-center gap-2">
-            <UseTrendingUp className="h-5 w-5 text-purple-400" />
+            <TrendingUp className="h-5 w-5 text-purple-400" />
             <CardTitle className="text-lg text-purple-200">Most Worn</CardTitle>
           </div>
         </CardHeader>
