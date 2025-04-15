@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { format } from 'date-fns';
-import { Outfit, WeatherInfo } from '@/lib/types';
+import { Outfit, WeatherInfo, ClothingSeason } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -32,7 +32,7 @@ const DayDetailView = ({
   onWeatherChange
 }: DayDetailViewProps) => {
   const [activity, setActivity] = useState('');
-  const [selectedSeason, setSelectedSeason] = useState<string>('');
+  const [selectedSeason, setSelectedSeason] = useState<ClothingSeason | ''>('');
   
   const handleAddActivity = () => {
     if (activity.trim()) {
@@ -42,7 +42,7 @@ const DayDetailView = ({
   };
   
   const filteredOutfits = selectedSeason 
-    ? outfits.filter(outfit => outfit.seasons.includes(selectedSeason.toLowerCase()))
+    ? outfits.filter(outfit => outfit.seasons.includes(selectedSeason))
     : outfits;
 
   return (
@@ -85,7 +85,7 @@ const DayDetailView = ({
                   <DialogTitle>Add Outfit</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4 pt-4">
-                  <Select onValueChange={setSelectedSeason}>
+                  <Select onValueChange={(value) => setSelectedSeason(value as ClothingSeason)}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select season" />
                     </SelectTrigger>

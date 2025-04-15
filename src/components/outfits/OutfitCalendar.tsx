@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
@@ -19,7 +20,6 @@ import WeekViewContainer from './calendar/WeekViewContainer';
 import OutfitLogForm from './calendar/OutfitLogForm';
 import OutfitStatsTab from './calendar/OutfitStatsTab';
 import OliviaAssistantSection from './OliviaAssistantSection';
-import { LocationType } from '@/components/weather/EnhancedLocationSelector';
 import DayDetailView from './calendar/DayDetailView';
 
 interface OutfitCalendarProps {
@@ -27,6 +27,8 @@ interface OutfitCalendarProps {
   clothingItems: ClothingItem[];
   onAddLog?: (log: Omit<OutfitLog, 'id'>) => void;
 }
+
+// Remove the LocationType import as it's not defined in EnhancedLocationSelector
 
 const OutfitLogSchema = z.object({
   outfitId: z.string({

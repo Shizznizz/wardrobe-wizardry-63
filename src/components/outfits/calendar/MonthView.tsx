@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { format, startOfMonth, getDaysInMonth, getDay, addDays, isSameDay, isToday, isSameMonth } from 'date-fns';
 import { Outfit } from '@/lib/types';
 import { Button } from '@/components/ui/button';
-import { Clothing, CalendarDays } from 'lucide-react';
+import { Shirt, CalendarDays } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
@@ -111,7 +111,7 @@ const MonthView = ({
                   </span>
                   <div className="flex gap-0.5">
                     {day.hasOutfit && (
-                      <Clothing className="w-3 h-3 text-primary" />
+                      <Shirt className="w-3 h-3 text-primary" />
                     )}
                     {day.hasActivity && (
                       <CalendarDays className="w-3 h-3 text-secondary" />
