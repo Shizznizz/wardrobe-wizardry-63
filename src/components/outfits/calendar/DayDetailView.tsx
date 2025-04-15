@@ -5,7 +5,7 @@ import { Outfit, WeatherInfo, ClothingSeason } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Sun, Cloud, CloudRain, Thermometer, Check, Shirt, MapPin } from 'lucide-react';
+import { Plus, Sun, Cloud, CloudRain, Thermometer, Check, Shirt, MapPin } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { OutfitLog } from '../OutfitLogItem';
