@@ -43,11 +43,11 @@ const OutfitLogSchema = z.object({
 });
 
 const OutfitCalendar = ({ outfits, clothingItems, onAddLog, location }: OutfitCalendarProps) => {
+  const isMobile = useIsMobile();
   const [selectedTab, setSelectedTab] = useState('calendar');
   const [calendarView, setCalendarView] = useState<'month' | 'week' | 'day'>(
     isMobile ? 'day' : 'month'
   );
-  const isMobile = useIsMobile();
   const { isAuthenticated } = useAuth();
   
   const {
