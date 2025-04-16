@@ -74,7 +74,7 @@ const PremiumTryOnHero = ({
           <div className="p-6 md:p-8 flex flex-col justify-center">
             <div className="flex items-center gap-2 mb-2">
               <h2 className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-300 to-pink-300">
-                Try It On Before You Buy
+                Try Before You Buy
               </h2>
               <div className="hidden md:flex items-center gap-1 bg-gradient-to-r from-purple-500/20 to-pink-500/20 px-2 py-0.5 rounded-full text-xs font-medium text-purple-200">
                 <Sparkle className="h-3 w-3 text-yellow-300" />
