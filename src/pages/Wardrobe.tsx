@@ -145,6 +145,8 @@ const Wardrobe = () => {
       id: `outfit-${Date.now()}`,
       name,
       items: itemIds,
+      occasion: 'casual',
+      season: [],
       occasions: [],
       seasons: [],
       favorite: false,
@@ -324,7 +326,7 @@ const Wardrobe = () => {
         case 'weather':
           const currentSeason: 'winter' | 'spring' | 'summer' | 'autumn' = 'spring';
           filteredItems = filteredItems.filter(item => 
-            item.seasons.includes(currentSeason) || item.seasons.includes('all')
+            item.season.includes(currentSeason) || item.season.includes('all')
           );
           break;
           
@@ -376,7 +378,7 @@ const Wardrobe = () => {
           return b.timesWorn - a.timesWorn;
         case 'weather-fit':
           const currentSeason: 'winter' | 'spring' | 'summer' | 'autumn' = 'spring';
-          return b.seasons.includes(currentSeason) ? -1 : 1;
+          return b.season.includes(currentSeason) ? -1 : 1;
         case 'not-recent':
           return a.timesWorn - b.timesWorn;
         default:

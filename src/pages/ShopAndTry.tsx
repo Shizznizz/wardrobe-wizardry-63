@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -47,7 +48,9 @@ const ShopAndTry = () => {
     id: 'new-clothing',
     name: 'New Clothing Preview',
     items: selectedItems.map(item => item.id),
+    occasion: 'casual',
     occasions: ['shopping'],
+    season: ['all'],
     seasons: ['all'],
     favorite: false,
     timesWorn: 0,
