@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ClothingItem } from '@/lib/types';
+import { ClothingItem, ClothingType, ClothingColor, ClothingMaterial, ClothingSeason, ClothingOccasion } from '@/lib/types';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { 
@@ -45,11 +45,11 @@ const dummyHistoryItems: TryOnHistoryItem[] = Array(6).fill(null).map((_, i) => 
 const dummyWishlistItems: ClothingItem[] = Array(5).fill(null).map((_, i) => ({
   id: `wishlist-${i}`,
   name: ['Trench Coat', 'Silk Scarf', 'Striped Shirt', 'Canvas Sneakers', 'Linen Pants'][i],
-  type: ['jacket', 'accessories', 'shirt', 'shoes', 'pants'][i],
-  color: ['beige', 'purple', 'blue', 'white', 'brown'][i],
-  material: ['cotton', 'silk', 'cotton', 'canvas', 'linen'][i],
-  seasons: ['autumn', 'spring', 'all', 'summer', 'summer'],
-  occasions: ['casual', 'formal', 'business', 'casual', 'casual'],
+  type: ['jacket', 'accessories', 'shirt', 'shoes', 'pants'][i] as ClothingType,
+  color: ['beige', 'purple', 'blue', 'white', 'brown'][i] as ClothingColor,
+  material: ['cotton', 'silk', 'cotton', 'canvas', 'linen'][i] as ClothingMaterial,
+  seasons: ['autumn', 'spring', 'all', 'summer', 'summer'] as ClothingSeason[],
+  occasions: ['casual', 'formal', 'business', 'casual', 'casual'] as ClothingOccasion[],
   imageUrl: '/placeholder.svg',
   favorite: false,
   timesWorn: 0,

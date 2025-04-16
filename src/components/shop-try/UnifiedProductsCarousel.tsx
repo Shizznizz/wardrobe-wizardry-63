@@ -17,7 +17,7 @@ import {
   ArrowRightCircle
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { ClothingItem } from '@/lib/types';
+import { ClothingItem, ClothingType, ClothingColor, ClothingMaterial, ClothingSeason, ClothingOccasion } from '@/lib/types';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
@@ -36,11 +36,11 @@ interface ShopItem extends ClothingItem {
 const dummyItems: ShopItem[] = Array(12).fill(null).map((_, i) => ({
   id: `item-${i}`,
   name: ['Casual Shirt', 'Summer Dress', 'Denim Jacket', 'Wool Sweater', 'Linen Pants'][i % 5],
-  type: ['shirt', 'dress', 'jacket', 'sweater', 'pants'][i % 5],
-  color: ['blue', 'red', 'green', 'black', 'white'][i % 5],
-  material: ['cotton', 'polyester', 'denim', 'wool', 'linen'][i % 5],
-  seasons: ['summer', 'winter', 'spring', 'autumn'],
-  occasions: ['casual', 'formal', 'outdoor', 'party', 'business'],
+  type: ['shirt', 'dress', 'jacket', 'sweater', 'pants'][i % 5] as ClothingType,
+  color: ['blue', 'red', 'green', 'black', 'white'][i % 5] as ClothingColor,
+  material: ['cotton', 'polyester', 'denim', 'wool', 'linen'][i % 5] as ClothingMaterial,
+  seasons: ['summer', 'winter', 'spring', 'autumn'] as ClothingSeason[],
+  occasions: ['casual', 'formal', 'business', 'party', 'outdoor'] as ClothingOccasion[],
   imageUrl: '/placeholder.svg',
   price: `$${Math.floor(Math.random() * 100) + 20}.99`,
   retailer: ['H&M', 'Zara', 'Mango', 'ASOS', 'Uniqlo'][i % 5],
