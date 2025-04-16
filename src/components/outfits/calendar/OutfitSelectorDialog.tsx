@@ -1,10 +1,11 @@
 
 import { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Outfit, ClothingSeason } from '@/lib/types';
 import OutfitPreview from './OutfitPreview';
+import { X } from 'lucide-react';
 
 interface OutfitSelectorDialogProps {
   isOpen: boolean;
@@ -14,19 +15,19 @@ interface OutfitSelectorDialogProps {
 }
 
 const OutfitSelectorDialog = ({ isOpen, onClose, onSubmit, outfits }: OutfitSelectorDialogProps) => {
-  const [selectedSeason, setSelectedSeason] = useState<ClothingSeason | ''>('');
+  const [selectedSeason, setSelectedSeason] = useState<ClothingSeason | null>(null);
   const [selectedOutfitId, setSelectedOutfitId] = useState<string>('');
 
   useEffect(() => {
     if (!isOpen) {
-      setSelectedSeason('');
+      setSelectedSeason(null);
       setSelectedOutfitId('');
     }
   }, [isOpen]);
 
   const seasons: ClothingSeason[] = ['spring', 'summer', 'autumn', 'winter'];
   
-  // Group outfits by category (e.g., casual, formal, etc.) for the second dropdown
+  // Group outfits by occasions since the Outfit type doesn't have a category property
   const getOutfitCategories = () => {
     if (!selectedSeason) return [];
     
@@ -34,8 +35,8 @@ const OutfitSelectorDialog = ({ isOpen, onClose, onSubmit, outfits }: OutfitSele
     const categories = new Set<string>();
     
     seasonOutfits.forEach(outfit => {
-      if (outfit.category) {
-        categories.add(outfit.category);
+      if (outfit.occasions && outfit.occasions.length > 0) {
+        outfit.occasions.forEach(occasion => categories.add(occasion));
       } else {
         categories.add('Uncategorized');
       }
@@ -46,8 +47,9 @@ const OutfitSelectorDialog = ({ isOpen, onClose, onSubmit, outfits }: OutfitSele
   
   const getCategoryOutfits = (category: string) => {
     return outfits.filter(outfit => 
-      outfit.seasons.includes(selectedSeason) && 
-      (outfit.category === category || (!outfit.category && category === 'Uncategorized'))
+      outfit.seasons.includes(selectedSeason as ClothingSeason) && 
+      (outfit.occasions?.includes(category) || 
+        (!outfit.occasions || outfit.occasions.length === 0) && category === 'Uncategorized')
     );
   };
   
@@ -67,6 +69,11 @@ const OutfitSelectorDialog = ({ isOpen, onClose, onSubmit, outfits }: OutfitSele
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[500px] bg-slate-900 border-purple-500/20 text-white">
+        <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 hover:opacity-100 ring-offset-background transition-opacity focus:outline-none disabled:pointer-events-none">
+          <X className="h-4 w-4 text-white" />
+          <span className="sr-only">Close</span>
+        </DialogClose>
+        
         <DialogHeader>
           <DialogTitle className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
             Add Outfit
@@ -75,7 +82,7 @@ const OutfitSelectorDialog = ({ isOpen, onClose, onSubmit, outfits }: OutfitSele
 
         <div className="space-y-6 py-4">
           <Select
-            value={selectedSeason}
+            value={selectedSeason || undefined}
             onValueChange={(value: ClothingSeason) => {
               setSelectedSeason(value);
               setSelectedCategory('');
