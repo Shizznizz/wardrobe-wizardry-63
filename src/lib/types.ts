@@ -45,6 +45,8 @@ export type ClothingType =
   | 'sneakers'
   | 'boots'
   | 'accessories'
+  | 'jacket'  // Added 'jacket' to fix StyleMoodSelector errors
+  | 'top'     // Added 'top' to fix StyleMoodSelector errors
   | 'other';
 
 export type ClothingOccasion = 
@@ -53,7 +55,10 @@ export type ClothingOccasion =
   | 'work'
   | 'sport'
   | 'special'
-  | 'travel';
+  | 'travel'
+  | 'business'  // Added to fix OutfitFilters errors
+  | 'party'     // Added to fix OutfitFilters errors
+  | 'date';     // Added to fix OutfitFilters errors
 
 export type ClothingMaterial =
   | 'cotton'
@@ -73,11 +78,45 @@ export interface WeatherInfo {
   city?: string;
   country?: string;
   iconCode?: string;
+  icon?: string;  // Added to fix OliviaRecommendationBox errors
   high?: number;
   low?: number;
   feelsLike?: number;
   humidity?: number;
   windSpeed?: number;
+}
+
+// Added TimeOfDay type for calendar components
+export type TimeOfDay = 'morning' | 'afternoon' | 'evening' | 'night';
+
+// Added Activity type for calendar components
+export type Activity = 'work' | 'casual' | 'formal' | 'exercise' | 'travel' | 'other';
+
+// Added OutfitLogExtended type for OutfitGroupsSection
+export interface OutfitLog {
+  id: string;
+  outfitId: string;
+  date: Date;
+  timeOfDay: TimeOfDay;
+  notes?: string;
+  weatherCondition?: string;
+  temperature?: string;
+}
+
+export interface OutfitLogExtended extends OutfitLog {
+  outfit?: Outfit;
+}
+
+// Interface for PersonalizedItem in style carousel
+export interface PersonalizedItem extends Omit<ClothingItem, 'season'> {
+  season?: ClothingSeason[];
+  seasons?: ClothingSeason[];  // For backward compatibility
+}
+
+// Interface for TrendingClothingItem 
+export interface TrendingClothingItem extends Omit<ClothingItem, 'season'> {
+  season?: ClothingSeason[];
+  seasons?: ClothingSeason[];  // For backward compatibility
 }
 
 export interface UserPreferences {
@@ -122,6 +161,7 @@ export interface ClothingItem {
   occasions?: string[];
   timesWorn?: number;
   dateAdded?: Date;
+  tags?: string[];  // Added for OutfitGroupsSection
 }
 
 export interface Outfit {
@@ -139,4 +179,5 @@ export interface Outfit {
   notes?: string;
   timesWorn?: number;
   personalityTags?: PersonalityTag[];
+  tags?: string[];  // Added for OutfitGroupsSection and OutfitPreview
 }

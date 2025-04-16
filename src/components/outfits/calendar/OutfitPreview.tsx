@@ -10,7 +10,7 @@ interface OutfitPreviewProps {
 }
 
 const OutfitPreview = ({ outfit, isCompact = false }: OutfitPreviewProps) => {
-  const imageUrl = outfit.tags?.find(tag => tag.startsWith('http'));
+  const imageUrl = outfit.tags?.find(tag => tag?.startsWith('http'));
   const hasImage = outfit.tags?.includes('image');
 
   return (
@@ -36,7 +36,7 @@ const OutfitPreview = ({ outfit, isCompact = false }: OutfitPreviewProps) => {
         <div className="flex flex-col gap-1">
           <h4 className="font-medium text-sm text-white">{outfit.name}</h4>
           <div className="flex flex-wrap gap-1">
-            {outfit.seasons.map(season => (
+            {outfit.season.map(season => (
               <Badge 
                 key={season} 
                 variant="secondary" 

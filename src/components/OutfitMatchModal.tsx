@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -34,7 +33,6 @@ const OutfitMatchModal = ({ open, onOpenChange, item, allItems }: OutfitMatchMod
     accessories: ['accessories']
   };
   
-  // Determine which tab the initial item belongs to
   const getItemCategory = (type: ClothingType): string => {
     for (const [category, types] of Object.entries(itemTypeCategories)) {
       if (types.includes(type)) {
@@ -46,7 +44,6 @@ const OutfitMatchModal = ({ open, onOpenChange, item, allItems }: OutfitMatchMod
   
   const initialCategory = getItemCategory(item.type);
   
-  // Filter items for each category excluding the current item
   const getCategoryItems = (category: string): ClothingItem[] => {
     return allItems.filter(i => {
       const types = itemTypeCategories[category as keyof typeof itemTypeCategories];
@@ -59,14 +56,11 @@ const OutfitMatchModal = ({ open, onOpenChange, item, allItems }: OutfitMatchMod
       allItems.find(i => i.id === id)?.type as ClothingType
     );
     
-    // Only allow one item per category
     setSelectedItems(prev => {
-      // Find if we already have an item from this category
       const existingItemOfCategoryIndex = prev.findIndex(
         i => i.id !== item.id && getItemCategory(i.type) === itemCategory
       );
       
-      // If we already have an item of this category, replace it
       if (existingItemOfCategoryIndex !== -1) {
         const newItems = [...prev];
         const targetItem = allItems.find(i => i.id === id);
@@ -76,7 +70,6 @@ const OutfitMatchModal = ({ open, onOpenChange, item, allItems }: OutfitMatchMod
         return newItems;
       }
       
-      // Otherwise add the new item
       const newItem = allItems.find(i => i.id === id);
       if (newItem) {
         return [...prev, newItem];
@@ -91,22 +84,20 @@ const OutfitMatchModal = ({ open, onOpenChange, item, allItems }: OutfitMatchMod
   };
   
   const handleSaveOutfit = () => {
-    // Create a new outfit object
     const newOutfit: Outfit = {
       id: uuidv4(),
       name: outfitName,
       items: selectedItems.map(i => i.id),
-      occasions: [...new Set(selectedItems.flatMap(i => i.occasions))],
-      seasons: [...new Set(selectedItems.flatMap(i => i.seasons))],
+      season: [...new Set(selectedItems.flatMap(i => i.season))],
+      occasion: selectedItems.flatMap(i => i.occasions || [])[0] || 'casual',
+      occasions: [...new Set(selectedItems.flatMap(i => i.occasions || []))],
       favorite: false,
       timesWorn: 0,
       dateAdded: new Date(),
     };
     
-    // In a real app, you would save this to your state/database
     console.log('New outfit created:', newOutfit);
     
-    // Show success message
     toast.success('Outfit created successfully!', {
       description: 'View it in your outfits collection.',
       action: {
@@ -115,7 +106,6 @@ const OutfitMatchModal = ({ open, onOpenChange, item, allItems }: OutfitMatchMod
       }
     });
     
-    // Close the modal
     onOpenChange(false);
     setSelectedItems([item]);
   };

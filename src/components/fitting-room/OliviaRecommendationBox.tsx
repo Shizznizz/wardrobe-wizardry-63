@@ -58,10 +58,10 @@ const OliviaRecommendationBox = ({
 
     const weatherTemp = weather?.temperature || 20;
     const suitableOutfits = outfits.filter(outfit => {
-      if (!outfit.seasons) return false;
-      if (weatherTemp < 10) return outfit.seasons.includes('winter');
-      if (weatherTemp < 20) return outfit.seasons.includes('spring') || outfit.seasons.includes('autumn');
-      return outfit.seasons.includes('summer');
+      if (!outfit.season) return false;
+      if (weatherTemp < 10) return outfit.season.includes('winter');
+      if (weatherTemp < 20) return outfit.season.includes('spring') || outfit.season.includes('autumn');
+      return outfit.season.includes('summer');
     });
 
     return suitableOutfits[Math.floor(Math.random() * suitableOutfits.length)] || outfits[0];
@@ -90,8 +90,7 @@ const OliviaRecommendationBox = ({
   };
 
   const getWeatherIcon = () => {
-    const weatherType = weather?.icon || 'sun';
-    const temp = weather?.temperature || 20;
+    const weatherType = weather?.condition || 'sun';
     
     switch (weatherType.toLowerCase()) {
       case 'rain':
@@ -107,7 +106,7 @@ const OliviaRecommendationBox = ({
   };
   
   const generateWeatherSuggestions = (weather: WeatherInfo) => {
-    const weatherType = weather?.icon || 'sun';
+    const weatherType = weather?.condition || 'sun';
     const temp = weather?.temperature || 20;
     const suggestions: string[] = [];
     

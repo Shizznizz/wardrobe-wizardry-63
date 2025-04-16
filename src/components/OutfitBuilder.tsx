@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -33,8 +34,8 @@ const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }
         .map(itemId => clothingItems.find(item => item.id === itemId))
         .filter(item => item !== undefined) as ClothingItem[];
       setSelectedItems(itemObjects);
-      setSelectedSeasons(initialOutfit.seasons || []);
-      setSelectedOccasions(initialOutfit.occasions || []);
+      setSelectedSeasons(initialOutfit.season || []);
+      setSelectedOccasions(initialOutfit.occasions || [initialOutfit.occasion]);
     } else {
       resetForm();
     }
@@ -53,7 +54,8 @@ const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }
       id: initialOutfit?.id || '',
       name: outfitName,
       items: selectedItems.map(item => item.id),
-      seasons: selectedSeasons,
+      season: selectedSeasons,
+      occasion: selectedOccasions[0] || 'casual',
       occasions: selectedOccasions,
       favorite: initialOutfit?.favorite || false,
       timesWorn: initialOutfit?.timesWorn || 0,
