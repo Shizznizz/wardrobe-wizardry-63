@@ -10,8 +10,6 @@ import { toast } from 'sonner';
 import { Outfit, ClothingItem } from '@/lib/types';
 import { OutfitLog } from './OutfitLogItem';
 import { useCalendarState } from '@/hooks/useCalendarState';
-
-// Import refactored components
 import CalendarTabs from './calendar/CalendarTabs';
 import ViewToggle from './calendar/ViewToggle';
 import MonthView from './calendar/MonthView';
@@ -20,6 +18,7 @@ import OutfitLogForm from './calendar/OutfitLogForm';
 import OutfitStatsTab from './calendar/OutfitStatsTab';
 import OliviaAssistantSection from './OliviaAssistantSection';
 import DayDetailView from './calendar/DayDetailView';
+import DailyView from './calendar/DailyView';
 
 interface OutfitCalendarProps {
   outfits: Outfit[];
@@ -27,8 +26,6 @@ interface OutfitCalendarProps {
   onAddLog?: (log: Omit<OutfitLog, 'id'>) => void;
   location?: { city: string; country: string };
 }
-
-// Remove the LocationType import as it's not defined in EnhancedLocationSelector
 
 const OutfitLogSchema = z.object({
   outfitId: z.string({
@@ -47,7 +44,9 @@ const OutfitLogSchema = z.object({
 
 const OutfitCalendar = ({ outfits, clothingItems, onAddLog, location }: OutfitCalendarProps) => {
   const [selectedTab, setSelectedTab] = useState('calendar');
-  const [calendarView, setCalendarView] = useState<'month' | 'week'>('month');
+  const [calendarView, setCalendarView] = useState<'month' | 'week' | 'day'>(
+    isMobile ? 'day' : 'month'
+  );
   const isMobile = useIsMobile();
   const { isAuthenticated } = useAuth();
   
@@ -95,13 +94,11 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog, location }: OutfitCa
     
     let result;
     if (selectedLog) {
-      // Update existing log
       result = await updateOutfitLog(selectedLog.id, values);
       if (result && onAddLog) {
         onAddLog({...values, id: selectedLog.id} as any);
       }
     } else {
-      // Create new log
       result = await addOutfitLog(values);
       if (result && onAddLog) {
         onAddLog(values);
@@ -159,7 +156,10 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog, location }: OutfitCa
   const renderCalendarView = () => {
     return (
       <div className="space-y-6">
-        <ViewToggle view={calendarView} onViewChange={(value) => setCalendarView(value)} />
+        <ViewToggle 
+          view={calendarView} 
+          onViewChange={(value) => setCalendarView(value)} 
+        />
         
         <AnimatePresence mode="wait">
           {calendarView === 'month' ? (
@@ -191,7 +191,7 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog, location }: OutfitCa
                 />
               )}
             </>
-          ) : (
+          ) : calendarView === 'week' ? (
             <WeekViewContainer
               currentDate={currentMonth}
               selectedDate={selectedDate}
@@ -201,6 +201,22 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog, location }: OutfitCa
               onDateClick={setSelectedDate}
               onLogDelete={deleteOutfitLog}
               setSelectedDate={setSelectedDate}
+              onAddOutfit={handleAddOutfit}
+              onAddActivity={handleAddActivity}
+              weatherLocation={location}
+            />
+          ) : (
+            <DailyView
+              currentDate={currentMonth}
+              selectedDate={selectedDate}
+              setSelectedDate={setSelectedDate}
+              outfits={outfits}
+              clothingItems={clothingItems}
+              outfitLogs={outfitLogs}
+              onLogDelete={deleteOutfitLog}
+              onAddOutfit={handleAddOutfit}
+              onAddActivity={handleAddActivity}
+              weatherLocation={location}
             />
           )}
         </AnimatePresence>
