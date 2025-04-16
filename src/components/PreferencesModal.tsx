@@ -49,7 +49,7 @@ const PreferencesModal = ({
     // Simulate AI processing time
     setTimeout(() => {
       // This would ideally be connected to a real AI recommendation engine
-      const recommendedColors: ClothingColor[] = ['black', 'navy', 'white', 'gray'];
+      const recommendedColors: ClothingColor[] = ['black', 'blue', 'white', 'gray'];
       const recommendedStyles = ['smart casual', 'minimalist', 'business casual'];
       
       setLocalPreferences(prev => ({

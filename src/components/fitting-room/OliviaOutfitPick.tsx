@@ -43,7 +43,7 @@ const OliviaOutfitPick = ({ outfit, onPreview, className }: OliviaOutfitPickProp
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/50"></div>
           <div className="absolute bottom-3 left-3">
             <Badge className="bg-purple-500/70 text-white border-none">
-              Perfect for {outfit.occasions[0] || 'today'}
+              Perfect for {outfit.occasion || 'today'}
             </Badge>
           </div>
         </div>

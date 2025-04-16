@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
@@ -9,7 +8,7 @@ import { cn } from '@/lib/utils';
 
 // Category icons
 import { Shirt, ShoppingBag, Glasses } from 'lucide-react';
-import { Footprints } from 'lucide-react'; // Changed from Footprint to Footprints
+import { Footprints } from 'lucide-react';
 import { Wind } from 'lucide-react';
 // Import PantsIcon from our icons file where we'll define it
 import { TrousersIcon } from '@/components/ui/icons';

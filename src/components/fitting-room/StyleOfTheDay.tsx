@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Sparkles, TrendingUp, Award, Star, Lightbulb, SquareArrowOutUpRight } from 'lucide-react';
@@ -18,16 +19,16 @@ const StyleOfTheDay = ({ outfit, onPreview }: StyleOfTheDayProps) => {
     id: 'style-of-the-day',
     name: 'Summer Breeze',
     items: [],
-    seasons: ['summer'],
-    occasions: ['casual'],
+    season: ['summer'],
+    occasion: 'casual',
     favorite: false,
     timesWorn: 0,
     dateAdded: new Date(),
   };
   
   const styleOutfit = outfit || defaultOutfit;
-  const safeSeasons = Array.isArray(styleOutfit.seasons) ? styleOutfit.seasons : [];
-  const safeOccasions = Array.isArray(styleOutfit.occasions) ? styleOutfit.occasions : [];
+  const safeSeasons = Array.isArray(styleOutfit.season) ? styleOutfit.season : [];
+  const safeOccasions = styleOutfit.occasion ? [styleOutfit.occasion] : [];
   
   const handlePreviewClick = () => {
     onPreview(styleOutfit);

@@ -1,6 +1,5 @@
 
 // src/lib/types.ts
-// This is a simplified version for demonstration purposes
 
 export type ClothingColor =
   | 'black'
@@ -14,6 +13,7 @@ export type ClothingColor =
   | 'pink'
   | 'orange'
   | 'brown'
+  | 'navy'
   | 'multicolor';
 
 export type ClothingSeason = 'spring' | 'summer' | 'autumn' | 'winter' | 'all';
@@ -31,6 +31,54 @@ export type PersonalityTag =
   | 'bohemian'
   | 'preppy'
   | 'artistic';
+
+export type ClothingType = 
+  | 'shirt'
+  | 'sweater'
+  | 'hoodie' 
+  | 'pants'
+  | 'jeans'
+  | 'shorts'
+  | 'skirt'
+  | 'dress'
+  | 'shoes'
+  | 'sneakers'
+  | 'boots'
+  | 'accessories'
+  | 'other';
+
+export type ClothingOccasion = 
+  | 'casual'
+  | 'formal'
+  | 'work'
+  | 'sport'
+  | 'special'
+  | 'travel';
+
+export type ClothingMaterial =
+  | 'cotton'
+  | 'wool'
+  | 'silk'
+  | 'linen'
+  | 'polyester'
+  | 'denim'
+  | 'leather'
+  | 'suede'
+  | 'synthetic'
+  | 'other';
+
+export interface WeatherInfo {
+  temperature?: number;
+  condition?: string;
+  city?: string;
+  country?: string;
+  iconCode?: string;
+  high?: number;
+  low?: number;
+  feelsLike?: number;
+  humidity?: number;
+  windSpeed?: number;
+}
 
 export interface UserPreferences {
   favoriteColors: ClothingColor[];
@@ -58,28 +106,37 @@ export interface UserPreferences {
 export interface ClothingItem {
   id: string;
   name: string;
-  type: string;
+  type: ClothingType;
   color: ClothingColor;
   season: ClothingSeason[];
   image: string;
+  imageUrl?: string;
   brand?: string;
   size?: string;
-  material?: string;
+  material?: ClothingMaterial;
   favorite?: boolean;
   lastWorn?: Date;
   purchaseDate?: Date;
   price?: number;
   notes?: string;
+  occasions?: string[];
+  timesWorn?: number;
+  dateAdded?: Date;
 }
 
 export interface Outfit {
   id: string;
   name: string;
-  items: ClothingItem[];
+  items: string[];
   season: ClothingSeason[];
   occasion: string;
+  occasions?: string[];
+  seasons?: ClothingSeason[];
   favorite?: boolean;
   lastWorn?: Date;
-  createdAt: Date;
+  createdAt?: Date;
+  dateAdded?: Date;
   notes?: string;
+  timesWorn?: number;
+  personalityTags?: PersonalityTag[];
 }
