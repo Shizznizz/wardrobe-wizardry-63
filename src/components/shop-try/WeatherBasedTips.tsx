@@ -85,66 +85,56 @@ const WeatherBasedTips = ({
     }
   };
   
-  const getOutfitSuggestion = (temp: number, condition: string) => {
-    if (temp < 0) return "a warm coat with insulated layers";
-    if (temp < 10) return "a cozy sweater with a light jacket";
-    if (temp < 20) return "a light cardigan or denim jacket";
-    return "a breathable tee or summer dress";
+  const getOutfitTip = (condition: string, temperature: number) => {
+    if (temperature < 0) {
+      return "a warm winter coat with layers";
+    } else if (temperature < 10) {
+      return "something cozy with a light jacket";
+    } else if (temperature < 20) {
+      return "a light sweater or cardigan";
+    } else {
+      return "something light and breathable";
+    }
   };
   
-  if (loading) {
+  if (loading || !weatherData) {
     return (
-      <Card className="bg-slate-900/40 border-white/10 overflow-hidden">
-        <CardContent className="p-4">
-          <div className="flex items-center gap-2 animate-pulse">
-            <div className="h-5 w-5 rounded-full bg-white/10"></div>
-            <div className="h-5 w-32 rounded bg-white/10"></div>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="h-12 animate-pulse bg-slate-800/50 rounded-lg"></div>
     );
   }
   
-  if (!weatherData) return null;
-  
-  const suggestion = getOutfitSuggestion(weatherData.temperature, weatherData.condition);
-  
   return (
     <motion.div
-      initial={{ opacity: 0, y: -10 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
+      className="mb-6"
     >
-      <Card className="bg-gradient-to-r from-slate-900/40 to-purple-900/20 border-white/10 overflow-hidden">
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
+      <Card className="border border-purple-500/20 bg-gradient-to-r from-purple-900/20 to-slate-900/20 backdrop-blur-sm">
+        <CardContent className="p-3 flex items-center justify-between">
+          <div className="flex items-center">
+            <div className="p-2 rounded-full bg-gradient-to-br from-slate-800 to-slate-900 mr-3">
               {getWeatherIcon(weatherData.condition)}
-              <span className="flex items-center text-sm font-medium text-white">
-                <Thermometer className="h-3.5 w-3.5 mr-1 text-white/70" />
-                {weatherData.temperature}°C • {weatherData.condition}
-              </span>
             </div>
             
-            <div className="flex items-center text-xs text-white/60">
-              <MapPin className="h-3 w-3 mr-1" />
-              {weatherData.city}, {weatherData.country}
+            <div>
+              <div className="flex items-center gap-1 text-sm text-white/80">
+                <MapPin className="h-3 w-3" />
+                <span>{weatherData.city}, {weatherData.country}</span>
+                <span className="mx-1">•</span>
+                <Thermometer className="h-3 w-3" />
+                <span>{weatherData.temperature}°C</span>
+              </div>
+              
+              <div className="text-sm text-purple-200 font-medium mt-0.5">
+                Olivia suggests {getOutfitTip(weatherData.condition, weatherData.temperature)} today
+              </div>
             </div>
           </div>
           
-          <p className="mt-2 text-white/80 text-sm">
-            <span className="text-purple-300 font-medium">Olivia suggests:</span> Try {suggestion} for today's weather conditions!
-          </p>
-          
-          <div className="mt-2 flex justify-end">
-            <Button 
-              variant="link" 
-              size="sm" 
-              className="text-xs text-purple-300 hover:text-purple-200 p-0 h-auto"
-            >
-              See weather-appropriate outfits
-            </Button>
-          </div>
+          <Button variant="ghost" size="sm" className="text-xs text-white/70 hover:text-white">
+            See Picks
+          </Button>
         </CardContent>
       </Card>
     </motion.div>

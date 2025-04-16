@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -9,39 +9,322 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { 
   Heart, 
-  Clock, 
-  Trash2, 
-  RotateCcw, 
-  ShoppingBag, 
   Calendar, 
-  Lock, 
-  Image,
-  Sparkles
+  History, 
+  Star, 
+  Trash2, 
+  ArrowRight, 
+  XIcon,
+  ShoppingBag,
+  ExternalLink,
+  Clock
 } from 'lucide-react';
 import { toast } from 'sonner';
 
-interface TryOnHistoryItem {
-  id: string;
-  date: string;
-  imageUrl: string;
-  itemName: string;
-  saved: boolean;
-}
-
 interface WishlistAndHistoryProps {
   isPremiumUser: boolean;
-  onUpgradeToPremium: () => void;
   onTryItem: (item: ClothingItem) => void;
+  onUpgradeToPremium: () => void;
 }
 
-const dummyHistoryItems: TryOnHistoryItem[] = Array(6).fill(null).map((_, i) => ({
-  id: `history-${i}`,
-  date: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toLocaleDateString(),
-  imageUrl: '/placeholder.svg',
-  itemName: ['Blue Jacket', 'White Dress', 'Summer Hat', 'Casual Jeans', 'Floral Blouse', 'Leather Boots'][i],
-  saved: Math.random() > 0.5
-}));
+const WishlistAndHistory = ({
+  isPremiumUser,
+  onTryItem,
+  onUpgradeToPremium
+}: WishlistAndHistoryProps) => {
+  const [activeTab, setActiveTab] = useState('wishlist');
+  const [wishlistItems, setWishlistItems] = useState<ClothingItem[]>(dummyWishlistItems);
+  const [historyItems, setHistoryItems] = useState<HistoryItem[]>(dummyHistoryItems);
+  
+  // If not premium, show upgrade prompt
+  if (!isPremiumUser) {
+    return (
+      <Card className="border-white/10 backdrop-blur-sm bg-gradient-to-br from-purple-900/10 to-slate-900/10 overflow-hidden">
+        <CardContent className="p-6 text-center">
+          <div className="p-3 rounded-full bg-amber-500/10 mx-auto mb-4 w-16 h-16 flex items-center justify-center">
+            <Heart className="h-8 w-8 text-amber-500" />
+          </div>
+          
+          <h3 className="text-xl font-semibold mb-2">Save Your Favorite Looks</h3>
+          <p className="text-white/70 mb-6 max-w-md mx-auto">
+            Premium members can save their favorite items and access their try-on history anytime.
+          </p>
+          
+          <Button 
+            onClick={onUpgradeToPremium}
+            className="bg-gradient-to-r from-amber-500 to-amber-600 hover:opacity-90"
+          >
+            Upgrade to Premium
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+  
+  const handleRemoveWishlistItem = (id: string) => {
+    setWishlistItems(prev => prev.filter(item => item.id !== id));
+    toast.success('Item removed from wishlist');
+  };
+  
+  const handleRemoveHistoryItem = (id: string) => {
+    setHistoryItems(prev => prev.filter(item => item.id !== id));
+    toast.success('History item removed');
+  };
+  
+  const handleTryAgain = (item: ClothingItem) => {
+    onTryItem(item);
+    toast.success('Item ready to try on!');
+  };
+  
+  const handleShopNow = (url: string) => {
+    window.open(url, '_blank');
+    toast.success('Opening store...');
+  };
+  
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.2 }}
+    >
+      <div className="flex items-center mb-6">
+        <div className="h-px flex-grow bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+        <h2 className="px-4 text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+          Your Collection
+        </h2>
+        <div className="h-px flex-grow bg-gradient-to-r from-white/10 via-transparent to-transparent"></div>
+      </div>
+      
+      <Card className="border-white/10 bg-slate-900/40 overflow-hidden shadow-lg">
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="w-full bg-slate-800 border-b border-white/5 p-0 rounded-none h-11">
+            <TabsTrigger
+              value="wishlist"
+              className="flex-1 h-10 rounded-none data-[state=active]:bg-slate-900 data-[state=active]:shadow-none border-r border-white/5"
+            >
+              <Heart className="h-4 w-4 mr-2" />
+              Wishlist ({wishlistItems.length})
+            </TabsTrigger>
+            <TabsTrigger
+              value="history"
+              className="flex-1 h-10 rounded-none data-[state=active]:bg-slate-900 data-[state=active]:shadow-none"
+            >
+              <History className="h-4 w-4 mr-2" />
+              Try-On History ({historyItems.length})
+            </TabsTrigger>
+          </TabsList>
+          
+          <CardContent className="p-4">
+            {activeTab === 'wishlist' && (
+              <div>
+                {wishlistItems.length > 0 ? (
+                  <ScrollArea className="h-[350px] pr-3">
+                    <div className="space-y-3">
+                      {wishlistItems.map((item) => (
+                        <motion.div
+                          key={item.id}
+                          className="bg-slate-800/70 border border-white/5 rounded-lg overflow-hidden flex"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                        >
+                          <div className="w-20 h-20 flex-shrink-0">
+                            <img 
+                              src={item.imageUrl} 
+                              alt={item.name} 
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          
+                          <div className="flex-grow p-3 flex flex-col justify-between">
+                            <div>
+                              <div className="flex items-start justify-between">
+                                <h4 className="font-medium text-sm text-white">{item.name}</h4>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-5 w-5 text-white/50 hover:text-white -mr-1 -mt-1"
+                                  onClick={() => handleRemoveWishlistItem(item.id)}
+                                >
+                                  <XIcon className="h-3 w-3" />
+                                </Button>
+                              </div>
+                              
+                              <div className="flex flex-wrap gap-1 mt-1">
+                                {(Array.isArray(item.occasions) ? item.occasions : []).slice(0, 2).map((occasion, i) => (
+                                  <Badge 
+                                    key={`${item.id}-${i}`} 
+                                    variant="outline" 
+                                    className="px-1.5 py-0 text-[10px] border-white/10 text-white/70"
+                                  >
+                                    {occasion}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                            
+                            <div className="flex items-center justify-between mt-2">
+                              <div className="text-xs text-white/60">
+                                <Calendar className="h-3 w-3 inline mr-1" />
+                                Added {new Date(item.dateAdded).toLocaleDateString()}
+                              </div>
+                              
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-6 text-xs px-2 text-purple-300 hover:text-purple-200"
+                                onClick={() => handleTryAgain(item)}
+                              >
+                                Try On
+                              </Button>
+                            </div>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                    <ScrollBar />
+                  </ScrollArea>
+                ) : (
+                  <div className="py-8 text-center">
+                    <Heart className="h-12 w-12 text-white/20 mx-auto mb-3" />
+                    <h3 className="text-lg font-medium text-white mb-2">Your wishlist is empty</h3>
+                    <p className="text-white/60 text-sm max-w-xs mx-auto mb-4">
+                      Save items you love while shopping to build your dream wardrobe
+                    </p>
+                    <Button 
+                      className="bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90"
+                      size="sm"
+                    >
+                      Browse Trending Items
+                    </Button>
+                  </div>
+                )}
+              </div>
+            )}
+            
+            {activeTab === 'history' && (
+              <div>
+                {historyItems.length > 0 ? (
+                  <ScrollArea className="h-[350px] pr-3">
+                    <div className="space-y-3">
+                      {historyItems.map((item) => (
+                        <motion.div
+                          key={item.id}
+                          className="bg-slate-800/70 border border-white/5 rounded-lg overflow-hidden"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                        >
+                          <div className="flex">
+                            <div className="w-20 h-20 flex-shrink-0">
+                              <img 
+                                src={item.resultImageUrl} 
+                                alt="Try-on result" 
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                            
+                            <div className="flex-grow p-3 flex flex-col justify-between">
+                              <div>
+                                <div className="flex items-start justify-between">
+                                  <h4 className="font-medium text-sm text-white">
+                                    {item.itemName}
+                                  </h4>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-5 w-5 text-white/50 hover:text-white -mr-1 -mt-1"
+                                    onClick={() => handleRemoveHistoryItem(item.id)}
+                                  >
+                                    <XIcon className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                                
+                                <div className="flex items-center gap-2 mt-1">
+                                  <div className="flex">
+                                    {Array.from({ length: 5 }).map((_, i) => (
+                                      <Star 
+                                        key={i} 
+                                        className={`h-3 w-3 ${i < item.rating ? 'text-yellow-400 fill-yellow-400' : 'text-white/20'}`} 
+                                      />
+                                    ))}
+                                  </div>
+                                  
+                                  <span className="text-xs text-white/60">
+                                    {new Date(item.date).toLocaleDateString()}
+                                  </span>
+                                </div>
+                              </div>
+                              
+                              <div className="flex items-center justify-between mt-2">
+                                <div className="text-xs text-white/60 flex items-center">
+                                  <Clock className="h-3 w-3 mr-1" />
+                                  {item.timeAgo}
+                                </div>
+                                
+                                <div className="flex items-center gap-1">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-6 text-xs px-2 text-purple-300 hover:text-purple-200"
+                                    onClick={() => handleTryAgain(item.item)}
+                                  >
+                                    Try Again
+                                  </Button>
+                                  
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-6 text-xs px-2 text-blue-300 hover:text-blue-200"
+                                    onClick={() => handleShopNow(item.affiliateUrl)}
+                                  >
+                                    <ShoppingBag className="h-3 w-3 mr-1" />
+                                    Shop
+                                  </Button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                    <ScrollBar />
+                  </ScrollArea>
+                ) : (
+                  <div className="py-8 text-center">
+                    <History className="h-12 w-12 text-white/20 mx-auto mb-3" />
+                    <h3 className="text-lg font-medium text-white mb-2">No try-on history yet</h3>
+                    <p className="text-white/60 text-sm max-w-xs mx-auto mb-4">
+                      Try on some outfits and they'll appear here for quick access
+                    </p>
+                    <Button 
+                      className="bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90"
+                      size="sm"
+                    >
+                      Start Trying On
+                    </Button>
+                  </div>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Tabs>
+      </Card>
+    </motion.div>
+  );
+};
 
+interface HistoryItem {
+  id: string;
+  itemName: string;
+  resultImageUrl: string;
+  date: Date;
+  timeAgo: string;
+  rating: number;
+  affiliateUrl: string;
+  item: ClothingItem;
+}
+
+// Mock wishlist items
 const dummyWishlistItems: ClothingItem[] = Array(5).fill(null).map((_, i) => ({
   id: `wishlist-${i}`,
   name: ['Trench Coat', 'Silk Scarf', 'Striped Shirt', 'Canvas Sneakers', 'Linen Pants'][i],
@@ -56,263 +339,74 @@ const dummyWishlistItems: ClothingItem[] = Array(5).fill(null).map((_, i) => ({
   dateAdded: new Date()
 }));
 
-const WishlistAndHistory = ({
-  isPremiumUser,
-  onUpgradeToPremium,
-  onTryItem
-}: WishlistAndHistoryProps) => {
-  const [activeTab, setActiveTab] = useState('wishlist');
-  const [wishlistItems, setWishlistItems] = useState(dummyWishlistItems);
-  const [historyItems, setHistoryItems] = useState(dummyHistoryItems);
-  
-  const handleRemoveWishlistItem = (itemId: string) => {
-    setWishlistItems(prev => prev.filter(item => item.id !== itemId));
-    toast.success('Item removed from wishlist');
-  };
-  
-  const handleToggleSavedHistory = (itemId: string) => {
-    setHistoryItems(prev => 
-      prev.map(item => 
-        item.id === itemId 
-          ? { ...item, saved: !item.saved } 
-          : item
-      )
-    );
-    
-    const isNowSaved = historyItems.find(item => item.id === itemId)?.saved;
-    toast.success(isNowSaved ? 'Removed from saved looks' : 'Added to saved looks');
-  };
-  
-  const handleClearHistory = () => {
-    setHistoryItems([]);
-    toast.success('Try-on history cleared');
-  };
-  
-  const handleTryOnAgain = (item: TryOnHistoryItem) => {
-    toast.success(`Preparing to try on ${item.itemName} again...`);
-  };
-  
-  if (!isPremiumUser) {
-    return (
-      <Card className="border-white/10 bg-gradient-to-br from-slate-900/80 to-purple-950/80 overflow-hidden">
-        <CardContent className="p-6 text-center">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-yellow-500/20 to-amber-500/20 flex items-center justify-center">
-            <Lock className="h-8 w-8 text-yellow-400" />
-          </div>
-          <h3 className="text-xl font-semibold text-white mb-2">Premium Feature</h3>
-          <p className="text-white/70 max-w-md mx-auto mb-6">
-            Unlock wishlists and try-on history with Premium. Save your favorite looks and easily access your past try-ons.
-          </p>
-          <Button 
-            onClick={onUpgradeToPremium}
-            className="bg-gradient-to-r from-yellow-500 to-amber-600 hover:opacity-90"
-          >
-            <Sparkles className="mr-2 h-4 w-4" />
-            Unlock Premium Features
-          </Button>
-        </CardContent>
-      </Card>
-    );
+// Mock history items
+const dummyHistoryItems: HistoryItem[] = [
+  {
+    id: 'history-1',
+    itemName: 'Blue Denim Jacket',
+    resultImageUrl: '/placeholder.svg',
+    date: new Date(),
+    timeAgo: '2 days ago',
+    rating: 4,
+    affiliateUrl: 'https://example.com',
+    item: {
+      id: 'history-item-1',
+      name: 'Blue Denim Jacket',
+      type: 'jacket' as ClothingType,
+      color: 'blue' as ClothingColor,
+      material: 'denim' as ClothingMaterial,
+      seasons: ['spring', 'autumn'] as ClothingSeason[],
+      occasions: ['casual'] as ClothingOccasion[],
+      imageUrl: '/placeholder.svg',
+      favorite: false,
+      timesWorn: 0,
+      dateAdded: new Date()
+    }
+  },
+  {
+    id: 'history-2',
+    itemName: 'Floral Summer Dress',
+    resultImageUrl: '/placeholder.svg',
+    date: new Date(),
+    timeAgo: '1 week ago',
+    rating: 5,
+    affiliateUrl: 'https://example.com',
+    item: {
+      id: 'history-item-2',
+      name: 'Floral Summer Dress',
+      type: 'dress' as ClothingType,
+      color: 'pink' as ClothingColor,
+      material: 'cotton' as ClothingMaterial,
+      seasons: ['summer'] as ClothingSeason[],
+      occasions: ['casual'] as ClothingOccasion[],
+      imageUrl: '/placeholder.svg',
+      favorite: true,
+      timesWorn: 2,
+      dateAdded: new Date()
+    }
+  },
+  {
+    id: 'history-3',
+    itemName: 'Linen Blend Shirt',
+    resultImageUrl: '/placeholder.svg',
+    date: new Date(),
+    timeAgo: '2 weeks ago',
+    rating: 3,
+    affiliateUrl: 'https://example.com',
+    item: {
+      id: 'history-item-3',
+      name: 'Linen Blend Shirt',
+      type: 'shirt' as ClothingType,
+      color: 'white' as ClothingColor,
+      material: 'linen' as ClothingMaterial,
+      seasons: ['summer'] as ClothingSeason[],
+      occasions: ['casual'] as ClothingOccasion[],
+      imageUrl: '/placeholder.svg',
+      favorite: false,
+      timesWorn: 1,
+      dateAdded: new Date()
+    }
   }
-  
-  return (
-    <Card className="border-white/10 bg-slate-900/40 overflow-hidden">
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <Heart className="h-5 w-5 text-pink-400" />
-            <h2 className="text-xl font-semibold text-white">Your Collection</h2>
-          </div>
-          
-          {activeTab === 'history' && historyItems.length > 0 && (
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="text-white/70 hover:text-white"
-              onClick={handleClearHistory}
-            >
-              <Trash2 className="h-3.5 w-3.5 mr-1.5" />
-              Clear History
-            </Button>
-          )}
-        </div>
-        
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-6 bg-slate-800/50">
-            <TabsTrigger value="wishlist" className="data-[state=active]:bg-pink-900/30">
-              <Heart className="h-4 w-4 mr-2" />
-              Saved Items
-            </TabsTrigger>
-            <TabsTrigger value="history" className="data-[state=active]:bg-blue-900/30">
-              <Clock className="h-4 w-4 mr-2" />
-              Try-On History
-            </TabsTrigger>
-          </TabsList>
-          
-          <AnimatePresence mode="wait">
-            {activeTab === 'wishlist' ? (
-              <motion.div
-                key="wishlist"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.3 }}
-              >
-                {wishlistItems.length > 0 ? (
-                  <ScrollArea>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-5 gap-4 pb-4">
-                      {wishlistItems.map((item, index) => (
-                        <motion.div
-                          key={item.id}
-                          initial={{ opacity: 0, scale: 0.9 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          transition={{ delay: index * 0.05 }}
-                          className="relative group"
-                        >
-                          <div className="rounded-lg overflow-hidden bg-slate-800 border border-white/10 hover:border-pink-500/30 transition-all">
-                            <div className="relative aspect-square bg-gray-800">
-                              <img
-                                src={item.imageUrl}
-                                alt={item.name}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                              />
-                              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent">
-                                  <div className="absolute bottom-2 left-2 right-2 flex gap-1">
-                                    <Button 
-                                      size="sm" 
-                                      className="flex-1 h-8 text-xs bg-white text-black hover:bg-white/90"
-                                      onClick={() => onTryItem(item)}
-                                    >
-                                      Try On
-                                    </Button>
-                                    <Button 
-                                      size="sm" 
-                                      variant="outline"
-                                      className="h-8 w-8 p-0 bg-black/60 border-white/40 text-white"
-                                      onClick={() => handleRemoveWishlistItem(item.id)}
-                                    >
-                                      <Trash2 className="h-3.5 w-3.5" />
-                                    </Button>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="p-2.5">
-                              <h3 className="text-sm font-medium text-white/90 line-clamp-1">{item.name}</h3>
-                              <div className="flex justify-between items-center mt-0.5">
-                                <p className="text-xs text-white/60 capitalize">{item.type}</p>
-                                <div className="flex gap-1">
-                                  {item.seasons.slice(0, 1).map(season => (
-                                    <span key={season} className="text-[10px] px-1.5 py-0.5 bg-slate-700 rounded-full text-white/60 capitalize">
-                                      {season}
-                                    </span>
-                                  ))}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </motion.div>
-                      ))}
-                    </div>
-                    <ScrollBar orientation="horizontal" />
-                  </ScrollArea>
-                ) : (
-                  <div className="text-center py-10 px-4 border border-dashed border-white/10 rounded-lg">
-                    <Heart className="h-10 w-10 text-white/20 mx-auto mb-3" />
-                    <h3 className="text-lg font-medium text-white/80 mb-1">Your wishlist is empty</h3>
-                    <p className="text-white/60 text-sm">
-                      Save items you love by clicking the heart icon
-                    </p>
-                  </div>
-                )}
-              </motion.div>
-            ) : (
-              <motion.div
-                key="history"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.3 }}
-              >
-                {historyItems.length > 0 ? (
-                  <ScrollArea>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 pb-4">
-                      {historyItems.map((item, index) => (
-                        <motion.div
-                          key={item.id}
-                          initial={{ opacity: 0, scale: 0.9 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          transition={{ delay: index * 0.05 }}
-                          className="relative group"
-                        >
-                          <div className="rounded-lg overflow-hidden bg-slate-800 border border-white/10 hover:border-blue-500/30 transition-all">
-                            <div className="relative aspect-square bg-gray-800">
-                              <img
-                                src={item.imageUrl}
-                                alt={item.itemName}
-                                className="w-full h-full object-cover"
-                              />
-                              <Badge 
-                                variant="outline" 
-                                className="absolute top-2 left-2 bg-black/60 border-white/20 text-white/90 flex items-center gap-1"
-                              >
-                                <Calendar className="h-3 w-3" />
-                                {item.date}
-                              </Badge>
-                              
-                              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent"></div>
-                                <div className="absolute bottom-3 left-3 right-3 flex flex-col gap-2">
-                                  <p className="text-white text-sm font-medium">{item.itemName}</p>
-                                  <div className="flex gap-2">
-                                    <Button 
-                                      size="sm" 
-                                      variant="outline"
-                                      className="h-8 flex-1 bg-white/10 border-white/40 backdrop-blur-sm text-white text-xs"
-                                      onClick={() => handleTryOnAgain(item)}
-                                    >
-                                      <RotateCcw className="h-3 w-3 mr-1" />
-                                      Try Again
-                                    </Button>
-                                    <Button 
-                                      size="sm" 
-                                      variant="outline"
-                                      className={`h-8 w-8 p-0 ${
-                                        item.saved 
-                                          ? 'bg-pink-500/20 border-pink-500/50 text-pink-300' 
-                                          : 'bg-black/60 border-white/40 text-white'
-                                      }`}
-                                      onClick={() => handleToggleSavedHistory(item.id)}
-                                    >
-                                      <Heart className={`h-3.5 w-3.5 ${item.saved ? 'fill-pink-300' : ''}`} />
-                                    </Button>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </motion.div>
-                      ))}
-                    </div>
-                    <ScrollBar orientation="horizontal" />
-                  </ScrollArea>
-                ) : (
-                  <div className="text-center py-10 px-4 border border-dashed border-white/10 rounded-lg">
-                    <Image className="h-10 w-10 text-white/20 mx-auto mb-3" />
-                    <h3 className="text-lg font-medium text-white/80 mb-1">No try-on history yet</h3>
-                    <p className="text-white/60 text-sm">
-                      Your try-on history will appear here after you generate looks
-                    </p>
-                  </div>
-                )}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </Tabs>
-      </CardContent>
-    </Card>
-  );
-};
+];
 
 export default WishlistAndHistory;
