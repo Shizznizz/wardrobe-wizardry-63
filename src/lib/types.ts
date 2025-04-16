@@ -119,20 +119,42 @@ export interface OutfitLogExtended extends OutfitLog {
   outfit?: Outfit;
 }
 
-// Interface for PersonalizedItem in style carousel
-export interface PersonalizedItem extends Omit<ClothingItem, 'season'> {
-  season?: ClothingSeason[];
-  seasons?: ClothingSeason[];  // For backward compatibility
+export interface ClothingItem {
+  id: string;
+  name: string;
+  type: ClothingType;
+  color: ClothingColor;
+  season: ClothingSeason[];
+  image: string;
+  imageUrl?: string;
   brand?: string;
-  category?: string;
+  size?: string;
+  material?: ClothingMaterial;
+  favorite?: boolean;
+  lastWorn?: Date;
+  purchaseDate?: Date;
+  price?: number;
+  notes?: string;
+  occasions?: ClothingOccasion[];
+  timesWorn?: number;
+  dateAdded?: Date;
+  tags?: string[];  // Added for OutfitGroupsSection
 }
 
-// Interface for TrendingClothingItem 
-export interface TrendingClothingItem extends Omit<ClothingItem, 'season'> {
+// Interface for PersonalizedItem in style carousel (making season optional)
+export interface PersonalizedItem extends Omit<ClothingItem, 'season' | 'image'> {
   season?: ClothingSeason[];
-  seasons?: ClothingSeason[];  // For backward compatibility
   brand?: string;
   category?: string;
+  image?: string;
+}
+
+// Interface for TrendingClothingItem (making season optional)
+export interface TrendingClothingItem extends Omit<ClothingItem, 'season' | 'image'> {
+  season?: ClothingSeason[];
+  brand?: string;
+  category?: string;
+  image?: string;
 }
 
 export interface UserPreferences {
@@ -158,29 +180,6 @@ export interface UserPreferences {
   };
 }
 
-export interface ClothingItem {
-  id: string;
-  name: string;
-  type: ClothingType;
-  color: ClothingColor;
-  season: ClothingSeason[];
-  seasons?: ClothingSeason[]; // For backward compatibility
-  image: string;
-  imageUrl?: string;
-  brand?: string;
-  size?: string;
-  material?: ClothingMaterial;
-  favorite?: boolean;
-  lastWorn?: Date;
-  purchaseDate?: Date;
-  price?: number;
-  notes?: string;
-  occasions?: ClothingOccasion[];
-  timesWorn?: number;
-  dateAdded?: Date;
-  tags?: string[];  // Added for OutfitGroupsSection
-}
-
 export interface Outfit {
   id: string;
   name: string;
@@ -197,6 +196,8 @@ export interface Outfit {
   timesWorn?: number;
   personalityTags?: PersonalityTag[];
   tags?: string[];  // Added for OutfitGroupsSection and OutfitPreview
+  colors?: string[]; // Added for filtering in Outfits page
+  colorScheme?: string; // Added for sample outfits in wardrobeData
 }
 
 // Interface specifically for shop items that extends ClothingItem

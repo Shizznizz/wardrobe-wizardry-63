@@ -65,6 +65,8 @@ const NewClothes = () => {
     items: selectedItems.map(item => item.id),
     occasions: ['shopping'],
     seasons: ['all'],
+    season: ['all'],
+    occasion: 'casual',
     favorite: false,
     timesWorn: 0,
     dateAdded: new Date()

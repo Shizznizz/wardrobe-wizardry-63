@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
@@ -198,7 +199,11 @@ const PersonalizedStyleCarousel = ({
                     <Button 
                       size="sm"
                       className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:opacity-90 flex-1"
-                      onClick={() => onTryItem(item)}
+                      onClick={() => onTryItem({
+                        ...item,
+                        season: item.season || ['all'],
+                        image: item.image || '/placeholder.svg'
+                      } as ClothingItem)}
                       disabled={!isPremiumUser}
                     >
                       <Shirt className="h-3.5 w-3.5 mr-1.5" />
@@ -209,7 +214,11 @@ const PersonalizedStyleCarousel = ({
                       size="sm"
                       variant="outline"
                       className="border-white/20 hover:bg-white/10"
-                      onClick={() => onStyleTips(item)}
+                      onClick={() => onStyleTips({
+                        ...item,
+                        season: item.season || ['all'],
+                        image: item.image || '/placeholder.svg'
+                      } as ClothingItem)}
                       disabled={!isPremiumUser}
                     >
                       Style Tips

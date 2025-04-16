@@ -1,3 +1,4 @@
+
 import React from 'react';
 import WardrobeItemCard from '@/components/WardrobeItemCard';
 import { ClothingItem } from '@/lib/types';
@@ -12,6 +13,7 @@ interface WardrobeGridProps {
   selectable?: boolean;
   selectedItems?: string[];
   onToggleSelect?: (id: string) => void;
+  onCreateOutfit?: (name: string, itemIds: string[]) => void;
 }
 
 const WardrobeGrid = ({
@@ -23,7 +25,8 @@ const WardrobeGrid = ({
   compactView = false,
   selectable = false,
   selectedItems = [],
-  onToggleSelect
+  onToggleSelect,
+  onCreateOutfit
 }: WardrobeGridProps) => {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
