@@ -99,13 +99,17 @@ interface UnifiedProductsCarouselProps {
   onTryItem: (item: ClothingItem) => void;
   onStylistSuggestion?: (item: ClothingItem) => void;
   onUpgradeToPremium: () => void;
+  activeMood?: string | null; // Add this property with optional type
+  onMoodSelect?: (mood: string | null) => void; // Add this property with optional type
 }
 
 const UnifiedProductsCarousel = ({
   isPremiumUser,
   onTryItem,
   onStylistSuggestion,
-  onUpgradeToPremium
+  onUpgradeToPremium,
+  activeMood,
+  onMoodSelect
 }: UnifiedProductsCarouselProps) => {
   const [activeTab, setActiveTab] = useState("editors");
   const [likedItems, setLikedItems] = useState<Record<string, boolean>>({});
@@ -135,6 +139,13 @@ const UnifiedProductsCarousel = ({
       setActiveFilters(prev => prev.filter(f => f !== filter));
     } else {
       setActiveFilters(prev => [...prev, filter]);
+    }
+  };
+  
+  // Handle mood selection
+  const handleMoodSelect = (mood: string | null) => {
+    if (onMoodSelect) {
+      onMoodSelect(mood);
     }
   };
   
@@ -313,6 +324,27 @@ const UnifiedProductsCarousel = ({
             </Button>
           ))}
         </div>
+        
+        {/* Add mood filters if onMoodSelect is provided */}
+        {onMoodSelect && (
+          <div className="flex flex-wrap gap-2 mb-4">
+            {['Romantic', 'Power Boss', 'Casual', 'Creative', 'Relaxed'].map((mood) => (
+              <Button
+                key={mood}
+                variant="outline"
+                size="sm"
+                className={`h-8 text-xs border-white/20 ${
+                  activeMood === mood
+                    ? 'bg-gradient-to-r from-purple-600/30 to-pink-600/30 text-white border-purple-500/30'
+                    : 'text-white/70'
+                }`}
+                onClick={() => handleMoodSelect(activeMood === mood ? null : mood)}
+              >
+                <span className="ml-1.5">{mood}</span>
+              </Button>
+            ))}
+          </div>
+        )}
         
         <Card className="border-white/10 bg-slate-900/40 overflow-hidden">
           <CardContent className="p-4 relative">
