@@ -27,7 +27,7 @@ const OutfitSelectorDialog = ({ isOpen, onClose, onSubmit, outfits }: OutfitSele
 
   const seasons: ClothingSeason[] = ['spring', 'summer', 'autumn', 'winter'];
   
-  // Group outfits by occasions since the Outfit type doesn't have a category property
+  // Group outfits by occasions
   const getOutfitCategories = () => {
     if (!selectedSeason) return [];
     
@@ -46,8 +46,10 @@ const OutfitSelectorDialog = ({ isOpen, onClose, onSubmit, outfits }: OutfitSele
   };
   
   const getCategoryOutfits = (category: string) => {
+    if (!selectedSeason) return [];
+    
     return outfits.filter(outfit => 
-      outfit.seasons.includes(selectedSeason as ClothingSeason) && 
+      outfit.seasons.includes(selectedSeason) && 
       (outfit.occasions?.includes(category) || 
         (!outfit.occasions || outfit.occasions.length === 0) && category === 'Uncategorized')
     );
@@ -92,7 +94,11 @@ const OutfitSelectorDialog = ({ isOpen, onClose, onSubmit, outfits }: OutfitSele
             <SelectTrigger className="w-full bg-slate-800 border-slate-700">
               <SelectValue placeholder="Select season" />
             </SelectTrigger>
-            <SelectContent className="bg-slate-800 border-slate-700 text-white">
+            <SelectContent 
+              className="bg-slate-800 border-slate-700 text-white max-h-[300px]"
+              position="popper"
+              sideOffset={5}
+            >
               {seasons.map(season => (
                 <SelectItem key={season} value={season}>
                   {season.charAt(0).toUpperCase() + season.slice(1)}
@@ -112,7 +118,11 @@ const OutfitSelectorDialog = ({ isOpen, onClose, onSubmit, outfits }: OutfitSele
               <SelectTrigger className="w-full bg-slate-800 border-slate-700">
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
-              <SelectContent className="bg-slate-800 border-slate-700 text-white">
+              <SelectContent 
+                className="bg-slate-800 border-slate-700 text-white max-h-[300px]" 
+                position="popper"
+                sideOffset={5}
+              >
                 {outfitCategories.map(category => (
                   <SelectItem key={category} value={category}>
                     {category.charAt(0).toUpperCase() + category.slice(1)}
@@ -130,7 +140,11 @@ const OutfitSelectorDialog = ({ isOpen, onClose, onSubmit, outfits }: OutfitSele
               <SelectTrigger className="w-full bg-slate-800 border-slate-700">
                 <SelectValue placeholder="Select outfit" />
               </SelectTrigger>
-              <SelectContent className="bg-slate-800 border-slate-700 text-white">
+              <SelectContent 
+                className="bg-slate-800 border-slate-700 text-white max-h-[300px]"
+                position="popper"
+                sideOffset={5}
+              >
                 {filteredOutfits.map(outfit => (
                   <SelectItem key={outfit.id} value={outfit.id}>
                     {outfit.name}
