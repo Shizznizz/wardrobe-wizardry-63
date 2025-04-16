@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
@@ -36,7 +35,6 @@ const WishlistAndHistory = ({
   const [wishlistItems, setWishlistItems] = useState<ClothingItem[]>(dummyWishlistItems);
   const [historyItems, setHistoryItems] = useState<HistoryItem[]>(dummyHistoryItems);
   
-  // If not premium, show upgrade prompt
   if (!isPremiumUser) {
     return (
       <Card className="border-white/10 backdrop-blur-sm bg-gradient-to-br from-purple-900/10 to-slate-900/10 overflow-hidden">
@@ -324,14 +322,13 @@ interface HistoryItem {
   item: ClothingItem;
 }
 
-// Mock wishlist items
 const dummyWishlistItems: ClothingItem[] = Array(5).fill(null).map((_, i) => ({
   id: `wishlist-${i}`,
   name: ['Trench Coat', 'Silk Scarf', 'Striped Shirt', 'Canvas Sneakers', 'Linen Pants'][i],
   type: ['jacket', 'accessories', 'shirt', 'shoes', 'pants'][i] as ClothingType,
   color: ['beige', 'purple', 'blue', 'white', 'brown'][i] as ClothingColor,
   material: ['cotton', 'silk', 'cotton', 'canvas', 'linen'][i] as ClothingMaterial,
-  seasons: ['autumn', 'spring', 'all', 'summer', 'summer'] as ClothingSeason[],
+  season: ['autumn', 'spring', 'all', 'summer', 'summer'] as ClothingSeason[],
   occasions: ['casual', 'formal', 'business', 'casual', 'casual'] as ClothingOccasion[],
   imageUrl: '/placeholder.svg',
   favorite: false,
@@ -339,7 +336,6 @@ const dummyWishlistItems: ClothingItem[] = Array(5).fill(null).map((_, i) => ({
   dateAdded: new Date()
 }));
 
-// Mock history items
 const dummyHistoryItems: HistoryItem[] = [
   {
     id: 'history-1',
@@ -355,7 +351,7 @@ const dummyHistoryItems: HistoryItem[] = [
       type: 'jacket' as ClothingType,
       color: 'blue' as ClothingColor,
       material: 'denim' as ClothingMaterial,
-      seasons: ['spring', 'autumn'] as ClothingSeason[],
+      season: ['spring', 'autumn'] as ClothingSeason[],
       occasions: ['casual'] as ClothingOccasion[],
       imageUrl: '/placeholder.svg',
       favorite: false,
@@ -377,7 +373,7 @@ const dummyHistoryItems: HistoryItem[] = [
       type: 'dress' as ClothingType,
       color: 'pink' as ClothingColor,
       material: 'cotton' as ClothingMaterial,
-      seasons: ['summer'] as ClothingSeason[],
+      season: ['summer'] as ClothingSeason[],
       occasions: ['casual'] as ClothingOccasion[],
       imageUrl: '/placeholder.svg',
       favorite: true,
@@ -399,7 +395,7 @@ const dummyHistoryItems: HistoryItem[] = [
       type: 'shirt' as ClothingType,
       color: 'white' as ClothingColor,
       material: 'linen' as ClothingMaterial,
-      seasons: ['summer'] as ClothingSeason[],
+      season: ['summer'] as ClothingSeason[],
       occasions: ['casual'] as ClothingOccasion[],
       imageUrl: '/placeholder.svg',
       favorite: false,
@@ -410,3 +406,21 @@ const dummyHistoryItems: HistoryItem[] = [
 ];
 
 export default WishlistAndHistory;
+
+const itemsWithCorrectTypes: ClothingItem[] = [
+  {
+    id: 'history-1',
+    name: 'Silk Blouse',
+    type: 'shirt',
+    color: 'white',
+    material: 'silk',
+    season: ['spring', 'summer', 'autumn'],
+    occasions: ['formal', 'business'],
+    image: '/placeholder.svg',
+    imageUrl: 'https://example.com/image.jpg',
+    favorite: false,
+    timesWorn: 0,
+    dateAdded: new Date()
+  },
+  // ... other items
+];

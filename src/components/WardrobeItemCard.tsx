@@ -1,4 +1,3 @@
-
 import { motion } from 'framer-motion';
 import { Star, Tally4, Calendar, Tags, Heart, ArrowRight, Trash2, Edit } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';

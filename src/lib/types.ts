@@ -123,12 +123,16 @@ export interface OutfitLogExtended extends OutfitLog {
 export interface PersonalizedItem extends Omit<ClothingItem, 'season'> {
   season?: ClothingSeason[];
   seasons?: ClothingSeason[];  // For backward compatibility
+  brand?: string;
+  category?: string;
 }
 
 // Interface for TrendingClothingItem 
 export interface TrendingClothingItem extends Omit<ClothingItem, 'season'> {
   season?: ClothingSeason[];
   seasons?: ClothingSeason[];  // For backward compatibility
+  brand?: string;
+  category?: string;
 }
 
 export interface UserPreferences {
@@ -160,6 +164,7 @@ export interface ClothingItem {
   type: ClothingType;
   color: ClothingColor;
   season: ClothingSeason[];
+  seasons?: ClothingSeason[]; // For backward compatibility
   image: string;
   imageUrl?: string;
   brand?: string;
@@ -170,7 +175,7 @@ export interface ClothingItem {
   purchaseDate?: Date;
   price?: number;
   notes?: string;
-  occasions?: string[];
+  occasions?: ClothingOccasion[];
   timesWorn?: number;
   dateAdded?: Date;
   tags?: string[];  // Added for OutfitGroupsSection
@@ -181,9 +186,9 @@ export interface Outfit {
   name: string;
   items: string[];
   season: ClothingSeason[];
+  seasons?: ClothingSeason[]; // For backward compatibility
   occasion: string;
   occasions?: string[];
-  seasons?: ClothingSeason[];
   favorite?: boolean;
   lastWorn?: Date;
   createdAt?: Date;
@@ -192,4 +197,16 @@ export interface Outfit {
   timesWorn?: number;
   personalityTags?: PersonalityTag[];
   tags?: string[];  // Added for OutfitGroupsSection and OutfitPreview
+}
+
+// Interface specifically for shop items that extends ClothingItem
+export interface ShopItem extends Omit<ClothingItem, 'price'> {
+  price: string;
+  retailer: string;
+  rating: number;
+  reviewCount: number;
+  discount?: string;
+  affiliateUrl: string;
+  isExclusive?: boolean;
+  isTrending?: boolean;
 }

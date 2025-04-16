@@ -1,22 +1,15 @@
-
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, Sparkles, Shirt, ArrowRight } from 'lucide-react';
-import { ClothingItem } from '@/lib/types';
+import { ClothingItem, TrendingClothingItem } from '@/lib/types';
 
 interface TrendingNowSectionProps {
   isPremiumUser: boolean;
   onTryItem: (item: ClothingItem) => void;
   onStyleTips: (item: ClothingItem) => void;
   onUpgradeToPremium: () => void;
-}
-
-// Extended version of ClothingItem with brand property
-interface TrendingClothingItem extends ClothingItem {
-  brand: string;
-  category: string;
 }
 
 const TrendingNowSection = ({
@@ -27,13 +20,12 @@ const TrendingNowSection = ({
 }: TrendingNowSectionProps) => {
   const [scrollPosition, setScrollPosition] = useState(0);
   
-  // Sample trending items
   const trendingItems: TrendingClothingItem[] = [
     {
       id: 'trend-1',
       name: 'Zara Mesh Corset Top',
       type: 'shirt',
-      seasons: ['spring', 'summer'],
+      season: ['spring', 'summer'],
       color: 'black',
       material: 'cotton',
       occasions: ['party'],
@@ -42,13 +34,14 @@ const TrendingNowSection = ({
       timesWorn: 0,
       dateAdded: new Date(),
       brand: 'Zara',
-      category: 'Tops'
+      category: 'Tops',
+      image: '/placeholder.svg'
     },
     {
       id: 'trend-2',
       name: 'TikTok Wide-Leg Jeans',
       type: 'pants',
-      seasons: ['all'],
+      season: ['all'],
       color: 'blue',
       material: 'denim',
       occasions: ['casual'],
@@ -57,13 +50,14 @@ const TrendingNowSection = ({
       timesWorn: 0,
       dateAdded: new Date(),
       brand: 'Urban Outfitters',
-      category: 'Bottoms'
+      category: 'Bottoms',
+      image: '/placeholder.svg'
     },
     {
       id: 'trend-3',
       name: 'Revolve Party Bag',
       type: 'accessories',
-      seasons: ['all'],
+      season: ['all'],
       color: 'gray',
       material: 'leather',
       occasions: ['party'],
@@ -72,13 +66,14 @@ const TrendingNowSection = ({
       timesWorn: 0,
       dateAdded: new Date(),
       brand: 'Revolve',
-      category: 'Accessories'
+      category: 'Accessories',
+      image: '/placeholder.svg'
     },
     {
       id: 'trend-4',
       name: 'Urban Outfitters Hoodie',
       type: 'hoodie',
-      seasons: ['autumn', 'winter'],
+      season: ['autumn', 'winter'],
       color: 'gray',
       material: 'cotton',
       occasions: ['casual'],
@@ -87,13 +82,14 @@ const TrendingNowSection = ({
       timesWorn: 0,
       dateAdded: new Date(),
       brand: 'Urban Outfitters',
-      category: 'Tops'
+      category: 'Tops',
+      image: '/placeholder.svg'
     },
     {
       id: 'trend-5',
       name: 'Shein Sparkle Crop Top',
       type: 'shirt',
-      seasons: ['summer'],
+      season: ['summer'],
       color: 'yellow',
       material: 'polyester',
       occasions: ['party'],
@@ -102,7 +98,8 @@ const TrendingNowSection = ({
       timesWorn: 0,
       dateAdded: new Date(),
       brand: 'Shein',
-      category: 'Tops'
+      category: 'Tops',
+      image: '/placeholder.svg'
     }
   ];
   

@@ -1,22 +1,15 @@
-
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, Info, Shirt } from 'lucide-react';
-import { ClothingItem } from '@/lib/types';
+import { ClothingItem, PersonalizedItem } from '@/lib/types';
 
 interface PersonalizedStyleCarouselProps {
   isPremiumUser: boolean;
   onTryItem: (item: ClothingItem) => void;
   onStyleTips: (item: ClothingItem) => void;
   onUpgradeToPremium: () => void;
-}
-
-// Extended version of ClothingItem with brand property
-interface PersonalizedItem extends ClothingItem {
-  brand: string;
-  category: string;
 }
 
 const PersonalizedStyleCarousel = ({
@@ -27,13 +20,12 @@ const PersonalizedStyleCarousel = ({
 }: PersonalizedStyleCarouselProps) => {
   const [scrollPosition, setScrollPosition] = useState(0);
   
-  // Sample personalized items (in a real app, these would be fetched based on user preferences)
   const personalizedItems: PersonalizedItem[] = [
     {
       id: 'personal-1',
       name: 'Satin Midi Dress',
       type: 'dress',
-      seasons: ['spring', 'summer'],
+      season: ['spring', 'summer'],
       color: 'pink',
       material: 'silk',
       occasions: ['party'],
@@ -42,13 +34,14 @@ const PersonalizedStyleCarousel = ({
       timesWorn: 0,
       dateAdded: new Date(),
       brand: 'Reformation',
-      category: 'Dresses'
+      category: 'Dresses',
+      image: '/placeholder.svg'
     },
     {
       id: 'personal-2',
       name: 'Boyfriend Blazer',
       type: 'jacket',
-      seasons: ['autumn', 'winter', 'spring'],
+      season: ['autumn', 'winter', 'spring'],
       color: 'black',
       material: 'cotton',
       occasions: ['business', 'casual'],
@@ -57,14 +50,15 @@ const PersonalizedStyleCarousel = ({
       timesWorn: 0,
       dateAdded: new Date(),
       brand: 'Arket',
-      category: 'Outerwear'
+      category: 'Outerwear',
+      image: '/placeholder.svg'
     },
     {
       id: 'personal-3',
       name: 'Statement Earrings',
       type: 'accessories',
-      seasons: ['all'],
-      color: 'yellow', // Changed from "gold" to "yellow" which is a valid ClothingColor
+      season: ['all'],
+      color: 'yellow',
       material: 'other',
       occasions: ['party', 'special'],
       imageUrl: 'https://images.unsplash.com/photo-1589128777073-263566ae5e4d?auto=format&fit=crop&q=80&w=300&h=400',
@@ -72,13 +66,14 @@ const PersonalizedStyleCarousel = ({
       timesWorn: 0,
       dateAdded: new Date(),
       brand: 'Mejuri',
-      category: 'Accessories'
+      category: 'Accessories',
+      image: '/placeholder.svg'
     },
     {
       id: 'personal-4',
       name: 'Chunky Knit Sweater',
       type: 'sweater',
-      seasons: ['autumn', 'winter'],
+      season: ['autumn', 'winter'],
       color: 'white',
       material: 'wool',
       occasions: ['casual'],
@@ -87,13 +82,14 @@ const PersonalizedStyleCarousel = ({
       timesWorn: 0,
       dateAdded: new Date(),
       brand: 'COS',
-      category: 'Knitwear'
+      category: 'Knitwear',
+      image: '/placeholder.svg'
     },
     {
       id: 'personal-5',
       name: 'Platform Boots',
       type: 'boots',
-      seasons: ['autumn', 'winter'],
+      season: ['autumn', 'winter'],
       color: 'black',
       material: 'leather',
       occasions: ['casual', 'party'],
@@ -102,7 +98,8 @@ const PersonalizedStyleCarousel = ({
       timesWorn: 0,
       dateAdded: new Date(),
       brand: 'Dr. Martens',
-      category: 'Footwear'
+      category: 'Footwear',
+      image: '/placeholder.svg'
     }
   ];
   

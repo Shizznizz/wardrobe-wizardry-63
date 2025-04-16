@@ -1,11 +1,10 @@
-
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Sparkles, Filter, X } from 'lucide-react';
-import { ClothingItem } from '@/lib/types';
+import { ClothingItem, ClothingOccasion, ClothingSeason } from '@/lib/types';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface StyleMood {
@@ -24,8 +23,9 @@ const moodItems: Record<string, ClothingItem[]> = {
     type: 'top',
     color: 'pink',
     material: 'cotton',
-    seasons: ['spring', 'summer'],
+    season: ['spring', 'summer'],
     occasions: ['date', 'party'],
+    image: '/placeholder.svg',
     imageUrl: '/placeholder.svg',
     favorite: false,
     timesWorn: 0,
@@ -37,8 +37,9 @@ const moodItems: Record<string, ClothingItem[]> = {
     type: 'jacket',
     color: 'black',
     material: 'polyester',
-    seasons: ['autumn', 'winter'],
+    season: ['autumn', 'winter'],
     occasions: ['business', 'formal'],
+    image: '/placeholder.svg',
     imageUrl: '/placeholder.svg',
     favorite: false,
     timesWorn: 0,
@@ -50,8 +51,9 @@ const moodItems: Record<string, ClothingItem[]> = {
     type: 'shirt',
     color: 'blue',
     material: 'cotton',
-    seasons: ['all'],
-    occasions: ['casual', 'everyday'],
+    season: ['all'],
+    occasions: ['casual'],
+    image: '/placeholder.svg',
     imageUrl: '/placeholder.svg',
     favorite: false,
     timesWorn: 0,
@@ -63,8 +65,9 @@ const moodItems: Record<string, ClothingItem[]> = {
     type: 'dress',
     color: 'brown',
     material: 'linen',
-    seasons: ['spring', 'summer'],
-    occasions: ['casual', 'vacation'],
+    season: ['spring', 'summer'],
+    occasions: ['casual'],
+    image: '/placeholder.svg',
     imageUrl: '/placeholder.svg',
     favorite: false,
     timesWorn: 0,
@@ -76,8 +79,9 @@ const moodItems: Record<string, ClothingItem[]> = {
     type: 'top',
     color: 'white',
     material: 'cotton',
-    seasons: ['all'],
+    season: ['all'],
     occasions: ['casual', 'business'],
+    image: '/placeholder.svg',
     imageUrl: '/placeholder.svg',
     favorite: false,
     timesWorn: 0,

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { ClothingItem, ClothingType, ClothingColor, ClothingMaterial, ClothingSeason, ClothingOccasion } from '@/lib/types';
 import {
@@ -26,22 +25,21 @@ const EditItemDialog = ({ item, isOpen, onClose, onSave }: EditItemDialogProps) 
   const [type, setType] = useState<ClothingType | ''>(item?.type || '');
   const [color, setColor] = useState<ClothingColor | ''>(item?.color || '');
   const [material, setMaterial] = useState<ClothingMaterial | ''>(item?.material || '');
-  const [seasons, setSeasons] = useState<ClothingSeason[]>(item?.seasons || []);
+  const [seasons, setSeasons] = useState<ClothingSeason[]>(item?.season || []);
   const [favorite, setFavorite] = useState(item?.favorite || false);
   const [imageUrl, setImageUrl] = useState(item?.imageUrl || '');
-  const [occasions, setOccasions] = useState<ClothingOccasion[]>(item?.occasions || []);
+  const [occasions, setOccasions] = useState<ClothingOccasion[]>(item?.occasions as ClothingOccasion[] || []);
   
-  // Reset form when item changes
   useEffect(() => {
     if (item) {
       setName(item.name);
       setType(item.type);
       setColor(item.color);
       setMaterial(item.material);
-      setSeasons(item.seasons);
+      setSeasons(item.season);
       setFavorite(item.favorite);
       setImageUrl(item.imageUrl);
-      setOccasions(item.occasions || []);
+      setOccasions(item.occasions as ClothingOccasion[] || []);
     }
   }, [item]);
   
@@ -76,9 +74,10 @@ const EditItemDialog = ({ item, isOpen, onClose, onSave }: EditItemDialogProps) 
       type,
       color,
       material: material as ClothingMaterial,
-      seasons,
+      season: seasons,
       favorite,
       imageUrl,
+      image: item.image || '/placeholder.svg',
       occasions: occasions || []
     };
     

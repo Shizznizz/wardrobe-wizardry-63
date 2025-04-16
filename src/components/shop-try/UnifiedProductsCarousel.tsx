@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
@@ -17,21 +16,10 @@ import {
   ArrowRightCircle
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { ClothingItem, ClothingType, ClothingColor, ClothingMaterial, ClothingSeason, ClothingOccasion } from '@/lib/types';
+import { ClothingItem, ClothingType, ClothingColor, ClothingMaterial, ClothingSeason, ClothingOccasion, ShopItem } from '@/lib/types';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-
-interface ShopItem extends ClothingItem {
-  price: string;
-  retailer: string;
-  rating: number;
-  reviewCount: number;
-  discount?: string;
-  affiliateUrl: string;
-  isExclusive?: boolean;
-  isTrending?: boolean;
-}
 
 const dummyItems: ShopItem[] = Array(12).fill(null).map((_, i) => ({
   id: `item-${i}`,
@@ -39,8 +27,9 @@ const dummyItems: ShopItem[] = Array(12).fill(null).map((_, i) => ({
   type: ['shirt', 'dress', 'jacket', 'sweater', 'pants'][i % 5] as ClothingType,
   color: ['blue', 'red', 'green', 'black', 'white'][i % 5] as ClothingColor,
   material: ['cotton', 'polyester', 'denim', 'wool', 'linen'][i % 5] as ClothingMaterial,
-  seasons: ['summer', 'winter', 'spring', 'autumn'] as ClothingSeason[],
+  season: ['summer', 'winter', 'spring', 'autumn'] as ClothingSeason[],
   occasions: ['casual', 'formal', 'business', 'party', 'outdoor'] as ClothingOccasion[],
+  image: '/placeholder.svg',
   imageUrl: '/placeholder.svg',
   price: `$${Math.floor(Math.random() * 100) + 20}.99`,
   retailer: ['H&M', 'Zara', 'Mango', 'ASOS', 'Uniqlo'][i % 5],
@@ -55,7 +44,6 @@ const dummyItems: ShopItem[] = Array(12).fill(null).map((_, i) => ({
   dateAdded: new Date()
 }));
 
-// Group items into different categories
 const editorsPicks = dummyItems.slice(0, 6);
 const trendingItems = dummyItems.slice(6, 12).map(item => ({ ...item, isTrending: true }));
 const vibeItems = dummyItems.slice(0, 8).reverse();
@@ -99,8 +87,8 @@ interface UnifiedProductsCarouselProps {
   onTryItem: (item: ClothingItem) => void;
   onStylistSuggestion?: (item: ClothingItem) => void;
   onUpgradeToPremium: () => void;
-  activeMood?: string | null; // Add this property with optional type
-  onMoodSelect?: (mood: string | null) => void; // Add this property with optional type
+  activeMood?: string | null;
+  onMoodSelect?: (mood: string | null) => void;
 }
 
 const UnifiedProductsCarousel = ({
@@ -142,14 +130,12 @@ const UnifiedProductsCarousel = ({
     }
   };
   
-  // Handle mood selection
   const handleMoodSelect = (mood: string | null) => {
     if (onMoodSelect) {
       onMoodSelect(mood);
     }
   };
   
-  // Get items based on active tab
   const getActiveItems = () => {
     switch (activeTab) {
       case "editors":
@@ -165,7 +151,14 @@ const UnifiedProductsCarousel = ({
   
   const activeItems = getActiveItems();
   
-  // Render product card
+  const handleTryItem = (item: ShopItem) => {
+    const clothingItem: ClothingItem = {
+      ...item,
+      price: typeof item.price === 'string' ? parseFloat(item.price.replace('$', '')) : undefined
+    };
+    onTryItem(clothingItem);
+  };
+  
   const renderProductCard = (item: ShopItem, index: number) => (
     <motion.div
       key={item.id}
@@ -207,7 +200,7 @@ const UnifiedProductsCarousel = ({
               <Button 
                 size="sm" 
                 className="bg-white text-black hover:bg-white/90"
-                onClick={() => onTryItem(item)}
+                onClick={() => handleTryItem(item)}
               >
                 Try On
               </Button>
@@ -325,7 +318,6 @@ const UnifiedProductsCarousel = ({
           ))}
         </div>
         
-        {/* Add mood filters if onMoodSelect is provided */}
         {onMoodSelect && (
           <div className="flex flex-wrap gap-2 mb-4">
             {['Romantic', 'Power Boss', 'Casual', 'Creative', 'Relaxed'].map((mood) => (
