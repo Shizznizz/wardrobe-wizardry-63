@@ -45,8 +45,8 @@ export type ClothingType =
   | 'sneakers'
   | 'boots'
   | 'accessories'
-  | 'jacket'  // Added 'jacket' to fix StyleMoodSelector errors
-  | 'top'     // Added 'top' to fix StyleMoodSelector errors
+  | 'jacket'
+  | 'top'
   | 'other';
 
 export type ClothingOccasion = 
@@ -56,9 +56,9 @@ export type ClothingOccasion =
   | 'sport'
   | 'special'
   | 'travel'
-  | 'business'  // Added to fix OutfitFilters errors
-  | 'party'     // Added to fix OutfitFilters errors
-  | 'date';     // Added to fix OutfitFilters errors
+  | 'business'
+  | 'party'
+  | 'date';
 
 export type ClothingMaterial =
   | 'cotton'
@@ -78,7 +78,7 @@ export interface WeatherInfo {
   city?: string;
   country?: string;
   iconCode?: string;
-  icon?: string;  // Added to fix OliviaRecommendationBox errors
+  icon?: string;
   high?: number;
   low?: number;
   feelsLike?: number;
@@ -86,11 +86,23 @@ export interface WeatherInfo {
   windSpeed?: number;
 }
 
-// Added TimeOfDay type for calendar components
+// Updated TimeOfDay type for calendar components
 export type TimeOfDay = 'morning' | 'afternoon' | 'evening' | 'night';
 
-// Added Activity type for calendar components
-export type Activity = 'work' | 'casual' | 'formal' | 'exercise' | 'travel' | 'other';
+// Updated Activity type for calendar components with additional activities
+export type Activity = 
+  | 'work' 
+  | 'casual' 
+  | 'formal' 
+  | 'exercise' 
+  | 'travel' 
+  | 'other'
+  | 'party'
+  | 'date'
+  | 'interview'
+  | 'presentation'
+  | 'dinner'
+  | 'sport';
 
 // Added OutfitLogExtended type for OutfitGroupsSection
 export interface OutfitLog {

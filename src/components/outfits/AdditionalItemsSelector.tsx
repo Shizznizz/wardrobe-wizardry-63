@@ -32,8 +32,8 @@ const sampleCategories: ClothingCategory[] = [
     name: 'Tops',
     icon: <Shirt className="h-5 w-5" />,
     items: [
-      { id: 'top1', name: 'White Blouse', type: 'shirt', imageUrl: '/placeholder.svg', occasions: ['casual', 'business'], seasons: ['spring', 'summer'], color: 'white', material: 'cotton', favorite: false, timesWorn: 0, dateAdded: new Date() },
-      { id: 'top2', name: 'Black T-Shirt', type: 'shirt', imageUrl: '/placeholder.svg', occasions: ['casual'], seasons: ['all'], color: 'black', material: 'cotton', favorite: false, timesWorn: 0, dateAdded: new Date() },
+      { id: 'top1', name: 'White Blouse', type: 'shirt', image: '/placeholder.svg', occasions: ['casual', 'business'], season: ['spring', 'summer'], color: 'white', material: 'cotton', favorite: false, timesWorn: 0, dateAdded: new Date() },
+      { id: 'top2', name: 'Black T-Shirt', type: 'shirt', image: '/placeholder.svg', occasions: ['casual'], season: ['all'], color: 'black', material: 'cotton', favorite: false, timesWorn: 0, dateAdded: new Date() },
     ]
   },
   {
@@ -41,8 +41,8 @@ const sampleCategories: ClothingCategory[] = [
     name: 'Bottoms',
     icon: <TrousersIcon className="h-5 w-5" />,
     items: [
-      { id: 'bottom1', name: 'Blue Jeans', type: 'jeans', imageUrl: '/placeholder.svg', occasions: ['casual'], seasons: ['all'], color: 'blue', material: 'denim', favorite: false, timesWorn: 0, dateAdded: new Date() },
-      { id: 'bottom2', name: 'Black Pants', type: 'pants', imageUrl: '/placeholder.svg', occasions: ['business'], seasons: ['autumn', 'winter'], color: 'black', material: 'cotton', favorite: false, timesWorn: 0, dateAdded: new Date() },
+      { id: 'bottom1', name: 'Blue Jeans', type: 'jeans', image: '/placeholder.svg', occasions: ['casual'], season: ['all'], color: 'blue', material: 'denim', favorite: false, timesWorn: 0, dateAdded: new Date() },
+      { id: 'bottom2', name: 'Black Pants', type: 'pants', image: '/placeholder.svg', occasions: ['business'], season: ['autumn', 'winter'], color: 'black', material: 'cotton', favorite: false, timesWorn: 0, dateAdded: new Date() },
     ]
   },
   {
@@ -50,8 +50,8 @@ const sampleCategories: ClothingCategory[] = [
     name: 'Shoes',
     icon: <Footprints className="h-5 w-5" />,
     items: [
-      { id: 'shoe1', name: 'Sneakers', type: 'sneakers', imageUrl: '/placeholder.svg', occasions: ['casual'], seasons: ['all'], color: 'white', material: 'other', favorite: false, timesWorn: 0, dateAdded: new Date() },
-      { id: 'shoe2', name: 'Boots', type: 'boots', imageUrl: '/placeholder.svg', occasions: ['casual', 'party'], seasons: ['autumn', 'winter'], color: 'brown', material: 'leather', favorite: false, timesWorn: 0, dateAdded: new Date() },
+      { id: 'shoe1', name: 'Sneakers', type: 'sneakers', image: '/placeholder.svg', occasions: ['casual'], season: ['all'], color: 'white', material: 'other', favorite: false, timesWorn: 0, dateAdded: new Date() },
+      { id: 'shoe2', name: 'Boots', type: 'boots', image: '/placeholder.svg', occasions: ['casual', 'party'], season: ['autumn', 'winter'], color: 'brown', material: 'leather', favorite: false, timesWorn: 0, dateAdded: new Date() },
     ]
   },
   {
@@ -59,8 +59,8 @@ const sampleCategories: ClothingCategory[] = [
     name: 'Accessories',
     icon: <Watch className="h-5 w-5" />,
     items: [
-      { id: 'acc1', name: 'Silver Necklace', type: 'accessories', imageUrl: '/placeholder.svg', occasions: ['casual', 'party'], seasons: ['all'], color: 'gray', material: 'other', favorite: false, timesWorn: 0, dateAdded: new Date() },
-      { id: 'acc2', name: 'Watch', type: 'accessories', imageUrl: '/placeholder.svg', occasions: ['business'], seasons: ['all'], color: 'black', material: 'other', favorite: false, timesWorn: 0, dateAdded: new Date() },
+      { id: 'acc1', name: 'Silver Necklace', type: 'accessories', image: '/placeholder.svg', occasions: ['casual', 'party'], season: ['all'], color: 'gray', material: 'other', favorite: false, timesWorn: 0, dateAdded: new Date() },
+      { id: 'acc2', name: 'Watch', type: 'accessories', image: '/placeholder.svg', occasions: ['business'], season: ['all'], color: 'black', material: 'other', favorite: false, timesWorn: 0, dateAdded: new Date() },
     ],
     isPremium: true
   },
@@ -69,8 +69,8 @@ const sampleCategories: ClothingCategory[] = [
     name: 'Premium Items',
     icon: <Crown className="h-5 w-5 text-yellow-400" />,
     items: [
-      { id: 'premium1', name: 'Designer Jacket', type: 'jacket', imageUrl: '/placeholder.svg', occasions: ['party'], seasons: ['autumn', 'winter'], color: 'black', material: 'leather', favorite: false, timesWorn: 0, dateAdded: new Date() },
-      { id: 'premium2', name: 'Luxury Bag', type: 'accessories', imageUrl: '/placeholder.svg', occasions: ['party'], seasons: ['all'], color: 'brown', material: 'leather', favorite: false, timesWorn: 0, dateAdded: new Date() },
+      { id: 'premium1', name: 'Designer Jacket', type: 'jacket', image: '/placeholder.svg', occasions: ['party'], season: ['autumn', 'winter'], color: 'black', material: 'leather', favorite: false, timesWorn: 0, dateAdded: new Date() },
+      { id: 'premium2', name: 'Luxury Bag', type: 'accessories', image: '/placeholder.svg', occasions: ['party'], season: ['all'], color: 'brown', material: 'leather', favorite: false, timesWorn: 0, dateAdded: new Date() },
     ],
     isPremium: true
   }
@@ -153,7 +153,7 @@ const AdditionalItemsSelector = ({ onAddItem, onPremiumClick, isPremium, classNa
                   onClick={() => handleSelectItem(item)}
                 >
                   <div className="aspect-square mb-2 rounded overflow-hidden bg-slate-800">
-                    <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
+                    <img src={item.imageUrl || item.image} alt={item.name} className="w-full h-full object-cover" />
                   </div>
                   <p className="text-sm font-medium text-white">{item.name}</p>
                 </div>

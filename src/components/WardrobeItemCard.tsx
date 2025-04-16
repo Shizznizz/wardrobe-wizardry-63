@@ -88,7 +88,7 @@ const WardrobeItemCard = ({
 
         <div className="relative aspect-square overflow-hidden">
           <OptimizedImage
-            src={item.imageUrl}
+            src={item.imageUrl || item.image}
             alt={item.name}
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
             showSkeleton={true}
@@ -153,16 +153,16 @@ const WardrobeItemCard = ({
             <div className="flex items-center text-xs text-gray-300 gap-3">
               <div className="flex items-center">
                 <Tally4 className="w-3 h-3 mr-1 text-purple-400" />
-                <span>{item.timesWorn} wears</span>
+                <span>{item.timesWorn || 0} wears</span>
               </div>
               <div className="flex items-center">
                 <Calendar className="w-3 h-3 mr-1 text-blue-400" />
-                <span>{formatDistanceToNow(new Date(item.dateAdded), { addSuffix: true })}</span>
+                <span>{item.dateAdded ? formatDistanceToNow(new Date(item.dateAdded), { addSuffix: true }) : 'Recently added'}</span>
               </div>
             </div>
 
             <div className="flex flex-wrap gap-1 pt-2 flex-grow">
-              {item.seasons.map((season) => (
+              {item.season && item.season.map((season) => (
                 <Badge key={season} variant="outline" className="text-[10px] h-5 px-1.5 border-blue-500/30 text-blue-100">
                   {season}
                 </Badge>

@@ -163,7 +163,7 @@ const WardrobeGrid = ({
                 <div className="flex items-center space-x-4">
                   <div className="relative h-20 w-20 rounded-lg overflow-hidden flex-shrink-0">
                     <img 
-                      src={item.imageUrl} 
+                      src={item.imageUrl || item.image} 
                       alt={item.name} 
                       className="h-full w-full object-cover"
                     />
@@ -271,7 +271,7 @@ const WardrobeGrid = ({
                     </div>
                     
                     <div className="mt-3 flex flex-wrap gap-1.5">
-                      {item.seasons.map((season) => (
+                      {item.season && item.season.map((season) => (
                         <span key={season} className="px-2 py-0.5 bg-blue-500/20 text-blue-200 rounded-full text-xs">
                           {season}
                         </span>
@@ -286,7 +286,7 @@ const WardrobeGrid = ({
                     
                     <div className="flex items-center justify-between mt-3">
                       <div className="flex items-center text-xs text-gray-400">
-                        <span>Worn: {item.timesWorn} times</span>
+                        <span>Worn: {item.timesWorn || 0} times</span>
                         {item.lastWorn && (
                           <>
                             <span className="mx-1.5">•</span>
