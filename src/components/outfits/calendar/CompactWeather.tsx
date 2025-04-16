@@ -38,16 +38,47 @@ const CompactWeather = ({ weather, date, customTip }: CompactWeatherProps) => {
     if (customTip) return customTip;
     if (!weather) return "Loading weather info...";
     
-    if (weather.temperature > 25) {
-      return "Stay cool with light, breathable fabrics.";
-    } else if (weather.temperature > 20) {
-      return "Perfect weather for a light outfit!";
-    } else if (weather.temperature > 15) {
-      return "Consider adding a light jacket.";
-    } else if (weather.temperature > 10) {
-      return "Layer up for comfort today.";
-    } else {
-      return "Bundle up warmly today!";
+    const condition = weather.condition.toLowerCase();
+    const month = date.getMonth();
+    const season = month >= 2 && month <= 4 ? 'spring' :
+                  month >= 5 && month <= 7 ? 'summer' :
+                  month >= 8 && month <= 10 ? 'autumn' : 'winter';
+    
+    if (condition.includes('rain')) {
+      return weather.temperature > 20 
+        ? "Don't forget a light rain jacket!"
+        : "Stay dry with waterproof layers today.";
+    }
+    
+    if (condition.includes('snow')) {
+      return "Bundle up warmly and wear waterproof boots!";
+    }
+    
+    if (condition.includes('wind')) {
+      return weather.temperature > 20
+        ? "A light windbreaker might be useful today."
+        : "Layer up against the wind today!";
+    }
+    
+    switch (season) {
+      case 'summer':
+        return weather.temperature > 25 
+          ? "Stay cool with breathable, light fabrics."
+          : "Perfect weather for your summer outfits!";
+      case 'winter':
+        return weather.temperature < 5
+          ? "Bundle up with warm layers today!"
+          : "Layer up for winter comfort.";
+      case 'spring':
+        return weather.temperature < 15
+          ? "Spring can be chilly - layer up!"
+          : "Perfect spring weather for light layers!";
+      case 'autumn':
+        return weather.temperature < 15
+          ? "Autumn chill - time for cozy layers!"
+          : "Enjoy the mild autumn weather!";
+      default:
+        return "Dress comfortably for today's weather!";
     }
   };
 
