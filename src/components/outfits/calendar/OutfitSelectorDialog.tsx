@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { X } from 'lucide-react';
 import { Outfit, ClothingSeason } from '@/lib/types';
 import OutfitPreview from './OutfitPreview';
 
@@ -26,9 +25,35 @@ const OutfitSelectorDialog = ({ isOpen, onClose, onSubmit, outfits }: OutfitSele
   }, [isOpen]);
 
   const seasons: ClothingSeason[] = ['spring', 'summer', 'autumn', 'winter'];
-  const filteredOutfits = selectedSeason 
-    ? outfits.filter(outfit => outfit.seasons.includes(selectedSeason))
-    : [];
+  
+  // Group outfits by category (e.g., casual, formal, etc.) for the second dropdown
+  const getOutfitCategories = () => {
+    if (!selectedSeason) return [];
+    
+    const seasonOutfits = outfits.filter(outfit => outfit.seasons.includes(selectedSeason));
+    const categories = new Set<string>();
+    
+    seasonOutfits.forEach(outfit => {
+      if (outfit.category) {
+        categories.add(outfit.category);
+      } else {
+        categories.add('Uncategorized');
+      }
+    });
+    
+    return Array.from(categories);
+  };
+  
+  const getCategoryOutfits = (category: string) => {
+    return outfits.filter(outfit => 
+      outfit.seasons.includes(selectedSeason) && 
+      (outfit.category === category || (!outfit.category && category === 'Uncategorized'))
+    );
+  };
+  
+  const outfitCategories = getOutfitCategories();
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const filteredOutfits = selectedCategory ? getCategoryOutfits(selectedCategory) : [];
 
   const selectedOutfit = outfits.find(o => o.id === selectedOutfitId);
 
@@ -46,15 +71,6 @@ const OutfitSelectorDialog = ({ isOpen, onClose, onSubmit, outfits }: OutfitSele
           <DialogTitle className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
             Add Outfit
           </DialogTitle>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="absolute right-4 top-4 rounded-sm opacity-70 hover:opacity-100 hover:bg-slate-800"
-            onClick={onClose}
-          >
-            <X className="h-4 w-4" />
-            <span className="sr-only">Close</span>
-          </Button>
         </DialogHeader>
 
         <div className="space-y-6 py-4">
@@ -62,6 +78,7 @@ const OutfitSelectorDialog = ({ isOpen, onClose, onSubmit, outfits }: OutfitSele
             value={selectedSeason}
             onValueChange={(value: ClothingSeason) => {
               setSelectedSeason(value);
+              setSelectedCategory('');
               setSelectedOutfitId('');
             }}
           >
@@ -78,6 +95,27 @@ const OutfitSelectorDialog = ({ isOpen, onClose, onSubmit, outfits }: OutfitSele
           </Select>
 
           {selectedSeason && (
+            <Select
+              value={selectedCategory}
+              onValueChange={(value: string) => {
+                setSelectedCategory(value);
+                setSelectedOutfitId('');
+              }}
+            >
+              <SelectTrigger className="w-full bg-slate-800 border-slate-700">
+                <SelectValue placeholder="Select category" />
+              </SelectTrigger>
+              <SelectContent className="bg-slate-800 border-slate-700 text-white">
+                {outfitCategories.map(category => (
+                  <SelectItem key={category} value={category}>
+                    {category.charAt(0).toUpperCase() + category.slice(1)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+
+          {selectedCategory && (
             <Select
               value={selectedOutfitId}
               onValueChange={setSelectedOutfitId}

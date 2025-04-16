@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { Outfit, WeatherInfo } from '@/lib/types';
@@ -92,13 +93,24 @@ const DayDetailView = ({
   }, [weatherLocation, onWeatherChange]);
 
   const handleDeleteLog = (log: OutfitLog) => {
-    const updatedLogs = outfitLogs.filter(l => l.id !== log.id);
-    if (log.outfitId === 'activity') {
-      onAddActivity('');
-    } else {
-      onAddOutfit('');
+    // Find the index of the log to be deleted
+    const logIndex = outfitLogs.findIndex(l => l.id === log.id);
+    
+    if (logIndex !== -1) {
+      // Create a copy of the logs array without the deleted log
+      const updatedLogs = outfitLogs.filter(l => l.id !== log.id);
+      
+      // Update the parent component's state by using the appropriate callback
+      if (log.outfitId === 'activity') {
+        // If it's an activity log, call onAddActivity with empty string to delete it
+        onAddActivity('');
+      } else {
+        // If it's an outfit log, call onAddOutfit with empty string to delete it
+        onAddOutfit('');
+      }
+      
+      toast.success('Item removed successfully');
     }
-    toast.success('Item removed successfully');
   };
 
   const getOutfitById = (id: string) => {

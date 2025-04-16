@@ -30,15 +30,6 @@ const ActivityInputDialog = ({ isOpen, onClose, onSubmit }: ActivityInputDialogP
           <DialogTitle className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
             Add Activity
           </DialogTitle>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="absolute right-4 top-4 rounded-sm opacity-70 hover:opacity-100 hover:bg-slate-800"
-            onClick={onClose}
-          >
-            <X className="h-4 w-4" />
-            <span className="sr-only">Close</span>
-          </Button>
         </DialogHeader>
 
         <div className="space-y-6 py-4">
