@@ -36,8 +36,9 @@ interface ShopItem extends ClothingItem {
 const dummyItems: ShopItem[] = Array(12).fill(null).map((_, i) => ({
   id: `item-${i}`,
   name: ['Casual Shirt', 'Summer Dress', 'Denim Jacket', 'Wool Sweater', 'Linen Pants'][i % 5],
-  type: ['top', 'dress', 'jacket', 'sweater', 'pants'][i % 5],
-  colors: ['blue', 'red', 'green', 'black', 'white'],
+  type: ['top', 'dress', 'jacket', 'sweater', 'pants'][i % 5] as any,
+  color: ['blue', 'red', 'green', 'black', 'white'][i % 5] as any,
+  material: ['cotton', 'polyester', 'denim', 'wool', 'linen'][i % 5] as any,
   seasons: ['summer', 'winter', 'spring', 'fall'],
   occasions: ['casual', 'formal', 'outdoor', 'party', 'work'],
   imageUrl: '/placeholder.svg',
@@ -49,6 +50,9 @@ const dummyItems: ShopItem[] = Array(12).fill(null).map((_, i) => ({
   affiliateUrl: 'https://example.com',
   isExclusive: Math.random() > 0.8,
   isTrending: Math.random() > 0.8,
+  favorite: false,
+  timesWorn: 0,
+  dateAdded: new Date()
 }));
 
 // Group items into different categories
