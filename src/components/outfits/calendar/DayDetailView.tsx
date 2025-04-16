@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { Outfit, WeatherInfo } from '@/lib/types';
@@ -22,6 +21,7 @@ interface DayDetailViewProps {
   onAddActivity: (activity: string) => void;
   weatherLocation?: { city: string; country: string };
   onWeatherChange?: (weather: WeatherInfo) => void;
+  onDeleteLog?: (logId: string) => Promise<boolean>;
 }
 
 const DayDetailView = ({
@@ -31,7 +31,8 @@ const DayDetailView = ({
   onAddOutfit,
   onAddActivity,
   weatherLocation,
-  onWeatherChange
+  onWeatherChange,
+  onDeleteLog
 }: DayDetailViewProps) => {
   const [isAddingActivity, setIsAddingActivity] = useState(false);
   const [isAddingOutfit, setIsAddingOutfit] = useState(false);
@@ -92,24 +93,14 @@ const DayDetailView = ({
     getWeather();
   }, [weatherLocation, onWeatherChange]);
 
-  const handleDeleteLog = (log: OutfitLog) => {
-    // Find the index of the log to be deleted
-    const logIndex = outfitLogs.findIndex(l => l.id === log.id);
-    
-    if (logIndex !== -1) {
-      // Create a copy of the logs array without the deleted log
-      const updatedLogs = outfitLogs.filter(l => l.id !== log.id);
-      
-      // Update the parent component's state by using the appropriate callback
-      if (log.outfitId === 'activity') {
-        // If it's an activity log, call onAddActivity with empty string to delete it
-        onAddActivity('');
+  const handleDeleteLog = async (logId: string) => {
+    if (onDeleteLog) {
+      const success = await onDeleteLog(logId);
+      if (success) {
+        toast.success('Item removed successfully');
       } else {
-        // If it's an outfit log, call onAddOutfit with empty string to delete it
-        onAddOutfit('');
+        toast.error('Failed to remove item');
       }
-      
-      toast.success('Item removed successfully');
     }
   };
 
@@ -183,7 +174,7 @@ const DayDetailView = ({
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => handleDeleteLog(log)}
+                      onClick={() => handleDeleteLog(log.id)}
                       className="text-red-400 hover:text-red-300 hover:bg-red-900/20"
                     >
                       <Trash2 className="w-4 h-4" />

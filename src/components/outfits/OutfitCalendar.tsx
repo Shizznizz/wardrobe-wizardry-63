@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
@@ -142,7 +141,7 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog, location }: OutfitCa
   };
 
   const handleAddActivity = async (activity: string) => {
-    if (!selectedDate) return;
+    if (!selectedDate || !activity.trim()) return;
     
     const newLog = {
       outfitId: 'activity',
@@ -188,6 +187,7 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog, location }: OutfitCa
                   onAddOutfit={handleAddOutfit}
                   onAddActivity={handleAddActivity}
                   weatherLocation={location}
+                  onDeleteLog={deleteOutfitLog}
                 />
               )}
             </>
