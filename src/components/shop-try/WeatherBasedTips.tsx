@@ -1,9 +1,10 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Cloud, Sun, Umbrella, Wind, CloudRain, ThermometerSnowflake, MapPin, CircleHelp } from 'lucide-react';
+import { Cloud, Sun, Umbrella, Wind, CloudRain, ThermometerSnowflake, MapPin, CircleHelp, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface WeatherBasedTipsProps {
   userPhoto: string | null;
@@ -92,15 +93,33 @@ const WeatherBasedTips = ({
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="mb-8 overflow-hidden rounded-lg border border-purple-500/20 bg-gradient-to-r from-indigo-950/40 to-purple-950/40 p-4 backdrop-blur-sm"
+      className="mb-8 overflow-hidden rounded-lg border border-purple-500/30 bg-gradient-to-r from-indigo-950/50 to-purple-950/50 p-5 backdrop-blur-sm"
     >
-      <div className="flex items-center gap-3">
-        <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-white/10">
-          {getWeatherIcon()}
-        </div>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <motion.div 
+                className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-blue-600/30 to-purple-600/30 shadow-md"
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.2 }}
+              >
+                {getWeatherIcon()}
+              </motion.div>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              <p className="text-xs">Current weather condition</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
         
-        <div className="flex-grow">
-          <div className="flex items-center gap-2">
+        <div className="flex-grow space-y-1">
+          <div className="flex items-start sm:items-center gap-1 flex-wrap">
+            <div className="inline-flex items-center px-2 py-0.5 bg-pink-500/20 rounded-full mr-2">
+              <Sparkles className="mr-1 h-3 w-3 text-pink-400" />
+              <span className="text-xs font-medium text-pink-300">Olivia's Tip</span>
+            </div>
+            
             <p className="text-sm font-medium text-white/90">
               <span className="inline-flex items-center">
                 <MapPin className="mr-1 h-3 w-3 text-pink-400" />
@@ -110,18 +129,20 @@ const WeatherBasedTips = ({
             </p>
           </div>
           
-          <p className="mt-1 text-xs text-white/70">
-            Olivia suggests {getClothingTip()} for today's weather.
+          <p className="mt-1 text-sm text-white/80">
+            <span className="font-medium text-purple-300">Style recommendation:</span> Try {getClothingTip()} today for the best comfort and style.
           </p>
         </div>
         
         <Button
           size="sm"
-          variant="ghost"
-          className="flex-shrink-0 border border-white/10 bg-white/5 text-xs text-white/80 hover:bg-white/10 hover:text-white"
+          className="flex-shrink-0 bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 shadow-md"
           onClick={onShowStyleOptions}
         >
-          See options
+          <span className="flex items-center gap-1">
+            <Sparkles className="h-3.5 w-3.5" />
+            <span>See options</span>
+          </span>
         </Button>
       </div>
     </motion.div>
