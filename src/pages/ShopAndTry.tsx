@@ -11,12 +11,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 
 // Import unified components
-import UnifiedIntroSection from '@/components/shop-try/UnifiedIntroSection';
-import UploadPanel from '@/components/shop-try/UploadPanel';
+import PremiumTryOnHero from '@/components/shop-try/PremiumTryOnHero';
 import WeatherBasedTips from '@/components/shop-try/WeatherBasedTips';
+import UploadPanel from '@/components/shop-try/UploadPanel';
 import UnifiedProductsCarousel from '@/components/shop-try/UnifiedProductsCarousel';
 import WishlistAndHistory from '@/components/shop-try/WishlistAndHistory';
 import FeedbackLoop, { FeedbackData } from '@/components/shop-try/FeedbackLoop';
+import ShopTryExplainer from '@/components/shop-try/ShopTryExplainer';
 
 const ShopAndTry = () => {
   const { isAuthenticated } = useAuth();
@@ -32,9 +33,10 @@ const ShopAndTry = () => {
   const [predictionId, setPredictionId] = useState<string | null>(null);
   const [generationError, setGenerationError] = useState<string | null>(null);
   const [oliviaMood, setOliviaMood] = useState<'happy' | 'thinking' | 'neutral'>('neutral');
+  const [stylingTip, setStylingTip] = useState<string | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
-  const [activeMood, setActiveMood] = useState<string | null>(null);
   const [customLocation, setCustomLocation] = useState<{ city: string; country: string } | null>(null);
+  const [activeMood, setActiveMood] = useState<string | null>(null);
 
   const isMobile = useIsMobile();
 
@@ -73,7 +75,7 @@ const ShopAndTry = () => {
           // Set Olivia's mood based on the outcome
           setOliviaMood('happy');
           
-          // Show feedback component
+          // Show feedback
           setTimeout(() => {
             setShowFeedback(true);
           }, 500);
@@ -131,16 +133,16 @@ const ShopAndTry = () => {
     setIsUsingOliviaImage(true);
     setShowFeedback(false);
     
-    // When selecting Olivia, set a specific location
+    // Set a custom location for Olivia
     setCustomLocation({
-      city: 'New York',
-      country: 'USA'
+      city: "New York",
+      country: "USA"
     });
   };
 
   const handleTryOn = async () => {
     if (!userPhoto || !clothingPhoto) {
-      toast.error("Please upload both a photo of yourself and a clothing item");
+      toast.error("Please upload both a photo and a clothing item");
       return;
     }
 
@@ -150,13 +152,13 @@ const ShopAndTry = () => {
     setShowFeedback(false);
 
     try {
-      // Simulate image generation for demo purposes
+      // Simulate AI processing for demo purposes
       setTimeout(() => {
         setFinalImage(userPhoto);
         setIsProcessing(false);
         setOliviaMood('happy');
         
-        // Show feedback component after try-on is complete
+        // Show feedback after a delay
         setTimeout(() => {
           setShowFeedback(true);
         }, 500);
@@ -192,7 +194,7 @@ const ShopAndTry = () => {
   };
 
   const handleUpgradeToPremium = () => {
-    toast.success('Redirecting to premium subscription page');
+    toast.success('Redirecting to premium subscription');
     setShowSubscriptionPopup(false);
   };
 
@@ -226,19 +228,6 @@ const ShopAndTry = () => {
     toast.success('Look saved to your wardrobe!');
   };
 
-  const handleStylistSuggestion = (item: ClothingItem) => {
-    toast.info(`Olivia suggests pairing this with ${item.name}`);
-  };
-
-  const handleSetActiveMood = (mood: string | null) => {
-    setActiveMood(mood);
-    if (mood) {
-      toast.info(`Showing items perfect for a ${mood} mood`);
-    } else {
-      toast.info('Showing all items');
-    }
-  };
-
   const handleFeedbackSubmit = (feedback: FeedbackData) => {
     console.log('Feedback submitted:', feedback);
     
@@ -253,6 +242,23 @@ const ShopAndTry = () => {
     }
   };
 
+  const handleSetActiveMood = (mood: string | null) => {
+    setActiveMood(mood);
+    if (mood) {
+      toast.info(`Showing items perfect for a ${mood} mood`);
+    } else {
+      toast.info('Showing all items');
+    }
+  };
+
+  const handleShowStylingOptions = () => {
+    document.getElementById('products-section')?.scrollIntoView({ 
+      behavior: 'smooth',
+      block: 'start'
+    });
+    toast.info("Here are some items that match today's weather");
+  };
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -265,26 +271,29 @@ const ShopAndTry = () => {
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white overflow-x-hidden">
       <Header />
       
-      <main className="container mx-auto px-4 pt-24 pb-16 max-w-6xl">
+      <main className="container mx-auto px-4 pt-20 pb-20 max-w-6xl">
         <motion.div 
-          className="space-y-12"
+          className="space-y-12 md:space-y-16"
           initial="hidden"
           animate="visible"
           variants={containerVariants}
         >
-          {/* Condensed Intro Section */}
-          <UnifiedIntroSection 
-            isPremiumUser={isPremiumUser} 
-            onStartStyling={() => document.getElementById('upload-section')?.scrollIntoView({ behavior: 'smooth' })}
-            onShowPremiumPopup={handleShowPremiumPopup}
-          />
+          {/* New unified hero section replacing the old intro + steps */}
+          <section id="hero-section">
+            <PremiumTryOnHero
+              isPremiumUser={isPremiumUser || isAuthenticated}
+              onStartStyling={() => document.getElementById('upload-section')?.scrollIntoView({ behavior: 'smooth' })}
+              onShowPremiumPopup={handleShowPremiumPopup}
+            />
+          </section>
 
-          <div id="upload-section">
-            {/* Weather-based Tips */}
+          <div id="upload-section" className="scroll-mt-24">
+            {/* Weather-based Tips - Only shows when a photo is selected */}
             <WeatherBasedTips 
               userPhoto={userPhoto}
               isUsingOliviaImage={isUsingOliviaImage}
               customLocation={customLocation}
+              onShowStyleOptions={handleShowStylingOptions}
             />
             
             {/* Upload Panel */}
@@ -299,7 +308,7 @@ const ShopAndTry = () => {
               generationError={generationError}
               isPremiumUser={isPremiumUser || isAuthenticated}
               oliviaMood={oliviaMood}
-              stylingTip={null}
+              stylingTip={stylingTip}
               onUserPhotoUpload={handleUserPhotoUpload}
               onClothingPhotoUpload={handleClothingPhotoUpload}
               onClearUserPhoto={() => {
@@ -321,17 +330,24 @@ const ShopAndTry = () => {
                 outfitName={clothingPhoto ? 'this look' : 'Custom Look'}
                 onClose={() => setShowFeedback(false)}
                 onFeedbackSubmit={handleFeedbackSubmit}
+                onSave={handleSaveLook}
+                isPremium={isPremiumUser || isAuthenticated}
+                onUpgradeToPremium={handleShowPremiumPopup}
               />
             )}
           </div>
           
           {/* Unified Products Carousel */}
-          <UnifiedProductsCarousel 
-            isPremiumUser={isPremiumUser || isAuthenticated}
-            onTryItem={handleTryOnTrendingItem}
-            onStylistSuggestion={handleStylistSuggestion}
-            onUpgradeToPremium={handleShowPremiumPopup}
-          />
+          <section id="products-section" className="scroll-mt-24">
+            <UnifiedProductsCarousel 
+              isPremiumUser={isPremiumUser || isAuthenticated}
+              onTryItem={handleTryOnTrendingItem}
+              onStylistSuggestion={(item) => toast.info(`Olivia suggests pairing with ${item.name}`)}
+              onUpgradeToPremium={handleShowPremiumPopup}
+              activeMood={activeMood}
+              onMoodSelect={handleSetActiveMood}
+            />
+          </section>
           
           {/* Wishlist and History */}
           <WishlistAndHistory 
