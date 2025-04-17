@@ -1,32 +1,34 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { 
   ShoppingBag, 
-  Star, 
+  Heart, 
   TrendingUp, 
+  Star, 
   ThumbsUp,
+  ExternalLink,
+  Sparkles,
   Palette,
   Filter,
   ArrowLeftCircle,
   ArrowRightCircle
 } from 'lucide-react';
-import { ClothingItem, ShopItem } from '@/lib/types';
+import { Badge } from '@/components/ui/badge';
+import { ClothingItem, ClothingType, ClothingColor, ClothingMaterial, ClothingSeason, ClothingOccasion, ShopItem } from '@/lib/types';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 
-import ProductCard from './ProductCard';
-
 const dummyItems: ShopItem[] = Array(12).fill(null).map((_, i) => ({
   id: `item-${i}`,
   name: ['Casual Shirt', 'Summer Dress', 'Denim Jacket', 'Wool Sweater', 'Linen Pants'][i % 5],
-  type: ['shirt', 'dress', 'jacket', 'sweater', 'pants'][i % 5] as any,
-  color: ['blue', 'red', 'green', 'black', 'white'][i % 5] as any,
-  material: ['cotton', 'polyester', 'denim', 'wool', 'linen'][i % 5] as any,
-  season: ['summer', 'winter', 'spring', 'autumn'] as any[],
-  occasions: ['casual', 'formal', 'business', 'party', 'outdoor'] as any[],
+  type: ['shirt', 'dress', 'jacket', 'sweater', 'pants'][i % 5] as ClothingType,
+  color: ['blue', 'red', 'green', 'black', 'white'][i % 5] as ClothingColor,
+  material: ['cotton', 'polyester', 'denim', 'wool', 'linen'][i % 5] as ClothingMaterial,
+  season: ['summer', 'winter', 'spring', 'autumn'] as ClothingSeason[],
+  occasions: ['casual', 'formal', 'business', 'party', 'outdoor'] as ClothingOccasion[],
   image: '/placeholder.svg',
   imageUrl: '/placeholder.svg',
   price: `$${Math.floor(Math.random() * 100) + 20}.99`,
@@ -115,6 +117,11 @@ const UnifiedProductsCarousel = ({
     toast.success(likedItems[itemId] ? 'Removed from wishlist' : 'Added to wishlist');
   };
   
+  const handleShopNow = (item: ShopItem) => {
+    toast.success(`Opening ${item.retailer} store...`);
+    window.open(item.affiliateUrl, '_blank');
+  };
+  
   const handleFilterToggle = (filter: string) => {
     if (activeFilters.includes(filter)) {
       setActiveFilters(prev => prev.filter(f => f !== filter));
@@ -143,6 +150,109 @@ const UnifiedProductsCarousel = ({
   };
   
   const activeItems = getActiveItems();
+  
+  const handleTryItem = (item: ShopItem) => {
+    const clothingItem: ClothingItem = {
+      ...item,
+      price: typeof item.price === 'string' ? parseFloat(item.price.replace('$', '')) : undefined
+    };
+    onTryItem(clothingItem);
+  };
+  
+  const renderProductCard = (item: ShopItem, index: number) => (
+    <motion.div
+      key={item.id}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.05, duration: 0.4 }}
+      className="min-w-[200px] flex-shrink-0"
+    >
+      <div className="relative rounded-lg overflow-hidden bg-slate-800 border border-white/10 hover:border-purple-500/30 transition-all h-full flex flex-col">
+        <div className="relative">
+          <img
+            src={item.imageUrl}
+            alt={item.name}
+            className="w-full aspect-square object-cover hover:scale-105 transition-transform duration-300"
+          />
+          
+          {item.discount && (
+            <Badge className="absolute top-2 left-2 bg-red-500 text-white border-0">
+              -{item.discount}
+            </Badge>
+          )}
+          
+          {item.isExclusive && (
+            <Badge className="absolute top-2 right-2 bg-purple-500 text-white border-0 flex items-center gap-1">
+              <Sparkles className="h-3 w-3" /> 
+              Exclusive
+            </Badge>
+          )}
+          
+          {item.isTrending && !item.isExclusive && (
+            <Badge className="absolute top-2 right-2 bg-blue-500 text-white border-0 flex items-center gap-1">
+              <TrendingUp className="h-3 w-3" /> 
+              Trending
+            </Badge>
+          )}
+          
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity flex items-end justify-center p-4">
+            <div className="flex gap-2">
+              <Button 
+                size="sm" 
+                className="bg-white text-black hover:bg-white/90"
+                onClick={() => handleTryItem(item)}
+              >
+                Try On
+              </Button>
+              
+              <Button
+                size="sm"
+                variant="outline"
+                className="bg-black/40 border-white/40 text-white hover:bg-black/60"
+                onClick={() => handleLikeItem(item.id)}
+              >
+                <Heart className={`h-4 w-4 ${likedItems[item.id] ? 'fill-red-500 text-red-500' : ''}`} />
+              </Button>
+            </div>
+          </div>
+        </div>
+        
+        <div className="p-3 flex-grow flex flex-col justify-between">
+          <div>
+            <div className="flex justify-between items-start mb-1">
+              <h3 className="text-sm font-medium text-white/90 line-clamp-1">{item.name}</h3>
+              <span className="text-sm font-bold text-white">{item.price}</span>
+            </div>
+            
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-xs text-white/60">{item.retailer}</p>
+              <div className="flex items-center">
+                <Star className="h-3 w-3 text-yellow-400 fill-yellow-400 mr-1" />
+                <span className="text-xs text-white/70">{item.rating.toFixed(1)}</span>
+              </div>
+            </div>
+            
+            <div className="flex flex-wrap gap-1 mb-3">
+              {item.occasions.slice(0, 2).map(tag => (
+                <span key={tag} className="text-[10px] px-1.5 py-0.5 bg-slate-700 rounded-full text-white/60 capitalize">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+          
+          <Button 
+            size="sm" 
+            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-xs h-8"
+            onClick={() => handleShopNow(item)}
+          >
+            Shop Now 
+            <ExternalLink className="h-3 w-3 ml-1" />
+          </Button>
+        </div>
+      </div>
+    </motion.div>
+  );
   
   return (
     <div className="space-y-6">
@@ -232,18 +342,7 @@ const UnifiedProductsCarousel = ({
           <CardContent className="p-4 relative">
             <ScrollArea>
               <div className="flex gap-4 pb-4">
-                {activeItems.map((item, i) => (
-                  <ProductCard
-                    key={item.id}
-                    item={item}
-                    index={i}
-                    isPremiumUser={isPremiumUser}
-                    onTryItem={onTryItem}
-                    onUpgradeToPremium={onUpgradeToPremium}
-                    likedItems={likedItems}
-                    onLikeItem={handleLikeItem}
-                  />
-                ))}
+                {activeItems.map((item, i) => renderProductCard(item, i))}
               </div>
               <ScrollBar orientation="horizontal" />
             </ScrollArea>

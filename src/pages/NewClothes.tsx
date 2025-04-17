@@ -8,7 +8,6 @@ import OutfitSubscriptionPopup from '@/components/OutfitSubscriptionPopup';
 import OliviaImageGallery from '@/components/outfits/OliviaImageGallery';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { useOlivia } from '@/contexts/OliviaContext';
 
 // Import section components
 import HeroSection from '@/components/shop-try/HeroSection';
@@ -18,14 +17,19 @@ import TrendingNowSection from '@/components/shop-try/TrendingNowSection';
 import StylingChallengeSection from '@/components/shop-try/StylingChallengeSection';
 import PremiumFeatureSection from '@/components/shop-try/PremiumFeatureSection';
 import OliviaMoodAvatar from '@/components/shop-try/OliviaMoodAvatar';
+import HelpTipsSection from '@/components/new-clothes/HelpTipsSection';
 import PersonalizedStyleCarousel from '@/components/shop-try/PersonalizedStyleCarousel';
 import StyleMoodSelector from '@/components/shop-try/StyleMoodSelector';
+import AIStylistChat from '@/components/shop-try/AIStylistChat';
 import TryOnLoadingAnimation from '@/components/shop-try/TryOnLoadingAnimation';
 import BeforeAfterToggle from '@/components/shop-try/BeforeAfterToggle';
 import ChallengeParticipationCount from '@/components/shop-try/ChallengeParticipationCount';
+import { defaultOutfitTips } from '@/components/outfits/OutfitTips';
 
 // New components
+import ShopTryExplainer from '@/components/shop-try/ShopTryExplainer';
 import EditorsPicks from '@/components/shop-try/EditorsPicks';
+import FloatingOliviaWidget from '@/components/shop-try/FloatingOliviaWidget';
 
 const NewClothes = () => {
   const { isAuthenticated } = useAuth();
@@ -38,53 +42,22 @@ const NewClothes = () => {
   const [selectedItems, setSelectedItems] = useState<ClothingItem[]>([]);
   const [showOliviaImageGallery, setShowOliviaImageGallery] = useState(false);
   const [isUsingOliviaImage, setIsUsingOliviaImage] = useState(false);
+  const [showHelpTips, setShowHelpTips] = useState(false);
+  const [currentTipIndex, setCurrentTipIndex] = useState(0);
   const [predictionId, setPredictionId] = useState<string | null>(null);
   const [generationError, setGenerationError] = useState<string | null>(null);
   const [oliviaMood, setOliviaMood] = useState<'happy' | 'thinking' | 'neutral'>('neutral');
   const [stylingTip, setStylingTip] = useState<string | null>(null);
   const [challengeParticipantCount] = useState<number>(347); // For demo purposes
-  const [showHelpTips, setShowHelpTips] = useState(false);
-  const [currentTipIndex, setCurrentTipIndex] = useState(0);
+
+  // Add new state for floating chat
   const [showFloatingChat, setShowFloatingChat] = useState(false);
 
   const isMobile = useIsMobile();
-  const { setUserHasPhoto } = useOlivia();
-
-  const defaultOutfitTips = [
-    {
-      id: 1,
-      title: "Upload Your Photo",
-      content: "Start by uploading a full-body photo of yourself. This will be the base for trying on new clothes."
-    },
-    {
-      id: 2,
-      title: "Select Clothing Items",
-      content: "Upload photos of clothing items you're interested in trying on. You can see how they look on you before purchasing."
-    },
-    {
-      id: 3,
-      title: "Create Complete Outfits",
-      content: "After trying on your main item, add more pieces to create complete looks with accessories and layers."
-    },
-    {
-      id: 4,
-      title: "Get Styling Recommendations",
-      content: "Check out the recommendations section for outfit ideas that complement your selected items."
-    },
-    {
-      id: 5,
-      title: "Save and Share",
-      content: "Found the perfect look? Save it to your wardrobe or share it with friends to get their opinion!"
-    }
-  ];
 
   useEffect(() => {
     setIsPremiumUser(isAuthenticated);
   }, [isAuthenticated]);
-
-  useEffect(() => {
-    setUserHasPhoto(!!userPhoto);
-  }, [userPhoto, setUserHasPhoto]);
 
   const mockOutfit: Outfit = {
     id: 'new-clothing',
@@ -116,8 +89,10 @@ const NewClothes = () => {
           setIsProcessing(false);
           toast.success("AI-generated try-on is ready!");
           
+          // Set Olivia's mood based on the outcome
           setOliviaMood('happy');
           
+          // Generate a random styling tip
           const tips = [
             "Love this fit with high-rise jeans! Want a rec?",
             "A cropped jacket would complete this. Shall I suggest one?",
@@ -208,11 +183,13 @@ const NewClothes = () => {
 
       console.log("AI generation response:", data);
 
+      // Simulate AI response for demo purposes (remove this in production with real API)
       setTimeout(() => {
-        setFinalImage(userPhoto);
+        setFinalImage(userPhoto); // This is just for demo
         setIsProcessing(false);
         setOliviaMood('happy');
         
+        // Generate a random styling tip
         const tips = [
           "Love this fit with high-rise jeans! Want a rec?",
           "A cropped jacket would complete this. Shall I suggest one?",
@@ -244,6 +221,7 @@ const NewClothes = () => {
       return;
     }
     
+    // For now, just show a placeholder behavior
     toast.success(`Preparing to try on ${item.name}...`);
     setClothingPhoto(item.imageUrl);
     
@@ -299,11 +277,13 @@ const NewClothes = () => {
     document.getElementById('gallery-section')?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  // New handler for opening chat
   const handleOpenChat = () => {
     setShowFloatingChat(true);
     toast.info("Olivia is ready to chat about your style!");
   };
 
+  // New handler for clothing items from Editor's Picks
   const handleTryEditorsPick = (imageUrl: string) => {
     if (!userPhoto) {
       toast.info("Please upload a photo first or select Olivia as a model");
@@ -326,6 +306,13 @@ const NewClothes = () => {
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white overflow-x-hidden">
       <Header />
       
+      <HelpTipsSection 
+        showHelpTips={showHelpTips}
+        onShowHelpTips={setShowHelpTips}
+        currentTipIndex={currentTipIndex}
+        onNextTip={handleNextTip}
+      />
+      
       <main className="container mx-auto px-4 pt-24 pb-16 max-w-6xl">
         <motion.div 
           className="space-y-16"
@@ -334,6 +321,9 @@ const NewClothes = () => {
           variants={containerVariants}
         >
           <HeroSection onStartStyling={() => document.getElementById('upload-section')?.scrollIntoView({ behavior: 'smooth' })} />
+
+          {/* New 3-step visual explainer */}
+          <ShopTryExplainer />
 
           <div id="upload-section">
             <UploadPanel 
@@ -384,12 +374,14 @@ const NewClothes = () => {
             />
           )}
           
+          {/* New Affiliate Products section */}
           <EditorsPicks 
             isPremiumUser={isPremiumUser || isAuthenticated}
             onTryItem={handleTryEditorsPick}
             onUpgradeToPremium={handleShowPremiumPopup}
           />
           
+          {/* Updated Style Mood Selector with new moods */}
           <StyleMoodSelector
             isPremiumUser={isPremiumUser || isAuthenticated}
             onTryItem={handleTryOnTrendingItem}
@@ -416,6 +408,22 @@ const NewClothes = () => {
           />
         </motion.div>
       </main>
+      
+      {/* New floating Olivia widget (replaces fixed AI Stylist Chat) */}
+      <FloatingOliviaWidget
+        isPremiumUser={isPremiumUser || isAuthenticated}
+        onUpgradeToPremium={handleShowPremiumPopup}
+        onOpenChat={handleOpenChat}
+      />
+      
+      {/* Only show AIStylistChat when explicitly opened */}
+      {showFloatingChat && (
+        <AIStylistChat
+          isPremiumUser={isPremiumUser || isAuthenticated}
+          onUpgradeToPremium={handleShowPremiumPopup}
+          onClose={() => setShowFloatingChat(false)}
+        />
+      )}
       
       <OliviaImageGallery 
         isOpen={showOliviaImageGallery}
