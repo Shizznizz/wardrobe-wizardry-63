@@ -1,94 +1,21 @@
+
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { 
-  ShoppingBag, 
-  Heart, 
-  TrendingUp, 
-  Star, 
-  ThumbsUp,
-  ExternalLink,
-  Sparkles,
-  Palette,
-  Filter,
-  ArrowLeftCircle,
-  ArrowRightCircle
-} from 'lucide-react';
+import { motion } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
-import { ClothingItem, ClothingType, ClothingColor, ClothingMaterial, ClothingSeason, ClothingOccasion, ShopItem } from '@/lib/types';
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { toast } from 'sonner';
-
-const dummyItems: ShopItem[] = Array(12).fill(null).map((_, i) => ({
-  id: `item-${i}`,
-  name: ['Casual Shirt', 'Summer Dress', 'Denim Jacket', 'Wool Sweater', 'Linen Pants'][i % 5],
-  type: ['shirt', 'dress', 'jacket', 'sweater', 'pants'][i % 5] as ClothingType,
-  color: ['blue', 'red', 'green', 'black', 'white'][i % 5] as ClothingColor,
-  material: ['cotton', 'polyester', 'denim', 'wool', 'linen'][i % 5] as ClothingMaterial,
-  season: ['summer', 'winter', 'spring', 'autumn'] as ClothingSeason[],
-  occasions: ['casual', 'formal', 'business', 'party', 'outdoor'] as ClothingOccasion[],
-  image: '/placeholder.svg',
-  imageUrl: '/placeholder.svg',
-  price: `$${Math.floor(Math.random() * 100) + 20}.99`,
-  retailer: ['H&M', 'Zara', 'Mango', 'ASOS', 'Uniqlo'][i % 5],
-  rating: 3.5 + Math.random() * 1.5,
-  reviewCount: Math.floor(Math.random() * 200) + 10,
-  discount: Math.random() > 0.7 ? `${Math.floor(Math.random() * 40) + 10}%` : undefined,
-  affiliateUrl: 'https://example.com',
-  isExclusive: Math.random() > 0.8,
-  isTrending: Math.random() > 0.8,
-  favorite: false,
-  timesWorn: 0,
-  dateAdded: new Date()
-}));
-
-const editorsPicks = dummyItems.slice(0, 6);
-const trendingItems = dummyItems.slice(6, 12).map(item => ({ ...item, isTrending: true }));
-const vibeItems = dummyItems.slice(0, 8).reverse();
-
-interface FilterOption {
-  label: string;
-  value: string;
-  options: string[];
-  icon?: React.ReactNode;
-}
-
-const filterOptions: FilterOption[] = [
-  {
-    label: 'Season',
-    value: 'season',
-    options: ['Spring', 'Summer', 'Fall', 'Winter'],
-    icon: <Palette className="h-3 w-3" />
-  },
-  {
-    label: 'Price',
-    value: 'price',
-    options: ['Under $25', '$25-$50', '$50-$100', 'Over $100'],
-    icon: <ShoppingBag className="h-3 w-3" />
-  },
-  {
-    label: 'Occasion',
-    value: 'occasion',
-    options: ['Casual', 'Work', 'Party', 'Formal', 'Outdoor'],
-    icon: <ThumbsUp className="h-3 w-3" />
-  },
-  {
-    label: 'Color',
-    value: 'color',
-    options: ['Black', 'White', 'Blue', 'Red', 'Green'],
-    icon: <Palette className="h-3 w-3" />
-  }
-];
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ClothingItem } from '@/lib/types';
+import { Lock, Sparkles, ExternalLink, Shirt, Plus, Heart } from 'lucide-react';
+import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 
 interface UnifiedProductsCarouselProps {
   isPremiumUser: boolean;
   onTryItem: (item: ClothingItem) => void;
-  onStylistSuggestion?: (item: ClothingItem) => void;
+  onStylistSuggestion: (item: ClothingItem) => void;
   onUpgradeToPremium: () => void;
-  activeMood?: string | null;
-  onMoodSelect?: (mood: string | null) => void;
+  activeMood: string | null;
+  onMoodSelect: (mood: string | null) => void;
 }
 
 const UnifiedProductsCarousel = ({
@@ -99,287 +26,318 @@ const UnifiedProductsCarousel = ({
   activeMood,
   onMoodSelect
 }: UnifiedProductsCarouselProps) => {
-  const [activeTab, setActiveTab] = useState("editors");
-  const [likedItems, setLikedItems] = useState<Record<string, boolean>>({});
-  const [activeFilters, setActiveFilters] = useState<string[]>([]);
+  const [activeTab, setActiveTab] = useState('trending');
   
-  const handleLikeItem = (itemId: string) => {
-    if (!isPremiumUser) {
-      onUpgradeToPremium();
-      return;
+  // Mock data - in real app, this would come from Supabase
+  const trendingItems: ClothingItem[] = [
+    {
+      id: 'trending-1',
+      name: 'Casual Oversized Tee',
+      type: 'shirt',
+      color: 'black',
+      season: ['all'],
+      image: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&q=80&w=300&h=400',
+      imageUrl: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&q=80&w=300&h=400',
+      tags: ['casual', 'everyday'],
+      timesWorn: 0
+    },
+    {
+      id: 'trending-2',
+      name: 'Summer Dress',
+      type: 'dress',
+      color: 'blue',
+      season: ['summer'],
+      image: 'https://images.unsplash.com/photo-1612336307429-8a898d10e223?auto=format&fit=crop&q=80&w=300&h=400',
+      imageUrl: 'https://images.unsplash.com/photo-1612336307429-8a898d10e223?auto=format&fit=crop&q=80&w=300&h=400',
+      tags: ['summer', 'date-night'],
+      timesWorn: 0
+    },
+    {
+      id: 'trending-3',
+      name: 'Classic Denim Jacket',
+      type: 'jacket',
+      color: 'blue',
+      season: ['spring', 'autumn'],
+      image: 'https://images.unsplash.com/photo-1548126032-079a0fb0099d?auto=format&fit=crop&q=80&w=300&h=400',
+      imageUrl: 'https://images.unsplash.com/photo-1548126032-079a0fb0099d?auto=format&fit=crop&q=80&w=300&h=400',
+      tags: ['casual', 'versatile'],
+      timesWorn: 0
+    },
+    {
+      id: 'trending-4',
+      name: 'Floral Blouse',
+      type: 'top',
+      color: 'multicolor',
+      season: ['spring', 'summer'],
+      image: 'https://images.unsplash.com/photo-1564257631407-4deb1f99d992?auto=format&fit=crop&q=80&w=300&h=400',
+      imageUrl: 'https://images.unsplash.com/photo-1564257631407-4deb1f99d992?auto=format&fit=crop&q=80&w=300&h=400',
+      tags: ['colorful', 'office'],
+      timesWorn: 0
     }
+  ];
+  
+  const moods = [
+    { id: 'casual', name: 'Casual', icon: '👖' },
+    { id: 'elegant', name: 'Elegant', icon: '✨' },
+    { id: 'bold', name: 'Bold', icon: '💪' },
+    { id: 'minimal', name: 'Minimal', icon: '⚪' },
+    { id: 'romantic', name: 'Romantic', icon: '💕' },
+    { id: 'edgy', name: 'Edgy', icon: '🔥' }
+  ];
+
+  const editorPicks: ClothingItem[] = [
+    {
+      id: 'editor-1',
+      name: 'Leather Jacket',
+      type: 'jacket',
+      color: 'black',
+      season: ['autumn', 'winter'],
+      image: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&q=80&w=300&h=400',
+      imageUrl: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&q=80&w=300&h=400',
+      tags: ['edgy', 'night-out'],
+      timesWorn: 0
+    },
+    {
+      id: 'editor-2',
+      name: 'Pleated Midi Skirt',
+      type: 'skirt',
+      color: 'gray',
+      season: ['spring', 'autumn'],
+      image: 'https://images.unsplash.com/photo-1582142306909-195724d0a735?auto=format&fit=crop&q=80&w=300&h=400',
+      imageUrl: 'https://images.unsplash.com/photo-1582142306909-195724d0a735?auto=format&fit=crop&q=80&w=300&h=400',
+      tags: ['elegant', 'office'],
+      timesWorn: 0
+    },
+    {
+      id: 'editor-3',
+      name: 'Linen Shirt',
+      type: 'shirt',
+      color: 'white',
+      season: ['summer'],
+      image: 'https://images.unsplash.com/photo-1604695573706-53170668f6a6?auto=format&fit=crop&q=80&w=300&h=400',
+      imageUrl: 'https://images.unsplash.com/photo-1604695573706-53170668f6a6?auto=format&fit=crop&q=80&w=300&h=400',
+      tags: ['minimal', 'summer'],
+      timesWorn: 0
+    },
+    {
+      id: 'editor-4',
+      name: 'Knit Sweater',
+      type: 'sweater',
+      color: 'green',
+      season: ['winter'],
+      image: 'https://images.unsplash.com/photo-1576871337622-98d48d1cf531?auto=format&fit=crop&q=80&w=300&h=400',
+      imageUrl: 'https://images.unsplash.com/photo-1576871337622-98d48d1cf531?auto=format&fit=crop&q=80&w=300&h=400',
+      tags: ['cozy', 'winter'],
+      timesWorn: 0
+    }
+  ];
+  
+  const getFilteredItems = () => {
+    const items = activeTab === 'trending' ? trendingItems : editorPicks;
     
-    setLikedItems(prev => ({
-      ...prev,
-      [itemId]: !prev[itemId]
-    }));
+    if (!activeMood) return items;
     
-    toast.success(likedItems[itemId] ? 'Removed from wishlist' : 'Added to wishlist');
+    return items.filter(item => 
+      item.tags?.some(tag => tag.toLowerCase() === activeMood.toLowerCase())
+    );
   };
-  
-  const handleShopNow = (item: ShopItem) => {
-    toast.success(`Opening ${item.retailer} store...`);
-    window.open(item.affiliateUrl, '_blank');
-  };
-  
-  const handleFilterToggle = (filter: string) => {
-    if (activeFilters.includes(filter)) {
-      setActiveFilters(prev => prev.filter(f => f !== filter));
-    } else {
-      setActiveFilters(prev => [...prev, filter]);
-    }
-  };
-  
-  const handleMoodSelect = (mood: string | null) => {
-    if (onMoodSelect) {
-      onMoodSelect(mood);
-    }
-  };
-  
-  const getActiveItems = () => {
-    switch (activeTab) {
-      case "editors":
-        return editorsPicks;
-      case "trending":
-        return trendingItems;
-      case "vibe":
-        return vibeItems;
-      default:
-        return editorsPicks;
-    }
-  };
-  
-  const activeItems = getActiveItems();
-  
-  const handleTryItem = (item: ShopItem) => {
-    const clothingItem: ClothingItem = {
-      ...item,
-      price: typeof item.price === 'string' ? parseFloat(item.price.replace('$', '')) : undefined
-    };
-    onTryItem(clothingItem);
-  };
-  
-  const renderProductCard = (item: ShopItem, index: number) => (
-    <motion.div
-      key={item.id}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.05, duration: 0.4 }}
-      className="min-w-[200px] flex-shrink-0"
-    >
-      <div className="relative rounded-lg overflow-hidden bg-slate-800 border border-white/10 hover:border-purple-500/30 transition-all h-full flex flex-col">
-        <div className="relative">
-          <img
-            src={item.imageUrl}
-            alt={item.name}
-            className="w-full aspect-square object-cover hover:scale-105 transition-transform duration-300"
-          />
-          
-          {item.discount && (
-            <Badge className="absolute top-2 left-2 bg-red-500 text-white border-0">
-              -{item.discount}
-            </Badge>
-          )}
-          
-          {item.isExclusive && (
-            <Badge className="absolute top-2 right-2 bg-purple-500 text-white border-0 flex items-center gap-1">
-              <Sparkles className="h-3 w-3" /> 
-              Exclusive
-            </Badge>
-          )}
-          
-          {item.isTrending && !item.isExclusive && (
-            <Badge className="absolute top-2 right-2 bg-blue-500 text-white border-0 flex items-center gap-1">
-              <TrendingUp className="h-3 w-3" /> 
-              Trending
-            </Badge>
-          )}
-          
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity flex items-end justify-center p-4">
-            <div className="flex gap-2">
-              <Button 
-                size="sm" 
-                className="bg-white text-black hover:bg-white/90"
-                onClick={() => handleTryItem(item)}
-              >
-                Try On
-              </Button>
-              
-              <Button
-                size="sm"
-                variant="outline"
-                className="bg-black/40 border-white/40 text-white hover:bg-black/60"
-                onClick={() => handleLikeItem(item.id)}
-              >
-                <Heart className={`h-4 w-4 ${likedItems[item.id] ? 'fill-red-500 text-red-500' : ''}`} />
-              </Button>
-            </div>
-          </div>
-        </div>
-        
-        <div className="p-3 flex-grow flex flex-col justify-between">
-          <div>
-            <div className="flex justify-between items-start mb-1">
-              <h3 className="text-sm font-medium text-white/90 line-clamp-1">{item.name}</h3>
-              <span className="text-sm font-bold text-white">{item.price}</span>
-            </div>
-            
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-xs text-white/60">{item.retailer}</p>
-              <div className="flex items-center">
-                <Star className="h-3 w-3 text-yellow-400 fill-yellow-400 mr-1" />
-                <span className="text-xs text-white/70">{item.rating.toFixed(1)}</span>
-              </div>
-            </div>
-            
-            <div className="flex flex-wrap gap-1 mb-3">
-              {item.occasions.slice(0, 2).map(tag => (
-                <span key={tag} className="text-[10px] px-1.5 py-0.5 bg-slate-700 rounded-full text-white/60 capitalize">
-                  {tag}
-                </span>
-              ))}
-            </div>
-          </div>
-          
-          <Button 
-            size="sm" 
-            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-xs h-8"
-            onClick={() => handleShopNow(item)}
-          >
-            Shop Now 
-            <ExternalLink className="h-3 w-3 ml-1" />
-          </Button>
-        </div>
-      </div>
-    </motion.div>
-  );
-  
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <ShoppingBag className="h-5 w-5 text-purple-400" />
-          <h2 className="text-xl font-semibold text-white">Shop Collections</h2>
-        </div>
-        
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      viewport={{ once: true }}
+      className="relative mb-16"
+    >
+      <div className="flex items-center mb-6">
+        <div className="h-px flex-grow bg-gradient-to-r from-transparent via-blue-500/30 to-transparent"></div>
+        <h2 className="px-4 text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+          {activeMood ? `${activeMood.charAt(0).toUpperCase() + activeMood.slice(1)} Styles` : '✨ Trending Styles'}
+        </h2>
+        <div className="h-px flex-grow bg-gradient-to-r from-blue-500/30 via-transparent to-transparent"></div>
+      </div>
+      
+      <div className="flex flex-wrap gap-2 mb-6 justify-center">
         <Button 
-          variant="ghost" 
+          variant="outline" 
           size="sm" 
-          className="text-white/70 hover:text-white"
-          onClick={() => setActiveFilters([])}
+          className={`rounded-full px-3 h-8 ${!activeMood ? 'bg-purple-700/30 border-purple-500/50 text-white' : 'border-white/20 text-white/70'}`}
+          onClick={() => onMoodSelect(null)}
         >
-          View All
+          <Sparkles className="h-3.5 w-3.5 mr-1.5" />
+          All Styles
         </Button>
+        
+        {moods.map(mood => (
+          <Button 
+            key={mood.id}
+            variant="outline" 
+            size="sm" 
+            className={`rounded-full px-3 h-8 ${activeMood === mood.id ? 'bg-purple-700/30 border-purple-500/50 text-white' : 'border-white/20 text-white/70'}`}
+            onClick={() => onMoodSelect(mood.id)}
+          >
+            <span className="mr-1.5">{mood.icon}</span>
+            {mood.name}
+          </Button>
+        ))}
       </div>
       
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <div className="flex items-center justify-between mb-4">
-          <TabsList className="bg-slate-800/50">
-            <TabsTrigger value="editors" className="data-[state=active]:bg-purple-900/30">
-              <Star className="h-4 w-4 mr-2" />
+        <div className="flex justify-center mb-6">
+          <TabsList className="bg-slate-800/80 border border-white/10">
+            <TabsTrigger 
+              value="trending" 
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-700/30 data-[state=active]:to-indigo-700/30"
+            >
+              Trending Now
+            </TabsTrigger>
+            <TabsTrigger 
+              value="editor" 
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-700/30 data-[state=active]:to-indigo-700/30"
+            >
               Editor's Picks
             </TabsTrigger>
-            <TabsTrigger value="trending" className="data-[state=active]:bg-blue-900/30">
-              <TrendingUp className="h-4 w-4 mr-2" />
-              Trending
-            </TabsTrigger>
-            <TabsTrigger value="vibe" className="data-[state=active]:bg-pink-900/30">
-              <ThumbsUp className="h-4 w-4 mr-2" />
-              Your Vibe
-            </TabsTrigger>
           </TabsList>
-          
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="border-white/20 text-white/70 hover:text-white flex items-center gap-1.5"
-          >
-            <Filter className="h-3.5 w-3.5" />
-            Filters
-          </Button>
         </div>
         
-        <div className="flex flex-wrap gap-2 mb-4">
-          {filterOptions.map((filter) => (
-            <Button
-              key={filter.value}
-              variant="outline"
-              size="sm"
-              className={`h-8 text-xs border-white/20 ${
-                activeFilters.includes(filter.value) 
-                  ? 'bg-white/10 text-white' 
-                  : 'text-white/70'
-              }`}
-              onClick={() => handleFilterToggle(filter.value)}
-            >
-              {filter.icon}
-              <span className="ml-1.5">{filter.label}</span>
-            </Button>
-          ))}
-        </div>
-        
-        {onMoodSelect && (
-          <div className="flex flex-wrap gap-2 mb-4">
-            {['Romantic', 'Power Boss', 'Casual', 'Creative', 'Relaxed'].map((mood) => (
-              <Button
-                key={mood}
-                variant="outline"
-                size="sm"
-                className={`h-8 text-xs border-white/20 ${
-                  activeMood === mood
-                    ? 'bg-gradient-to-r from-purple-600/30 to-pink-600/30 text-white border-purple-500/30'
-                    : 'text-white/70'
-                }`}
-                onClick={() => handleMoodSelect(activeMood === mood ? null : mood)}
-              >
-                <span className="ml-1.5">{mood}</span>
-              </Button>
+        <TabsContent value="trending" className="mt-0">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4">
+            {getFilteredItems().map((item) => (
+              <ProductCard 
+                key={item.id}
+                item={item}
+                isPremiumUser={isPremiumUser}
+                onTryItem={onTryItem}
+                onUpgradeToPremium={onUpgradeToPremium}
+                onStylistSuggestion={onStylistSuggestion}
+              />
             ))}
           </div>
-        )}
+        </TabsContent>
         
-        <Card className="border-white/10 bg-slate-900/40 overflow-hidden">
-          <CardContent className="p-4 relative">
-            <ScrollArea>
-              <div className="flex gap-4 pb-4">
-                {activeItems.map((item, i) => renderProductCard(item, i))}
-              </div>
-              <ScrollBar orientation="horizontal" />
-            </ScrollArea>
-            
-            <motion.div 
-              className="absolute top-1/2 left-2 -translate-y-1/2 z-10"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-            >
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="bg-black/30 rounded-full hover:bg-black/50 text-white"
-              >
-                <ArrowLeftCircle className="h-8 w-8" />
-              </Button>
-            </motion.div>
-            
-            <motion.div 
-              className="absolute top-1/2 right-2 -translate-y-1/2 z-10"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-            >
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="bg-black/30 rounded-full hover:bg-black/50 text-white"
-              >
-                <ArrowRightCircle className="h-8 w-8" />
-              </Button>
-            </motion.div>
-          </CardContent>
-        </Card>
+        <TabsContent value="editor" className="mt-0">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4">
+            {getFilteredItems().map((item) => (
+              <ProductCard 
+                key={item.id}
+                item={item}
+                isPremiumUser={isPremiumUser}
+                onTryItem={onTryItem}
+                onUpgradeToPremium={onUpgradeToPremium}
+                onStylistSuggestion={onStylistSuggestion}
+              />
+            ))}
+          </div>
+        </TabsContent>
       </Tabs>
-    </div>
+    </motion.div>
+  );
+};
+
+interface ProductCardProps {
+  item: ClothingItem;
+  isPremiumUser: boolean;
+  onTryItem: (item: ClothingItem) => void;
+  onStylistSuggestion: (item: ClothingItem) => void;
+  onUpgradeToPremium: () => void;
+}
+
+const ProductCard = ({ 
+  item, 
+  isPremiumUser, 
+  onTryItem, 
+  onStylistSuggestion,
+  onUpgradeToPremium 
+}: ProductCardProps) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.3 }}
+      className="flex-shrink-0"
+    >
+      <Card className="border-0 shadow-soft bg-gradient-to-br from-slate-800/80 to-slate-900/80 border border-white/10 backdrop-blur-lg overflow-hidden h-full">
+        <div className="relative aspect-[3/4] overflow-hidden">
+          <img 
+            src={item.imageUrl || item.image} 
+            alt={item.name}
+            className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+          />
+          
+          {!isPremiumUser && (
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center z-10 opacity-0 hover:opacity-100 transition-opacity">
+              <Button 
+                size="sm"
+                onClick={onUpgradeToPremium}
+                className="bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90"
+              >
+                <Lock className="h-3.5 w-3.5 mr-1.5" />
+                Unlock Try-On
+              </Button>
+            </div>
+          )}
+        </div>
+        
+        <CardContent className="p-4 space-y-3">
+          <h3 className="font-medium text-white truncate">{item.name}</h3>
+          
+          <div className="flex flex-wrap gap-1 mb-2">
+            {item.tags?.map((tag, index) => (
+              <span key={index} className="text-xs bg-slate-700 text-slate-200 px-1.5 py-0.5 rounded-sm">
+                {tag}
+              </span>
+            ))}
+          </div>
+          
+          <div className="flex gap-2">
+            <Button 
+              size="sm"
+              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:opacity-90 flex-1"
+              onClick={() => isPremiumUser ? onTryItem(item) : onUpgradeToPremium()}
+            >
+              <Shirt className="h-3.5 w-3.5 mr-1.5" />
+              Try On
+            </Button>
+            
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    size="sm"
+                    variant="outline"
+                    className="border-white/20 hover:bg-white/10"
+                    onClick={() => onStylistSuggestion(item)}
+                  >
+                    <Plus className="h-3.5 w-3.5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  <p className="text-xs">Get styling suggestions</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    size="sm"
+                    variant="outline"
+                    className="border-white/20 hover:bg-white/10"
+                  >
+                    <Heart className="h-3.5 w-3.5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  <p className="text-xs">Save to wishlist</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 };
 

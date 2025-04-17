@@ -1,9 +1,11 @@
-import { useState } from 'react';
+
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, Heart, Clock, ShoppingBag } from 'lucide-react';
-import { ClothingItem, ClothingOccasion } from '@/lib/types';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Heart, History, Lock, Shirt, Clock, Star } from 'lucide-react';
+import { ClothingItem } from '@/lib/types';
+import { useState } from 'react';
 
 interface WishlistAndHistoryProps {
   isPremiumUser: boolean;
@@ -16,368 +18,314 @@ const WishlistAndHistory = ({
   onTryItem,
   onUpgradeToPremium
 }: WishlistAndHistoryProps) => {
-  const [wishlistScrollPosition, setWishlistScrollPosition] = useState(0);
-  const [historyScrollPosition, setHistoryScrollPosition] = useState(0);
+  const [activeTab, setActiveTab] = useState('wishlist');
   
-  const wishlistItems: ClothingItem[] = [
+  // Mock data - in a real app this would come from Supabase
+  const mockWishlist: ClothingItem[] = isPremiumUser ? [
     {
       id: 'wish-1',
-      name: 'Statement Earrings',
-      type: 'accessories',
-      color: 'yellow',
-      material: 'other',
-      season: ['all'],
-      occasions: ['party', 'special'] as ClothingOccasion[],
-      imageUrl: 'https://images.unsplash.com/photo-1589128777073-263566ae5e4d?auto=format&fit=crop&q=80&w=300&h=400',
-      favorite: false,
-      timesWorn: 0,
-      dateAdded: new Date(),
-      image: '/placeholder.svg'
+      name: 'Statement Blazer',
+      type: 'jacket',
+      color: 'black',
+      season: ['autumn', 'winter', 'spring'],
+      image: 'https://images.unsplash.com/photo-1591369822096-ffd140ec948f?auto=format&fit=crop&q=80&w=300&h=400',
+      imageUrl: 'https://images.unsplash.com/photo-1591369822096-ffd140ec948f?auto=format&fit=crop&q=80&w=300&h=400',
+      tags: ['formal', 'office'],
+      timesWorn: 0
     },
     {
       id: 'wish-2',
-      name: 'Satin Midi Dress',
+      name: 'Boho Maxi Dress',
       type: 'dress',
-      color: 'pink',
-      material: 'silk',
-      season: ['spring', 'summer'],
-      occasions: ['party'] as ClothingOccasion[],
-      imageUrl: 'https://images.unsplash.com/photo-1612336307429-8a898d10e223?auto=format&fit=crop&q=80&w=300&h=400',
-      favorite: false,
-      timesWorn: 0,
-      dateAdded: new Date(),
-      image: '/placeholder.svg'
+      color: 'multicolor',
+      season: ['summer'],
+      image: 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&q=80&w=300&h=400',
+      imageUrl: 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&q=80&w=300&h=400',
+      tags: ['bohemian', 'vacation'],
+      timesWorn: 0
     },
     {
       id: 'wish-3',
-      name: 'Boyfriend Blazer',
-      type: 'jacket',
-      color: 'black',
-      material: 'cotton',
-      season: ['autumn', 'winter', 'spring'],
-      occasions: ['business', 'casual'] as ClothingOccasion[],
-      imageUrl: 'https://images.unsplash.com/photo-1591085686350-798c0f9faa7f?auto=format&fit=crop&q=80&w=300&h=400',
-      favorite: false,
-      timesWorn: 0,
-      dateAdded: new Date(),
-      image: '/placeholder.svg'
-    },
-    {
-      id: 'wish-4',
-      name: 'Chunky Knit Sweater',
+      name: 'Chunky Knit Cardigan',
       type: 'sweater',
-      color: 'white',
-      material: 'wool',
-      season: ['autumn', 'winter'],
-      occasions: ['casual'] as ClothingOccasion[],
-      imageUrl: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&q=80&w=300&h=400',
-      favorite: false,
-      timesWorn: 0,
-      dateAdded: new Date(),
-      image: '/placeholder.svg'
-    },
-    {
-      id: 'wish-5',
-      name: 'Platform Boots',
-      type: 'boots',
-      color: 'black',
-      material: 'leather',
-      season: ['autumn', 'winter'],
-      occasions: ['casual', 'party'] as ClothingOccasion[],
-      imageUrl: 'https://images.unsplash.com/photo-1605812860427-4024433a70fd?auto=format&fit=crop&q=80&w=300&h=400',
-      favorite: false,
-      timesWorn: 0,
-      dateAdded: new Date(),
-      image: '/placeholder.svg'
+      color: 'beige',
+      season: ['winter'],
+      image: 'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?auto=format&fit=crop&q=80&w=300&h=400',
+      imageUrl: 'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?auto=format&fit=crop&q=80&w=300&h=400',
+      tags: ['cozy', 'casual'],
+      timesWorn: 0
     }
-  ];
+  ] : [];
   
-  const viewedItems: ClothingItem[] = [
+  const mockHistory: ClothingItem[] = isPremiumUser ? [
     {
-      id: 'viewed-1',
-      name: 'Floral Summer Dress',
-      type: 'dress',
-      color: 'pink',
-      material: 'cotton',
-      season: ['spring', 'summer'],
-      occasions: ['casual', 'party'] as ClothingOccasion[],
-      imageUrl: 'https://images.unsplash.com/photo-1550639525-c97d455acf70?auto=format&fit=crop&q=80&w=300&h=400',
-      favorite: false,
-      timesWorn: 0,
-      dateAdded: new Date(),
-      image: '/placeholder.svg'
-    },
-    {
-      id: 'viewed-2',
-      name: 'Denim Jacket',
-      type: 'jacket',
-      color: 'blue',
-      material: 'denim',
-      season: ['spring', 'autumn'],
-      occasions: ['casual'] as ClothingOccasion[],
-      imageUrl: 'https://images.unsplash.com/photo-1602533457627-eb2c2089574f?auto=format&fit=crop&q=80&w=300&h=400',
-      favorite: false,
-      timesWorn: 0,
-      dateAdded: new Date(),
-      image: '/placeholder.svg'
-    },
-    {
-      id: 'viewed-3',
-      name: 'Leather Ankle Boots',
-      type: 'boots',
-      color: 'brown',
-      material: 'leather',
-      season: ['autumn', 'winter'],
-      occasions: ['casual'] as ClothingOccasion[],
-      imageUrl: 'https://images.unsplash.com/photo-1543168278-ef4bd865e236?auto=format&fit=crop&q=80&w=300&h=400',
-      favorite: true,
-      timesWorn: 0,
-      dateAdded: new Date(),
-      image: '/placeholder.svg'
-    },
-    {
-      id: 'viewed-4',
-      name: 'Striped T-Shirt',
-      type: 'shirt',
-      color: 'multicolor',
-      material: 'cotton',
-      season: ['spring', 'summer'],
-      occasions: ['casual'] as ClothingOccasion[],
-      imageUrl: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&q=80&w=300&h=400',
-      favorite: false,
-      timesWorn: 0,
-      dateAdded: new Date(),
-      image: '/placeholder.svg'
-    },
-    {
-      id: 'viewed-5',
-      name: 'High-Waisted Jeans',
-      type: 'jeans',
-      color: 'blue',
-      material: 'denim',
+      id: 'history-1',
+      name: 'Tailored Pants',
+      type: 'pants',
+      color: 'navy',
       season: ['all'],
-      occasions: ['casual'] as ClothingOccasion[],
-      imageUrl: 'https://images.unsplash.com/photo-1595942484754-c9449816939c?auto=format&fit=crop&q=80&w=300&h=400',
-      favorite: false,
-      timesWorn: 0,
-      dateAdded: new Date(),
-      image: '/placeholder.svg'
+      image: 'https://images.unsplash.com/photo-1473966968600-fa801b869a1a?auto=format&fit=crop&q=80&w=300&h=400',
+      imageUrl: 'https://images.unsplash.com/photo-1473966968600-fa801b869a1a?auto=format&fit=crop&q=80&w=300&h=400',
+      tags: ['formal', 'work'],
+      timesWorn: 0
+    },
+    {
+      id: 'history-2',
+      name: 'Graphic Tee',
+      type: 'shirt',
+      color: 'white',
+      season: ['summer'],
+      image: 'https://images.unsplash.com/photo-1554568218-0f1715e72254?auto=format&fit=crop&q=80&w=300&h=400',
+      imageUrl: 'https://images.unsplash.com/photo-1554568218-0f1715e72254?auto=format&fit=crop&q=80&w=300&h=400',
+      tags: ['casual', 'streetwear'],
+      timesWorn: 0
+    },
+    {
+      id: 'history-3',
+      name: 'Denim Shorts',
+      type: 'shorts',
+      color: 'blue',
+      season: ['summer'],
+      image: 'https://images.unsplash.com/photo-1591195853828-11db59a44f6b?auto=format&fit=crop&q=80&w=300&h=400',
+      imageUrl: 'https://images.unsplash.com/photo-1591195853828-11db59a44f6b?auto=format&fit=crop&q=80&w=300&h=400',
+      tags: ['casual', 'summer'],
+      timesWorn: 0
     }
-  ];
+  ] : [];
   
-  const wishlistScrollContainerRef = (ref: HTMLDivElement | null) => {
-    if (ref) {
-      setWishlistScrollPosition(ref.scrollLeft);
-    }
-  };
-  
-  const historyScrollContainerRef = (ref: HTMLDivElement | null) => {
-    if (ref) {
-      setHistoryScrollPosition(ref.scrollLeft);
-    }
-  };
-  
-  const scrollWishlistLeft = () => {
-    const container = document.getElementById('wishlist-scroll-container');
-    if (container) {
-      container.scrollBy({ left: -300, behavior: 'smooth' });
-    }
-  };
-  
-  const scrollWishlistRight = () => {
-    const container = document.getElementById('wishlist-scroll-container');
-    if (container) {
-      container.scrollBy({ left: 300, behavior: 'smooth' });
-    }
-  };
-  
-  const scrollHistoryLeft = () => {
-    const container = document.getElementById('history-scroll-container');
-    if (container) {
-      container.scrollBy({ left: -300, behavior: 'smooth' });
-    }
-  };
-  
-  const scrollHistoryRight = () => {
-    const container = document.getElementById('history-scroll-container');
-    if (container) {
-      container.scrollBy({ left: 300, behavior: 'smooth' });
-    }
+  const getItems = () => {
+    return activeTab === 'wishlist' ? mockWishlist : mockHistory;
   };
   
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
+      whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="space-y-12"
+      viewport={{ once: true }}
+      className="relative mb-16"
     >
-      {/* Wishlist Section */}
-      <div className="relative">
-        <div className="flex items-center mb-6">
-          <div className="h-px flex-grow bg-gradient-to-r from-transparent via-purple-500/30 to-transparent"></div>
-          <h2 className="px-4 text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-            Your Wishlist
-          </h2>
-          <div className="h-px flex-grow bg-gradient-to-r from-purple-500/30 via-transparent to-transparent"></div>
-        </div>
-        
-        <div className="relative">
-          <div className="absolute left-0 top-1/2 -translate-y-1/2 z-10">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="rounded-full bg-black/30 backdrop-blur-sm hover:bg-black/50 text-white"
-              onClick={scrollWishlistLeft}
-            >
-              <ChevronLeft className="h-6 w-6" />
-            </Button>
-          </div>
-          
-          <div
-            id="wishlist-scroll-container"
-            ref={wishlistScrollContainerRef}
-            className="pb-4 flex gap-6 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent pl-12 pr-12"
-            style={{ scrollbarWidth: 'thin' }}
-          >
-            {wishlistItems.map((item, index) => (
-              <motion.div
-                key={item.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="flex-shrink-0 w-[250px]"
-              >
-                <Card className="border-0 shadow-soft bg-gradient-to-br from-slate-800/80 to-slate-900/80 border border-white/10 backdrop-blur-lg overflow-hidden h-full">
-                  <div className="relative aspect-[3/4] overflow-hidden">
-                    <img 
-                      src={item.imageUrl} 
-                      alt={item.name}
-                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                    />
-                    
-                    {!isPremiumUser && (
-                      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center z-10">
-                        <Heart className="h-8 w-8 text-purple-400 mb-2" />
-                        <p className="text-white font-medium text-center mb-2">Premium Feature</p>
-                        <Button 
-                          size="sm"
-                          onClick={onUpgradeToPremium}
-                          className="bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90"
-                        >
-                          Unlock Now
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                  
-                  <CardContent className="p-4 space-y-3">
-                    <h3 className="font-medium text-white truncate">{item.name}</h3>
-                    
-                    <Button 
-                      size="sm"
-                      className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:opacity-90 w-full"
-                      onClick={() => onTryItem(item)}
-                      disabled={!isPremiumUser}
-                    >
-                      <ShoppingBag className="h-3.5 w-3.5 mr-1.5" />
-                      Try on Olivia
-                    </Button>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-          
-          <div className="absolute right-0 top-1/2 -translate-y-1/2 z-10">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="rounded-full bg-black/30 backdrop-blur-sm hover:bg-black/50 text-white"
-              onClick={scrollWishlistRight}
-            >
-              <ChevronRight className="h-6 w-6" />
-            </Button>
-          </div>
-        </div>
+      <div className="flex items-center mb-6">
+        <div className="h-px flex-grow bg-gradient-to-r from-transparent via-pink-500/30 to-transparent"></div>
+        <h2 className="px-4 text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-purple-400">
+          {activeTab === 'wishlist' ? '❤️ Your Wishlist' : '🕒 Recently Viewed'}
+        </h2>
+        <div className="h-px flex-grow bg-gradient-to-r from-pink-500/30 via-transparent to-transparent"></div>
       </div>
       
-      {/* Recently Viewed Section */}
-      <div className="relative">
-        <div className="flex items-center mb-6">
-          <div className="h-px flex-grow bg-gradient-to-r from-transparent via-purple-500/30 to-transparent"></div>
-          <h2 className="px-4 text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-            Recently Viewed
-          </h2>
-          <div className="h-px flex-grow bg-gradient-to-r from-purple-500/30 via-transparent to-transparent"></div>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <div className="flex justify-center mb-6">
+          <TabsList className="bg-slate-800/80 border border-white/10">
+            <TabsTrigger 
+              value="wishlist" 
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-pink-700/30 data-[state=active]:to-purple-700/30"
+            >
+              <Heart className="h-4 w-4 mr-2" />
+              Wishlist
+            </TabsTrigger>
+            <TabsTrigger 
+              value="history" 
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-pink-700/30 data-[state=active]:to-purple-700/30"
+            >
+              <History className="h-4 w-4 mr-2" />
+              Recently Viewed
+            </TabsTrigger>
+          </TabsList>
         </div>
         
-        <div className="relative">
-          <div className="absolute left-0 top-1/2 -translate-y-1/2 z-10">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="rounded-full bg-black/30 backdrop-blur-sm hover:bg-black/50 text-white"
-              onClick={scrollHistoryLeft}
-            >
-              <ChevronLeft className="h-6 w-6" />
-            </Button>
+        <TabsContent value="wishlist" className="mt-0">
+          {isPremiumUser && mockWishlist.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 px-4">
+              {mockWishlist.map((item) => (
+                <WishlistItemCard 
+                  key={item.id}
+                  item={item}
+                  onTryItem={onTryItem}
+                />
+              ))}
+            </div>
+          ) : (
+            <PremiumFeatureCard 
+              title="Save your favorite items"
+              description="Create a wishlist of items you'd like to try on and check how they look on you."
+              icon={<Heart className="h-6 w-6 text-pink-400" />}
+              onUpgradeToPremium={onUpgradeToPremium}
+            />
+          )}
+        </TabsContent>
+        
+        <TabsContent value="history" className="mt-0">
+          {isPremiumUser && mockHistory.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 px-4">
+              {mockHistory.map((item) => (
+                <HistoryItemCard 
+                  key={item.id}
+                  item={item}
+                  onTryItem={onTryItem}
+                />
+              ))}
+            </div>
+          ) : (
+            <PremiumFeatureCard 
+              title="Keep track of items you've viewed"
+              description="See your browsing history and easily try on items you've viewed before."
+              icon={<Clock className="h-6 w-6 text-indigo-400" />}
+              onUpgradeToPremium={onUpgradeToPremium}
+            />
+          )}
+        </TabsContent>
+      </Tabs>
+    </motion.div>
+  );
+};
+
+interface WishlistItemCardProps {
+  item: ClothingItem;
+  onTryItem: (item: ClothingItem) => void;
+}
+
+const WishlistItemCard = ({ item, onTryItem }: WishlistItemCardProps) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.3 }}
+    >
+      <Card className="border-0 shadow-soft bg-gradient-to-br from-slate-800/80 to-slate-900/80 border border-white/10 backdrop-blur-lg overflow-hidden h-full">
+        <div className="relative aspect-[3/4] overflow-hidden">
+          <img 
+            src={item.imageUrl || item.image} 
+            alt={item.name}
+            className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+          />
+          <div className="absolute top-2 right-2 bg-pink-500 text-white text-xs px-2 py-0.5 rounded-full">
+            Saved
           </div>
+        </div>
+        
+        <CardContent className="p-4 space-y-3">
+          <h3 className="font-medium text-white truncate">{item.name}</h3>
           
-          <div
-            id="history-scroll-container"
-            ref={historyScrollContainerRef}
-            className="pb-4 flex gap-6 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent pl-12 pr-12"
-            style={{ scrollbarWidth: 'thin' }}
-          >
-            {viewedItems.map((item, index) => (
-              <motion.div
-                key={item.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="flex-shrink-0 w-[250px]"
-              >
-                <Card className="border-0 shadow-soft bg-gradient-to-br from-slate-800/80 to-slate-900/80 border border-white/10 backdrop-blur-lg overflow-hidden h-full">
-                  <div className="relative aspect-[3/4] overflow-hidden">
-                    <img 
-                      src={item.imageUrl} 
-                      alt={item.name}
-                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                    />
-                  </div>
-                  
-                  <CardContent className="p-4 space-y-3">
-                    <h3 className="font-medium text-white truncate">{item.name}</h3>
-                    
-                    <Button 
-                      size="sm"
-                      className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:opacity-90 w-full"
-                      onClick={() => onTryItem(item)}
-                      disabled={!isPremiumUser}
-                    >
-                      <Clock className="h-3.5 w-3.5 mr-1.5" />
-                      Try Again
-                    </Button>
-                  </CardContent>
-                </Card>
-              </motion.div>
+          <div className="flex flex-wrap gap-1 mb-2">
+            {item.tags?.map((tag, index) => (
+              <span key={index} className="text-xs bg-slate-700 text-slate-200 px-1.5 py-0.5 rounded-sm">
+                {tag}
+              </span>
             ))}
           </div>
           
-          <div className="absolute right-0 top-1/2 -translate-y-1/2 z-10">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="rounded-full bg-black/30 backdrop-blur-sm hover:bg-black/50 text-white"
-              onClick={scrollHistoryRight}
+          <div className="flex gap-2">
+            <Button 
+              size="sm"
+              className="bg-gradient-to-r from-pink-600 to-purple-600 hover:opacity-90 w-full"
+              onClick={() => onTryItem(item)}
             >
-              <ChevronRight className="h-6 w-6" />
+              <Shirt className="h-3.5 w-3.5 mr-1.5" />
+              Try It On
             </Button>
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </motion.div>
+  );
+};
+
+interface HistoryItemCardProps {
+  item: ClothingItem;
+  onTryItem: (item: ClothingItem) => void;
+}
+
+const HistoryItemCard = ({ item, onTryItem }: HistoryItemCardProps) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.3 }}
+    >
+      <Card className="border-0 shadow-soft bg-gradient-to-br from-slate-800/80 to-slate-900/80 border border-white/10 backdrop-blur-lg overflow-hidden h-full">
+        <div className="relative aspect-[3/4] overflow-hidden">
+          <img 
+            src={item.imageUrl || item.image} 
+            alt={item.name}
+            className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+          />
+          <div className="absolute top-2 right-2 bg-indigo-500 text-white text-xs px-2 py-0.5 rounded-full">
+            Viewed
+          </div>
+        </div>
+        
+        <CardContent className="p-4 space-y-3">
+          <h3 className="font-medium text-white truncate">{item.name}</h3>
+          
+          <div className="flex flex-wrap gap-1 mb-2">
+            {item.tags?.map((tag, index) => (
+              <span key={index} className="text-xs bg-slate-700 text-slate-200 px-1.5 py-0.5 rounded-sm">
+                {tag}
+              </span>
+            ))}
+          </div>
+          
+          <div className="flex gap-2">
+            <Button 
+              size="sm"
+              className="bg-gradient-to-r from-indigo-600 to-blue-600 hover:opacity-90 w-full"
+              onClick={() => onTryItem(item)}
+            >
+              <Shirt className="h-3.5 w-3.5 mr-1.5" />
+              Try It On Again
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
+  );
+};
+
+interface PremiumFeatureCardProps {
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  onUpgradeToPremium: () => void;
+}
+
+const PremiumFeatureCard = ({ 
+  title, 
+  description, 
+  icon,
+  onUpgradeToPremium 
+}: PremiumFeatureCardProps) => {
+  return (
+    <div className="max-w-2xl mx-auto px-4">
+      <Card className="border-white/10 bg-gradient-to-r from-slate-900/90 to-purple-900/30 backdrop-blur-sm">
+        <CardContent className="p-8 flex flex-col items-center text-center">
+          <div className="w-16 h-16 rounded-full bg-gradient-to-r from-purple-600/20 to-pink-600/20 flex items-center justify-center mb-6">
+            {icon}
+          </div>
+          
+          <h3 className="text-xl font-medium text-white mb-3">{title}</h3>
+          <p className="text-white/70 mb-6 max-w-md">{description}</p>
+          
+          <Button 
+            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-6"
+            onClick={onUpgradeToPremium}
+          >
+            <Lock className="h-4 w-4 mr-2" />
+            Upgrade to Premium
+          </Button>
+          
+          <div className="flex items-center gap-4 mt-6">
+            <div className="flex items-center text-white/60 text-sm">
+              <Star className="h-4 w-4 text-yellow-400 mr-1.5" />
+              Exclusive Features
+            </div>
+            <div className="flex items-center text-white/60 text-sm">
+              <Heart className="h-4 w-4 text-pink-400 mr-1.5" />
+              Unlimited Try-Ons
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 

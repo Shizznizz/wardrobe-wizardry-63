@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -9,6 +10,16 @@ import OliviaImageGallery from '@/components/outfits/OliviaImageGallery';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import PrettyLittleThingPicks from '@/components/shop-try/PrettyLittleThingPicks';
+
+// Import the newly created components
+import PremiumTryOnHero from '@/components/shop-try/PremiumTryOnHero';
+import WeatherBasedTips from '@/components/shop-try/WeatherBasedTips';
+import UploadPanel from '@/components/shop-try/UploadPanel';
+import FeedbackLoop from '@/components/shop-try/FeedbackLoop';
+import { FeedbackData } from '@/components/shop-try/FeedbackData';
+import UnifiedProductsCarousel from '@/components/shop-try/UnifiedProductsCarousel';
+import WishlistAndHistory from '@/components/shop-try/WishlistAndHistory';
+import FloatingOliviaWidget from '@/components/shop-try/FloatingOliviaWidget';
 
 const ShopAndTry = () => {
   const { isAuthenticated } = useAuth();

@@ -5,13 +5,7 @@ import { Star, X, Smile, Meh, Frown, Heart, Lock, ThumbsUp, ThumbsDown, Send, Sp
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-
-export interface FeedbackData {
-  rating: number;
-  favorite: boolean;
-  comment?: string;
-  accuracy?: 'good' | 'ok' | 'poor';
-}
+import { FeedbackData } from './FeedbackData';
 
 interface FeedbackLoopProps {
   visible: boolean;
