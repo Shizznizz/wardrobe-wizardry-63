@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -11,7 +10,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import PrettyLittleThingPicks from '@/components/shop-try/PrettyLittleThingPicks';
 
-// Import the newly created components
 import PremiumTryOnHero from '@/components/shop-try/PremiumTryOnHero';
 import WeatherBasedTips from '@/components/shop-try/WeatherBasedTips';
 import UploadPanel from '@/components/shop-try/UploadPanel';
@@ -76,10 +74,8 @@ const ShopAndTry = () => {
           setIsProcessing(false);
           toast.success("AI-generated try-on is ready!");
           
-          // Set Olivia's mood based on the outcome
           setOliviaMood('happy');
           
-          // Show feedback
           setTimeout(() => {
             setShowFeedback(true);
           }, 500);
@@ -137,7 +133,6 @@ const ShopAndTry = () => {
     setIsUsingOliviaImage(true);
     setShowFeedback(false);
     
-    // Set a custom location for Olivia
     setCustomLocation({
       city: "New York",
       country: "USA"
@@ -156,13 +151,11 @@ const ShopAndTry = () => {
     setShowFeedback(false);
 
     try {
-      // Simulate AI processing for demo purposes
       setTimeout(() => {
         setFinalImage(userPhoto);
         setIsProcessing(false);
         setOliviaMood('happy');
         
-        // Show feedback after a delay
         setTimeout(() => {
           setShowFeedback(true);
         }, 500);
@@ -235,12 +228,10 @@ const ShopAndTry = () => {
   const handleFeedbackSubmit = (feedback: FeedbackData) => {
     console.log('Feedback submitted:', feedback);
     
-    // In a real app, this would be sent to the backend
     if (feedback.favorite) {
       toast.success('Added to favorites!');
     }
     
-    // Use the rating to improve AI suggestions (just a visual confirmation for demo)
     if (feedback.rating >= 4) {
       toast.success('Olivia will remember your style preferences!');
     }
@@ -265,6 +256,16 @@ const ShopAndTry = () => {
 
   const handleOpenChat = () => {
     toast.info("Olivia is ready to chat about your style!");
+  };
+
+  const handleTryEditorsPick = (item: ClothingItem) => {
+    if (!userPhoto) {
+      toast.info("Please upload a photo first or select Olivia as a model");
+      return;
+    }
+    
+    setClothingPhoto(item.imageUrl || item.image);
+    toast.success("Editor's pick selected! Ready to try on.");
   };
 
   const containerVariants = {

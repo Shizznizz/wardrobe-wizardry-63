@@ -1,4 +1,3 @@
-
 // src/lib/types.ts
 
 export type ClothingColor =
@@ -14,6 +13,7 @@ export type ClothingColor =
   | 'orange'
   | 'brown'
   | 'navy'
+  | 'beige'
   | 'multicolor';
 
 export type ClothingSeason = 'spring' | 'summer' | 'autumn' | 'winter' | 'all';

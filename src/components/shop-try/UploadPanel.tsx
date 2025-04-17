@@ -45,6 +45,7 @@ interface UploadPanelProps {
   onSaveLook: () => void;
   onAddItem: (item: ClothingItem) => void;
   onShowPremiumPopup: () => void;
+  customSlot?: React.ReactNode; // Add optional customSlot prop
 }
 
 const UploadPanel = ({
