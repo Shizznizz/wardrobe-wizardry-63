@@ -103,7 +103,15 @@ const ShopAndTry = () => {
     }
   }, [finalImage, isPremiumUser, isAuthenticated]);
 
-  const handleUserPhotoUpload = (file: File) => {
+  const handleUserPhotoUpload = (file: File | string) => {
+    if (typeof file === 'string') {
+      setUserPhoto(file);
+      setFinalImage(null);
+      setIsUsingOliviaImage(false);
+      setShowFeedback(false);
+      return;
+    }
+    
     const reader = new FileReader();
     reader.onload = (event) => {
       setUserPhoto(event.target?.result as string);
@@ -114,7 +122,14 @@ const ShopAndTry = () => {
     reader.readAsDataURL(file);
   };
 
-  const handleClothingPhotoUpload = (file: File) => {
+  const handleClothingPhotoUpload = (file: File | string) => {
+    if (typeof file === 'string') {
+      setClothingPhoto(file);
+      setFinalImage(null);
+      setShowFeedback(false);
+      return;
+    }
+    
     const reader = new FileReader();
     reader.onload = (event) => {
       setClothingPhoto(event.target?.result as string);

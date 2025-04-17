@@ -20,7 +20,7 @@ interface UploadPanelProps {
   oliviaMood: 'happy' | 'thinking' | 'neutral';
   stylingTip: string | null;
   onUserPhotoUpload: (file: File) => void;
-  onClothingPhotoUpload: (file: File) => void;
+  onClothingPhotoUpload: (file: File | string) => void; // Updated to accept string
   onClearUserPhoto: () => void;
   onClearPhotos: () => void;
   onTryOn: () => void;
@@ -28,6 +28,7 @@ interface UploadPanelProps {
   onSaveLook: () => void;
   onAddItem: (item: ClothingItem) => void;
   onShowPremiumPopup: () => void;
+  customSlot?: React.ReactNode; // Added customSlot as an optional prop
 }
 
 const UploadPanel = ({
@@ -50,7 +51,8 @@ const UploadPanel = ({
   onShowOliviaImageGallery,
   onSaveLook,
   onAddItem,
-  onShowPremiumPopup
+  onShowPremiumPopup,
+  customSlot
 }: UploadPanelProps) => {
   const [dragActive, setDragActive] = useState(false);
   
@@ -335,6 +337,9 @@ const UploadPanel = ({
           )}
         </Button>
       </div>
+      
+      {/* Render the customSlot if provided */}
+      {customSlot}
     </Card>
   );
 };
