@@ -8,16 +8,7 @@ import OutfitSubscriptionPopup from '@/components/OutfitSubscriptionPopup';
 import OliviaImageGallery from '@/components/outfits/OliviaImageGallery';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-
-// Import unified components
-import PremiumTryOnHero from '@/components/shop-try/PremiumTryOnHero';
-import WeatherBasedTips from '@/components/shop-try/WeatherBasedTips';
-import UploadPanel from '@/components/shop-try/UploadPanel';
-import UnifiedProductsCarousel from '@/components/shop-try/UnifiedProductsCarousel';
-import WishlistAndHistory from '@/components/shop-try/WishlistAndHistory';
-import FeedbackLoop, { FeedbackData } from '@/components/shop-try/FeedbackLoop';
-import ShopTryExplainer from '@/components/shop-try/ShopTryExplainer';
-import FloatingOliviaWidget from '@/components/shop-try/FloatingOliviaWidget';
+import PrettyLittleThingPicks from '@/components/shop-try/PrettyLittleThingPicks';
 
 const ShopAndTry = () => {
   const { isAuthenticated } = useAuth();
@@ -284,7 +275,6 @@ const ShopAndTry = () => {
           animate="visible"
           variants={containerVariants}
         >
-          {/* Remove HelpTipsSection and keep other sections */}
           <section id="hero-section">
             <PremiumTryOnHero
               isPremiumUser={isPremiumUser || isAuthenticated}
@@ -294,7 +284,6 @@ const ShopAndTry = () => {
           </section>
 
           <div id="upload-section" className="scroll-mt-24">
-            {/* Weather-based Tips - Only shows when a photo is selected */}
             <WeatherBasedTips 
               userPhoto={userPhoto}
               isUsingOliviaImage={isUsingOliviaImage}
@@ -302,7 +291,6 @@ const ShopAndTry = () => {
               onShowStyleOptions={handleShowStylingOptions}
             />
             
-            {/* Upload Panel */}
             <UploadPanel 
               userPhoto={userPhoto}
               clothingPhoto={clothingPhoto}
@@ -329,7 +317,6 @@ const ShopAndTry = () => {
               onShowPremiumPopup={handleShowPremiumPopup}
             />
             
-            {/* Feedback Loop - Only show after try-on */}
             {showFeedback && finalImage && (
               <FeedbackLoop 
                 visible={showFeedback}
@@ -343,7 +330,6 @@ const ShopAndTry = () => {
             )}
           </div>
           
-          {/* Unified Products Carousel */}
           <section id="products-section" className="scroll-mt-24">
             <UnifiedProductsCarousel 
               isPremiumUser={isPremiumUser || isAuthenticated}
@@ -355,14 +341,18 @@ const ShopAndTry = () => {
             />
           </section>
           
-          {/* Wishlist and History */}
+          <PrettyLittleThingPicks
+            isPremiumUser={isPremiumUser || isAuthenticated}
+            onTryItem={handleTryOnTrendingItem}
+            onUpgradeToPremium={handleShowPremiumPopup}
+          />
+          
           <WishlistAndHistory 
             isPremiumUser={isPremiumUser || isAuthenticated}
             onTryItem={handleTryOnTrendingItem}
             onUpgradeToPremium={handleShowPremiumPopup}
           />
           
-          {/* Keep the floating Olivia widget */}
           <FloatingOliviaWidget
             isPremiumUser={isPremiumUser || isAuthenticated}
             onUpgradeToPremium={handleShowPremiumPopup}
