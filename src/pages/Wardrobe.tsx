@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import { motion } from 'framer-motion';
@@ -19,6 +20,8 @@ const Wardrobe = () => {
   const [clothingItems, setClothingItems] = useState<ClothingItem[]>(sampleClothingItems);
   const [outfits, setOutfits] = useState<Outfit[]>(sampleOutfits);
   const [selectedOutfitItems, setSelectedOutfitItems] = useState<ClothingItem[]>([]);
+  const [outfitDialogOpen, setOutfitDialogOpen] = useState(false);
+  const [selectedOutfit, setSelectedOutfit] = useState<Outfit | null>(null);
   const { user, isAuthenticated } = useAuth();
   const { setHasUploadedWardrobe } = useOlivia();
   
@@ -100,6 +103,16 @@ const Wardrobe = () => {
       )
     );
   };
+  
+  const handleOpenOutfitBuilder = (outfit?: Outfit) => {
+    setSelectedOutfit(outfit || null);
+    setOutfitDialogOpen(true);
+  };
+
+  const handleCloseOutfitBuilder = () => {
+    setOutfitDialogOpen(false);
+    setSelectedOutfit(null);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white">
@@ -122,11 +135,11 @@ const Wardrobe = () => {
         
         {isBuilding ? (
           <OutfitBuilder 
-            allItems={clothingItems}
-            selectedItems={selectedOutfitItems}
-            onAddToOutfit={handleAddToOutfit}
+            isOpen={isBuilding}
+            onClose={handleCancelBuilding}
             onSave={handleSaveOutfit}
-            onCancel={handleCancelBuilding}
+            clothingItems={clothingItems}
+            initialOutfit={null}
           />
         ) : (
           <Tabs defaultValue="clothes" className="w-full" onValueChange={setActiveTab}>
@@ -146,7 +159,7 @@ const Wardrobe = () => {
                   </button>
                 ) : (
                   <button
-                    onClick={handleStartBuilding}
+                    onClick={() => handleOpenOutfitBuilder()}
                     className="bg-gradient-to-r from-purple-600 to-pink-500 px-4 py-2 rounded-lg text-white font-medium hover:opacity-90 transition"
                   >
                     Create Outfit
@@ -167,7 +180,7 @@ const Wardrobe = () => {
               <OutfitGrid 
                 outfits={outfits}
                 clothingItems={clothingItems}
-                onEdit={handleEditOutfit}
+                onEdit={handleOpenOutfitBuilder}
                 onDelete={handleDeleteOutfit}
                 onToggleFavorite={handleToggleOutfitFavorite}
               />
@@ -177,8 +190,18 @@ const Wardrobe = () => {
       </main>
       
       <UploadModal 
+        open={showUploadModal}
+        onOpenChange={setShowUploadModal}
         onUpload={handleAddItem}
         buttonText="Add Item"
+      />
+      
+      <OutfitBuilder
+        isOpen={outfitDialogOpen}
+        onClose={handleCloseOutfitBuilder}
+        onSave={handleSaveOutfit}
+        clothingItems={clothingItems}
+        initialOutfit={selectedOutfit}
       />
     </div>
   );
