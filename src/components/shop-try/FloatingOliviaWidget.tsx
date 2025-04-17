@@ -60,7 +60,7 @@ const FloatingOliviaWidget = ({
   };
   
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className="fixed bottom-6 right-6 z-50 w-full max-w-xs">
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -68,7 +68,7 @@ const FloatingOliviaWidget = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, y: 20 }}
             transition={{ duration: 0.2 }}
-            className="bg-gradient-to-r from-slate-800/90 to-slate-900/90 backdrop-blur-lg p-4 rounded-lg border border-purple-500/30 shadow-xl mb-4 max-w-[300px] w-[calc(100vw-3rem)]"
+            className="bg-gradient-to-r from-slate-800/90 to-slate-900/90 backdrop-blur-lg p-4 rounded-lg border border-purple-500/30 shadow-xl mb-4 w-full max-w-xs mx-auto"
           >
             <div className="flex justify-between items-start mb-3">
               <div className="flex items-center">
@@ -139,7 +139,7 @@ const FloatingOliviaWidget = ({
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setIsOpen(!isOpen)}
-              className="bg-gradient-to-r from-purple-600 to-pink-500 rounded-full p-3 shadow-lg shadow-purple-500/20 flex items-center justify-center relative"
+              className="bg-gradient-to-r from-purple-600 to-pink-500 rounded-full p-3 shadow-lg shadow-purple-500/20 flex items-center justify-center relative ml-auto"
             >
               <MessageCircle className="h-6 w-6 text-white" />
               {!isOpen && (
