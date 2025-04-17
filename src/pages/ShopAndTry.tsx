@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -9,15 +8,7 @@ import OutfitSubscriptionPopup from '@/components/OutfitSubscriptionPopup';
 import OliviaImageGallery from '@/components/outfits/OliviaImageGallery';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-
-// Import unified components
-import PremiumTryOnHero from '@/components/shop-try/PremiumTryOnHero';
-import WeatherBasedTips from '@/components/shop-try/WeatherBasedTips';
-import UploadPanel from '@/components/shop-try/UploadPanel';
-import UnifiedProductsCarousel from '@/components/shop-try/UnifiedProductsCarousel';
-import WishlistAndHistory from '@/components/shop-try/WishlistAndHistory';
-import FeedbackLoop, { FeedbackData } from '@/components/shop-try/FeedbackLoop';
-import ShopTryExplainer from '@/components/shop-try/ShopTryExplainer';
+import EnhancedStepSection from '@/components/shop-try/EnhancedStepSection';
 
 const ShopAndTry = () => {
   const { isAuthenticated } = useAuth();
@@ -74,10 +65,8 @@ const ShopAndTry = () => {
           setIsProcessing(false);
           toast.success("AI-generated try-on is ready!");
           
-          // Set Olivia's mood based on the outcome
           setOliviaMood('happy');
           
-          // Show feedback
           setTimeout(() => {
             setShowFeedback(true);
           }, 500);
@@ -135,7 +124,6 @@ const ShopAndTry = () => {
     setIsUsingOliviaImage(true);
     setShowFeedback(false);
     
-    // Set a custom location for Olivia
     setCustomLocation({
       city: "New York",
       country: "USA"
@@ -154,13 +142,11 @@ const ShopAndTry = () => {
     setShowFeedback(false);
 
     try {
-      // Simulate AI processing for demo purposes
       setTimeout(() => {
         setFinalImage(userPhoto);
         setIsProcessing(false);
         setOliviaMood('happy');
         
-        // Show feedback after a delay
         setTimeout(() => {
           setShowFeedback(true);
         }, 500);
@@ -233,12 +219,10 @@ const ShopAndTry = () => {
   const handleFeedbackSubmit = (feedback: FeedbackData) => {
     console.log('Feedback submitted:', feedback);
     
-    // In a real app, this would be sent to the backend
     if (feedback.favorite) {
       toast.success('Added to favorites!');
     }
     
-    // Use the rating to improve AI suggestions (just a visual confirmation for demo)
     if (feedback.rating >= 4) {
       toast.success('Olivia will remember your style preferences!');
     }
@@ -261,6 +245,13 @@ const ShopAndTry = () => {
     toast.info("Here are some items that match today's weather");
   };
 
+  const handleShowClothingSelection = () => {
+    document.getElementById('products-section')?.scrollIntoView({ 
+      behavior: 'smooth',
+      block: 'start' 
+    });
+  };
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -280,17 +271,15 @@ const ShopAndTry = () => {
           animate="visible"
           variants={containerVariants}
         >
-          {/* New unified hero section replacing the old intro + steps */}
-          <section id="hero-section">
-            <PremiumTryOnHero
-              isPremiumUser={isPremiumUser || isAuthenticated}
+          <section id="steps-section">
+            <EnhancedStepSection
               onStartStyling={() => document.getElementById('upload-section')?.scrollIntoView({ behavior: 'smooth' })}
-              onShowPremiumPopup={handleShowPremiumPopup}
+              onShowOliviaImageGallery={() => setShowOliviaImageGallery(true)}
+              onShowClothingSelection={handleShowClothingSelection}
             />
           </section>
 
           <div id="upload-section" className="scroll-mt-24">
-            {/* Weather-based Tips - Only shows when a photo is selected */}
             <WeatherBasedTips 
               userPhoto={userPhoto}
               isUsingOliviaImage={isUsingOliviaImage}
@@ -298,7 +287,6 @@ const ShopAndTry = () => {
               onShowStyleOptions={handleShowStylingOptions}
             />
             
-            {/* Upload Panel */}
             <UploadPanel 
               userPhoto={userPhoto}
               clothingPhoto={clothingPhoto}
@@ -325,7 +313,6 @@ const ShopAndTry = () => {
               onShowPremiumPopup={handleShowPremiumPopup}
             />
             
-            {/* Feedback Loop - Only show after try-on */}
             {showFeedback && finalImage && (
               <FeedbackLoop 
                 visible={showFeedback}
@@ -339,7 +326,6 @@ const ShopAndTry = () => {
             )}
           </div>
           
-          {/* Unified Products Carousel */}
           <section id="products-section" className="scroll-mt-24">
             <UnifiedProductsCarousel 
               isPremiumUser={isPremiumUser || isAuthenticated}
@@ -351,7 +337,6 @@ const ShopAndTry = () => {
             />
           </section>
           
-          {/* Wishlist and History */}
           <WishlistAndHistory 
             isPremiumUser={isPremiumUser || isAuthenticated}
             onTryItem={handleTryOnTrendingItem}
@@ -366,10 +351,10 @@ const ShopAndTry = () => {
         onSelectImage={handleSelectOliviaImage}
       />
       
-      <OutfitSubscriptionPopup 
-        isOpen={showSubscriptionPopup}
-        onClose={() => setShowSubscriptionPopup(false)}
-        onUpgrade={handleUpgradeToPremium}
+      <FloatingOliviaWidget 
+        isPremiumUser={isPremiumUser || isAuthenticated}
+        onUpgradeToPremium={handleShowPremiumPopup}
+        onOpenChat={onOpenChat}
       />
     </div>
   );
