@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MessageCircle, X, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 interface FloatingOliviaWidgetProps {
   isPremiumUser: boolean;
@@ -71,13 +70,7 @@ const FloatingOliviaWidget = ({
             className="bg-gradient-to-r from-slate-800/90 to-slate-900/90 backdrop-blur-lg p-4 rounded-lg border border-purple-500/30 shadow-xl mb-4 w-full max-w-xs mx-auto"
           >
             <div className="flex justify-between items-start mb-3">
-              <div className="flex items-center">
-                <Avatar className="h-9 w-9 border-2 border-white/30">
-                  <AvatarImage src="/lovable-uploads/28e5664c-3c8a-4b7e-9c99-065ad489583f.png" alt="Olivia" />
-                  <AvatarFallback className="bg-gradient-to-r from-purple-600 to-pink-500">OB</AvatarFallback>
-                </Avatar>
-                <span className="ml-2 font-medium text-white">Olivia</span>
-              </div>
+              <span className="font-medium text-white">Olivia's Styling Guide</span>
               <Button 
                 variant="ghost" 
                 size="icon" 
