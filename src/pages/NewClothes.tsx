@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -8,6 +9,21 @@ import OutfitSubscriptionPopup from '@/components/OutfitSubscriptionPopup';
 import OliviaImageGallery from '@/components/outfits/OliviaImageGallery';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import UploadPanel from '@/components/shop-try/UploadPanel';
+import TryOnLoadingAnimation from '@/components/shop-try/TryOnLoadingAnimation';
+import BeforeAfterToggle from '@/components/shop-try/BeforeAfterToggle';
+import FloatingOliviaWidget from '@/components/shop-try/FloatingOliviaWidget';
+import AIStylistChat from '@/components/shop-try/AIStylistChat';
+import HelpTipsSection from '@/components/new-clothes/HelpTipsSection';
+import { defaultOutfitTips } from '@/components/outfits/OutfitTips';
+import HeroSection from '@/components/shop-try/HeroSection';
+import ShopTryExplainer from '@/components/shop-try/ShopTryExplainer';
+import StyleFeedbackSection from '@/components/shop-try/StyleFeedbackSection';
+import EditorsPicks from '@/components/shop-try/EditorsPicks';
+import StyleMoodSelector from '@/components/shop-try/StyleMoodSelector';
+import PersonalizedStyleCarousel from '@/components/shop-try/PersonalizedStyleCarousel';
+import TrendingNowSection from '@/components/shop-try/TrendingNowSection';
+import PremiumFeatureSection from '@/components/shop-try/PremiumFeatureSection';
 
 const NewClothes = () => {
   const { isAuthenticated } = useAuth();
@@ -27,6 +43,7 @@ const NewClothes = () => {
   const [oliviaMood, setOliviaMood] = useState<'happy' | 'thinking' | 'neutral'>('neutral');
   const [stylingTip, setStylingTip] = useState<string | null>(null);
   const [challengeParticipantCount] = useState<number>(347);
+  const [showFloatingChat, setShowFloatingChat] = useState(false);
 
   const isMobile = useIsMobile();
 

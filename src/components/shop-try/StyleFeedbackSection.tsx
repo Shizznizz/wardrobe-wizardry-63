@@ -1,8 +1,8 @@
 
 import { motion } from 'framer-motion';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Heart, Sparkles, Shirt, ArrowRight } from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { Lightbulb, Sparkles, BookHeart, Flame } from 'lucide-react';
 import OliviaMoodAvatar from './OliviaMoodAvatar';
 
 interface StyleFeedbackSectionProps {
@@ -27,119 +27,58 @@ const StyleFeedbackSection = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="relative"
     >
-      <div className="flex items-center mb-6">
-        <div className="h-px flex-grow bg-gradient-to-r from-transparent via-purple-500/30 to-transparent"></div>
-        <h2 className="px-4 text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-          Olivia's Styling Tips
-        </h2>
-        <div className="h-px flex-grow bg-gradient-to-r from-purple-500/30 via-transparent to-transparent"></div>
-      </div>
-      
-      {isPremiumUser ? (
-        <Card className="border-0 shadow-soft bg-gradient-to-r from-purple-900/30 to-slate-900/40 border border-purple-500/20 backdrop-blur-lg overflow-hidden">
-          <CardContent className="p-6">
-            <div className="flex items-start gap-4">
-              <OliviaMoodAvatar mood="happy" size="md" />
-              
-              <div className="flex-1">
-                <div className="relative bg-slate-800/70 backdrop-blur-sm rounded-lg p-4 mb-4 before:content-[''] before:absolute before:top-5 before:-left-3 before:border-8 before:border-transparent before:border-r-slate-800/70">
-                  <p className="text-white/90">{stylingTip}</p>
-                </div>
-                
-                <div className="flex flex-wrap gap-3">
-                  <Button 
-                    onClick={onSuggestSimilar}
-                    className="bg-gradient-to-r from-pink-600 to-purple-600 hover:opacity-90"
-                    size="sm"
-                  >
-                    <Shirt className="h-4 w-4 mr-2" />
-                    Try Similar Look
-                  </Button>
-                  
-                  <Button 
-                    onClick={onSaveLook}
-                    variant="outline" 
-                    className="border-pink-500/30 text-pink-300 hover:bg-pink-500/10 hover:text-pink-200"
-                    size="sm"
-                  >
-                    <Heart className="h-4 w-4 mr-2" />
-                    Save to My Wardrobe
-                  </Button>
-                  
-                  <Button 
-                    onClick={onShowStylingOptions}
-                    variant="outline" 
-                    className="border-blue-500/30 text-blue-300 hover:bg-blue-500/10 hover:text-blue-200"
-                    size="sm"
-                  >
-                    <Sparkles className="h-4 w-4 mr-2" />
-                    See Styling Options
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      ) : (
-        <Card className="relative border-0 shadow-soft bg-gradient-to-r from-purple-900/20 to-slate-900/30 border border-purple-500/10 backdrop-blur-lg overflow-hidden">
-          <div className="absolute inset-0 backdrop-blur-sm bg-slate-900/60 z-10 flex flex-col items-center justify-center">
-            <p className="text-white/90 mb-3 px-8 text-center">Unlock Olivia's styling tips and personalized suggestions</p>
-            <Button 
-              onClick={onUpgradeToPremium} 
-              className="bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90"
-            >
-              <Sparkles className="h-4 w-4 mr-2" />
-              Upgrade to Premium
-              <ArrowRight className="h-4 w-4 ml-2" />
-            </Button>
+      <Card className="border-purple-500/30 bg-gradient-to-br from-slate-900/90 to-purple-950/90 p-6 backdrop-blur-lg">
+        <div className="flex items-start gap-4">
+          <div className="flex-shrink-0">
+            <OliviaMoodAvatar mood="happy" size="md" />
           </div>
           
-          <CardContent className="p-6 filter blur-[2px]">
-            <div className="flex items-start gap-4">
-              <OliviaMoodAvatar mood="happy" size="md" />
+          <div className="flex-1">
+            <h3 className="text-xl font-medium text-white mb-2">Olivia's Styling Take</h3>
+            <p className="text-white/80 mb-4">{stylingTip}</p>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+              <Button 
+                onClick={onSuggestSimilar}
+                className="bg-gradient-to-r from-indigo-600 to-blue-600 text-white hover:opacity-90"
+                disabled={!isPremiumUser}
+              >
+                <Sparkles className="h-4 w-4 mr-2" />
+                Similar Items
+              </Button>
               
-              <div className="flex-1">
-                <div className="relative bg-slate-800/70 backdrop-blur-sm rounded-lg p-4 mb-4 before:content-[''] before:absolute before:top-5 before:-left-3 before:border-8 before:border-transparent before:border-r-slate-800/70">
-                  <p className="text-white/90">{stylingTip}</p>
-                </div>
-                
-                <div className="flex flex-wrap gap-3">
-                  <Button 
-                    className="bg-gradient-to-r from-pink-600 to-purple-600 hover:opacity-90"
-                    size="sm"
-                    disabled
-                  >
-                    <Shirt className="h-4 w-4 mr-2" />
-                    Try Similar Look
-                  </Button>
-                  
-                  <Button 
-                    variant="outline" 
-                    className="border-pink-500/30 text-pink-300 hover:bg-pink-500/10 hover:text-pink-200"
-                    size="sm"
-                    disabled
-                  >
-                    <Heart className="h-4 w-4 mr-2" />
-                    Save to My Wardrobe
-                  </Button>
-                  
-                  <Button 
-                    variant="outline" 
-                    className="border-blue-500/30 text-blue-300 hover:bg-blue-500/10 hover:text-blue-200"
-                    size="sm"
-                    disabled
-                  >
-                    <Sparkles className="h-4 w-4 mr-2" />
-                    See Styling Options
-                  </Button>
-                </div>
-              </div>
+              <Button 
+                onClick={onSaveLook}
+                className="bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:opacity-90"
+                disabled={!isPremiumUser}
+              >
+                <BookHeart className="h-4 w-4 mr-2" />
+                Save This Look
+              </Button>
+              
+              <Button 
+                onClick={onShowStylingOptions}
+                className="bg-gradient-to-r from-amber-600 to-orange-600 text-white hover:opacity-90"
+                disabled={!isPremiumUser}
+              >
+                <Lightbulb className="h-4 w-4 mr-2" />
+                Styling Options
+              </Button>
+              
+              {!isPremiumUser && (
+                <Button 
+                  onClick={onUpgradeToPremium}
+                  className="bg-gradient-to-r from-red-600 to-pink-600 text-white hover:opacity-90"
+                >
+                  <Flame className="h-4 w-4 mr-2" />
+                  Unlock All Features
+                </Button>
+              )}
             </div>
-          </CardContent>
-        </Card>
-      )}
+          </div>
+        </div>
+      </Card>
     </motion.div>
   );
 };
