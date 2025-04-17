@@ -190,8 +190,6 @@ const Wardrobe = () => {
       </main>
       
       <UploadModal 
-        open={showUploadModal}
-        onOpenChange={setShowUploadModal}
         onUpload={handleAddItem}
         buttonText="Add Item"
       />
