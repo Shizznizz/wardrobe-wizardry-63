@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -18,6 +17,7 @@ import UnifiedProductsCarousel from '@/components/shop-try/UnifiedProductsCarous
 import WishlistAndHistory from '@/components/shop-try/WishlistAndHistory';
 import FeedbackLoop, { FeedbackData } from '@/components/shop-try/FeedbackLoop';
 import ShopTryExplainer from '@/components/shop-try/ShopTryExplainer';
+import FloatingOliviaWidget from '@/components/shop-try/FloatingOliviaWidget';
 
 const ShopAndTry = () => {
   const { isAuthenticated } = useAuth();
@@ -261,6 +261,10 @@ const ShopAndTry = () => {
     toast.info("Here are some items that match today's weather");
   };
 
+  const handleOpenChat = () => {
+    toast.info("Olivia is ready to chat about your style!");
+  };
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -280,7 +284,7 @@ const ShopAndTry = () => {
           animate="visible"
           variants={containerVariants}
         >
-          {/* New unified hero section replacing the old intro + steps */}
+          {/* Remove HelpTipsSection and keep other sections */}
           <section id="hero-section">
             <PremiumTryOnHero
               isPremiumUser={isPremiumUser || isAuthenticated}
@@ -356,6 +360,13 @@ const ShopAndTry = () => {
             isPremiumUser={isPremiumUser || isAuthenticated}
             onTryItem={handleTryOnTrendingItem}
             onUpgradeToPremium={handleShowPremiumPopup}
+          />
+          
+          {/* Keep the floating Olivia widget */}
+          <FloatingOliviaWidget
+            isPremiumUser={isPremiumUser || isAuthenticated}
+            onUpgradeToPremium={handleShowPremiumPopup}
+            onOpenChat={handleOpenChat}
           />
         </motion.div>
       </main>
