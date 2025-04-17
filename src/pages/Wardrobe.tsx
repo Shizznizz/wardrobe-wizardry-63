@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import { motion } from 'framer-motion';
@@ -39,6 +38,28 @@ const Wardrobe = () => {
     setSelectedOutfitItems([]);
   };
 
+  const handleSaveOutfit = (outfit: Outfit) => {
+    if (outfit.items.length === 0) {
+      toast.error('Please select at least one item for your outfit');
+      return;
+    }
+
+    // Use the passed outfit directly
+    setOutfits(prev => [...prev, outfit]);
+    setIsBuilding(false);
+    setSelectedOutfitItems([]);
+    toast.success('Outfit created successfully!');
+  };
+
+  const handleEditOutfit = (outfit: Outfit) => {
+    // This will now correctly handle the Outfit type
+    const updatedOutfits = outfits.map(existingOutfit => 
+      existingOutfit.id === outfit.id ? outfit : existingOutfit
+    );
+    setOutfits(updatedOutfits);
+    toast.success(`Outfit "${outfit.name}" updated successfully`);
+  };
+
   const handleCancelBuilding = () => {
     setIsBuilding(false);
     setSelectedOutfitItems([]);
@@ -54,33 +75,6 @@ const Wardrobe = () => {
     });
   };
 
-  // This function needs to use Outfit parameter, not just a name string
-  const handleSaveOutfit = (outfitName: string) => {
-    if (selectedOutfitItems.length === 0) {
-      toast.error('Please select at least one item for your outfit');
-      return;
-    }
-
-    const newOutfit: Outfit = {
-      id: Date.now().toString(),
-      name: outfitName,
-      items: selectedOutfitItems.map(item => item.id),
-      seasons: ['spring', 'summer', 'autumn', 'winter'], // Changed 'fall' to 'autumn' to match ClothingSeason type
-      occasions: ['casual'],
-      season: ['all'],
-      occasion: 'casual',
-      favorite: false,
-      timesWorn: 0,
-      dateAdded: new Date()
-    };
-
-    setOutfits(prev => [...prev, newOutfit]);
-    setIsBuilding(false);
-    setSelectedOutfitItems([]);
-    toast.success('Outfit created successfully!');
-  };
-
-  // Added handlers required by component props
   const handleToggleFavorite = (id: string) => {
     setClothingItems(prev => 
       prev.map(item => 
@@ -92,11 +86,6 @@ const Wardrobe = () => {
   const handleMatchItem = (item: ClothingItem) => {
     // Implement logic for matching items
     toast.info(`Finding matches for ${item.name}...`);
-  };
-
-  const handleEditOutfit = (outfit: Outfit) => {
-    // Implement edit outfit functionality
-    toast.info(`Editing outfit: ${outfit.name}`);
   };
 
   const handleDeleteOutfit = (id: string) => {
