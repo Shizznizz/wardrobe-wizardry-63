@@ -64,7 +64,7 @@ const Wardrobe = () => {
       id: Date.now().toString(),
       name,
       items: selectedOutfitItems.map(item => item.id),
-      seasons: ['spring', 'summer', 'fall', 'winter'],
+      seasons: ['spring', 'summer', 'autumn', 'winter'], // Changed 'fall' to 'autumn' to match ClothingSeason type
       occasions: ['casual'],
       season: ['all'],
       occasion: 'casual',
@@ -77,6 +77,38 @@ const Wardrobe = () => {
     setIsBuilding(false);
     setSelectedOutfitItems([]);
     toast.success('Outfit created successfully!');
+  };
+
+  // Added handlers required by component props
+  const handleToggleFavorite = (id: string) => {
+    setClothingItems(prev => 
+      prev.map(item => 
+        item.id === id ? { ...item, favorite: !item.favorite } : item
+      )
+    );
+  };
+
+  const handleMatchItem = (item: ClothingItem) => {
+    // Implement logic for matching items
+    toast.info(`Finding matches for ${item.name}...`);
+  };
+
+  const handleEditOutfit = (outfit: Outfit) => {
+    // Implement edit outfit functionality
+    toast.info(`Editing outfit: ${outfit.name}`);
+  };
+
+  const handleDeleteOutfit = (id: string) => {
+    setOutfits(prev => prev.filter(outfit => outfit.id !== id));
+    toast.success('Outfit deleted successfully');
+  };
+
+  const handleToggleOutfitFavorite = (id: string) => {
+    setOutfits(prev => 
+      prev.map(outfit => 
+        outfit.id === id ? { ...outfit, favorite: !outfit.favorite } : outfit
+      )
+    );
   };
 
   return (
@@ -134,13 +166,20 @@ const Wardrobe = () => {
             </div>
 
             <TabsContent value="clothes" className="mt-6">
-              <WardrobeGrid items={clothingItems} />
+              <WardrobeGrid 
+                items={clothingItems} 
+                onToggleFavorite={handleToggleFavorite}
+                onMatchItem={handleMatchItem}
+              />
             </TabsContent>
             
             <TabsContent value="outfits" className="mt-6">
               <OutfitGrid 
                 outfits={outfits}
                 clothingItems={clothingItems}
+                onEdit={handleEditOutfit}
+                onDelete={handleDeleteOutfit}
+                onToggleFavorite={handleToggleOutfitFavorite}
               />
             </TabsContent>
           </Tabs>
@@ -148,9 +187,8 @@ const Wardrobe = () => {
       </main>
       
       <UploadModal 
-        isOpen={showUploadModal} 
-        onClose={() => setShowUploadModal(false)}
         onAddItem={handleAddItem}
+        buttonText="Add Item"
       />
     </div>
   );
