@@ -43,9 +43,40 @@ const NewClothes = () => {
   const [oliviaMood, setOliviaMood] = useState<'happy' | 'thinking' | 'neutral'>('neutral');
   const [stylingTip, setStylingTip] = useState<string | null>(null);
   const [challengeParticipantCount] = useState<number>(347); // For demo purposes
+  const [showHelpTips, setShowHelpTips] = useState(false);
+  const [currentTipIndex, setCurrentTipIndex] = useState(0);
+  const [showFloatingChat, setShowFloatingChat] = useState(false);
 
   const isMobile = useIsMobile();
   const { setUserHasPhoto } = useOlivia();
+
+  const defaultOutfitTips = [
+    {
+      id: 1,
+      title: "Upload Your Photo",
+      content: "Start by uploading a full-body photo of yourself. This will be the base for trying on new clothes."
+    },
+    {
+      id: 2,
+      title: "Select Clothing Items",
+      content: "Upload photos of clothing items you're interested in trying on. You can see how they look on you before purchasing."
+    },
+    {
+      id: 3,
+      title: "Create Complete Outfits",
+      content: "After trying on your main item, add more pieces to create complete looks with accessories and layers."
+    },
+    {
+      id: 4,
+      title: "Get Styling Recommendations",
+      content: "Check out the recommendations section for outfit ideas that complement your selected items."
+    },
+    {
+      id: 5,
+      title: "Save and Share",
+      content: "Found the perfect look? Save it to your wardrobe or share it with friends to get their opinion!"
+    }
+  ];
 
   useEffect(() => {
     setIsPremiumUser(isAuthenticated);

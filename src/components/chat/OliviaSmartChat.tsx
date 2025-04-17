@@ -64,7 +64,8 @@ const OliviaSmartChat = ({
   const isMobile = useIsMobile();
   const chatContainerRef = useRef<HTMLDivElement>(null);
   
-  const isNewUser = user && (user.metadata?.created_at && new Date().getTime() - new Date(user.metadata.created_at).getTime() < 86400000);
+  // Fix: Check if user is new based on creation time if available
+  const isNewUser = user && new Date().getTime() - new Date(user.created_at || Date.now()).getTime() < 86400000;
   
   // Get the current page
   const currentPage = location.pathname;
