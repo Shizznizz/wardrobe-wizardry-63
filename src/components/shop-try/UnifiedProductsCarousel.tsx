@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
@@ -225,7 +226,6 @@ const UnifiedProductsCarousel = ({
           <ReviewStars rating={item.rating} reviewCount={item.reviewCount} />
           
           <div className="flex justify-between items-start mb-1">
-            
             <span className="text-sm font-bold text-white">{item.price}</span>
           </div>
           
@@ -253,7 +253,7 @@ const UnifiedProductsCarousel = ({
             Shop Now 
             <ExternalLink className="h-3 w-3 ml-1" />
           </Button>
-        </div>
+        </CardContent>
       </div>
     </motion.div>
   );
