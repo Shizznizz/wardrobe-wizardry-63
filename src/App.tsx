@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import { AuthProvider } from '@/hooks/useAuth';
 import OliviaProvider from '@/components/OliviaProvider';
+import { ThemeProvider } from '@/components/ThemeProvider';
 
 // Import pages
 import Home from '@/pages/Home';
@@ -23,21 +24,23 @@ const App = () => {
   
   return (
     <AuthProvider>
-      <ScrollToTop />
-      <OliviaProvider onUpgradeToPremium={handleUpgradeToPremium}>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/shop-and-try" element={<ShopAndTry />} />
-          <Route path="/new-clothes" element={<NewClothes />} />
-          <Route path="/mix-and-match" element={<MixAndMatch />} />
-          <Route path="/wardrobe" element={<Wardrobe />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-        </Routes>
-      </OliviaProvider>
-      <Toaster position="top-center" />
+      <ThemeProvider>
+        <ScrollToTop />
+        <OliviaProvider onUpgradeToPremium={handleUpgradeToPremium}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/shop-and-try" element={<ShopAndTry />} />
+            <Route path="/new-clothes" element={<NewClothes />} />
+            <Route path="/mix-and-match" element={<MixAndMatch />} />
+            <Route path="/wardrobe" element={<Wardrobe />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+          </Routes>
+        </OliviaProvider>
+        <Toaster position="top-center" />
+      </ThemeProvider>
     </AuthProvider>
   );
 };
