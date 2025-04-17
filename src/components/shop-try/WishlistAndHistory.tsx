@@ -1,9 +1,14 @@
+
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Card, CardContent } from '@/components/ui/card';
+import { Clock, Heart, Star, ShoppingBag, Lock, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, Heart, Clock, ShoppingBag } from 'lucide-react';
-import { ClothingItem, ClothingOccasion } from '@/lib/types';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { ClothingItem, ClothingType, ClothingColor, ClothingMaterial, ClothingSeason, ClothingOccasion } from '@/lib/types';
 
 interface WishlistAndHistoryProps {
   isPremiumUser: boolean;
@@ -16,368 +21,244 @@ const WishlistAndHistory = ({
   onTryItem,
   onUpgradeToPremium
 }: WishlistAndHistoryProps) => {
-  const [wishlistScrollPosition, setWishlistScrollPosition] = useState(0);
-  const [historyScrollPosition, setHistoryScrollPosition] = useState(0);
+  const [activeTab, setActiveTab] = useState('wishlist');
+  const isMobile = useIsMobile();
   
+  // Sample wishlist items
   const wishlistItems: ClothingItem[] = [
     {
       id: 'wish-1',
-      name: 'Statement Earrings',
-      type: 'accessories',
-      color: 'yellow',
-      material: 'other',
-      season: ['all'],
-      occasions: ['party', 'special'] as ClothingOccasion[],
-      imageUrl: 'https://images.unsplash.com/photo-1589128777073-263566ae5e4d?auto=format&fit=crop&q=80&w=300&h=400',
+      name: 'Denim Jacket',
+      type: 'jacket' as ClothingType,
+      color: 'blue' as ClothingColor,
+      material: 'denim' as ClothingMaterial,
+      season: ['spring', 'fall'] as ClothingSeason[],
+      occasions: ['casual'] as ClothingOccasion[],
+      image: '/placeholder.svg',
+      imageUrl: '/placeholder.svg',
       favorite: false,
       timesWorn: 0,
-      dateAdded: new Date(),
-      image: '/placeholder.svg'
+      dateAdded: new Date()
     },
     {
       id: 'wish-2',
-      name: 'Satin Midi Dress',
-      type: 'dress',
-      color: 'pink',
-      material: 'silk',
-      season: ['spring', 'summer'],
-      occasions: ['party'] as ClothingOccasion[],
-      imageUrl: 'https://images.unsplash.com/photo-1612336307429-8a898d10e223?auto=format&fit=crop&q=80&w=300&h=400',
-      favorite: false,
+      name: 'Floral Dress',
+      type: 'dress' as ClothingType,
+      color: 'multi' as ClothingColor,
+      material: 'cotton' as ClothingMaterial,
+      season: ['spring', 'summer'] as ClothingSeason[],
+      occasions: ['casual', 'party'] as ClothingOccasion[],
+      image: '/placeholder.svg',
+      imageUrl: '/placeholder.svg',
+      favorite: true,
       timesWorn: 0,
-      dateAdded: new Date(),
-      image: '/placeholder.svg'
+      dateAdded: new Date()
     },
     {
       id: 'wish-3',
-      name: 'Boyfriend Blazer',
-      type: 'jacket',
-      color: 'black',
-      material: 'cotton',
-      season: ['autumn', 'winter', 'spring'],
-      occasions: ['business', 'casual'] as ClothingOccasion[],
-      imageUrl: 'https://images.unsplash.com/photo-1591085686350-798c0f9faa7f?auto=format&fit=crop&q=80&w=300&h=400',
+      name: 'Leather Boots',
+      type: 'footwear' as ClothingType,
+      color: 'black' as ClothingColor,
+      material: 'leather' as ClothingMaterial,
+      season: ['fall', 'winter'] as ClothingSeason[],
+      occasions: ['casual', 'business'] as ClothingOccasion[],
+      image: '/placeholder.svg',
+      imageUrl: '/placeholder.svg',
       favorite: false,
       timesWorn: 0,
-      dateAdded: new Date(),
-      image: '/placeholder.svg'
-    },
-    {
-      id: 'wish-4',
-      name: 'Chunky Knit Sweater',
-      type: 'sweater',
-      color: 'white',
-      material: 'wool',
-      season: ['autumn', 'winter'],
-      occasions: ['casual'] as ClothingOccasion[],
-      imageUrl: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&q=80&w=300&h=400',
-      favorite: false,
-      timesWorn: 0,
-      dateAdded: new Date(),
-      image: '/placeholder.svg'
-    },
-    {
-      id: 'wish-5',
-      name: 'Platform Boots',
-      type: 'boots',
-      color: 'black',
-      material: 'leather',
-      season: ['autumn', 'winter'],
-      occasions: ['casual', 'party'] as ClothingOccasion[],
-      imageUrl: 'https://images.unsplash.com/photo-1605812860427-4024433a70fd?auto=format&fit=crop&q=80&w=300&h=400',
-      favorite: false,
-      timesWorn: 0,
-      dateAdded: new Date(),
-      image: '/placeholder.svg'
+      dateAdded: new Date()
     }
   ];
   
-  const viewedItems: ClothingItem[] = [
+  // Sample history items
+  const historyItems: ClothingItem[] = [
     {
-      id: 'viewed-1',
-      name: 'Floral Summer Dress',
-      type: 'dress',
-      color: 'pink',
-      material: 'cotton',
-      season: ['spring', 'summer'],
-      occasions: ['casual', 'party'] as ClothingOccasion[],
-      imageUrl: 'https://images.unsplash.com/photo-1550639525-c97d455acf70?auto=format&fit=crop&q=80&w=300&h=400',
+      id: 'hist-1',
+      name: 'Silk Blouse',
+      type: 'shirt' as ClothingType,
+      color: 'white' as ClothingColor,
+      material: 'silk' as ClothingMaterial,
+      season: ['all'] as ClothingSeason[],
+      occasions: ['business', 'formal'] as ClothingOccasion[],
+      image: '/placeholder.svg',
+      imageUrl: '/placeholder.svg',
       favorite: false,
-      timesWorn: 0,
-      dateAdded: new Date(),
-      image: '/placeholder.svg'
+      timesWorn: 3,
+      dateAdded: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000)
     },
     {
-      id: 'viewed-2',
-      name: 'Denim Jacket',
-      type: 'jacket',
-      color: 'blue',
-      material: 'denim',
-      season: ['spring', 'autumn'],
-      occasions: ['casual'] as ClothingOccasion[],
-      imageUrl: 'https://images.unsplash.com/photo-1602533457627-eb2c2089574f?auto=format&fit=crop&q=80&w=300&h=400',
-      favorite: false,
-      timesWorn: 0,
-      dateAdded: new Date(),
-      image: '/placeholder.svg'
-    },
-    {
-      id: 'viewed-3',
-      name: 'Leather Ankle Boots',
-      type: 'boots',
-      color: 'brown',
-      material: 'leather',
-      season: ['autumn', 'winter'],
-      occasions: ['casual'] as ClothingOccasion[],
-      imageUrl: 'https://images.unsplash.com/photo-1543168278-ef4bd865e236?auto=format&fit=crop&q=80&w=300&h=400',
+      id: 'hist-2',
+      name: 'Cashmere Sweater',
+      type: 'sweater' as ClothingType,
+      color: 'beige' as ClothingColor,
+      material: 'cashmere' as ClothingMaterial,
+      season: ['fall', 'winter'] as ClothingSeason[],
+      occasions: ['casual', 'business'] as ClothingOccasion[],
+      image: '/placeholder.svg',
+      imageUrl: '/placeholder.svg',
       favorite: true,
-      timesWorn: 0,
-      dateAdded: new Date(),
-      image: '/placeholder.svg'
+      timesWorn: 5,
+      dateAdded: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000)
     },
     {
-      id: 'viewed-4',
-      name: 'Striped T-Shirt',
-      type: 'shirt',
-      color: 'multicolor',
-      material: 'cotton',
-      season: ['spring', 'summer'],
+      id: 'hist-3',
+      name: 'Linen Pants',
+      type: 'pants' as ClothingType,
+      color: 'beige' as ClothingColor,
+      material: 'linen' as ClothingMaterial,
+      season: ['spring', 'summer'] as ClothingSeason[],
       occasions: ['casual'] as ClothingOccasion[],
-      imageUrl: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&q=80&w=300&h=400',
+      image: '/placeholder.svg',
+      imageUrl: '/placeholder.svg',
       favorite: false,
-      timesWorn: 0,
-      dateAdded: new Date(),
-      image: '/placeholder.svg'
-    },
-    {
-      id: 'viewed-5',
-      name: 'High-Waisted Jeans',
-      type: 'jeans',
-      color: 'blue',
-      material: 'denim',
-      season: ['all'],
-      occasions: ['casual'] as ClothingOccasion[],
-      imageUrl: 'https://images.unsplash.com/photo-1595942484754-c9449816939c?auto=format&fit=crop&q=80&w=300&h=400',
-      favorite: false,
-      timesWorn: 0,
-      dateAdded: new Date(),
-      image: '/placeholder.svg'
+      timesWorn: 2,
+      dateAdded: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000)
     }
   ];
   
-  const wishlistScrollContainerRef = (ref: HTMLDivElement | null) => {
-    if (ref) {
-      setWishlistScrollPosition(ref.scrollLeft);
-    }
-  };
-  
-  const historyScrollContainerRef = (ref: HTMLDivElement | null) => {
-    if (ref) {
-      setHistoryScrollPosition(ref.scrollLeft);
-    }
-  };
-  
-  const scrollWishlistLeft = () => {
-    const container = document.getElementById('wishlist-scroll-container');
-    if (container) {
-      container.scrollBy({ left: -300, behavior: 'smooth' });
-    }
-  };
-  
-  const scrollWishlistRight = () => {
-    const container = document.getElementById('wishlist-scroll-container');
-    if (container) {
-      container.scrollBy({ left: 300, behavior: 'smooth' });
-    }
-  };
-  
-  const scrollHistoryLeft = () => {
-    const container = document.getElementById('history-scroll-container');
-    if (container) {
-      container.scrollBy({ left: -300, behavior: 'smooth' });
-    }
-  };
-  
-  const scrollHistoryRight = () => {
-    const container = document.getElementById('history-scroll-container');
-    if (container) {
-      container.scrollBy({ left: 300, behavior: 'smooth' });
-    }
-  };
-  
-  return (
+  const renderItem = (item: ClothingItem) => (
     <motion.div
+      key={item.id}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="space-y-12"
+      className="min-w-[180px] max-w-[220px] flex-shrink-0"
     >
-      {/* Wishlist Section */}
-      <div className="relative">
-        <div className="flex items-center mb-6">
-          <div className="h-px flex-grow bg-gradient-to-r from-transparent via-purple-500/30 to-transparent"></div>
-          <h2 className="px-4 text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-            Your Wishlist
-          </h2>
-          <div className="h-px flex-grow bg-gradient-to-r from-purple-500/30 via-transparent to-transparent"></div>
+      <div className="relative rounded-lg overflow-hidden bg-slate-800 border border-white/10 hover:border-purple-500/30 transition-all h-full flex flex-col">
+        <div className="relative">
+          <img
+            src={item.imageUrl}
+            alt={item.name}
+            className="w-full aspect-square object-cover hover:scale-105 transition-transform duration-300"
+          />
+          
+          {item.favorite && (
+            <div className="absolute top-2 right-2">
+              <Heart className="h-5 w-5 text-red-500 fill-red-500" />
+            </div>
+          )}
         </div>
         
-        <div className="relative">
-          <div className="absolute left-0 top-1/2 -translate-y-1/2 z-10">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="rounded-full bg-black/30 backdrop-blur-sm hover:bg-black/50 text-white"
-              onClick={scrollWishlistLeft}
-            >
-              <ChevronLeft className="h-6 w-6" />
-            </Button>
+        <div className="p-3 flex-grow flex flex-col justify-between">
+          <div>
+            <h3 className="text-sm font-medium text-white/90 line-clamp-1">{item.name}</h3>
+            
+            <div className="flex flex-wrap gap-1 mt-1 mb-2">
+              {item.occasions.slice(0, 2).map(tag => (
+                <span key={tag} className="text-[10px] px-1.5 py-0.5 bg-slate-700 rounded-full text-white/60 capitalize">
+                  {tag}
+                </span>
+              ))}
+            </div>
           </div>
           
-          <div
-            id="wishlist-scroll-container"
-            ref={wishlistScrollContainerRef}
-            className="pb-4 flex gap-6 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent pl-12 pr-12"
-            style={{ scrollbarWidth: 'thin' }}
-          >
-            {wishlistItems.map((item, index) => (
-              <motion.div
-                key={item.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="flex-shrink-0 w-[250px]"
-              >
-                <Card className="border-0 shadow-soft bg-gradient-to-br from-slate-800/80 to-slate-900/80 border border-white/10 backdrop-blur-lg overflow-hidden h-full">
-                  <div className="relative aspect-[3/4] overflow-hidden">
-                    <img 
-                      src={item.imageUrl} 
-                      alt={item.name}
-                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                    />
-                    
-                    {!isPremiumUser && (
-                      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center z-10">
-                        <Heart className="h-8 w-8 text-purple-400 mb-2" />
-                        <p className="text-white font-medium text-center mb-2">Premium Feature</p>
-                        <Button 
-                          size="sm"
-                          onClick={onUpgradeToPremium}
-                          className="bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90"
-                        >
-                          Unlock Now
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                  
-                  <CardContent className="p-4 space-y-3">
-                    <h3 className="font-medium text-white truncate">{item.name}</h3>
-                    
-                    <Button 
-                      size="sm"
-                      className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:opacity-90 w-full"
-                      onClick={() => onTryItem(item)}
-                      disabled={!isPremiumUser}
-                    >
-                      <ShoppingBag className="h-3.5 w-3.5 mr-1.5" />
-                      Try on Olivia
-                    </Button>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-          
-          <div className="absolute right-0 top-1/2 -translate-y-1/2 z-10">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="rounded-full bg-black/30 backdrop-blur-sm hover:bg-black/50 text-white"
-              onClick={scrollWishlistRight}
+          <div className="mt-auto">
+            {activeTab === 'history' && (
+              <div className="flex items-center text-xs text-white/60 mb-2">
+                <Clock className="h-3 w-3 mr-1" />
+                Worn {item.timesWorn} times
+              </div>
+            )}
+            
+            <Button 
+              size="sm" 
+              className="w-full text-xs h-7 bg-gradient-to-r from-purple-600 to-indigo-600"
+              onClick={() => isPremiumUser ? onTryItem(item) : onUpgradeToPremium()}
             >
-              <ChevronRight className="h-6 w-6" />
-            </Button>
-          </div>
-        </div>
-      </div>
-      
-      {/* Recently Viewed Section */}
-      <div className="relative">
-        <div className="flex items-center mb-6">
-          <div className="h-px flex-grow bg-gradient-to-r from-transparent via-purple-500/30 to-transparent"></div>
-          <h2 className="px-4 text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-            Recently Viewed
-          </h2>
-          <div className="h-px flex-grow bg-gradient-to-r from-purple-500/30 via-transparent to-transparent"></div>
-        </div>
-        
-        <div className="relative">
-          <div className="absolute left-0 top-1/2 -translate-y-1/2 z-10">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="rounded-full bg-black/30 backdrop-blur-sm hover:bg-black/50 text-white"
-              onClick={scrollHistoryLeft}
-            >
-              <ChevronLeft className="h-6 w-6" />
-            </Button>
-          </div>
-          
-          <div
-            id="history-scroll-container"
-            ref={historyScrollContainerRef}
-            className="pb-4 flex gap-6 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent pl-12 pr-12"
-            style={{ scrollbarWidth: 'thin' }}
-          >
-            {viewedItems.map((item, index) => (
-              <motion.div
-                key={item.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="flex-shrink-0 w-[250px]"
-              >
-                <Card className="border-0 shadow-soft bg-gradient-to-br from-slate-800/80 to-slate-900/80 border border-white/10 backdrop-blur-lg overflow-hidden h-full">
-                  <div className="relative aspect-[3/4] overflow-hidden">
-                    <img 
-                      src={item.imageUrl} 
-                      alt={item.name}
-                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                    />
-                  </div>
-                  
-                  <CardContent className="p-4 space-y-3">
-                    <h3 className="font-medium text-white truncate">{item.name}</h3>
-                    
-                    <Button 
-                      size="sm"
-                      className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:opacity-90 w-full"
-                      onClick={() => onTryItem(item)}
-                      disabled={!isPremiumUser}
-                    >
-                      <Clock className="h-3.5 w-3.5 mr-1.5" />
-                      Try Again
-                    </Button>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-          
-          <div className="absolute right-0 top-1/2 -translate-y-1/2 z-10">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="rounded-full bg-black/30 backdrop-blur-sm hover:bg-black/50 text-white"
-              onClick={scrollHistoryRight}
-            >
-              <ChevronRight className="h-6 w-6" />
+              {!isPremiumUser && <Lock className="h-3 w-3 mr-1" />}
+              Try Again
             </Button>
           </div>
         </div>
       </div>
     </motion.div>
+  );
+  
+  const getPremiumMessage = () => {
+    switch (activeTab) {
+      case 'wishlist':
+        return "Save items you love to your wishlist";
+      case 'history':
+        return "See all items you've tried on before";
+      default:
+        return "Unlock premium features";
+    }
+  };
+  
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between flex-wrap gap-4">
+        <div className="flex items-center gap-2">
+          {activeTab === 'wishlist' ? (
+            <Heart className="h-5 w-5 text-pink-400" />
+          ) : (
+            <Clock className="h-5 w-5 text-blue-400" />
+          )}
+          <h2 className="text-xl font-semibold text-white">
+            {activeTab === 'wishlist' ? 'Your Wishlist' : 'Recently Tried'}
+          </h2>
+        </div>
+        
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-auto">
+          <TabsList className="bg-slate-800/50">
+            <TabsTrigger value="wishlist" className="data-[state=active]:bg-pink-900/30">
+              <Heart className="h-4 w-4 mr-2" />
+              Wishlist
+            </TabsTrigger>
+            <TabsTrigger value="history" className="data-[state=active]:bg-blue-900/30">
+              <Clock className="h-4 w-4 mr-2" />
+              History
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
+      
+      <Card className="border-white/10 bg-slate-900/40 overflow-hidden">
+        <CardContent className="p-4">
+          {isPremiumUser ? (
+            <ScrollArea>
+              <div className="flex gap-4 pb-4">
+                {activeTab === 'wishlist' 
+                  ? wishlistItems.map(item => renderItem(item))
+                  : historyItems.map(item => renderItem(item))
+                }
+              </div>
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
+          ) : (
+            <div className="p-6 flex flex-col md:flex-row items-center justify-center gap-6 bg-gradient-to-r from-slate-900/60 to-purple-900/30 rounded-lg">
+              <div className="text-center md:text-left">
+                <Badge className="bg-purple-500/30 text-purple-300 border-purple-500/30 mb-2">
+                  <Star className="h-3 w-3 mr-1 fill-purple-300" /> Premium Feature
+                </Badge>
+                <h3 className="text-xl font-semibold text-white mb-2">{getPremiumMessage()}</h3>
+                <p className="text-white/70 max-w-md">
+                  Upgrade to premium to keep track of your favorite styles and get personalized recommendations.
+                </p>
+              </div>
+              
+              <Button 
+                size={isMobile ? "sm" : "default"}
+                className="bg-gradient-to-r from-purple-600 to-pink-600 text-white min-w-[140px]"
+                onClick={onUpgradeToPremium}
+              >
+                <ShoppingBag className="h-4 w-4 mr-2" />
+                Upgrade Now
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+      
+      <div className="flex justify-center">
+        <Button 
+          variant="link" 
+          className="text-sm text-white/60 hover:text-white"
+        >
+          View All in Wardrobe 
+          <ExternalLink className="h-3 w-3 ml-1" />
+        </Button>
+      </div>
+    </div>
   );
 };
 

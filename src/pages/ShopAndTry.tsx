@@ -9,6 +9,12 @@ import OliviaImageGallery from '@/components/outfits/OliviaImageGallery';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import EnhancedStepSection from '@/components/shop-try/EnhancedStepSection';
+import WeatherBasedTips from '@/components/shop-try/WeatherBasedTips';
+import UploadPanel from '@/components/shop-try/UploadPanel';
+import FeedbackLoop, { FeedbackData } from '@/components/shop-try/FeedbackLoop';
+import UnifiedProductsCarousel from '@/components/shop-try/UnifiedProductsCarousel';
+import WishlistAndHistory from '@/components/shop-try/WishlistAndHistory';
+import FloatingOliviaWidget from '@/components/shop-try/FloatingOliviaWidget';
 
 const ShopAndTry = () => {
   const { isAuthenticated } = useAuth();
@@ -252,6 +258,10 @@ const ShopAndTry = () => {
     });
   };
 
+  const handleOpenChat = () => {
+    toast.info("Olivia is ready to help with your style questions!");
+  };
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -354,7 +364,7 @@ const ShopAndTry = () => {
       <FloatingOliviaWidget 
         isPremiumUser={isPremiumUser || isAuthenticated}
         onUpgradeToPremium={handleShowPremiumPopup}
-        onOpenChat={onOpenChat}
+        onOpenChat={handleOpenChat}
       />
     </div>
   );
