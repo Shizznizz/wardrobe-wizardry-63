@@ -9,14 +9,14 @@ import OliviaImageGallery from '@/components/outfits/OliviaImageGallery';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useOlivia } from '@/contexts/OliviaContext';
-
-// Import unified components
 import PremiumTryOnHero from '@/components/shop-try/PremiumTryOnHero';
 import WeatherBasedTips from '@/components/shop-try/WeatherBasedTips';
 import UploadPanel from '@/components/shop-try/UploadPanel';
 import UnifiedProductsCarousel from '@/components/shop-try/UnifiedProductsCarousel';
 import WishlistAndHistory from '@/components/shop-try/WishlistAndHistory';
 import FeedbackLoop, { FeedbackData } from '@/components/shop-try/FeedbackLoop';
+import MediaBar from '@/components/shop-try/MediaBar';
+import TestimonialCarousel from '@/components/shop-try/TestimonialCarousel';
 
 const ShopAndTry = () => {
   const { isAuthenticated } = useAuth();
@@ -348,6 +348,10 @@ const ShopAndTry = () => {
               onMoodSelect={handleSetActiveMood}
             />
           </section>
+          
+          <TestimonialCarousel />
+          
+          <MediaBar />
           
           <WishlistAndHistory 
             isPremiumUser={isPremiumUser || isAuthenticated}

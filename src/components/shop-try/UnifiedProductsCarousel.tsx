@@ -21,6 +21,8 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 
+import ReviewStars from './ReviewStars';
+
 const dummyItems: ShopItem[] = Array(12).fill(null).map((_, i) => ({
   id: `item-${i}`,
   name: ['Casual Shirt', 'Summer Dress', 'Denim Jacket', 'Wool Sweater', 'Linen Pants'][i % 5],
@@ -217,28 +219,30 @@ const UnifiedProductsCarousel = ({
           </div>
         </div>
         
-        <div className="p-3 flex-grow flex flex-col justify-between">
-          <div>
-            <div className="flex justify-between items-start mb-1">
-              <h3 className="text-sm font-medium text-white/90 line-clamp-1">{item.name}</h3>
-              <span className="text-sm font-bold text-white">{item.price}</span>
-            </div>
+        <CardContent className="p-4 space-y-3">
+          <h3 className="font-medium text-white truncate">{item.name}</h3>
+          
+          <ReviewStars rating={item.rating} reviewCount={item.reviewCount} />
+          
+          <div className="flex justify-between items-start mb-1">
             
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-xs text-white/60">{item.retailer}</p>
-              <div className="flex items-center">
-                <Star className="h-3 w-3 text-yellow-400 fill-yellow-400 mr-1" />
-                <span className="text-xs text-white/70">{item.rating.toFixed(1)}</span>
-              </div>
+            <span className="text-sm font-bold text-white">{item.price}</span>
+          </div>
+          
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-xs text-white/60">{item.retailer}</p>
+            <div className="flex items-center">
+              <Star className="h-3 w-3 text-yellow-400 fill-yellow-400 mr-1" />
+              <span className="text-xs text-white/70">{item.rating.toFixed(1)}</span>
             </div>
-            
-            <div className="flex flex-wrap gap-1 mb-3">
-              {item.occasions.slice(0, 2).map(tag => (
-                <span key={tag} className="text-[10px] px-1.5 py-0.5 bg-slate-700 rounded-full text-white/60 capitalize">
-                  {tag}
-                </span>
-              ))}
-            </div>
+          </div>
+          
+          <div className="flex flex-wrap gap-1 mb-3">
+            {item.occasions.slice(0, 2).map(tag => (
+              <span key={tag} className="text-[10px] px-1.5 py-0.5 bg-slate-700 rounded-full text-white/60 capitalize">
+                {tag}
+              </span>
+            ))}
           </div>
           
           <Button 
