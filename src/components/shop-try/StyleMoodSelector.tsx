@@ -39,6 +39,7 @@ const StyleMoodSelector = ({
         season: ['all'],
         occasions: ['casual'],
         imageUrl: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&q=80&w=300&h=400',
+        image: '/placeholder.svg', // Added required image property
         favorite: false,
         timesWorn: 0,
         dateAdded: new Date()
@@ -54,6 +55,7 @@ const StyleMoodSelector = ({
         season: ['autumn', 'winter', 'spring'],
         occasions: ['formal', 'work'],
         imageUrl: 'https://images.unsplash.com/photo-1598808503746-f34cfbb3f1f5?auto=format&fit=crop&q=80&w=300&h=400',
+        image: '/placeholder.svg', // Added required image property
         favorite: false,
         timesWorn: 0,
         dateAdded: new Date()

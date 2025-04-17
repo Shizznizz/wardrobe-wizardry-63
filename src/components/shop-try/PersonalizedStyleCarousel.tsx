@@ -26,11 +26,12 @@ const PersonalizedStyleCarousel = ({
       id: 'personal-1',
       name: 'Sustainable Knit Sweater',
       type: 'sweater',
-      color: 'beige',
+      color: 'brown', // Changed from "beige" to "brown" which is in ClothingColor type
       material: 'wool',
       season: ['autumn', 'winter'],
       occasions: ['casual'],
       imageUrl: 'https://images.unsplash.com/photo-1608842850209-ed2858135ea0?auto=format&fit=crop&q=80&w=300&h=400',
+      image: '/placeholder.svg', // Added required image property
       favorite: false,
       timesWorn: 0,
       dateAdded: new Date()
@@ -44,6 +45,7 @@ const PersonalizedStyleCarousel = ({
       season: ['all'],
       occasions: ['casual'],
       imageUrl: 'https://images.unsplash.com/photo-1604176354204-9268737828e4?auto=format&fit=crop&q=80&w=300&h=400',
+      image: '/placeholder.svg', // Added required image property
       favorite: false,
       timesWorn: 0,
       dateAdded: new Date()
@@ -57,6 +59,7 @@ const PersonalizedStyleCarousel = ({
       season: ['spring', 'summer'],
       occasions: ['work'],
       imageUrl: 'https://images.unsplash.com/photo-1644950905342-f28177e9aa96?auto=format&fit=crop&q=80&w=300&h=400',
+      image: '/placeholder.svg', // Added required image property
       favorite: false,
       timesWorn: 0,
       dateAdded: new Date()
