@@ -1,8 +1,8 @@
 
 import { motion } from 'framer-motion';
-import { Card } from '@/components/ui/card';
+import { LayoutGrid, Upload, Sparkles, BrainCircuit, Shirt, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Crown, Check, Sparkles } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 interface PremiumFeatureSectionProps {
   isPremiumUser: boolean;
@@ -14,12 +14,21 @@ const PremiumFeatureSection = ({
   onUpgradeToPremium
 }: PremiumFeatureSectionProps) => {
   const features = [
-    "Unlimited virtual try-ons",
-    "Access to exclusive clothing items",
-    "Save your favorite looks",
-    "Personalized style recommendations",
-    "Chat with AI stylist Olivia",
-    "Compatible with your own wardrobe items"
+    {
+      icon: <Upload className="h-10 w-10 text-purple-400" />,
+      title: 'Multiple Photo Uploads',
+      description: 'Try on outfits in different poses or events'
+    },
+    {
+      icon: <BrainCircuit className="h-10 w-10 text-blue-400" />,
+      title: 'AI Outfit Feedback',
+      description: 'Olivia will give personalized suggestions'
+    },
+    {
+      icon: <Shirt className="h-10 w-10 text-pink-400" />,
+      title: 'Premium Closet Access',
+      description: 'Curated collections & trending pieces'
+    }
   ];
   
   return (
@@ -27,74 +36,96 @@ const PremiumFeatureSection = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
+      className="relative"
     >
-      <Card className="border-0 bg-gradient-to-br from-purple-900/40 to-slate-900/40 border-purple-500/20 backdrop-blur-sm overflow-hidden">
-        <div className="grid grid-cols-1 md:grid-cols-2">
-          <div className="p-8 md:p-10 flex flex-col justify-center">
-            <div className="flex items-center gap-2 mb-4">
-              <Crown className="h-6 w-6 text-yellow-400" />
-              <h2 className="text-2xl font-bold text-white">Premium Features</h2>
-            </div>
-            
-            <p className="text-white/80 mb-6">
-              Unlock the full potential of virtual try-on and get personalized styling advice from Olivia.
-            </p>
-            
-            <ul className="space-y-3 mb-8">
-              {features.map((feature, index) => (
-                <motion.li 
-                  key={index}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1, duration: 0.5 }}
-                  className="flex items-center gap-2"
-                >
-                  <div className="rounded-full bg-purple-500/20 p-1">
-                    <Check className="h-4 w-4 text-purple-400" />
-                  </div>
-                  <span className="text-white">{feature}</span>
-                </motion.li>
-              ))}
-            </ul>
-            
-            {!isPremiumUser && (
+      <div className="flex items-center mb-6">
+        <div className="h-px flex-grow bg-gradient-to-r from-transparent via-purple-500/30 to-transparent"></div>
+        <h2 className="px-4 text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+          Unlock Olivia's VIP Closet <span className="text-yellow-300">💎</span>
+        </h2>
+        <div className="h-px flex-grow bg-gradient-to-r from-purple-500/30 via-transparent to-transparent"></div>
+      </div>
+      
+      <div className="relative">
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
+          variants={{
+            hidden: { opacity: 0 },
+            show: {
+              opacity: 1,
+              transition: {
+                staggerChildren: 0.1
+              }
+            }
+          }}
+          initial="hidden"
+          animate="show"
+        >
+          {features.map((feature, index) => (
+            <motion.div
+              key={index}
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                show: { opacity: 1, y: 0 }
+              }}
+              className="relative backdrop-blur-sm bg-white/5 rounded-xl p-6 border border-white/10 hover:border-purple-500/30 transition-colors group"
+            >
+              <div className="mb-4">
+                {feature.icon}
+              </div>
+              <h3 className="text-lg font-semibold mb-2 text-white group-hover:text-purple-300 transition-colors">
+                {feature.title}
+              </h3>
+              <p className="text-white/70 text-sm">
+                {feature.description}
+              </p>
+              
+              {!isPremiumUser && (
+                <Badge className="absolute top-3 right-3 bg-gradient-to-r from-purple-600 to-pink-500 border-none">
+                  Premium
+                </Badge>
+              )}
+            </motion.div>
+          ))}
+        </motion.div>
+        
+        <div className="text-center">
+          {!isPremiumUser ? (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+            >
               <Button 
                 onClick={onUpgradeToPremium}
-                className="w-full bg-gradient-to-r from-yellow-400 to-amber-600 hover:from-yellow-500 hover:to-amber-700 text-slate-900 font-medium"
+                className="bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90 py-6 px-8 text-lg rounded-lg shadow-lg shadow-purple-500/20 group relative overflow-hidden"
                 size="lg"
               >
-                <Crown className="h-5 w-5 mr-2" />
-                Upgrade to Premium
+                <span className="absolute inset-0 bg-gradient-to-r from-pink-400/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                <Sparkles className="mr-2 h-5 w-5 text-yellow-200" />
+                <span>Upgrade to Premium – Only $2.99/week</span>
+                <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-            )}
-            
-            {isPremiumUser && (
-              <div className="p-4 bg-gradient-to-r from-purple-600/20 to-blue-600/20 rounded-lg border border-purple-500/30">
-                <div className="flex items-center gap-2">
-                  <Sparkles className="h-5 w-5 text-purple-400" />
-                  <p className="text-white font-medium">You're enjoying premium features!</p>
-                </div>
-              </div>
-            )}
-          </div>
-          
-          <div className="bg-gradient-to-br from-purple-600 to-blue-600 hidden md:flex items-center justify-center p-10">
-            <div className="text-center">
-              <div className="relative mx-auto w-32 h-32 flex items-center justify-center">
-                <div className="absolute inset-0 rounded-full bg-white/20 animate-ping opacity-50"></div>
-                <div className="relative bg-white/10 rounded-full p-6 backdrop-blur-sm">
-                  <Crown className="h-20 w-20 text-white" />
-                </div>
-              </div>
               
-              <h3 className="text-2xl font-bold text-white mt-6">Premium Experience</h3>
-              <p className="text-white/80 mt-2">
-                Unlock all features and enjoy an ad-free experience.
+              <p className="mt-3 text-white/60 text-sm">
+                Join thousands of fashion enthusiasts who've unlocked the full experience
               </p>
-            </div>
-          </div>
+            </motion.div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="p-4 backdrop-blur-sm bg-white/5 rounded-xl border border-green-500/30"
+            >
+              <div className="flex items-center justify-center gap-2 text-green-400">
+                <Sparkles className="h-5 w-5" />
+                <span className="font-medium">You're enjoying Premium features!</span>
+              </div>
+            </motion.div>
+          )}
         </div>
-      </Card>
+      </div>
     </motion.div>
   );
 };

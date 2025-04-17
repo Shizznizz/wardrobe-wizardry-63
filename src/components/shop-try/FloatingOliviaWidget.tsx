@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageCircle, X } from 'lucide-react';
@@ -66,6 +67,12 @@ const FloatingOliviaWidget = ({
                 <MessageCircle className="h-4 w-4 mr-2" />
                 {isPremiumUser ? "Chat with Olivia" : "Upgrade for Advice"}
               </Button>
+              
+              {!isPremiumUser && (
+                <p className="text-xs text-slate-400 text-center mt-1">
+                  Premium feature: Get personalized styling advice
+                </p>
+              )}
             </div>
           </motion.div>
         )}
