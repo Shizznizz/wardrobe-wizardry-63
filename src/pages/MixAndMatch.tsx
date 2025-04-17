@@ -5,6 +5,7 @@ import Header from '@/components/Header';
 import { sampleOutfits, sampleClothingItems } from '@/lib/wardrobeData';
 import { WeatherInfo } from '@/lib/types';
 import { OutfitProvider } from '@/hooks/useOutfitContext';
+import { useOlivia } from '@/contexts/OliviaContext';
 
 // Import refactored components
 import WeatherSection from '@/components/outfits/mix-match/WeatherSection';
@@ -15,6 +16,9 @@ const MixAndMatch = () => {
   const [weather, setWeather] = useState<WeatherInfo | null>(null);
   const [situation, setSituation] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // We can now use the Olivia context
+  const { setWeatherTemp, setWeatherCondition, setHasUploadedWardrobe } = useOlivia();
   
   // Memoize outfit collections to prevent unnecessary recalculations
   const personalOutfits = sampleOutfits.filter(outfit => outfit.favorite);
@@ -31,11 +35,20 @@ const MixAndMatch = () => {
       city: 'San Francisco',
       country: 'USA'
     });
-  }, []);
+    
+    // Update Olivia context with weather data
+    setWeatherTemp(weatherData.temperature);
+    setWeatherCondition(weatherData.condition);
+  }, [setWeatherTemp, setWeatherCondition]);
   
   const handleSituationChange = useCallback((newSituation: string) => {
     setSituation(newSituation);
   }, []);
+
+  // Set wardrobe status for Olivia
+  useEffect(() => {
+    setHasUploadedWardrobe(true); // Assuming the user has a wardrobe in this page
+  }, [setHasUploadedWardrobe]);
 
   // Simulate loading state for better UX
   useEffect(() => {
@@ -86,6 +99,8 @@ const MixAndMatch = () => {
             clothingItems={sampleClothingItems}
           />
         </main>
+        
+        {/* We've removed the showroom dialogs with Olivia popups here */}
       </div>
     </OutfitProvider>
   );
