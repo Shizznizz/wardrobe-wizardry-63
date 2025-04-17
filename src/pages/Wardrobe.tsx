@@ -54,7 +54,8 @@ const Wardrobe = () => {
     });
   };
 
-  const handleSaveOutfit = (name: string) => {
+  // This function needs to use Outfit parameter, not just a name string
+  const handleSaveOutfit = (outfitName: string) => {
     if (selectedOutfitItems.length === 0) {
       toast.error('Please select at least one item for your outfit');
       return;
@@ -62,7 +63,7 @@ const Wardrobe = () => {
 
     const newOutfit: Outfit = {
       id: Date.now().toString(),
-      name,
+      name: outfitName,
       items: selectedOutfitItems.map(item => item.id),
       seasons: ['spring', 'summer', 'autumn', 'winter'], // Changed 'fall' to 'autumn' to match ClothingSeason type
       occasions: ['casual'],
@@ -187,7 +188,7 @@ const Wardrobe = () => {
       </main>
       
       <UploadModal 
-        onAddItem={handleAddItem}
+        onUpload={handleAddItem}
         buttonText="Add Item"
       />
     </div>
