@@ -68,10 +68,6 @@ const OutfitCollectionSection = ({ outfits, clothingItems }: OutfitCollectionSec
     toast.success('Creating new outfit');
   };
   
-  const renderSearchIcon = () => {
-    return <Search className="h-4 w-4 text-white/50" />;
-  };
-  
   return (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
@@ -90,13 +86,17 @@ const OutfitCollectionSection = ({ outfits, clothingItems }: OutfitCollectionSec
       
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <div className="md:col-span-2">
-          <Input
-            placeholder="Search outfits by name..."
-            className="bg-slate-800/50 border-slate-700/50 text-white"
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-            prefix={renderSearchIcon()}
-          />
+          <div className="relative">
+            <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+              <Search className="h-4 w-4 text-white/50" />
+            </div>
+            <Input
+              placeholder="Search outfits by name..."
+              className="bg-slate-800/50 border-slate-700/50 text-white pl-10"
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+            />
+          </div>
         </div>
         
         <Select value={season} onValueChange={setSeason}>

@@ -157,7 +157,7 @@ export interface ClothingItem {
 export interface PersonalizedItem extends Omit<ClothingItem, 'season' | 'image'> {
   season?: ClothingSeason[];
   brand?: string;
-  category?: string;
+  category?: ClothingCategory;  // Fixed type to match ClothingCategory
   image?: string;
 }
 
@@ -165,7 +165,7 @@ export interface PersonalizedItem extends Omit<ClothingItem, 'season' | 'image'>
 export interface TrendingClothingItem extends Omit<ClothingItem, 'season' | 'image'> {
   season?: ClothingSeason[];
   brand?: string;
-  category?: string;
+  category?: ClothingCategory;  // Fixed type to match ClothingCategory
   image?: string;
 }
 

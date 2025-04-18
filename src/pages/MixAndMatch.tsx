@@ -35,11 +35,12 @@ const MixAndMatch = () => {
     ? sampleOutfits.find(outfit => outfit.id === selectedOutfitId) 
     : sampleOutfits[0];
   
+  // Modified to handle the type mismatch correctly
   const handleWeatherUpdate = useCallback((weatherData: { temperature: number; condition: string }) => {
-    // Ensure we're providing required properties for the weather info
+    // Create a new WeatherInfo object with all required properties
     const newWeather: WeatherInfo = {
-      temperature: weatherData.temperature,
-      condition: weatherData.condition,
+      temperature: weatherData.temperature, // Now explicitly set
+      condition: weatherData.condition, // Now explicitly set
       icon: weatherData.condition.toLowerCase().includes('cloud') ? 'cloud' :
             weatherData.condition.toLowerCase().includes('rain') ? 'rain' :
             weatherData.condition.toLowerCase().includes('snow') ? 'snow' :
