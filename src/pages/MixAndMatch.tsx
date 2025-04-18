@@ -7,9 +7,9 @@ import { OutfitProvider } from '@/hooks/useOutfitContext';
 import { Skeleton } from '@/components/ui/skeleton';
 
 // Import main section components
+import CreateOutfitSection from '@/components/outfits/mix-match/CreateOutfitSection';
 import OutfitRecommendationSection from '@/components/outfits/mix-match/OutfitRecommendationSection';
 import ContextAdjustmentSection from '@/components/outfits/mix-match/ContextAdjustmentSection';
-import CreateOutfitSection from '@/components/outfits/mix-match/CreateOutfitSection';
 import OutfitCollectionSection from '@/components/outfits/mix-match/OutfitCollectionSection';
 import SuggestedOutfitsSection from '@/components/outfits/mix-match/SuggestedOutfitsSection';
 
@@ -142,24 +142,49 @@ const MixAndMatch = () => {
             </p>
           </motion.div>
           
-          {/* 1️⃣ Section: "Today's Outfit Pick by Olivia" */}
+          {/* 1️⃣ Section: "Create Your Own Outfit" - MOVED TO TOP */}
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, duration: 0.5 }}
-            className="mb-8"
+            className="mb-12"
           >
-            <OutfitRecommendationSection 
-              weather={safeWeather} 
-              situation={situation}
+            <CreateOutfitSection 
+              clothingItems={sampleClothingItems} 
+              isPremium={false}
             />
           </motion.section>
           
-          {/* 2️⃣ Section: "Adjust Context" */}
+          {/* 2️⃣ Section: "Today's Outfit Pick by Olivia" */}
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.5 }}
+            className="mb-8"
+          >
+            <OutfitRecommendationSection 
+              weather={weather ? {
+                temperature: weather.temperature ?? 0,
+                condition: weather.condition ?? 'clear',
+                icon: weather.icon,
+                city: weather.city,
+                country: weather.country
+              } : {
+                temperature: 0,
+                condition: 'clear',
+                icon: 'sun',
+                city: 'Unknown',
+                country: 'Unknown'
+              }} 
+              situation={situation}
+            />
+          </motion.section>
+          
+          {/* 3️⃣ Section: "Adjust Context" */}
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
             className="mb-8"
           >
             <ContextAdjustmentSection 
@@ -170,19 +195,6 @@ const MixAndMatch = () => {
               weatherCondition={weatherCondition}
               onContextChange={handleContextChange}
               onRefreshOutfit={handleRefreshOutfit}
-            />
-          </motion.section>
-          
-          {/* 3️⃣ Section: "Create Your Own Outfit" */}
-          <motion.section
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.5 }}
-            className="mb-12"
-          >
-            <CreateOutfitSection 
-              clothingItems={sampleClothingItems} 
-              isPremium={false}
             />
           </motion.section>
           
@@ -210,8 +222,8 @@ const MixAndMatch = () => {
               outfits={popularOutfits.slice(0, 6)}
               clothingItems={sampleClothingItems}
               weather={{
-                temperature: safeWeather.temperature,
-                condition: safeWeather.condition
+                temperature: temperature,
+                condition: weatherCondition
               }}
             />
           </motion.section>

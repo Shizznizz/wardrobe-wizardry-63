@@ -14,7 +14,7 @@ const CategoryFilters = ({ selectedCategory, onSelectCategory }: CategoryFilters
     <ToggleGroup
       type="single"
       value={selectedCategory}
-      onValueChange={onSelectCategory}
+      onValueChange={(value) => value && onSelectCategory(value)}
       className="flex flex-wrap justify-center gap-2"
     >
       <ToggleGroupItem
