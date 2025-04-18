@@ -20,6 +20,7 @@ import PrettyLittleThingPicks from '@/components/shop-try/PrettyLittleThingPicks
 import OliviaDailyRecommendation from '@/components/shop-try/OliviaDailyRecommendation';
 import SheinAffiliatePicks from '@/components/shop-try/SheinAffiliatePicks';
 import PremiumTeaserSection from '@/components/shop-try/PremiumTeaserSection';
+import { FeedbackData } from '@/components/shop-try/FeedbackData';
 
 const ShopAndTry = () => {
   const { isAuthenticated } = useAuth();
