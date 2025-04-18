@@ -1,3 +1,4 @@
+
 // src/lib/types.ts
 
 export type ClothingColor =
@@ -47,6 +48,16 @@ export type ClothingType =
   | 'accessories'
   | 'jacket'
   | 'top'
+  | 'other';
+
+export type ClothingCategory = 
+  | 'top'
+  | 'bottom'
+  | 'shoes'
+  | 'outerwear'
+  | 'accessories'
+  | 'dress'
+  | 'skirt'
   | 'other';
 
 export type ClothingOccasion = 
@@ -138,7 +149,8 @@ export interface ClothingItem {
   occasions?: ClothingOccasion[];
   timesWorn?: number;
   dateAdded?: Date;
-  tags?: string[];  // Added for OutfitGroupsSection
+  tags?: string[];
+  category?: ClothingCategory;  // Added category field to fix errors
 }
 
 // Interface for PersonalizedItem in style carousel (making season optional)

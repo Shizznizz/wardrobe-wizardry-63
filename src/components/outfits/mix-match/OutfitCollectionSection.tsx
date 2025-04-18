@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { Outfit, ClothingItem } from '@/lib/types';
+import { Outfit, ClothingItem, ClothingSeason } from '@/lib/types';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 
@@ -31,7 +31,7 @@ const OutfitCollectionSection = ({ outfits, clothingItems }: OutfitCollectionSec
     }
     
     // Filter by season
-    if (season !== 'all' && outfit.seasons && !outfit.seasons.includes(season)) {
+    if (season !== 'all' && outfit.seasons && !outfit.seasons.includes(season as ClothingSeason)) {
       return false;
     }
     
@@ -68,6 +68,10 @@ const OutfitCollectionSection = ({ outfits, clothingItems }: OutfitCollectionSec
     toast.success('Creating new outfit');
   };
   
+  const renderSearchIcon = () => {
+    return <Search className="h-4 w-4 text-white/50" />;
+  };
+  
   return (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
@@ -91,7 +95,7 @@ const OutfitCollectionSection = ({ outfits, clothingItems }: OutfitCollectionSec
             className="bg-slate-800/50 border-slate-700/50 text-white"
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
-            prefix={<Search className="h-4 w-4 text-white/50" />}
+            prefix={renderSearchIcon()}
           />
         </div>
         

@@ -7,7 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
-import { ClothingItem } from '@/lib/types';
+import { ClothingItem, ClothingType } from '@/lib/types';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 
@@ -22,20 +22,26 @@ const CreateOutfitSection = ({ clothingItems }: CreateOutfitSectionProps) => {
   const [selectedShoes, setSelectedShoes] = useState<string | null>(null);
   const [outfitName, setOutfitName] = useState('My Custom Outfit');
   
-  // Filter items by category
+  // Filter items by type instead of category
   const tops = clothingItems.filter(item => 
-    item.category === 'top' || 
-    item.category === 'outerwear' || 
-    item.category === 'dress'
+    item.type === 'shirt' || 
+    item.type === 'sweater' || 
+    item.type === 'hoodie' || 
+    item.type === 'top' || 
+    item.type === 'jacket'
   );
   
   const bottoms = clothingItems.filter(item => 
-    item.category === 'bottom' || 
-    item.category === 'skirt'
+    item.type === 'pants' || 
+    item.type === 'jeans' || 
+    item.type === 'shorts' || 
+    item.type === 'skirt'
   );
   
   const shoes = clothingItems.filter(item => 
-    item.category === 'shoes'
+    item.type === 'shoes' || 
+    item.type === 'sneakers' || 
+    item.type === 'boots'
   );
   
   const isOutfitComplete = selectedTop && selectedBottom && selectedShoes;

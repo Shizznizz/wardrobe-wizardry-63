@@ -36,7 +36,8 @@ const MixAndMatch = () => {
     : sampleOutfits[0];
   
   const handleWeatherUpdate = useCallback((weatherData: { temperature: number; condition: string }) => {
-    setWeather({
+    // Ensure we're providing required properties for the weather info
+    const newWeather: WeatherInfo = {
       temperature: weatherData.temperature,
       condition: weatherData.condition,
       icon: weatherData.condition.toLowerCase().includes('cloud') ? 'cloud' :
@@ -45,7 +46,9 @@ const MixAndMatch = () => {
             'sun',
       city: 'San Francisco',
       country: 'USA'
-    });
+    };
+    
+    setWeather(newWeather);
     setTemperature(weatherData.temperature);
     setWeatherCondition(weatherData.condition.toLowerCase());
   }, []);
