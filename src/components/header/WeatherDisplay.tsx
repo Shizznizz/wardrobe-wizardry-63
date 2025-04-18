@@ -6,8 +6,8 @@ import { WeatherInfo } from '@/lib/types';
 
 interface WeatherDisplayProps {
   weather: {
-    temperature?: number;
-    condition?: string;
+    temperature: number;
+    condition: string;
   };
   isScrolled?: boolean;
 }
@@ -34,7 +34,7 @@ export const WeatherDisplay = ({ weather, isScrolled = false }: WeatherDisplayPr
         : "bg-white/10 backdrop-blur-md"
     )}>
       {getWeatherIcon()}
-      <span className="text-sm font-medium text-white">{weather.temperature ?? 0}°</span>
+      <span className="text-sm font-medium text-white">{weather.temperature}°</span>
     </div>
   );
 };
