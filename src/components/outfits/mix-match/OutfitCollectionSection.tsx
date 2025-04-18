@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Filter, Search, Trash2, Eye, Calendar, ArrowRightCircle, Star, Heart, Plus } from 'lucide-react';
@@ -10,7 +9,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { Outfit, ClothingItem } from '@/lib/types';
+import { Outfit, ClothingItem, ClothingSeason } from '@/lib/types';
 import { useNavigate } from 'react-router-dom';
 
 interface OutfitCollectionSectionProps {
@@ -34,7 +33,7 @@ const OutfitCollectionSection = ({ outfits, clothingItems }: OutfitCollectionSec
     
     // Filter by category
     const matchesCategory = selectedCategory === "all" || 
-      (outfit.seasons && outfit.seasons.includes(selectedCategory)) ||
+      (outfit.seasons && outfit.seasons.includes(selectedCategory as ClothingSeason)) ||
       (outfit.occasions && outfit.occasions.includes(selectedCategory));
     
     return matchesSearch && matchesFavorite && matchesCategory;
