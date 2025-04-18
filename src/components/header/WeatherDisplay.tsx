@@ -6,8 +6,8 @@ import { WeatherInfo } from '@/lib/types';
 
 interface WeatherDisplayProps {
   weather: {
-    temperature: number;
-    condition: string;
+    temperature?: number;
+    condition?: string;
   };
   isScrolled?: boolean;
 }
@@ -16,7 +16,7 @@ export const WeatherDisplay = ({ weather, isScrolled = false }: WeatherDisplayPr
   const isMobile = useIsMobile();
   
   const getWeatherIcon = () => {
-    const condition = weather.condition.toLowerCase();
+    const condition = (weather.condition || 'clear').toLowerCase();
     if (condition.includes('sun') || condition.includes('clear')) return <Sun className="w-5 h-5 text-yellow-400" />;
     if (condition.includes('cloud') && condition.includes('sun')) return <CloudSun className="w-5 h-5 text-blue-300" />;
     if (condition.includes('cloud')) return <Cloud className="w-5 h-5 text-blue-200" />;
@@ -34,7 +34,7 @@ export const WeatherDisplay = ({ weather, isScrolled = false }: WeatherDisplayPr
         : "bg-white/10 backdrop-blur-md"
     )}>
       {getWeatherIcon()}
-      <span className="text-sm font-medium text-white">{weather.temperature}°</span>
+      <span className="text-sm font-medium text-white">{weather.temperature ?? 0}°</span>
     </div>
   );
 };
