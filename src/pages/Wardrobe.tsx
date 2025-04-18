@@ -57,6 +57,40 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: { 
+    opacity: 1, 
+    transition: { 
+      staggerChildren: 0.1 
+    } 
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: { 
+      type: "spring", 
+      stiffness: 100 
+    } 
+  }
+};
+
+const getOliviaTip = () => {
+  const tips = [
+    "Try mixing colors to create vibrant outfits for spring!",
+    "Accessories can transform even the simplest outfit.",
+    "Don't forget to categorize your items for easier outfit planning.",
+    "Add your favorite items to see personalized style recommendations!",
+    "Create outfit collections for different occasions."
+  ];
+  
+  return tips[Math.floor(Math.random() * tips.length)];
+};
+
 const Wardrobe = () => {
   const [items, setItems] = useState<ClothingItem[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
