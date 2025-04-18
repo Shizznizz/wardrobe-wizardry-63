@@ -86,92 +86,74 @@ const PrettyLittleThingPicks = ({
       
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4">
         {mockPLTProducts.map((product) => (
-          <ProductCard 
+          <motion.div
             key={product.id}
-            product={product}
-            isPremiumUser={isPremiumUser}
-            onTryItem={onTryItem}
-            onUpgradeToPremium={onUpgradeToPremium}
-          />
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Card className="border-0 shadow-soft bg-gradient-to-br from-slate-800/80 to-slate-900/80 border border-white/10 backdrop-blur-lg overflow-hidden h-full">
+              <div className="relative aspect-[3/4] overflow-hidden">
+                <img 
+                  src={product.imageUrl || product.image} 
+                  alt={product.name}
+                  className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                />
+                <div className="absolute top-2 right-2 bg-pink-500 text-white text-xs px-2 py-0.5 rounded-full">
+                  New In
+                </div>
+              </div>
+              
+              <CardContent className="p-4 space-y-3">
+                <div>
+                  <p className="text-xs text-purple-300 font-medium">PrettyLittleThing</p>
+                  <h3 className="font-medium text-white truncate">{product.name}</h3>
+                </div>
+                
+                <div className="flex flex-wrap gap-1 mb-2">
+                  {product.tags?.map((tag, index) => (
+                    <span key={index} className="text-xs bg-slate-700 text-slate-200 px-1.5 py-0.5 rounded-sm">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                
+                <div className="flex flex-col gap-2">
+                  <Button 
+                    size="sm"
+                    className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:opacity-90 w-full"
+                    onClick={() => {
+                      if (!isPremiumUser) {
+                        onUpgradeToPremium();
+                        return;
+                      }
+                      onTryItem(product);
+                    }}
+                  >
+                    {!isPremiumUser && <Lock className="h-3.5 w-3.5 mr-1.5" />}
+                    <Shirt className="h-3.5 w-3.5 mr-1.5" />
+                    Try on Olivia
+                  </Button>
+                  
+                  <Button 
+                    size="sm"
+                    variant="outline"
+                    className="border-white/20 text-white hover:bg-white/10 w-full"
+                    onClick={() => window.open('#plt-affiliate-link', '_blank')}
+                  >
+                    <ExternalLink className="h-3.5 w-3.5 mr-1.5" />
+                    Shop at PLT
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
         ))}
       </div>
       
-      <div className="mt-8 text-center text-xs text-white/60">
+      <div className="mt-8 text-xs text-center text-white/60">
         <p>Affiliate Disclosure: We may earn a commission for purchases made through these links.</p>
       </div>
-    </motion.div>
-  );
-};
-
-interface ProductCardProps {
-  product: ClothingItem;
-  isPremiumUser: boolean;
-  onTryItem: (item: ClothingItem) => void;
-  onUpgradeToPremium: () => void;
-}
-
-const ProductCard = ({ product, isPremiumUser, onTryItem, onUpgradeToPremium }: ProductCardProps) => {
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.3 }}
-    >
-      <Card className="border-0 shadow-soft bg-gradient-to-br from-slate-800/80 to-slate-900/80 border border-white/10 backdrop-blur-lg overflow-hidden h-full">
-        <div className="relative aspect-[3/4] overflow-hidden">
-          <img 
-            src={product.imageUrl || product.image} 
-            alt={product.name}
-            className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-          />
-          <div className="absolute top-2 right-2 bg-pink-500 text-white text-xs px-2 py-0.5 rounded-full">
-            New In
-          </div>
-        </div>
-        
-        <CardContent className="p-4 space-y-3">
-          <div>
-            <p className="text-xs text-purple-300 font-medium">PrettyLittleThing</p>
-            <h3 className="font-medium text-white truncate">{product.name}</h3>
-          </div>
-          
-          <div className="flex flex-wrap gap-1 mb-2">
-            {product.tags?.map((tag, index) => (
-              <span key={index} className="text-xs bg-slate-700 text-slate-200 px-1.5 py-0.5 rounded-sm">
-                {tag}
-              </span>
-            ))}
-          </div>
-          
-          <div className="flex flex-col gap-2">
-            <Button 
-              size="sm"
-              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:opacity-90 w-full"
-              onClick={() => {
-                if (!isPremiumUser) {
-                  onUpgradeToPremium();
-                  return;
-                }
-                onTryItem(product);
-              }}
-            >
-              {!isPremiumUser && <Lock className="h-3.5 w-3.5 mr-1.5" />}
-              <Shirt className="h-3.5 w-3.5 mr-1.5" />
-              Try on Olivia
-            </Button>
-            
-            <Button 
-              size="sm"
-              variant="outline"
-              className="border-white/20 text-white hover:bg-white/10 w-full"
-              onClick={() => window.open('#plt-affiliate-link', '_blank')}
-            >
-              <ExternalLink className="h-3.5 w-3.5 mr-1.5" />
-              Shop at PLT
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
     </motion.div>
   );
 };
