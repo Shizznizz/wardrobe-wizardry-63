@@ -127,7 +127,7 @@ const MixAndMatch = () => {
   return (
     <OutfitProvider>
       <div className="min-h-screen bg-gradient-to-b from-slate-950 to-indigo-950 text-white">
-        <Header weather={safeWeather} />
+        <Header />
         
         <main className="container mx-auto px-4 py-6 pt-20 max-w-6xl">
           <motion.div 
