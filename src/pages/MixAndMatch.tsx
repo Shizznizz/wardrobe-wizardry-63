@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -108,6 +109,15 @@ const MixAndMatch = () => {
     }
   }, [selectedOutfitId]);
 
+  // Create a valid weather object for components that require non-optional properties
+  const safeWeather = weather ? {
+    temperature: weather.temperature || 0,
+    condition: weather.condition || 'clear',
+    icon: weather.icon,
+    city: weather.city,
+    country: weather.country
+  } : undefined;
+
   return (
     <OutfitProvider>
       <div className="min-h-screen bg-gradient-to-b from-slate-950 to-indigo-950 text-white">
@@ -136,7 +146,7 @@ const MixAndMatch = () => {
             className="mb-8"
           >
             <DailyOutfitSection 
-              weather={weather || undefined} 
+              weather={safeWeather} 
               currentOutfit={currentOutfit} 
               clothingItems={sampleClothingItems}
             />
@@ -171,7 +181,7 @@ const MixAndMatch = () => {
               currentOutfit={currentOutfit}
               onRefresh={handleRefreshOutfit}
               temperature={temperature}
-              weather={weather || undefined}
+              weather={safeWeather}
             />
           </motion.section>
           
@@ -208,7 +218,7 @@ const MixAndMatch = () => {
             <SuggestedOutfitsSection 
               outfits={popularOutfits.slice(0, 6)}
               clothingItems={sampleClothingItems}
-              weather={weather || undefined}
+              weather={safeWeather}
             />
           </motion.section>
         </main>
