@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 interface WeatherDisplayProps {
-  weather?: {
+  weather: {
     temperature: number;
     condition: string;
   };
@@ -15,8 +15,6 @@ export const WeatherDisplay = ({ weather, isScrolled = false }: WeatherDisplayPr
   const isMobile = useIsMobile();
   
   const getWeatherIcon = () => {
-    if (!weather) return <Sun className="w-5 h-5 text-yellow-400" />;
-    
     const condition = weather.condition.toLowerCase();
     if (condition.includes('sun') || condition.includes('clear')) return <Sun className="w-5 h-5 text-yellow-400" />;
     if (condition.includes('cloud') && condition.includes('sun')) return <CloudSun className="w-5 h-5 text-blue-300" />;
@@ -26,8 +24,6 @@ export const WeatherDisplay = ({ weather, isScrolled = false }: WeatherDisplayPr
     
     return <Sun className="w-5 h-5 text-yellow-400" />;
   };
-
-  if (!weather || isMobile) return null;
 
   return (
     <div className={cn(

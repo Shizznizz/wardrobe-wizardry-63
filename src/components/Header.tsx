@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu } from 'lucide-react';
@@ -11,12 +10,10 @@ import { WeatherDisplay } from './header/WeatherDisplay';
 import { UserMenu } from './header/UserMenu';
 import { MobileMenu } from './header/MobileMenu';
 import { DesktopNavigation } from './header/DesktopNavigation';
+import { WeatherInfo } from '@/lib/types';
 
 interface HeaderProps {
-  weather?: {
-    temperature: number;
-    condition: string;
-  };
+  weather?: WeatherInfo;
 }
 
 const Header = ({ weather }: HeaderProps) => {
@@ -75,6 +72,12 @@ const Header = ({ weather }: HeaderProps) => {
     return currentItem ? currentItem.name : '';
   };
 
+  // Safely extract weather information
+  const weatherDisplay = weather ? {
+    temperature: weather.temperature ?? 0,
+    condition: weather.condition ?? 'clear'
+  } : { temperature: 0, condition: 'clear' };
+
   return (
     <header 
       className={cn(
@@ -99,7 +102,7 @@ const Header = ({ weather }: HeaderProps) => {
         )}
 
         <div className="flex items-center">
-          {!isMobile && <WeatherDisplay weather={weather} isScrolled={isScrolled} />}
+          {!isMobile && <WeatherDisplay weather={weatherDisplay} isScrolled={isScrolled} />}
           
           <UserMenu isScrolled={isScrolled} />
 
