@@ -1,7 +1,7 @@
 
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Crown, Sparkles, Clock, CloudLightning, Stars } from 'lucide-react';
+import { Crown, Sparkles, Clock, CloudLightning } from 'lucide-react';
 
 interface PremiumTeaserSectionProps {
   onUpgrade: () => void;
@@ -23,7 +23,7 @@ const PremiumTeaserSection = ({ onUpgrade }: PremiumTeaserSectionProps) => {
     },
     {
       id: 'advanced-tools',
-      icon: <Stars className="h-5 w-5 text-purple-400" />,
+      icon: <Sparkles className="h-5 w-5 text-purple-400" />,
       title: 'Advanced Mix & Match',
       description: 'Experiment with unlimited combinations of tops, bottoms, and accessories.',
     },

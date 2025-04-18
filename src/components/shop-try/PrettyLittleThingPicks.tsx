@@ -1,8 +1,9 @@
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ExternalLink, Shirt, Lock } from 'lucide-react';
+import { ExternalLink, Shirt, LightbulbIcon } from 'lucide-react';
 import { ClothingItem } from '@/lib/types';
 import { toast } from 'sonner';
 
@@ -12,73 +13,73 @@ interface PrettyLittleThingPicksProps {
   onUpgradeToPremium: () => void;
 }
 
-const PrettyLittleThingPicks = ({ isPremiumUser, onTryItem, onUpgradeToPremium }: PrettyLittleThingPicksProps) => {
+const PrettyLittleThingPicks = ({ 
+  isPremiumUser, 
+  onTryItem, 
+  onUpgradeToPremium 
+}: PrettyLittleThingPicksProps) => {
   const [products, setProducts] = useState<ClothingItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Sample data for PrettyLittleThing products
-    const prettylittlethingProducts: ClothingItem[] = [
+    // Sample data for PLT products
+    const pltProducts: ClothingItem[] = [
       {
         id: 'plt-1',
-        name: 'Black Oversized Blazer',
+        name: 'Oversized Denim Jacket',
         type: 'jacket',
-        color: 'black',
-        season: ['all'],
-        image: '',
-        occasion: 'formal',
-        brand: 'PrettyLittleThing',
-        imageUrl: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&w=500&h=600',
-        price: 49.99,
-        tags: ['Power Boss', 'Office Chic'],
-        affiliateUrl: 'https://www.prettylittlething.com/black-oversized-blazer.html'
-      },
-      {
-        id: 'plt-2',
-        name: 'Cream Ribbed Bodycon Dress',
-        type: 'dress',
-        color: 'cream',
-        season: ['summer'],
-        image: '',
-        occasion: 'party',
-        brand: 'PrettyLittleThing',
-        imageUrl: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=500&h=600',
-        price: 32.99,
-        tags: ['Date Night', 'Romantic'],
-        affiliateUrl: 'https://www.prettylittlething.com/cream-ribbed-bodycon-dress.html'
-      },
-      {
-        id: 'plt-3',
-        name: 'Light Wash Mom Jeans',
-        type: 'pants',
         color: 'blue',
         season: ['all'],
         image: '',
-        occasion: 'casual',
+        imageUrl: 'https://images.unsplash.com/photo-1611312449408-fcece27cdbb7?auto=format&fit=crop&w=500&h=600',
+        price: 49.99,
         brand: 'PrettyLittleThing',
-        imageUrl: 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=500&h=600',
-        price: 38.99,
-        tags: ['Everyday Casual', 'Boho Chic'],
-        affiliateUrl: 'https://www.prettylittlething.com/light-wash-mom-jeans.html'
+        tags: ['Boho Chic', 'Casual'],
+        affiliateUrl: 'https://www.prettylittlething.com/oversized-denim-jacket'
+      },
+      {
+        id: 'plt-2',
+        name: 'Satin Slip Dress',
+        type: 'dress',
+        color: 'rose',
+        season: ['spring', 'summer'],
+        image: '',
+        imageUrl: 'https://images.unsplash.com/photo-1585487000160-6ebcfceb0d03?auto=format&fit=crop&w=500&h=600',
+        price: 35.99,
+        brand: 'PrettyLittleThing',
+        tags: ['Date Night', 'Romantic'],
+        affiliateUrl: 'https://www.prettylittlething.com/satin-slip-dress'
+      },
+      {
+        id: 'plt-3',
+        name: 'Tailored Blazer',
+        type: 'blazer',
+        color: 'black',
+        season: ['all'],
+        image: '',
+        imageUrl: 'https://images.unsplash.com/photo-1591511276520-e0e2b3465b4f?auto=format&fit=crop&w=500&h=600',
+        price: 55.99,
+        brand: 'PrettyLittleThing',
+        tags: ['Power Boss', 'Office'],
+        affiliateUrl: 'https://www.prettylittlething.com/tailored-blazer'
       },
       {
         id: 'plt-4',
-        name: 'Beige Oversized Sweatshirt',
-        type: 'top',
-        color: 'beige',
-        season: ['winter'],
+        name: 'Wide Leg Trousers',
+        type: 'pants',
+        color: 'cream',
+        season: ['all'],
         image: '',
-        occasion: 'casual',
+        imageUrl: 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?auto=format&fit=crop&w=500&h=600',
+        price: 42.99,
         brand: 'PrettyLittleThing',
-        imageUrl: 'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?auto=format&fit=crop&w=500&h=600',
-        price: 24.99,
-        tags: ['Minimalist', 'Cozy'],
-        affiliateUrl: 'https://www.prettylittlething.com/beige-oversized-sweatshirt.html'
+        tags: ['Minimalist', 'Office'],
+        affiliateUrl: 'https://www.prettylittlething.com/wide-leg-trousers'
       }
     ];
 
     setTimeout(() => {
-      setProducts(prettylittlethingProducts);
+      setProducts(pltProducts);
       setLoading(false);
     }, 800);
   }, []);
@@ -88,8 +89,8 @@ const PrettyLittleThingPicks = ({ isPremiumUser, onTryItem, onUpgradeToPremium }
       onUpgradeToPremium();
       return;
     }
-    
     onTryItem(item);
+    toast.success(`Preparing to try on ${item.name}...`);
   };
 
   const handleShopNow = (item: ClothingItem) => {
@@ -108,7 +109,7 @@ const PrettyLittleThingPicks = ({ isPremiumUser, onTryItem, onUpgradeToPremium }
       >
         <div className="flex items-center mb-4">
           <h2 className="text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-            Editor's Picks from PrettyLittleThing
+            Editor's Top Picks
           </h2>
         </div>
         <div className="flex justify-center p-8">
@@ -128,7 +129,7 @@ const PrettyLittleThingPicks = ({ isPremiumUser, onTryItem, onUpgradeToPremium }
       <div className="flex items-center mb-6">
         <div className="h-px flex-grow bg-gradient-to-r from-transparent via-purple-500/30 to-transparent"></div>
         <h2 className="px-4 text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-          Editor's Picks from PrettyLittleThing
+          Editor's Top Picks
         </h2>
         <div className="h-px flex-grow bg-gradient-to-r from-purple-500/30 via-transparent to-transparent"></div>
       </div>
@@ -140,7 +141,6 @@ const PrettyLittleThingPicks = ({ isPremiumUser, onTryItem, onUpgradeToPremium }
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.3 }}
-            className="h-full"
           >
             <Card className="h-full border-0 shadow-soft bg-gradient-to-br from-slate-800/80 to-slate-900/80 border border-white/10 backdrop-blur-lg overflow-hidden">
               <div className="relative aspect-[3/4] overflow-hidden">
@@ -157,7 +157,6 @@ const PrettyLittleThingPicks = ({ isPremiumUser, onTryItem, onUpgradeToPremium }
                       onClick={() => onUpgradeToPremium()}
                       className="bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90"
                     >
-                      <Lock className="mr-2 h-4 w-4" />
                       Unlock Try-On
                     </Button>
                   </div>
@@ -169,7 +168,7 @@ const PrettyLittleThingPicks = ({ isPremiumUser, onTryItem, onUpgradeToPremium }
                 
                 {product.price && (
                   <div className="absolute top-2 right-2 bg-purple-600/80 backdrop-blur-sm text-white text-xs font-medium px-2 py-0.5 rounded-full">
-                    {product.price}
+                    €{product.price.toFixed(2)}
                   </div>
                 )}
               </div>
@@ -192,7 +191,7 @@ const PrettyLittleThingPicks = ({ isPremiumUser, onTryItem, onUpgradeToPremium }
                     onClick={() => handleTryOn(product)}
                   >
                     <Shirt className="h-3.5 w-3.5 mr-1.5" />
-                    Try Now
+                    Try on Olivia
                   </Button>
                   
                   <Button 
@@ -201,8 +200,8 @@ const PrettyLittleThingPicks = ({ isPremiumUser, onTryItem, onUpgradeToPremium }
                     className="border-white/20 hover:bg-white/10"
                     onClick={() => handleShopNow(product)}
                   >
-                    <ExternalLink className="h-3.5 w-3.5 mr-1.5" />
-                    Shop
+                    <ExternalLink className="h-3.5 w-3.5" />
+                    <span className="sr-only">Shop Now</span>
                   </Button>
                 </div>
               </CardContent>
