@@ -1,28 +1,25 @@
 
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Upload, 
-  Shirt, 
-  User2, 
   Image, 
+  Shirt, 
   X, 
-  Loader2, 
-  ArrowRight, 
-  Check, 
-  AlertTriangle,
-  Camera,
-  Save,
-  Plus,
-  RefreshCw,
-  ClipboardCheck
+  RefreshCw, 
+  Wand2, 
+  User, 
+  Sparkles, 
+  Heart, 
+  Lock, 
+  Download
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
 import { Outfit, ClothingItem } from '@/lib/types';
-import { toast } from 'sonner';
+import { useIsMobile } from '@/hooks/use-mobile';
+import VirtualFittingRoom from '@/components/VirtualFittingRoom';
 
 interface UploadPanelProps {
   userPhoto: string | null;
@@ -45,7 +42,6 @@ interface UploadPanelProps {
   onSaveLook: () => void;
   onAddItem: (item: ClothingItem) => void;
   onShowPremiumPopup: () => void;
-  customSlot?: React.ReactNode; // Add optional customSlot prop
 }
 
 const UploadPanel = ({
@@ -70,355 +66,265 @@ const UploadPanel = ({
   onAddItem,
   onShowPremiumPopup
 }: UploadPanelProps) => {
-  const [activeTab, setActiveTab] = useState('user-photo');
+  const [activeTab, setActiveTab] = useState('photo');
+  const isMobile = useIsMobile();
   
-  const handleUserPhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUserPhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       onUserPhotoUpload(e.target.files[0]);
     }
   };
   
-  const handleClothingPhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleClothingPhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       onClothingPhotoUpload(e.target.files[0]);
     }
   };
-  
-  const getOliviaEmoji = () => {
-    switch (oliviaMood) {
-      case 'happy': return '😊';
-      case 'thinking': return '🤔';
-      default: return '🙂';
-    }
-  };
-  
+
   return (
-    <div className="mb-16">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
-        <div>
-          <Card className="bg-gray-900/80 border-purple-500/20 shadow-xl overflow-hidden">
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="w-full bg-slate-800/80 p-0 h-auto border-b border-white/10">
-                <TabsTrigger
-                  value="user-photo"
-                  className="flex-1 rounded-none py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-700/30 data-[state=active]:to-pink-700/30 data-[state=active]:text-white border-b data-[state=active]:border-purple-500 border-transparent"
-                >
-                  <User2 className="h-4 w-4 mr-2" />
-                  Your Photo
-                </TabsTrigger>
-                <TabsTrigger
-                  value="clothing-photo"
-                  className="flex-1 rounded-none py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-700/30 data-[state=active]:to-pink-700/30 data-[state=active]:text-white border-b data-[state=active]:border-purple-500 border-transparent"
-                >
-                  <Shirt className="h-4 w-4 mr-2" />
-                  Clothing
-                </TabsTrigger>
-              </TabsList>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="mb-12"
+    >
+      <Card className="border-white/10 bg-gradient-to-br from-slate-900/80 to-purple-900/50 backdrop-blur-sm overflow-hidden">
+        <CardContent className="p-6">
+          <div className="flex flex-col md:flex-row gap-6">
+            <div className="w-full md:w-1/2">
+              <h2 className="text-xl font-bold text-white mb-4">Virtual Try-On</h2>
               
-              <TabsContent value="user-photo" className="bg-transparent p-6 m-0">
-                <div className="flex flex-col items-center justify-center">
-                  {!userPhoto ? (
-                    <div className="w-full">
-                      <div className="border-2 border-dashed border-white/20 rounded-lg py-12 flex flex-col items-center justify-center bg-slate-800/50 mb-4">
-                        <div className="mb-4 w-16 h-16 rounded-full bg-purple-700/30 flex items-center justify-center">
-                          <Camera className="h-8 w-8 text-purple-300" />
-                        </div>
-                        <p className="text-white/70 text-center mb-4 max-w-xs">
-                          Upload a full-body photo of yourself or choose Olivia as your model
-                        </p>
-                        <div className="flex gap-3">
-                          <Button
-                            onClick={() => document.getElementById('user-photo-upload')?.click()}
-                            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-                          >
-                            <Upload className="h-4 w-4 mr-2" />
-                            Upload Photo
-                          </Button>
+              <Tabs defaultValue="photo" className="w-full" onValueChange={setActiveTab}>
+                <TabsList className="bg-slate-800/50 border border-white/10 w-full">
+                  <TabsTrigger value="photo" className="flex-1 data-[state=active]:bg-indigo-600">
+                    <User className="h-4 w-4 mr-2" />
+                    Your Photo
+                  </TabsTrigger>
+                  <TabsTrigger value="clothing" className="flex-1 data-[state=active]:bg-indigo-600">
+                    <Shirt className="h-4 w-4 mr-2" />
+                    Clothing
+                  </TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="photo" className="mt-4">
+                  <div className="border-2 border-dashed border-white/20 rounded-lg p-6 text-center">
+                    {!userPhoto ? (
+                      <div className="py-6">
+                        <Image className="h-12 w-12 mx-auto text-white/40 mb-4" />
+                        <p className="text-white/70 mb-6">Upload a photo to see how clothes look on you</p>
+                        
+                        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                          <label className="cursor-pointer">
+                            <input
+                              type="file"
+                              className="hidden"
+                              accept="image/*"
+                              onChange={handleUserPhotoUpload}
+                            />
+                            <div className="flex items-center justify-center rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:opacity-90 text-white px-4 py-2 text-sm">
+                              <Upload className="h-4 w-4 mr-2" />
+                              Upload Photo
+                            </div>
+                          </label>
+                          
                           <Button 
-                            variant="outline" 
-                            className="border-white/20 text-white hover:bg-white/10"
+                            variant="outline"
+                            className="border-white/20 hover:bg-white/10 text-white"
                             onClick={onShowOliviaImageGallery}
                           >
-                            <Image className="h-4 w-4 mr-2" />
+                            <Sparkles className="h-4 w-4 mr-2" />
                             Use Olivia
                           </Button>
                         </div>
-                        <input
-                          id="user-photo-upload"
-                          type="file"
-                          accept="image/*"
-                          onChange={handleUserPhotoChange}
-                          className="hidden"
-                        />
-                      </div>
-                      <p className="text-xs text-white/50 text-center">
-                        Photos are processed locally. For best results, use a clear, well-lit full-body photo.
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="w-full">
-                      <div className="relative overflow-hidden rounded-lg w-full aspect-[3/4] mb-4">
-                        <img
-                          src={userPhoto}
-                          alt="User photo"
-                          className="w-full h-full object-cover"
-                        />
-                        {isUsingOliviaImage && (
-                          <div className="absolute bottom-2 left-2 bg-black/60 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-full">
-                            {getOliviaEmoji()} Using Olivia as model
-                          </div>
-                        )}
-                        <button
-                          onClick={onClearUserPhoto}
-                          className="absolute top-2 right-2 bg-black/60 text-white p-1 rounded-full hover:bg-black/80"
-                        >
-                          <X className="h-4 w-4" />
-                        </button>
-                      </div>
-                      
-                      <div className="flex justify-between">
-                        <p className="text-xs text-white/60">
-                          {isUsingOliviaImage ? 'Using Olivia as your model' : 'Your photo is ready'}
-                        </p>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="text-white/60 hover:text-white text-xs h-6 px-2"
-                          onClick={() => setActiveTab('clothing-photo')}
-                        >
-                          Next: Add Clothing <ArrowRight className="h-3 w-3 ml-1" />
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="clothing-photo" className="bg-transparent p-6 m-0">
-                <div className="flex flex-col items-center justify-center">
-                  {!clothingPhoto ? (
-                    <div className="w-full">
-                      <div className="border-2 border-dashed border-white/20 rounded-lg py-12 flex flex-col items-center justify-center bg-slate-800/50 mb-4">
-                        <div className="mb-4 w-16 h-16 rounded-full bg-purple-700/30 flex items-center justify-center">
-                          <Shirt className="h-8 w-8 text-purple-300" />
-                        </div>
-                        <p className="text-white/70 text-center mb-4 max-w-xs">
-                          Upload a photo of the clothing item you'd like to try on
-                        </p>
-                        <Button
-                          onClick={() => document.getElementById('clothing-photo-upload')?.click()}
-                          className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-                        >
-                          <Upload className="h-4 w-4 mr-2" />
-                          Upload Clothing
-                        </Button>
-                        <input
-                          id="clothing-photo-upload"
-                          type="file"
-                          accept="image/*"
-                          onChange={handleClothingPhotoChange}
-                          className="hidden"
-                        />
-                      </div>
-                      <p className="text-xs text-white/50 text-center">
-                        For best results, use images with a clear background or product photos.
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="w-full">
-                      <div className="relative overflow-hidden rounded-lg w-full aspect-square mb-4">
-                        <img
-                          src={clothingPhoto}
-                          alt="Clothing photo"
-                          className="w-full h-full object-contain bg-gray-800"
-                        />
-                        <button
-                          onClick={() => onClothingPhotoUpload(new File([], ""))}
-                          className="absolute top-2 right-2 bg-black/60 text-white p-1 rounded-full hover:bg-black/80"
-                        >
-                          <X className="h-4 w-4" />
-                        </button>
-                      </div>
-                      
-                      <div className="flex justify-between">
-                        <p className="text-xs text-white/60">
-                          Clothing photo ready
-                        </p>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="text-white/60 hover:text-white text-xs h-6 px-2"
-                          onClick={() => setActiveTab('user-photo')}
-                        >
-                          <ArrowRight className="h-3 w-3 rotate-180 mr-1" /> Back to Photo
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </TabsContent>
-            </Tabs>
-            
-            <div className="p-6 pt-0 flex justify-between border-t border-white/10 mt-3">
-              <Button 
-                variant="outline" 
-                className="border-white/20 text-white/70 hover:bg-white/10 hover:text-white"
-                onClick={onClearPhotos}
-              >
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Reset
-              </Button>
-              
-              <Button
-                disabled={!userPhoto || !clothingPhoto || isProcessing}
-                onClick={onTryOn}
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
-              >
-                {isProcessing ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Processing...
-                  </>
-                ) : (
-                  <>
-                    <Shirt className="h-4 w-4 mr-2" />
-                    Try It On
-                  </>
-                )}
-              </Button>
-            </div>
-          </Card>
-        </div>
-        
-        <div>
-          <Card className="bg-gray-900/80 border-purple-500/20 shadow-xl overflow-hidden h-full">
-            <div className="p-6">
-              <h3 className="font-medium text-white mb-4 flex items-center">
-                <Camera className="h-4 w-4 mr-2 text-purple-400" />
-                Preview Result
-              </h3>
-              
-              <div className="rounded-lg overflow-hidden bg-gray-800/60 w-full aspect-[3/4] mb-4 flex items-center justify-center">
-                {finalImage ? (
-                  <div className="relative w-full h-full">
-                    <img
-                      src={finalImage}
-                      alt="Final preview"
-                      className="w-full h-full object-cover"
-                    />
-                    
-                    {stylingTip && (
-                      <div className="absolute bottom-3 left-3 right-3 bg-black/70 backdrop-blur-sm text-white text-sm p-3 rounded-lg">
-                        <div className="flex items-start gap-2">
-                          <span className="text-lg mt-1">{getOliviaEmoji()}</span>
-                          <p>{stylingTip}</p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div className="text-center p-6">
-                    {isProcessing ? (
-                      <div className="flex flex-col items-center">
-                        <Loader2 className="h-10 w-10 text-purple-400 animate-spin mb-4" />
-                        <p className="text-white/70">Creating your virtual try-on...</p>
-                        <p className="text-white/50 text-sm mt-2">This may take a few moments</p>
-                      </div>
-                    ) : generationError ? (
-                      <div className="flex flex-col items-center">
-                        <AlertTriangle className="h-10 w-10 text-red-400 mb-4" />
-                        <p className="text-white/70">Couldn't generate your try-on</p>
-                        <p className="text-red-400/70 text-xs mt-2 max-w-xs">{generationError}</p>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="mt-4 text-white/60"
-                          onClick={onTryOn}
-                        >
-                          Try Again
-                        </Button>
                       </div>
                     ) : (
-                      <div className="flex flex-col items-center">
-                        <div className="w-16 h-16 rounded-full bg-indigo-700/20 flex items-center justify-center mb-4">
-                          <Image className="h-8 w-8 text-indigo-300" />
-                        </div>
-                        <p className="text-white/70">Upload photos and click "Try It On"</p>
-                        <p className="text-white/50 text-sm mt-2">Preview will appear here</p>
+                      <div className="relative">
+                        <img 
+                          src={userPhoto} 
+                          alt="Uploaded" 
+                          className="w-full max-h-[400px] object-contain rounded-lg"
+                        />
+                        <Button 
+                          variant="outline" 
+                          size="icon" 
+                          className="absolute top-2 right-2 h-8 w-8 rounded-full bg-black/60 border-white/10 text-white hover:bg-black/80"
+                          onClick={onClearUserPhoto}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                        
+                        {isUsingOliviaImage && (
+                          <div className="absolute bottom-2 left-2 bg-black/60 text-white text-xs px-2 py-1 rounded">
+                            Olivia
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
-                )}
+                </TabsContent>
+                
+                <TabsContent value="clothing" className="mt-4">
+                  <div className="border-2 border-dashed border-white/20 rounded-lg p-6 text-center">
+                    {!clothingPhoto ? (
+                      <div className="py-6">
+                        <Shirt className="h-12 w-12 mx-auto text-white/40 mb-4" />
+                        <p className="text-white/70 mb-6">Upload a clothing item to try it on</p>
+                        
+                        <label className="cursor-pointer inline-block">
+                          <input
+                            type="file"
+                            className="hidden"
+                            accept="image/*"
+                            onChange={handleClothingPhotoUpload}
+                          />
+                          <div className="flex items-center justify-center rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 text-white px-4 py-2 text-sm">
+                            <Upload className="h-4 w-4 mr-2" />
+                            Upload Clothing
+                          </div>
+                        </label>
+                      </div>
+                    ) : (
+                      <div className="relative">
+                        <img 
+                          src={clothingPhoto} 
+                          alt="Clothing" 
+                          className="w-full max-h-[400px] object-contain rounded-lg"
+                        />
+                        <Button 
+                          variant="outline" 
+                          size="icon" 
+                          className="absolute top-2 right-2 h-8 w-8 rounded-full bg-black/60 border-white/10 text-white hover:bg-black/80"
+                          onClick={() => onClothingPhotoUpload(new File([], ""))}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </TabsContent>
+              </Tabs>
+              
+              <div className="mt-6 flex flex-col sm:flex-row gap-3">
+                <Button 
+                  className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 text-white"
+                  disabled={!userPhoto || !clothingPhoto || isProcessing}
+                  onClick={onTryOn}
+                >
+                  {isProcessing ? (
+                    <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                  ) : (
+                    <Wand2 className="h-4 w-4 mr-2" />
+                  )}
+                  {isProcessing ? 'Processing...' : 'Try It On'}
+                </Button>
+                
+                <Button 
+                  variant="outline"
+                  className="border-white/20 hover:bg-white/10 text-white"
+                  onClick={onClearPhotos}
+                >
+                  Clear All
+                </Button>
               </div>
               
-              {finalImage && (
-                <div className="flex flex-wrap gap-2 mt-4">
-                  <Button 
-                    onClick={onSaveLook}
-                    className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
-                  >
-                    <Save className="h-4 w-4 mr-2" />
-                    Save Look
-                  </Button>
-                  
-                  <Button 
-                    variant="outline" 
-                    className="border-white/20 text-white hover:bg-white/10"
-                    onClick={() => {
-                      if (!isPremiumUser) {
-                        onShowPremiumPopup();
-                        return;
-                      }
-                      toast.success('Added to your outfits collection!');
-                    }}
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add to Collection
-                  </Button>
-                  
-                  {isPremiumUser && (
-                    <Button 
-                      variant="outline" 
-                      className="border-white/20 text-white hover:bg-white/10"
-                      onClick={() => toast.success('Copied to clipboard!')}
-                    >
-                      <ClipboardCheck className="h-4 w-4 mr-2" />
-                      Copy Image
-                    </Button>
-                  )}
+              {generationError && (
+                <div className="mt-4 p-3 bg-red-900/30 border border-red-500/30 rounded-md text-sm text-red-200">
+                  <p>Error generating image: {generationError}</p>
                 </div>
               )}
             </div>
             
-            {mockOutfit && (
-              <div className="p-6 pt-0 border-t border-white/10 mt-3">
-                <div className="flex justify-between items-center mb-2">
-                  <h4 className="text-sm font-medium text-white/90">Outfit Components</h4>
-                  <Badge variant="outline" className="text-xs border-purple-500/30 text-purple-300">
-                    {mockOutfit.occasion}
-                  </Badge>
-                </div>
+            <div className="w-full md:w-1/2">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold text-white">Preview</h2>
                 
-                <div className="flex flex-wrap gap-2 mt-3">
-                  {selectedItems.length > 0 ? (
-                    selectedItems.map((item, index) => (
-                      <Badge 
-                        key={index} 
-                        className="bg-indigo-900/40 hover:bg-indigo-800/60 px-2 py-1 text-xs"
+                {finalImage && (
+                  <div className="flex items-center gap-2">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="text-white/70 hover:text-white"
+                      onClick={onSaveLook}
+                    >
+                      <Heart className="h-4 w-4 mr-1" />
+                      Save
+                    </Button>
+                    
+                    {!isPremiumUser && (
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="text-white/70 hover:text-white"
+                        onClick={onShowPremiumPopup}
                       >
-                        {item.name}
-                      </Badge>
-                    ))
-                  ) : (
-                    <p className="text-xs text-white/50">No items selected yet</p>
-                  )}
-                </div>
+                        <Lock className="h-4 w-4 mr-1" />
+                        Premium
+                      </Button>
+                    )}
+                  </div>
+                )}
               </div>
-            )}
-          </Card>
-        </div>
-      </div>
-    </div>
+              
+              <VirtualFittingRoom 
+                finalImage={finalImage}
+                outfit={mockOutfit}
+                clothingItems={selectedItems}
+                isProcessing={isProcessing}
+                userPhoto={userPhoto}
+                clothingPhoto={clothingPhoto}
+                className="h-full"
+                onSaveLook={onSaveLook}
+                isOliviaImage={isUsingOliviaImage}
+              />
+              
+              {/* AI Styling Tip */}
+              <AnimatePresence>
+                {stylingTip && finalImage && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    transition={{ type: "spring" }}
+                    className="mt-4 p-3 bg-gradient-to-r from-purple-900/40 to-indigo-900/40 rounded-lg border border-purple-500/20"
+                  >
+                    <div className="flex gap-3">
+                      <div className="w-8 h-8 shrink-0 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
+                        <span className="text-white text-xs">OB</span>
+                      </div>
+                      <div>
+                        <p className="text-white/90 text-sm">{stylingTip}</p>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+          
+          {!isPremiumUser && !userPhoto && activeTab === 'photo' && (
+            <div className="mt-6 pt-4 border-t border-white/10">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center mr-2">
+                    <Sparkles className="h-4 w-4 text-white" />
+                  </div>
+                  <span className="text-white/90 text-sm">Premium members can try unlimited outfits and get personalized AI styling advice.</span>
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="border-purple-400/30 text-white hover:bg-white/10 whitespace-nowrap ml-3"
+                  onClick={onShowPremiumPopup}
+                >
+                  <Lock className="h-3.5 w-3.5 mr-1.5" />
+                  Upgrade
+                </Button>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 };
 

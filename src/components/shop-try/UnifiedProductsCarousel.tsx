@@ -1,13 +1,12 @@
 
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Check, ChevronLeft, ChevronRight, Sparkles, Lock } from 'lucide-react';
 import { ClothingItem } from '@/lib/types';
-import { Lock, Sparkles, ExternalLink, Shirt, Plus, Heart } from 'lucide-react';
-import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
+import { toast } from 'sonner';
 
 interface UnifiedProductsCarouselProps {
   isPremiumUser: boolean;
@@ -18,325 +17,338 @@ interface UnifiedProductsCarouselProps {
   onMoodSelect: (mood: string | null) => void;
 }
 
-const UnifiedProductsCarousel = ({
-  isPremiumUser,
-  onTryItem,
+const UnifiedProductsCarousel = ({ 
+  isPremiumUser, 
+  onTryItem, 
   onStylistSuggestion,
   onUpgradeToPremium,
   activeMood,
   onMoodSelect
 }: UnifiedProductsCarouselProps) => {
-  const [activeTab, setActiveTab] = useState('trending');
-  
-  // Mock data - in real app, this would come from Supabase
-  const trendingItems: ClothingItem[] = [
-    {
-      id: 'trending-1',
-      name: 'Casual Oversized Tee',
-      type: 'shirt',
-      color: 'black',
-      season: ['all'],
-      image: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&q=80&w=300&h=400',
-      imageUrl: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&q=80&w=300&h=400',
-      tags: ['casual', 'everyday'],
-      timesWorn: 0
-    },
-    {
-      id: 'trending-2',
-      name: 'Summer Dress',
-      type: 'dress',
-      color: 'blue',
-      season: ['summer'],
-      image: 'https://images.unsplash.com/photo-1612336307429-8a898d10e223?auto=format&fit=crop&q=80&w=300&h=400',
-      imageUrl: 'https://images.unsplash.com/photo-1612336307429-8a898d10e223?auto=format&fit=crop&q=80&w=300&h=400',
-      tags: ['summer', 'date-night'],
-      timesWorn: 0
-    },
-    {
-      id: 'trending-3',
-      name: 'Classic Denim Jacket',
-      type: 'jacket',
-      color: 'blue',
-      season: ['spring', 'autumn'],
-      image: 'https://images.unsplash.com/photo-1548126032-079a0fb0099d?auto=format&fit=crop&q=80&w=300&h=400',
-      imageUrl: 'https://images.unsplash.com/photo-1548126032-079a0fb0099d?auto=format&fit=crop&q=80&w=300&h=400',
-      tags: ['casual', 'versatile'],
-      timesWorn: 0
-    },
-    {
-      id: 'trending-4',
-      name: 'Floral Blouse',
-      type: 'top',
-      color: 'multicolor',
-      season: ['spring', 'summer'],
-      image: 'https://images.unsplash.com/photo-1564257631407-4deb1f99d992?auto=format&fit=crop&q=80&w=300&h=400',
-      imageUrl: 'https://images.unsplash.com/photo-1564257631407-4deb1f99d992?auto=format&fit=crop&q=80&w=300&h=400',
-      tags: ['colorful', 'office'],
-      timesWorn: 0
-    }
-  ];
+  const [products, setProducts] = useState<ClothingItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [currentIndex, setCurrentIndex] = useState(0);
   
   const moods = [
-    { id: 'casual', name: 'Casual', icon: '👖' },
-    { id: 'elegant', name: 'Elegant', icon: '✨' },
-    { id: 'bold', name: 'Bold', icon: '💪' },
-    { id: 'minimal', name: 'Minimal', icon: '⚪' },
-    { id: 'romantic', name: 'Romantic', icon: '💕' },
-    { id: 'edgy', name: 'Edgy', icon: '🔥' }
+    { name: 'Romantic', color: 'from-pink-500 to-rose-500' },
+    { name: 'Power Boss', color: 'from-blue-500 to-indigo-500' },
+    { name: 'Everyday Casual', color: 'from-green-500 to-emerald-500' },
+    { name: 'Boho Chic', color: 'from-amber-500 to-orange-500' },
+    { name: 'Minimalist', color: 'from-gray-500 to-slate-500' }
   ];
 
-  const editorPicks: ClothingItem[] = [
-    {
-      id: 'editor-1',
-      name: 'Leather Jacket',
-      type: 'jacket',
-      color: 'black',
-      season: ['autumn', 'winter'],
-      image: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&q=80&w=300&h=400',
-      imageUrl: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&q=80&w=300&h=400',
-      tags: ['edgy', 'night-out'],
-      timesWorn: 0
-    },
-    {
-      id: 'editor-2',
-      name: 'Pleated Midi Skirt',
-      type: 'skirt',
-      color: 'gray',
-      season: ['spring', 'autumn'],
-      image: 'https://images.unsplash.com/photo-1582142306909-195724d0a735?auto=format&fit=crop&q=80&w=300&h=400',
-      imageUrl: 'https://images.unsplash.com/photo-1582142306909-195724d0a735?auto=format&fit=crop&q=80&w=300&h=400',
-      tags: ['elegant', 'office'],
-      timesWorn: 0
-    },
-    {
-      id: 'editor-3',
-      name: 'Linen Shirt',
-      type: 'shirt',
-      color: 'white',
-      season: ['summer'],
-      image: 'https://images.unsplash.com/photo-1604695573706-53170668f6a6?auto=format&fit=crop&q=80&w=300&h=400',
-      imageUrl: 'https://images.unsplash.com/photo-1604695573706-53170668f6a6?auto=format&fit=crop&q=80&w=300&h=400',
-      tags: ['minimal', 'summer'],
-      timesWorn: 0
-    },
-    {
-      id: 'editor-4',
-      name: 'Knit Sweater',
-      type: 'sweater',
-      color: 'green',
-      season: ['winter'],
-      image: 'https://images.unsplash.com/photo-1576871337622-98d48d1cf531?auto=format&fit=crop&q=80&w=300&h=400',
-      imageUrl: 'https://images.unsplash.com/photo-1576871337622-98d48d1cf531?auto=format&fit=crop&q=80&w=300&h=400',
-      tags: ['cozy', 'winter'],
-      timesWorn: 0
+  useEffect(() => {
+    // Sample data - in a real app this would come from an API or Supabase
+    const sampleProducts: ClothingItem[] = [
+      {
+        id: 'prod-1',
+        name: 'Satin Slip Dress',
+        type: 'dress',
+        color: 'coral',
+        season: 'summer',
+        occasion: 'party',
+        imageUrl: 'https://images.unsplash.com/photo-1566206091558-7f218b696731?auto=format&fit=crop&w=500&h=600',
+        tags: ['Romantic', 'Date Night'],
+        price: '$45.99'
+      },
+      {
+        id: 'prod-2',
+        name: 'Oversized Blazer',
+        type: 'jacket',
+        color: 'black',
+        season: 'all',
+        occasion: 'formal',
+        imageUrl: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&w=500&h=600',
+        tags: ['Power Boss', 'Office'],
+        price: '$59.99'
+      },
+      {
+        id: 'prod-3',
+        name: 'Relaxed Jeans',
+        type: 'pants',
+        color: 'blue',
+        season: 'all',
+        occasion: 'casual',
+        imageUrl: 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=500&h=600',
+        tags: ['Everyday Casual', 'Effortless'],
+        price: '$38.99'
+      },
+      {
+        id: 'prod-4',
+        name: 'Crochet Crop Top',
+        type: 'top',
+        color: 'cream',
+        season: 'summer',
+        occasion: 'casual',
+        imageUrl: 'https://images.unsplash.com/photo-1499939667766-4afceb292d05?auto=format&fit=crop&w=500&h=600',
+        tags: ['Boho Chic', 'Festival'],
+        price: '$29.99'
+      },
+      {
+        id: 'prod-5',
+        name: 'Boxy White Tee',
+        type: 'top',
+        color: 'white',
+        season: 'all',
+        occasion: 'casual',
+        imageUrl: 'https://images.unsplash.com/photo-1523381294911-8d3cead13475?auto=format&fit=crop&w=500&h=600',
+        tags: ['Minimalist', 'Everyday'],
+        price: '$19.99'
+      },
+      {
+        id: 'prod-6',
+        name: 'Linen Wide-Leg Pants',
+        type: 'pants',
+        color: 'beige',
+        season: 'summer',
+        occasion: 'casual',
+        imageUrl: 'https://images.unsplash.com/photo-1594633313593-bab3825d0caf?auto=format&fit=crop&w=500&h=600',
+        tags: ['Minimalist', 'Boho Chic'],
+        price: '$42.99'
+      }
+    ];
+
+    // Filter products based on active mood if one is selected
+    let filteredProducts = [...sampleProducts];
+    if (activeMood) {
+      filteredProducts = sampleProducts.filter(product => 
+        product.tags?.some(tag => tag === activeMood)
+      );
     }
-  ];
-  
-  const getFilteredItems = () => {
-    const items = activeTab === 'trending' ? trendingItems : editorPicks;
+
+    setTimeout(() => {
+      setProducts(filteredProducts);
+      setLoading(false);
+    }, 600);
+  }, [activeMood]);
+
+  const handleNext = () => {
+    if (currentIndex < products.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+    }
+  };
+
+  const handlePrev = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
+    }
+  };
+
+  const handleTryItem = (item: ClothingItem) => {
+    if (!isPremiumUser) {
+      onUpgradeToPremium();
+      return;
+    }
     
-    if (!activeMood) return items;
-    
-    return items.filter(item => 
-      item.tags?.some(tag => tag.toLowerCase() === activeMood.toLowerCase())
-    );
+    onTryItem(item);
+  };
+
+  const handleMoodSelect = (mood: string | null) => {
+    onMoodSelect(mood);
+    setCurrentIndex(0);
   };
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      viewport={{ once: true }}
-      className="relative mb-16"
+      className="mb-12"
     >
-      <div className="flex items-center mb-6">
-        <div className="h-px flex-grow bg-gradient-to-r from-transparent via-blue-500/30 to-transparent"></div>
-        <h2 className="px-4 text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-          {activeMood ? `${activeMood.charAt(0).toUpperCase() + activeMood.slice(1)} Styles` : '✨ Trending Styles'}
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-purple-400">
+          Shop by Mood
         </h2>
-        <div className="h-px flex-grow bg-gradient-to-r from-blue-500/30 via-transparent to-transparent"></div>
+        
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            disabled={currentIndex === 0}
+            onClick={handlePrev}
+            className="h-8 w-8 rounded-full text-white/70 hover:text-white"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </Button>
+          
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            disabled={currentIndex >= products.length - 1}
+            onClick={handleNext}
+            className="h-8 w-8 rounded-full text-white/70 hover:text-white"
+          >
+            <ChevronRight className="h-5 w-5" />
+          </Button>
+        </div>
       </div>
       
-      <div className="flex flex-wrap gap-2 mb-6 justify-center">
-        <Button 
-          variant="outline" 
-          size="sm" 
-          className={`rounded-full px-3 h-8 ${!activeMood ? 'bg-purple-700/30 border-purple-500/50 text-white' : 'border-white/20 text-white/70'}`}
-          onClick={() => onMoodSelect(null)}
+      <div className="mb-6 flex flex-wrap gap-2">
+        <Button
+          variant={activeMood === null ? "default" : "outline"}
+          size="sm"
+          onClick={() => handleMoodSelect(null)}
+          className={activeMood === null ? "bg-white/10 text-white" : "border-white/10 text-white/70"}
         >
-          <Sparkles className="h-3.5 w-3.5 mr-1.5" />
           All Styles
         </Button>
         
-        {moods.map(mood => (
-          <Button 
-            key={mood.id}
-            variant="outline" 
-            size="sm" 
-            className={`rounded-full px-3 h-8 ${activeMood === mood.id ? 'bg-purple-700/30 border-purple-500/50 text-white' : 'border-white/20 text-white/70'}`}
-            onClick={() => onMoodSelect(mood.id)}
+        {moods.map((mood) => (
+          <Button
+            key={mood.name}
+            variant={activeMood === mood.name ? "default" : "outline"}
+            size="sm"
+            onClick={() => handleMoodSelect(mood.name)}
+            className={`${activeMood === mood.name 
+              ? `bg-gradient-to-r ${mood.color} text-white` 
+              : 'border-white/10 text-white/70'} transition-all duration-300`}
           >
-            <span className="mr-1.5">{mood.icon}</span>
+            {activeMood === mood.name && <Check className="mr-1 h-3 w-3" />}
             {mood.name}
           </Button>
         ))}
       </div>
       
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <div className="flex justify-center mb-6">
-          <TabsList className="bg-slate-800/80 border border-white/10">
-            <TabsTrigger 
-              value="trending" 
-              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-700/30 data-[state=active]:to-indigo-700/30"
-            >
-              Trending Now
-            </TabsTrigger>
-            <TabsTrigger 
-              value="editor" 
-              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-700/30 data-[state=active]:to-indigo-700/30"
-            >
-              Editor's Picks
-            </TabsTrigger>
-          </TabsList>
+      {loading ? (
+        <div className="flex justify-center p-8">
+          <div className="w-10 h-10 border-t-2 border-b-2 border-purple-500 rounded-full animate-spin"></div>
         </div>
-        
-        <TabsContent value="trending" className="mt-0">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4">
-            {getFilteredItems().map((item) => (
-              <ProductCard 
-                key={item.id}
-                item={item}
-                isPremiumUser={isPremiumUser}
-                onTryItem={onTryItem}
-                onUpgradeToPremium={onUpgradeToPremium}
-                onStylistSuggestion={onStylistSuggestion}
+      ) : products.length === 0 ? (
+        <div className="text-center py-8 bg-white/5 rounded-lg">
+          <p className="text-white/70">No items found for this mood. Try selecting a different mood.</p>
+        </div>
+      ) : (
+        <div className="relative overflow-hidden">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentIndex}
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -50 }}
+              transition={{ duration: 0.3 }}
+              className="grid grid-cols-1 md:grid-cols-2 gap-6"
+            >
+              <div className="w-full aspect-[3/4] md:aspect-auto overflow-hidden rounded-xl relative group">
+                <img 
+                  src={products[currentIndex].imageUrl} 
+                  alt={products[currentIndex].name}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                
+                {!isPremiumUser && (
+                  <div className="absolute inset-0 bg-black/50 backdrop-blur-sm flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Sparkles className="h-10 w-10 text-purple-400 mb-3 animate-pulse" />
+                    <p className="text-white text-center mb-4 max-w-xs px-4">
+                      Upgrade to Premium to try on any item with your photos
+                    </p>
+                    <Button 
+                      onClick={onUpgradeToPremium}
+                      className="bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90"
+                    >
+                      <Lock className="mr-2 h-4 w-4" />
+                      Unlock Premium
+                    </Button>
+                  </div>
+                )}
+                
+                <div className="absolute top-4 left-4 right-4 flex justify-between items-center">
+                  <Badge className="bg-black/60 backdrop-blur-sm text-white border-0 px-3 py-1">
+                    {products[currentIndex].type}
+                  </Badge>
+                  
+                  <Badge className="bg-purple-600/80 backdrop-blur-sm text-white border-0 px-3 py-1">
+                    {products[currentIndex].price}
+                  </Badge>
+                </div>
+              </div>
+              
+              <div className="flex flex-col h-full">
+                <Card className="flex-grow bg-white/5 border-white/10">
+                  <CardContent className="p-6 flex flex-col h-full">
+                    <div className="flex-grow">
+                      <h3 className="text-2xl font-semibold mb-2">{products[currentIndex].name}</h3>
+                      
+                      <div className="flex flex-wrap gap-1 mb-4">
+                        {products[currentIndex].tags && products[currentIndex].tags.map((tag, index) => (
+                          <Badge 
+                            key={index} 
+                            variant="outline"
+                            className="bg-transparent border-purple-400/30 hover:bg-purple-400/10 transition-colors"
+                          >
+                            {tag}
+                          </Badge>
+                        ))}
+                      </div>
+                      
+                      <div className="space-y-3 mb-6">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-white/70">Color</span>
+                          <span className="text-white">{products[currentIndex].color}</span>
+                        </div>
+                        
+                        <div className="flex justify-between text-sm">
+                          <span className="text-white/70">Season</span>
+                          <span className="text-white capitalize">{products[currentIndex].season}</span>
+                        </div>
+                        
+                        <div className="flex justify-between text-sm">
+                          <span className="text-white/70">Occasion</span>
+                          <span className="text-white capitalize">{products[currentIndex].occasion}</span>
+                        </div>
+                      </div>
+                      
+                      <div className="relative p-4 rounded-lg bg-gradient-to-br from-purple-900/40 to-blue-900/40 border border-white/10 mb-5">
+                        <div className="absolute -top-3 left-3 bg-gradient-to-r from-purple-600 to-blue-600 px-2 py-0.5 rounded-sm text-xs font-medium">
+                          Olivia's Tip
+                        </div>
+                        <p className="text-sm text-white/90">
+                          This {products[currentIndex].name.toLowerCase()} would look amazing paired with 
+                          {products[currentIndex].type === 'top' || products[currentIndex].type === 'jacket' 
+                            ? ' light-wash denim and white sneakers'
+                            : products[currentIndex].type === 'pants' || products[currentIndex].type === 'skirt'
+                              ? ' a tucked-in white blouse and ankle boots'
+                              : ' your favorite accessories'}. 
+                          Perfect for your personal style!
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-auto space-y-3">
+                      <Button 
+                        className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+                        onClick={() => handleTryItem(products[currentIndex])}
+                      >
+                        <Sparkles className="mr-2 h-4 w-4" />
+                        Try It On
+                      </Button>
+                      
+                      <Button 
+                        variant="outline" 
+                        className="w-full border-white/20 text-white hover:bg-white/10"
+                        onClick={() => onStylistSuggestion(products[currentIndex])}
+                      >
+                        See Styling Suggestions
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+          
+          <div className="flex justify-center mt-6">
+            {products.map((_, index) => (
+              <button
+                key={index}
+                className={`w-2 h-2 mx-1 rounded-full transition-all ${
+                  index === currentIndex ? 'bg-purple-500 scale-125' : 'bg-white/30'
+                }`}
+                onClick={() => setCurrentIndex(index)}
               />
             ))}
           </div>
-        </TabsContent>
-        
-        <TabsContent value="editor" className="mt-0">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4">
-            {getFilteredItems().map((item) => (
-              <ProductCard 
-                key={item.id}
-                item={item}
-                isPremiumUser={isPremiumUser}
-                onTryItem={onTryItem}
-                onUpgradeToPremium={onUpgradeToPremium}
-                onStylistSuggestion={onStylistSuggestion}
-              />
-            ))}
-          </div>
-        </TabsContent>
-      </Tabs>
-    </motion.div>
-  );
-};
-
-interface ProductCardProps {
-  item: ClothingItem;
-  isPremiumUser: boolean;
-  onTryItem: (item: ClothingItem) => void;
-  onStylistSuggestion: (item: ClothingItem) => void;
-  onUpgradeToPremium: () => void;
-}
-
-const ProductCard = ({ 
-  item, 
-  isPremiumUser, 
-  onTryItem, 
-  onStylistSuggestion,
-  onUpgradeToPremium 
-}: ProductCardProps) => {
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.3 }}
-      className="flex-shrink-0"
-    >
-      <Card className="border-0 shadow-soft bg-gradient-to-br from-slate-800/80 to-slate-900/80 border border-white/10 backdrop-blur-lg overflow-hidden h-full">
-        <div className="relative aspect-[3/4] overflow-hidden">
-          <img 
-            src={item.imageUrl || item.image} 
-            alt={item.name}
-            className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-          />
-          
-          {!isPremiumUser && (
-            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center z-10 opacity-0 hover:opacity-100 transition-opacity">
-              <Button 
-                size="sm"
-                onClick={onUpgradeToPremium}
-                className="bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90"
-              >
-                <Lock className="h-3.5 w-3.5 mr-1.5" />
-                Unlock Try-On
-              </Button>
-            </div>
-          )}
         </div>
-        
-        <CardContent className="p-4 space-y-3">
-          <h3 className="font-medium text-white truncate">{item.name}</h3>
-          
-          <div className="flex flex-wrap gap-1 mb-2">
-            {item.tags?.map((tag, index) => (
-              <span key={index} className="text-xs bg-slate-700 text-slate-200 px-1.5 py-0.5 rounded-sm">
-                {tag}
-              </span>
-            ))}
-          </div>
-          
-          <div className="flex gap-2">
-            <Button 
-              size="sm"
-              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:opacity-90 flex-1"
-              onClick={() => isPremiumUser ? onTryItem(item) : onUpgradeToPremium()}
-            >
-              <Shirt className="h-3.5 w-3.5 mr-1.5" />
-              Try On
-            </Button>
-            
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button 
-                    size="sm"
-                    variant="outline"
-                    className="border-white/20 hover:bg-white/10"
-                    onClick={() => onStylistSuggestion(item)}
-                  >
-                    <Plus className="h-3.5 w-3.5" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="bottom">
-                  <p className="text-xs">Get styling suggestions</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button 
-                    size="sm"
-                    variant="outline"
-                    className="border-white/20 hover:bg-white/10"
-                  >
-                    <Heart className="h-3.5 w-3.5" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="bottom">
-                  <p className="text-xs">Save to wishlist</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
-        </CardContent>
-      </Card>
+      )}
     </motion.div>
   );
 };

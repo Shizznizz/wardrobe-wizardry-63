@@ -1,7 +1,8 @@
 
 export interface FeedbackData {
   rating: number;
-  favorite: boolean;
   comment?: string;
-  accuracy?: 'good' | 'ok' | 'poor';
+  favorite: boolean;
+  tags: string[];
+  shareOnSocial: boolean;
 }

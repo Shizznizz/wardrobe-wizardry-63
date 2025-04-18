@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -18,6 +19,7 @@ import { FeedbackData } from '@/components/shop-try/FeedbackData';
 import UnifiedProductsCarousel from '@/components/shop-try/UnifiedProductsCarousel';
 import WishlistAndHistory from '@/components/shop-try/WishlistAndHistory';
 import FloatingOliviaWidget from '@/components/shop-try/FloatingOliviaWidget';
+import PremiumTeaserSection from '@/components/shop-try/PremiumTeaserSection';
 
 const ShopAndTry = () => {
   const { isAuthenticated } = useAuth();
@@ -364,6 +366,8 @@ const ShopAndTry = () => {
             onTryItem={handleTryOnTrendingItem}
             onUpgradeToPremium={handleShowPremiumPopup}
           />
+          
+          <PremiumTeaserSection onUpgrade={handleShowPremiumPopup} />
           
           <FloatingOliviaWidget
             isPremiumUser={isPremiumUser || isAuthenticated}
