@@ -291,8 +291,8 @@ const Wardrobe = () => {
         toast.success('Showing items suitable for current weather');
         break;
       case 'pairing':
-        if (itemId) {
-          const item = items.find(i => i.id === itemId);
+        if (itemForPairing) {
+          const item = items.find(i => i.id === itemForPairing);
           if (item) {
             toast.success(`Showing items that pair well with "${item.name}"`);
           }
@@ -734,5 +734,132 @@ const Wardrobe = () => {
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
-                    <DropdownMenuContent 
-                      className="bg-slate-900/95 backdrop-blur-md border-slate-7
+                    <DropdownMenuContent className="bg-slate-900/95 backdrop-blur-md border-slate-700/50 text-white max-h-60 overflow-y-auto">
+                      <DropdownMenuItem onClick={() => applySmartFilter('olivia')} className="focus:bg-slate-800">
+                        Olivia's Personal Style
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                  
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className={cn(
+                            "text-xs border-slate-700/50 hover:bg-slate-800/60",
+                            smartFilter === 'color' && "bg-slate-800/80 border-red-500/50 text-red-300"
+                          )}
+                          onClick={() => applySmartFilter('color')}
+                        >
+                          <Sparkles className="mr-1.5 h-3.5 w-3.5" />
+                          By Color
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" className="bg-slate-900 border-slate-700 text-white">
+                        <p className="text-xs">Filter by color</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className={cn(
+                            "text-xs border-slate-700/50 hover:bg-slate-800/60",
+                            smartFilter === 'most-worn' && "bg-slate-800/80 border-yellow-500/50 text-yellow-300"
+                          )}
+                          onClick={() => applySmartFilter('most-worn')}
+                        >
+                          <Clock className="mr-1.5 h-3.5 w-3.5" />
+                          Most Worn
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" className="bg-slate-900 border-slate-700 text-white">
+                        <p className="text-xs">Filter by most worn items</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className={cn(
+                            "text-xs border-slate-700/50 hover:bg-slate-800/60",
+                            smartFilter === 'most-matched' && "bg-slate-800/80 border-pink-500/50 text-pink-300"
+                          )}
+                          onClick={() => applySmartFilter('most-matched')}
+                        >
+                          <Info className="mr-1.5 h-3.5 w-3.5" />
+                          Most Matched
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" className="bg-slate-900 border-slate-700 text-white">
+                        <p className="text-xs">Filter by most matched items</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className={cn(
+                            "text-xs border-slate-700/50 hover:bg-slate-800/60",
+                            smartFilter === 'weather-fit' && "bg-slate-800/80 border-green-500/50 text-green-300"
+                          )}
+                          onClick={() => applySmartFilter('weather-fit')}
+                        >
+                          <CloudSun className="mr-1.5 h-3.5 w-3.5" />
+                          Weather Fit
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" className="bg-slate-900 border-slate-700 text-white">
+                        <p className="text-xs">Filter by weather fit</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className={cn(
+                            "text-xs border-slate-700/50 hover:bg-slate-800/60",
+                            smartFilter === 'not-recent' && "bg-slate-800/80 border-red-500/50 text-red-300"
+                          )}
+                          onClick={() => applySmartFilter('not-recent')}
+                        >
+                          <Clock className="mr-1.5 h-3.5 w-3.5" />
+                          Not Recent
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" className="bg-slate-900 border-slate-700 text-white">
+                        <p className="text-xs">Filter by not recent items</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+              </div>
+            </motion.div>
+            
+            <WardrobeGrid items={sortedItems} />
+          </motion.div>
+        </motion.div>
+      </main>
+    </div>
+  );
+};
+
+export default Wardrobe;
