@@ -17,7 +17,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-const Wardrobe = () => {
+const MyWardrobe = () => {
   const { user, signOut } = useAuth();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -88,4 +88,4 @@ const Wardrobe = () => {
   );
 };
 
-export default Wardrobe;
+export default MyWardrobe;
