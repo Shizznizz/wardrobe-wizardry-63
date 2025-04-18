@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -111,12 +110,24 @@ const MixAndMatch = () => {
 
   // Create a valid weather object for components that require non-optional properties
   const safeWeather = weather ? {
-    temperature: weather.temperature || 0,
-    condition: weather.condition || 'clear',
+    temperature: weather.temperature ?? 0,
+    condition: weather.condition ?? 'clear',
     icon: weather.icon,
     city: weather.city,
     country: weather.country
-  } : undefined;
+  } : {
+    temperature: 0,
+    condition: 'clear',
+    icon: 'sun',
+    city: 'Unknown',
+    country: 'Unknown'
+  };
+
+  // Create a function to safely pass weather to components
+  const getSafeWeather = (fallbackTemp: number = 0) => ({
+    temperature: safeWeather.temperature || fallbackTemp,
+    condition: safeWeather.condition || 'clear'
+  });
 
   return (
     <OutfitProvider>
@@ -181,7 +192,7 @@ const MixAndMatch = () => {
               currentOutfit={currentOutfit}
               onRefresh={handleRefreshOutfit}
               temperature={temperature}
-              weather={safeWeather}
+              weather={getSafeWeather(temperature)}
             />
           </motion.section>
           
@@ -218,7 +229,7 @@ const MixAndMatch = () => {
             <SuggestedOutfitsSection 
               outfits={popularOutfits.slice(0, 6)}
               clothingItems={sampleClothingItems}
-              weather={safeWeather}
+              weather={getSafeWeather(temperature)}
             />
           </motion.section>
         </main>
