@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Outfit, ClothingItem } from '@/lib/types';
 import { Heart, Clock } from 'lucide-react';
 import OutfitGrid from '@/components/OutfitGrid';
+import { toast } from 'sonner';
 
 interface OutfitCollectionSectionProps {
   outfits: Outfit[];
@@ -13,13 +14,36 @@ interface OutfitCollectionSectionProps {
 
 const OutfitCollectionSection = ({ outfits, clothingItems }: OutfitCollectionSectionProps) => {
   const [activeTab, setActiveTab] = useState('all');
+  const [localOutfits, setLocalOutfits] = useState<Outfit[]>(outfits);
   
   // Filter outfits based on the selected tab
-  const filteredOutfits = outfits.filter(outfit => {
+  const filteredOutfits = localOutfits.filter(outfit => {
     if (activeTab === 'favorites') return outfit.favorite;
     if (activeTab === 'recent') return true; // Would filter by date in a real app
     return true; // 'all' tab shows everything
   });
+
+  // Handle outfit edit
+  const handleEdit = (outfit: Outfit) => {
+    // In a real implementation, this would open an edit dialog
+    toast.info(`Editing outfit: ${outfit.name}`);
+  };
+
+  // Handle outfit delete
+  const handleDelete = (id: string) => {
+    setLocalOutfits(prev => prev.filter(outfit => outfit.id !== id));
+    toast.success("Outfit removed from collection");
+  };
+
+  // Handle toggling favorite status
+  const handleToggleFavorite = (id: string) => {
+    setLocalOutfits(prev => 
+      prev.map(outfit => 
+        outfit.id === id ? { ...outfit, favorite: !outfit.favorite } : outfit
+      )
+    );
+    toast.success("Favorite status updated");
+  };
 
   return (
     <div className="rounded-xl border border-white/10 overflow-hidden bg-slate-900/50 backdrop-blur-md p-6">
@@ -41,15 +65,33 @@ const OutfitCollectionSection = ({ outfits, clothingItems }: OutfitCollectionSec
         </TabsList>
 
         <TabsContent value="all">
-          <OutfitGrid outfits={filteredOutfits} clothingItems={clothingItems} />
+          <OutfitGrid 
+            outfits={filteredOutfits} 
+            clothingItems={clothingItems} 
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onToggleFavorite={handleToggleFavorite}
+          />
         </TabsContent>
         
         <TabsContent value="favorites">
-          <OutfitGrid outfits={filteredOutfits} clothingItems={clothingItems} />
+          <OutfitGrid 
+            outfits={filteredOutfits} 
+            clothingItems={clothingItems} 
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onToggleFavorite={handleToggleFavorite}
+          />
         </TabsContent>
         
         <TabsContent value="recent">
-          <OutfitGrid outfits={filteredOutfits} clothingItems={clothingItems} />
+          <OutfitGrid 
+            outfits={filteredOutfits} 
+            clothingItems={clothingItems} 
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onToggleFavorite={handleToggleFavorite}
+          />
         </TabsContent>
       </Tabs>
     </div>
