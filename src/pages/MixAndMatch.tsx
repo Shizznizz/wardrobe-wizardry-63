@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -7,7 +8,7 @@ import { OutfitProvider } from '@/hooks/useOutfitContext';
 import { Skeleton } from '@/components/ui/skeleton';
 
 // Import main section components
-import DailyOutfitSection from '@/components/outfits/mix-match/DailyOutfitSection';
+import OutfitRecommendationSection from '@/components/outfits/mix-match/OutfitRecommendationSection';
 import ContextAdjustmentSection from '@/components/outfits/mix-match/ContextAdjustmentSection';
 import OutfitExplanationSection from '@/components/outfits/mix-match/OutfitExplanationSection';
 import CreateOutfitSection from '@/components/outfits/mix-match/CreateOutfitSection';
@@ -123,16 +124,10 @@ const MixAndMatch = () => {
     country: 'Unknown'
   };
 
-  // Create a function to safely pass weather to components
-  const getSafeWeather = (fallbackTemp: number = 0) => ({
-    temperature: safeWeather.temperature || fallbackTemp,
-    condition: safeWeather.condition || 'clear'
-  });
-
   return (
     <OutfitProvider>
       <div className="min-h-screen bg-gradient-to-b from-slate-950 to-indigo-950 text-white">
-        <Header weather={weather || undefined} />
+        <Header weather={safeWeather} />
         
         <main className="container mx-auto px-4 py-6 pt-20 max-w-6xl">
           <motion.div 
@@ -156,10 +151,9 @@ const MixAndMatch = () => {
             transition={{ delay: 0.1, duration: 0.5 }}
             className="mb-8"
           >
-            <DailyOutfitSection 
+            <OutfitRecommendationSection 
               weather={safeWeather} 
-              currentOutfit={currentOutfit} 
-              clothingItems={sampleClothingItems}
+              situation={situation}
             />
           </motion.section>
           
@@ -192,7 +186,10 @@ const MixAndMatch = () => {
               currentOutfit={currentOutfit}
               onRefresh={handleRefreshOutfit}
               temperature={temperature}
-              weather={getSafeWeather(temperature)}
+              weather={{
+                temperature: safeWeather.temperature,
+                condition: safeWeather.condition
+              }}
             />
           </motion.section>
           
@@ -229,7 +226,10 @@ const MixAndMatch = () => {
             <SuggestedOutfitsSection 
               outfits={popularOutfits.slice(0, 6)}
               clothingItems={sampleClothingItems}
-              weather={getSafeWeather(temperature)}
+              weather={{
+                temperature: safeWeather.temperature,
+                condition: safeWeather.condition
+              }}
             />
           </motion.section>
         </main>

@@ -78,7 +78,10 @@ const Header = ({ weather }: HeaderProps) => {
   const weatherDisplay = weather ? {
     temperature: weather.temperature ?? 0,
     condition: weather.condition ?? 'clear'
-  } : undefined;
+  } : {
+    temperature: 0,
+    condition: 'clear'
+  };
 
   return (
     <header 
@@ -104,7 +107,7 @@ const Header = ({ weather }: HeaderProps) => {
         )}
 
         <div className="flex items-center">
-          {!isMobile && weatherDisplay && <WeatherDisplay weather={weatherDisplay} isScrolled={isScrolled} />}
+          {!isMobile && <WeatherDisplay weather={weatherDisplay} isScrolled={isScrolled} />}
           
           <UserMenu isScrolled={isScrolled} />
 

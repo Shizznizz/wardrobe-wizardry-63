@@ -1,156 +1,171 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { User, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
+import { ArrowRightCircle, ArrowLeft, ArrowRight, Calendar, ShoppingBag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { Outfit, ClothingItem, WeatherInfo } from '@/lib/types';
+import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
+import { Outfit, ClothingItem } from '@/lib/types';
 import { useNavigate } from 'react-router-dom';
 
 interface SuggestedOutfitsSectionProps {
   outfits: Outfit[];
   clothingItems: ClothingItem[];
-  weather?: WeatherInfo;
+  weather: {
+    temperature: number;
+    condition: string;
+  };
 }
 
 const SuggestedOutfitsSection = ({ outfits, clothingItems, weather }: SuggestedOutfitsSectionProps) => {
   const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const itemsPerPage = 3;
+  const pageSize = 3;
   
-  // Calculate the total number of pages
-  const totalPages = Math.ceil(outfits.length / itemsPerPage);
+  const totalPages = Math.ceil(outfits.length / pageSize);
+  const currentOutfits = outfits.slice(currentIndex * pageSize, (currentIndex + 1) * pageSize);
   
-  // Get the current page of outfits
-  const currentOutfits = outfits.slice(
-    currentIndex * itemsPerPage, 
-    (currentIndex + 1) * itemsPerPage
-  );
-  
-  const handlePrevPage = () => {
-    setCurrentIndex(prev => (prev > 0 ? prev - 1 : totalPages - 1));
+  const handleNext = () => {
+    setCurrentIndex((prev) => (prev + 1) % totalPages);
   };
   
-  const handleNextPage = () => {
-    setCurrentIndex(prev => (prev < totalPages - 1 ? prev + 1 : 0));
+  const handlePrevious = () => {
+    setCurrentIndex((prev) => (prev - 1 + totalPages) % totalPages);
   };
   
-  const handleTryOnOlivia = (outfit: Outfit) => {
-    navigate('/fitting-room', { state: { outfitId: outfit.id } });
+  const handleTryOn = (outfit: Outfit) => {
+    toast.success(`Opening ${outfit.name} in fitting room`);
+    navigate('/fitting-room');
+  };
+  
+  const getOutfitItemImage = (outfit: Outfit): string => {
+    if (!outfit.items || outfit.items.length === 0) return '/placeholder.svg';
+    
+    const firstItemId = outfit.items[0];
+    const item = clothingItems.find(item => item.id === firstItemId);
+    
+    return item?.imageUrl || '/placeholder.svg';
+  };
+  
+  const getWeatherSuitableText = (outfit: Outfit) => {
+    if (!outfit.seasons) return null;
+    
+    const isWarm = weather.temperature > 20;
+    const isCold = weather.temperature < 10;
+    const isRainy = weather.condition.toLowerCase().includes('rain');
+    const isSnowy = weather.condition.toLowerCase().includes('snow');
+    
+    if (isRainy && outfit.seasons.includes('autumn')) {
+      return 'Perfect for rainy weather';
+    } else if (isSnowy && outfit.seasons.includes('winter')) {
+      return 'Ideal for snow days';
+    } else if (isCold && (outfit.seasons.includes('winter') || outfit.seasons.includes('autumn'))) {
+      return 'Great for colder days';
+    } else if (isWarm && (outfit.seasons.includes('summer') || outfit.seasons.includes('spring'))) {
+      return 'Perfect for warm weather';
+    }
+    
+    return 'Matches your style';
   };
   
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-purple-400" />
-          <h2 className="text-xl font-semibold text-white">
-            Suggested For You
-          </h2>
-        </div>
+    <div className="mb-10">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-blue-400">
+          Suggested For You
+        </h2>
         
-        {totalPages > 1 && (
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8 rounded-full border-white/20 text-white hover:bg-white/10"
-              onClick={handlePrevPage}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            
-            <span className="text-sm text-white/70">
-              {currentIndex + 1} / {totalPages}
-            </span>
-            
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8 rounded-full border-white/20 text-white hover:bg-white/10"
-              onClick={handleNextPage}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-        )}
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handlePrevious}
+            disabled={outfits.length <= pageSize}
+            className="border-white/20 text-white hover:bg-white/10"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleNext}
+            disabled={outfits.length <= pageSize}
+            className="border-white/20 text-white hover:bg-white/10"
+          >
+            <ArrowRight className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
       
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {currentOutfits.map((outfit, index) => {
-          // Find a clothing item to use as the main image
-          const mainItem = clothingItems.find(item => 
-            outfit.items && outfit.items.includes(item.id)
-          );
-          
-          return (
-            <motion.div
-              key={outfit.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: index * 0.1 }}
-            >
-              <Card className="bg-slate-900/50 border-white/10 hover:border-purple-500/30 transition-colors overflow-hidden h-full flex flex-col">
-                <div className="relative aspect-video overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent z-10"></div>
-                  <img 
-                    src={mainItem?.imageUrl || '/placeholder.svg'} 
-                    alt={outfit.name}
-                    className="w-full h-full object-cover"
-                  />
-                  
-                  <div className="absolute top-3 left-3 z-20">
-                    <Badge 
-                      variant="outline"
-                      className="bg-purple-500/40 border-purple-400/30 text-white text-xs backdrop-blur-sm"
-                    >
-                      Olivia's Pick
-                    </Badge>
-                  </div>
-                </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        {currentOutfits.map((outfit, index) => (
+          <motion.div
+            key={outfit.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 }}
+          >
+            <Card className="bg-slate-900/60 border-white/10 overflow-hidden">
+              <div className="aspect-square relative overflow-hidden">
+                <img 
+                  src={getOutfitItemImage(outfit)} 
+                  alt={outfit.name}
+                  className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
+                />
                 
-                <CardContent className="p-4 flex flex-col gap-3 flex-grow">
-                  <div>
-                    <h3 className="text-lg font-medium text-white mb-1">
-                      {outfit.name}
-                    </h3>
-                    
-                    <p className="text-xs text-white/70">
-                      {weather ? 
-                        `Perfect for ${weather.temperature}°C ${weather.condition} weather.` :
-                        `Based on your style preferences and recent choices.`
-                      }
-                    </p>
-                  </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent flex flex-col justify-end p-4">
+                  <h3 className="text-white font-medium text-lg">{outfit.name}</h3>
                   
-                  <div className="flex flex-wrap gap-1.5">
-                    {outfit.tags?.slice(0, 3).map((tag, idx) => (
-                      <Badge 
-                        key={idx}
-                        variant="outline" 
-                        className="bg-purple-500/20 border-purple-400/30 text-purple-200 text-xs"
-                      >
-                        {tag}
+                  <div className="flex flex-wrap gap-1 mt-1 mb-3">
+                    {outfit.seasons && outfit.seasons.slice(0, 2).map((season, index) => (
+                      <Badge key={index} variant="outline" className="border-white/20 text-white/90">
+                        {season}
                       </Badge>
                     ))}
                   </div>
                   
-                  <div className="mt-auto pt-3">
-                    <Button
-                      onClick={() => handleTryOnOlivia(outfit)}
-                      className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
-                    >
-                      <User className="mr-2 h-4 w-4" />
-                      Try on Olivia
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          );
-        })}
+                  <p className="text-white/80 text-sm mb-4">{getWeatherSuitableText(outfit)}</p>
+                  
+                  <Button
+                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+                    onClick={() => handleTryOn(outfit)}
+                  >
+                    <ArrowRightCircle className="mr-2 h-4 w-4" /> Try on Olivia
+                  </Button>
+                </div>
+              </div>
+              
+              <CardContent className="p-3">
+                <div className="flex justify-between gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 border-white/20 text-white hover:bg-white/10"
+                    onClick={() => {
+                      toast.success(`Added ${outfit.name} to your calendar`);
+                    }}
+                  >
+                    <Calendar className="mr-2 h-4 w-4" /> Add to Calendar
+                  </Button>
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 border-white/20 text-white hover:bg-white/10"
+                    onClick={() => {
+                      toast.success('Taking you to shop similar items!');
+                      navigate('/shop-and-try');
+                    }}
+                  >
+                    <ShoppingBag className="mr-2 h-4 w-4" /> Shop Similar
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
       </div>
     </div>
   );
