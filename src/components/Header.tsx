@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu } from 'lucide-react';
@@ -72,11 +73,12 @@ const Header = ({ weather }: HeaderProps) => {
     return currentItem ? currentItem.name : '';
   };
 
-  // Safely extract weather information with non-optional properties
+  // Create a properly formatted weather object for WeatherDisplay
+  // This ensures temperature and condition are always defined
   const weatherDisplay = weather ? {
     temperature: weather.temperature ?? 0,
     condition: weather.condition ?? 'clear'
-  } : { temperature: 0, condition: 'clear' };
+  } : undefined;
 
   return (
     <header 
@@ -102,7 +104,7 @@ const Header = ({ weather }: HeaderProps) => {
         )}
 
         <div className="flex items-center">
-          {!isMobile && <WeatherDisplay weather={weatherDisplay} isScrolled={isScrolled} />}
+          {!isMobile && weatherDisplay && <WeatherDisplay weather={weatherDisplay} isScrolled={isScrolled} />}
           
           <UserMenu isScrolled={isScrolled} />
 
