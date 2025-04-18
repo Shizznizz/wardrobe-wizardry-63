@@ -72,7 +72,7 @@ const Header = ({ weather }: HeaderProps) => {
     return currentItem ? currentItem.name : '';
   };
 
-  // Safely extract weather information
+  // Safely extract weather information with non-optional properties
   const weatherDisplay = weather ? {
     temperature: weather.temperature ?? 0,
     condition: weather.condition ?? 'clear'

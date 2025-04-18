@@ -2,6 +2,7 @@
 import { Sun, CloudSun, Cloud, CloudRain, Umbrella } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { WeatherInfo } from '@/lib/types';
 
 interface WeatherDisplayProps {
   weather: {
