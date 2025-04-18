@@ -10,6 +10,7 @@ import OutfitCanvas from './outfit-builder/OutfitCanvas';
 import WardrobeDrawer from './outfit-builder/WardrobeDrawer';
 import CategoryFilters from './outfit-builder/CategoryFilters';
 import { PersonStanding, Save } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface CreateOutfitSectionProps {
   clothingItems: ClothingItem[];

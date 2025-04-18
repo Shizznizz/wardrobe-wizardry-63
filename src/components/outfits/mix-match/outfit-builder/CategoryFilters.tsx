@@ -1,7 +1,8 @@
 
 import React from 'react';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { Shirt, Pants, Shoe, Jacket, CircleDot } from 'lucide-react';
+import { Shirt, CircleDot } from 'lucide-react';
+import { PantsIcon, ShirtIcon } from '@/components/ui/icons';
 
 interface CategoryFiltersProps {
   selectedCategory: string;
@@ -21,7 +22,7 @@ const CategoryFilters = ({ selectedCategory, onSelectCategory }: CategoryFilters
         aria-label="Toggle tops"
         className="data-[state=on]:bg-purple-600"
       >
-        <Shirt className="w-4 h-4 mr-2" />
+        <ShirtIcon className="w-4 h-4 mr-2" />
         Tops
       </ToggleGroupItem>
       
@@ -30,7 +31,7 @@ const CategoryFilters = ({ selectedCategory, onSelectCategory }: CategoryFilters
         aria-label="Toggle bottoms"
         className="data-[state=on]:bg-purple-600"
       >
-        <Pants className="w-4 h-4 mr-2" />
+        <PantsIcon className="w-4 h-4 mr-2" />
         Bottoms
       </ToggleGroupItem>
       
@@ -39,7 +40,7 @@ const CategoryFilters = ({ selectedCategory, onSelectCategory }: CategoryFilters
         aria-label="Toggle outerwear"
         className="data-[state=on]:bg-purple-600"
       >
-        <Jacket className="w-4 h-4 mr-2" />
+        <Shirt className="w-4 h-4 mr-2 rotate-180" />
         Outerwear
       </ToggleGroupItem>
       
@@ -48,7 +49,7 @@ const CategoryFilters = ({ selectedCategory, onSelectCategory }: CategoryFilters
         aria-label="Toggle shoes"
         className="data-[state=on]:bg-purple-600"
       >
-        <Shoe className="w-4 h-4 mr-2" />
+        <CircleDot className="w-4 h-4 mr-2" />
         Shoes
       </ToggleGroupItem>
       
