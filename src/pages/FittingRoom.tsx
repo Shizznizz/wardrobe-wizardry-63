@@ -265,33 +265,31 @@ const FittingRoom = () => {
           </Button>
         </div>
         
-        {!userPhoto && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.3 }}
-            className="mt-8 mb-12"
-          >
-            <h2 className="text-xl font-semibold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-purple-200">Select Your Model</h2>
-            
-            <UserPhotoSection 
-              userPhoto={userPhoto} 
-              isUploading={isUploadLoading}
-              isUsingOliviaImage={isUsingOliviaImage}
-              onUserPhotoChange={handleUserPhotoUpload}
-              onShowOliviaImageGallery={() => setShowOliviaImageGallery(true)}
-            />
-          </motion.div>
-        )}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+          className="mt-8 mb-12"
+        >
+          <h2 className="text-xl font-semibold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-purple-200">Select Your Model</h2>
+          
+          <UserPhotoSection 
+            userPhoto={userPhoto} 
+            isUploading={isUploadLoading}
+            isUsingOliviaImage={isUsingOliviaImage}
+            onUserPhotoChange={handleUserPhotoUpload}
+            onShowOliviaImageGallery={() => setShowOliviaImageGallery(true)}
+          />
+        </motion.div>
         
-        {userPhoto && !finalImage && (
-          <div className="mt-10">
-            <motion.div 
-              className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
-            >
+        <div className="mt-10">
+          <motion.div 
+            className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            {userPhoto && (
               <div>
                 <h2 className="text-xl font-semibold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-purple-200">Your Model</h2>
                 <UserPhotoDisplay 
@@ -300,69 +298,65 @@ const FittingRoom = () => {
                   onResetPhoto={resetSelection}
                 />
               </div>
-              
-              <div>
-                <h2 className="text-xl font-semibold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-purple-200">Olivia's Suggestions</h2>
-                <OliviaRecommendationBox 
-                  weather={currentWeather} 
-                  selectedOutfit={selectedOutfit}
-                  onSuggestOutfit={handleRefreshOutfit}
-                  onFilterByTag={handleFilterByTag}
-                  onTryOutfit={handleOutfitPreview}
-                  outfits={safeFilteredOutfits}
-                />
-              </div>
-            </motion.div>
+            )}
             
-            <div className="mt-14" id="outfits-section">
-              <OutfitFilters 
-                selectedSeason={selectedSeason}
-                selectedOccasion={selectedOccasion}
-                showFavoritesOnly={showFavoritesOnly}
-                onSeasonChange={handleSeasonChange}
-                onOccasionChange={handleOccasionChange}
-                onFavoritesToggle={toggleFavorites}
-                totalOutfits={userOutfits.length}
-                filteredOutfits={safeFilteredOutfits.length}
+            <div>
+              <h2 className="text-xl font-semibold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-purple-200">Olivia's Suggestions</h2>
+              <OliviaRecommendationBox 
+                weather={currentWeather} 
+                selectedOutfit={selectedOutfit}
+                onSuggestOutfit={handleRefreshOutfit}
+                onFilterByTag={handleFilterByTag}
+                onTryOutfit={handleOutfitPreview}
+                outfits={safeFilteredOutfits}
               />
-              
-              {!Array.isArray(safeFilteredOutfits) || safeFilteredOutfits.length === 0 ? (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="glass-dark border border-white/10 rounded-lg p-6 text-center"
-                >
-                  <Sparkles className="h-8 w-8 text-purple-400 mb-3 mx-auto" />
-                  <h3 className="text-lg font-medium text-white mb-2">No outfits yet</h3>
-                  <p className="text-white/70 mb-4">Would you like Olivia to create some looks for you?</p>
-                  <Button
-                    onClick={handleAssistantAction}
-                    className="bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:opacity-90"
-                  >
-                    Generate Looks
-                  </Button>
-                </motion.div>
-              ) : (
-                <OutfitCarousel 
-                  outfits={safeFilteredOutfits} 
-                  onPreview={handleOutfitPreview} 
-                  title="Your Outfits & Collections"
-                />
-              )}
             </div>
-            
-            <StyleOfTheDay 
-              outfit={safeFilteredOutfits[0] || null} 
-              onPreview={handleOutfitPreview}
+          </motion.div>
+          
+          <div className="mt-14" id="outfits-section">
+            <OutfitFilters 
+              selectedSeason={selectedSeason}
+              selectedOccasion={selectedOccasion}
+              showFavoritesOnly={showFavoritesOnly}
+              onSeasonChange={handleSeasonChange}
+              onOccasionChange={handleOccasionChange}
+              onFavoritesToggle={toggleFavorites}
+              totalOutfits={userOutfits.length}
+              filteredOutfits={safeFilteredOutfits.length}
             />
             
-            <TrendingLooks onShowLogin={handleUpgradeToPremium} />
+            {!Array.isArray(safeFilteredOutfits) || safeFilteredOutfits.length === 0 ? (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="glass-dark border border-white/10 rounded-lg p-6 text-center"
+              >
+                <Sparkles className="h-8 w-8 text-purple-400 mb-3 mx-auto" />
+                <h3 className="text-lg font-medium text-white mb-2">No outfits yet</h3>
+                <p className="text-white/70 mb-4">Would you like Olivia to create some looks for you?</p>
+                <Button
+                  onClick={handleAssistantAction}
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:opacity-90"
+                >
+                  Generate Looks
+                </Button>
+              </motion.div>
+            ) : (
+              <OutfitCarousel 
+                outfits={safeFilteredOutfits} 
+                onPreview={handleOutfitPreview} 
+                title="Your Outfits & Collections"
+              />
+            )}
           </div>
-        )}
-        
-        {!userPhoto && (
-          <NoPhotoMessage />
-        )}
+          
+          <StyleOfTheDay 
+            outfit={safeFilteredOutfits[0] || null} 
+            onPreview={handleOutfitPreview}
+          />
+          
+          <TrendingLooks onShowLogin={handleUpgradeToPremium} />
+        </div>
         
         {(finalImage || selectedOutfit) && (
           <OutfitPreviewArea
