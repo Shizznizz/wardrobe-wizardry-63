@@ -48,10 +48,11 @@ export const MobileMenu = ({ isOpen, onClose, navItems, currentPath, weather, on
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-            className="fixed top-0 right-0 h-full w-[75vw] max-w-[320px] bg-gradient-to-b from-purple-900 to-slate-900 border-l border-purple-800/30 shadow-xl overflow-y-auto z-[1000]"
+            className="fixed top-0 right-0 h-full w-[75vw] max-w-[320px] bg-gradient-to-b from-purple-900 to-slate-900 border-l border-purple-800/30 shadow-xl overflow-y-auto z-[1000] pt-20"
             onClick={(e) => e.stopPropagation()}
+            style={{ maxHeight: '100vh' }}
           >
-            <div className="flex flex-col justify-between h-full pb-8 pt-20">
+            <div className="flex flex-col justify-between h-full pb-8">
               <motion.div 
                 className="px-4 space-y-1"
                 initial="closed"
