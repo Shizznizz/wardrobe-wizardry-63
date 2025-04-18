@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -164,19 +165,7 @@ const MixAndMatch = () => {
             className="mb-8"
           >
             <OutfitRecommendationSection 
-              weather={weather ? {
-                temperature: weather.temperature ?? 0,
-                condition: weather.condition ?? 'clear',
-                icon: weather.icon,
-                city: weather.city,
-                country: weather.country
-              } : {
-                temperature: 0,
-                condition: 'clear',
-                icon: 'sun',
-                city: 'Unknown',
-                country: 'Unknown'
-              }} 
+              weather={safeWeather} 
               situation={situation}
             />
           </motion.section>

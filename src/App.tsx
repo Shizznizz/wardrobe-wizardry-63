@@ -11,13 +11,12 @@ import Footer from "./components/Footer";
 import LegalDisclaimer from "./components/LegalDisclaimer";
 import Index from "./pages/Index";
 import Wardrobe from "./pages/Wardrobe";
-import Outfits from "./pages/Outfits";
+import MixAndMatch from "./pages/MixAndMatch"; // Updated import
 import Settings from "./pages/Settings";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
-import NewClothes from "./pages/NewClothes";
-import Showroom from "./pages/Showroom";
-import FittingRoom from "./pages/FittingRoom";
+import ShopAndTry from "./pages/ShopAndTry"; // Updated import
+import FittingRoom from "./pages/FittingRoom"; // Updated import
 import Preferences from './pages/Preferences';
 import Calendar from './pages/Calendar';
 
@@ -50,10 +49,10 @@ const AppRoutes = () => {
             </>} />
             {/* Updated routes with proper page names */}
             <Route path="/my-wardrobe" element={<ProtectedRoute><Wardrobe /></ProtectedRoute>} />
-            <Route path="/mix-and-match" element={<ProtectedRoute><Outfits /></ProtectedRoute>} />
+            <Route path="/mix-and-match" element={<ProtectedRoute><MixAndMatch /></ProtectedRoute>} />
             <Route path="/style-planner" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
             <Route path="/fitting-room" element={<ProtectedRoute><FittingRoom /></ProtectedRoute>} />
-            <Route path="/shop-and-try" element={<ProtectedRoute><NewClothes /></ProtectedRoute>} />
+            <Route path="/shop-and-try" element={<ProtectedRoute><ShopAndTry /></ProtectedRoute>} />
             <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
             <Route path="/preferences" element={<ProtectedRoute><Preferences /></ProtectedRoute>} />
             <Route path="/auth" element={<Auth />} />
