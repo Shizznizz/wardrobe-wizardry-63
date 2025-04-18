@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -9,15 +10,15 @@ import ScrollToTop from "./components/ScrollToTop";
 import Footer from "./components/Footer";
 import LegalDisclaimer from "./components/LegalDisclaimer";
 import Index from "./pages/Index";
-import MyWardrobe from "./pages/MyWardrobe";
-import MixAndMatch from "./pages/MixAndMatch";
+import Wardrobe from "./pages/Wardrobe";
+import MixAndMatch from "./pages/MixAndMatch"; // Updated import
 import Settings from "./pages/Settings";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
-import ShopAndTry from "./pages/ShopAndTry";
-import FittingRoom from "./pages/FittingRoom";
+import ShopAndTry from "./pages/ShopAndTry"; // Updated import
+import FittingRoom from "./pages/FittingRoom"; // Updated import
 import Preferences from './pages/Preferences';
-import StylePlanner from './pages/StylePlanner';
+import Calendar from './pages/Calendar';
 
 const queryClient = new QueryClient();
 
@@ -46,18 +47,20 @@ const AppRoutes = () => {
               <Index />
               <LegalDisclaimer />
             </>} />
-            <Route path="/my-wardrobe" element={<ProtectedRoute><MyWardrobe /></ProtectedRoute>} />
+            {/* Updated routes with proper page names */}
+            <Route path="/my-wardrobe" element={<ProtectedRoute><Wardrobe /></ProtectedRoute>} />
             <Route path="/mix-and-match" element={<ProtectedRoute><MixAndMatch /></ProtectedRoute>} />
-            <Route path="/style-planner" element={<ProtectedRoute><StylePlanner /></ProtectedRoute>} />
+            <Route path="/style-planner" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
             <Route path="/fitting-room" element={<ProtectedRoute><FittingRoom /></ProtectedRoute>} />
             <Route path="/shop-and-try" element={<ProtectedRoute><ShopAndTry /></ProtectedRoute>} />
             <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
             <Route path="/preferences" element={<ProtectedRoute><Preferences /></ProtectedRoute>} />
             <Route path="/auth" element={<Auth />} />
             
+            {/* Redirects from old to new routes */}
             <Route path="/wardrobe" element={<Navigate to="/my-wardrobe" replace />} />
-            <Route path="/calendar" element={<Navigate to="/style-planner" replace />} />
             <Route path="/outfits" element={<Navigate to="/mix-and-match" replace />} />
+            <Route path="/calendar" element={<Navigate to="/style-planner" replace />} />
             <Route path="/showroom" element={<Navigate to="/fitting-room" replace />} />
             <Route path="/new-clothes" element={<Navigate to="/shop-and-try" replace />} />
             <Route path="/virtual-try-on" element={<Navigate to="/fitting-room" replace />} />

@@ -16,7 +16,6 @@ import NoOutfitsMessage from '@/components/fitting-room/NoOutfitsMessage';
 import OutfitPreviewArea from '@/components/fitting-room/OutfitPreviewArea';
 import NoPhotoMessage from '@/components/fitting-room/NoPhotoMessage';
 import { ClothingSeason, ClothingOccasion, WeatherInfo, Outfit } from '@/lib/types';
-import PageHeader from '@/components/layout/PageHeader';
 
 import OliviaRecommendationBox from '@/components/fitting-room/OliviaRecommendationBox';
 import OutfitFilters from '@/components/fitting-room/OutfitFilters';
@@ -250,12 +249,8 @@ const FittingRoom = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white overflow-x-hidden">
       <Header />
+      
       <main className="container mx-auto px-4 pt-20 pb-32 max-w-[1600px] relative">
-        <PageHeader 
-          title="Your Virtual Fitting Room"
-          subtitle="Try on outfits from your wardrobe and get styling input from Olivia."
-        />
-        
         <WelcomeMessage />
         
         <div className="mt-4 flex justify-end">
