@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,15 +9,15 @@ import ScrollToTop from "./components/ScrollToTop";
 import Footer from "./components/Footer";
 import LegalDisclaimer from "./components/LegalDisclaimer";
 import Index from "./pages/Index";
-import Wardrobe from "./pages/Wardrobe";
-import MixAndMatch from "./pages/MixAndMatch"; // Updated import
+import MyWardrobe from "./pages/MyWardrobe";
+import MixAndMatch from "./pages/MixAndMatch";
 import Settings from "./pages/Settings";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
-import ShopAndTry from "./pages/ShopAndTry"; // Updated import
-import FittingRoom from "./pages/FittingRoom"; // Updated import
+import ShopAndTry from "./pages/ShopAndTry";
+import FittingRoom from "./pages/FittingRoom";
 import Preferences from './pages/Preferences';
-import Calendar from './pages/Calendar';
+import StylePlanner from './pages/StylePlanner';
 
 const queryClient = new QueryClient();
 
@@ -47,10 +46,9 @@ const AppRoutes = () => {
               <Index />
               <LegalDisclaimer />
             </>} />
-            {/* Updated routes with proper page names */}
-            <Route path="/my-wardrobe" element={<ProtectedRoute><Wardrobe /></ProtectedRoute>} />
+            <Route path="/my-wardrobe" element={<ProtectedRoute><MyWardrobe /></ProtectedRoute>} />
             <Route path="/mix-and-match" element={<ProtectedRoute><MixAndMatch /></ProtectedRoute>} />
-            <Route path="/style-planner" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
+            <Route path="/style-planner" element={<ProtectedRoute><StylePlanner /></ProtectedRoute>} />
             <Route path="/fitting-room" element={<ProtectedRoute><FittingRoom /></ProtectedRoute>} />
             <Route path="/shop-and-try" element={<ProtectedRoute><ShopAndTry /></ProtectedRoute>} />
             <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
