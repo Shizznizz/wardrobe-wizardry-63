@@ -41,7 +41,7 @@ const PrettyLittleThingPicks = ({
         id: 'plt-2',
         name: 'Satin Slip Dress',
         type: 'dress',
-        color: 'rose',
+        color: 'rose',  // Updated to match new type
         season: ['spring', 'summer'],
         image: '',
         imageUrl: 'https://images.unsplash.com/photo-1585487000160-6ebcfceb0d03?auto=format&fit=crop&w=500&h=600',
@@ -53,7 +53,7 @@ const PrettyLittleThingPicks = ({
       {
         id: 'plt-3',
         name: 'Tailored Blazer',
-        type: 'blazer',
+        type: 'blazer',  // Updated to match new type
         color: 'black',
         season: ['all'],
         image: '',

@@ -17,7 +17,8 @@ export type ClothingColor =
   | 'cream'
   | 'coral'
   | 'burgundy'
-  | 'multicolor';
+  | 'multicolor'
+  | 'rose';
 
 export type ClothingSeason = 'spring' | 'summer' | 'autumn' | 'winter' | 'all';
 
@@ -51,6 +52,7 @@ export type ClothingType =
   | 'jacket'
   | 'top'
   | 'swimwear'
+  | 'blazer'
   | 'other';
 
 export type ClothingCategory = 
