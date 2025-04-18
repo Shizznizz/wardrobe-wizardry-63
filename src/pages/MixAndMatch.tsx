@@ -142,12 +142,13 @@ const MixAndMatch = () => {
             </p>
           </motion.div>
           
-          {/* 1️⃣ Section: "Create Your Own Outfit" - MOVED TO TOP */}
+          {/* 1️⃣ Section: "Create Your Own Outfit" - First section */}
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, duration: 0.5 }}
             className="mb-12"
+            id="create-outfit-section"
           >
             <CreateOutfitSection 
               clothingItems={sampleClothingItems} 

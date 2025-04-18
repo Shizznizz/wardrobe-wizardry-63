@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { Shirt, CircleDot } from 'lucide-react';
+import { Shirt, CircleDot, Footprints, Bookmark } from 'lucide-react';
 import { PantsIcon, ShirtIcon } from '@/components/ui/icons';
 
 interface CategoryFiltersProps {
@@ -49,7 +49,7 @@ const CategoryFilters = ({ selectedCategory, onSelectCategory }: CategoryFilters
         aria-label="Toggle shoes"
         className="data-[state=on]:bg-purple-600"
       >
-        <CircleDot className="w-4 h-4 mr-2" />
+        <Footprints className="w-4 h-4 mr-2" />
         Shoes
       </ToggleGroupItem>
       
@@ -58,7 +58,7 @@ const CategoryFilters = ({ selectedCategory, onSelectCategory }: CategoryFilters
         aria-label="Toggle accessories"
         className="data-[state=on]:bg-purple-600"
       >
-        <CircleDot className="w-4 h-4 mr-2" />
+        <Bookmark className="w-4 h-4 mr-2" />
         Accessories
       </ToggleGroupItem>
     </ToggleGroup>
