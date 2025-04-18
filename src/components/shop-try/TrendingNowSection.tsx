@@ -35,7 +35,7 @@ const TrendingNowSection = ({
       timesWorn: 0,
       dateAdded: new Date(),
       brand: 'Zara',
-      category: 'Tops',
+      category: 'top',
       image: '/placeholder.svg'
     },
     {
@@ -51,7 +51,7 @@ const TrendingNowSection = ({
       timesWorn: 0,
       dateAdded: new Date(),
       brand: 'Urban Outfitters',
-      category: 'Bottoms',
+      category: 'bottom',
       image: '/placeholder.svg'
     },
     {
@@ -67,7 +67,7 @@ const TrendingNowSection = ({
       timesWorn: 0,
       dateAdded: new Date(),
       brand: 'Revolve',
-      category: 'Accessories',
+      category: 'accessories',
       image: '/placeholder.svg'
     },
     {
@@ -83,7 +83,7 @@ const TrendingNowSection = ({
       timesWorn: 0,
       dateAdded: new Date(),
       brand: 'Urban Outfitters',
-      category: 'Tops',
+      category: 'top',
       image: '/placeholder.svg'
     },
     {
@@ -99,7 +99,7 @@ const TrendingNowSection = ({
       timesWorn: 0,
       dateAdded: new Date(),
       brand: 'Shein',
-      category: 'Tops',
+      category: 'top',
       image: '/placeholder.svg'
     }
   ];

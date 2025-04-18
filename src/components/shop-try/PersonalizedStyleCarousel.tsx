@@ -35,7 +35,7 @@ const PersonalizedStyleCarousel = ({
       timesWorn: 0,
       dateAdded: new Date(),
       brand: 'Reformation',
-      category: 'Dresses',
+      category: 'dress',
       image: '/placeholder.svg'
     },
     {
@@ -51,7 +51,7 @@ const PersonalizedStyleCarousel = ({
       timesWorn: 0,
       dateAdded: new Date(),
       brand: 'Arket',
-      category: 'Outerwear',
+      category: 'outerwear',
       image: '/placeholder.svg'
     },
     {
@@ -67,7 +67,7 @@ const PersonalizedStyleCarousel = ({
       timesWorn: 0,
       dateAdded: new Date(),
       brand: 'Mejuri',
-      category: 'Accessories',
+      category: 'accessories',
       image: '/placeholder.svg'
     },
     {
@@ -83,7 +83,7 @@ const PersonalizedStyleCarousel = ({
       timesWorn: 0,
       dateAdded: new Date(),
       brand: 'COS',
-      category: 'Knitwear',
+      category: 'top',
       image: '/placeholder.svg'
     },
     {
@@ -99,7 +99,7 @@ const PersonalizedStyleCarousel = ({
       timesWorn: 0,
       dateAdded: new Date(),
       brand: 'Dr. Martens',
-      category: 'Footwear',
+      category: 'shoes',
       image: '/placeholder.svg'
     }
   ];

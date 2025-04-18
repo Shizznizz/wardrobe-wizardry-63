@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -35,23 +34,27 @@ const MixAndMatch = () => {
     ? sampleOutfits.find(outfit => outfit.id === selectedOutfitId) 
     : sampleOutfits[0];
   
-  // Modified to handle the type mismatch correctly
+  // Modified to ensure temperature and condition are defined
   const handleWeatherUpdate = useCallback((weatherData: { temperature: number; condition: string }) => {
+    // Use provided data with mandatory properties for the callback parameter
+    const temp = weatherData.temperature || 0; // Default to 0 if undefined
+    const condition = weatherData.condition || 'clear'; // Default if undefined
+    
     // Create a new WeatherInfo object with all required properties
     const newWeather: WeatherInfo = {
-      temperature: weatherData.temperature, // Now explicitly set
-      condition: weatherData.condition, // Now explicitly set
-      icon: weatherData.condition.toLowerCase().includes('cloud') ? 'cloud' :
-            weatherData.condition.toLowerCase().includes('rain') ? 'rain' :
-            weatherData.condition.toLowerCase().includes('snow') ? 'snow' :
+      temperature: temp,
+      condition: condition,
+      icon: condition.toLowerCase().includes('cloud') ? 'cloud' :
+            condition.toLowerCase().includes('rain') ? 'rain' :
+            condition.toLowerCase().includes('snow') ? 'snow' :
             'sun',
       city: 'San Francisco',
       country: 'USA'
     };
     
     setWeather(newWeather);
-    setTemperature(weatherData.temperature);
-    setWeatherCondition(weatherData.condition.toLowerCase());
+    setTemperature(temp);
+    setWeatherCondition(condition.toLowerCase());
   }, []);
   
   const handleSituationChange = useCallback((newSituation: string) => {
