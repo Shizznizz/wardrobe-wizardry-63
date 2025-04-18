@@ -1,7 +1,7 @@
-
 import { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
+import PageHeader from '@/components/layout/PageHeader';
 import { sampleOutfits, sampleClothingItems } from '@/lib/wardrobeData';
 import { WeatherInfo } from '@/lib/types';
 import { OutfitProvider } from '@/hooks/useOutfitContext';
@@ -129,19 +129,10 @@ const MixAndMatch = () => {
         <Header />
         
         <main className="container mx-auto px-4 py-6 pt-20 max-w-6xl">
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className="mb-6 text-center"
-          >
-            <h1 className="text-3xl md:text-4xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-coral-400 to-pink-400">
-              Style Mixer
-            </h1>
-            <p className="text-lg text-white/70 max-w-2xl mx-auto">
-              Discover your perfect outfit with Olivia's AI-powered styling
-            </p>
-          </motion.div>
+          <PageHeader 
+            title="Style Creator"
+            subtitle="Design your perfect look using your own wardrobe — styled by you or Olivia."
+          />
           
           {/* 1️⃣ Section: "Create Your Own Outfit" - First section */}
           <motion.section

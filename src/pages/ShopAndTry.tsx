@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import Header from '@/components/Header';
+import PageHeader from '@/components/layout/PageHeader';
 import { Outfit, ClothingItem } from '@/lib/types';
 import { useIsMobile } from '@/hooks/use-mobile';
 import OutfitSubscriptionPopup from '@/components/OutfitSubscriptionPopup';
@@ -282,8 +283,11 @@ const ShopAndTry = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white overflow-x-hidden">
       <Header />
-      
       <main className="container mx-auto px-4 pt-20 pb-20 max-w-6xl">
+        <PageHeader 
+          title="Style It Your Way"
+          subtitle="Discover trending pieces and try them virtually — before you buy."
+        />
         <motion.div 
           className="space-y-12 md:space-y-16"
           initial="hidden"
