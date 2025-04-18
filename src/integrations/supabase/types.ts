@@ -57,6 +57,66 @@ export type Database = {
         }
         Relationships: []
       }
+      outfits: {
+        Row: {
+          color_scheme: string | null
+          colors: string[] | null
+          created_at: string | null
+          date_added: string | null
+          favorite: boolean | null
+          id: string
+          items: string[]
+          last_worn: string | null
+          name: string
+          notes: string | null
+          occasion: string | null
+          occasions: string[] | null
+          personality_tags: string[] | null
+          season: string[] | null
+          tags: string[] | null
+          times_worn: number | null
+          user_id: string
+        }
+        Insert: {
+          color_scheme?: string | null
+          colors?: string[] | null
+          created_at?: string | null
+          date_added?: string | null
+          favorite?: boolean | null
+          id?: string
+          items: string[]
+          last_worn?: string | null
+          name: string
+          notes?: string | null
+          occasion?: string | null
+          occasions?: string[] | null
+          personality_tags?: string[] | null
+          season?: string[] | null
+          tags?: string[] | null
+          times_worn?: number | null
+          user_id: string
+        }
+        Update: {
+          color_scheme?: string | null
+          colors?: string[] | null
+          created_at?: string | null
+          date_added?: string | null
+          favorite?: boolean | null
+          id?: string
+          items?: string[]
+          last_worn?: string | null
+          name?: string
+          notes?: string | null
+          occasion?: string | null
+          occasions?: string[] | null
+          personality_tags?: string[] | null
+          season?: string[] | null
+          tags?: string[] | null
+          times_worn?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_preferences: {
         Row: {
           climate_preferences: string[] | null

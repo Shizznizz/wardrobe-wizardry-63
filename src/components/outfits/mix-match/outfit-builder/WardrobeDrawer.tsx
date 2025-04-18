@@ -1,10 +1,8 @@
 
 import React from 'react';
-import { motion } from 'framer-motion';
+import { Drawer, DrawerContent, DrawerTrigger } from '@/components/ui/drawer';
 import { ClothingItem } from '@/lib/types';
-import { cn } from '@/lib/utils';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import OptimizedImage from '@/components/ui/optimized-image';
+import WardrobeGrid from '@/components/WardrobeGrid';
 
 interface WardrobeDrawerProps {
   items: ClothingItem[];
@@ -23,32 +21,27 @@ const WardrobeDrawer = ({
     item => item.category === selectedCategory
   );
 
+  const handleToggleFavorite = () => {}; // No-op for now
+  const handleMatchItem = (item: ClothingItem) => onSelectItem(item);
+
   return (
-    <ScrollArea className="h-40 w-full rounded-md border border-white/10">
-      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2 p-2">
-        {filteredItems.map(item => (
-          <motion.div
-            key={item.id}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            whileHover={{ scale: 1.05 }}
-            onClick={() => onSelectItem(item)}
-            className={cn(
-              "relative aspect-square rounded-lg overflow-hidden cursor-pointer border-2 transition-colors",
-              selectedItems.some(selected => selected.id === item.id)
-                ? "border-purple-500"
-                : "border-transparent hover:border-purple-500/50"
-            )}
-          >
-            <OptimizedImage
-              src={item.imageUrl || item.image || ''}
-              alt={item.name}
-              className="w-full h-full object-cover"
-            />
-          </motion.div>
-        ))}
-      </div>
-    </ScrollArea>
+    <Drawer>
+      <DrawerTrigger asChild>
+        <button className="w-full py-3 px-4 bg-slate-800/50 hover:bg-slate-800/70 rounded-lg border border-white/10 text-white/70 text-sm transition-colors">
+          Open Wardrobe ({filteredItems.length} items)
+        </button>
+      </DrawerTrigger>
+      <DrawerContent className="bg-slate-900 border-t border-white/10">
+        <div className="max-h-[80vh] overflow-y-auto p-6">
+          <WardrobeGrid
+            items={filteredItems}
+            onToggleFavorite={handleToggleFavorite}
+            onMatchItem={handleMatchItem}
+            compactView={true}
+          />
+        </div>
+      </DrawerContent>
+    </Drawer>
   );
 };
 
