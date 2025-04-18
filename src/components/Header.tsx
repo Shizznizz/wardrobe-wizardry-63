@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu } from 'lucide-react';
@@ -7,17 +6,15 @@ import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
-import { WeatherDisplay } from './header/WeatherDisplay';
 import { UserMenu } from './header/UserMenu';
 import { MobileMenu } from './header/MobileMenu';
 import { DesktopNavigation } from './header/DesktopNavigation';
 import { WeatherInfo } from '@/lib/types';
 
 interface HeaderProps {
-  weather?: WeatherInfo;
 }
 
-const Header = ({ weather }: HeaderProps) => {
+const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
@@ -73,16 +70,6 @@ const Header = ({ weather }: HeaderProps) => {
     return currentItem ? currentItem.name : '';
   };
 
-  // Create a properly formatted weather object for WeatherDisplay
-  // This ensures temperature and condition are always defined
-  const weatherDisplay = weather ? {
-    temperature: weather.temperature ?? 0,
-    condition: weather.condition ?? 'clear'
-  } : {
-    temperature: 0,
-    condition: 'clear'
-  };
-
   return (
     <header 
       className={cn(
@@ -107,8 +94,6 @@ const Header = ({ weather }: HeaderProps) => {
         )}
 
         <div className="flex items-center">
-          {!isMobile && <WeatherDisplay weather={weatherDisplay} isScrolled={isScrolled} />}
-          
           <UserMenu isScrolled={isScrolled} />
 
           {isMobile && (
@@ -132,7 +117,6 @@ const Header = ({ weather }: HeaderProps) => {
           onClose={() => setIsMenuOpen(false)}
           navItems={navItems}
           currentPath={location.pathname}
-          weather={weather}
           onSignOut={handleSignOut}
         />
       </div>
