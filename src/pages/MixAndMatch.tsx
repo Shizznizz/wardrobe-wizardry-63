@@ -9,7 +9,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 // Import main section components
 import OutfitRecommendationSection from '@/components/outfits/mix-match/OutfitRecommendationSection';
 import ContextAdjustmentSection from '@/components/outfits/mix-match/ContextAdjustmentSection';
-import OutfitExplanationSection from '@/components/outfits/mix-match/OutfitExplanationSection';
 import CreateOutfitSection from '@/components/outfits/mix-match/CreateOutfitSection';
 import OutfitCollectionSection from '@/components/outfits/mix-match/OutfitCollectionSection';
 import SuggestedOutfitsSection from '@/components/outfits/mix-match/SuggestedOutfitsSection';
@@ -143,7 +142,7 @@ const MixAndMatch = () => {
             </p>
           </motion.div>
           
-          {/* 1️⃣ Section: "Your Daily Outfit from Olivia" */}
+          {/* 1️⃣ Section: "Today's Outfit Pick by Olivia" */}
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -174,30 +173,12 @@ const MixAndMatch = () => {
             />
           </motion.section>
           
-          {/* 3️⃣ Section: "Why This Works" */}
+          {/* 3️⃣ Section: "Create Your Own Outfit" */}
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.5 }}
             className="mb-12"
-          >
-            <OutfitExplanationSection 
-              currentOutfit={currentOutfit}
-              onRefresh={handleRefreshOutfit}
-              temperature={temperature}
-              weather={{
-                temperature: safeWeather.temperature,
-                condition: safeWeather.condition
-              }}
-            />
-          </motion.section>
-          
-          {/* 4️⃣ Section: "Create Your Own Outfit" */}
-          <motion.section
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.5 }}
-            className="mb-16"
           >
             <CreateOutfitSection 
               clothingItems={sampleClothingItems} 
@@ -205,11 +186,11 @@ const MixAndMatch = () => {
             />
           </motion.section>
           
-          {/* 5️⃣ Section: "My Outfit Collection" */}
+          {/* 4️⃣ Section: "My Outfit Collection" */}
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.5 }}
+            transition={{ delay: 0.4, duration: 0.5 }}
             className="mb-16"
           >
             <OutfitCollectionSection 
@@ -218,11 +199,11 @@ const MixAndMatch = () => {
             />
           </motion.section>
           
-          {/* 6️⃣ Section: "Suggested For You" (optional) */}
+          {/* 5️⃣ Section: "Suggested For You" */}
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.5 }}
+            transition={{ delay: 0.5, duration: 0.5 }}
             className="mb-8"
           >
             <SuggestedOutfitsSection 
