@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -200,7 +199,10 @@ const MixAndMatch = () => {
             transition={{ delay: 0.4, duration: 0.5 }}
             className="mb-16"
           >
-            <CreateOutfitSection clothingItems={sampleClothingItems} />
+            <CreateOutfitSection 
+              clothingItems={sampleClothingItems} 
+              isPremium={false}
+            />
           </motion.section>
           
           {/* 5️⃣ Section: "My Outfit Collection" */}

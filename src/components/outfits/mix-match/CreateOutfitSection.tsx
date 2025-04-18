@@ -1,24 +1,27 @@
-
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, ArrowRightCircle, Calendar, Save } from 'lucide-react';
+import { Plus, ArrowRightCircle, Calendar, Save, RotateCcw, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { Card, CardContent } from '@/components/ui/card';
 import { ClothingItem } from '@/lib/types';
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { useNavigate } from 'react-router-dom';
 
 interface CreateOutfitSectionProps {
   clothingItems: ClothingItem[];
+  isPremium?: boolean;
 }
 
-const CreateOutfitSection = ({ clothingItems }: CreateOutfitSectionProps) => {
+const CreateOutfitSection = ({ clothingItems, isPremium = false }: CreateOutfitSectionProps) => {
   const [selectedTop, setSelectedTop] = useState<ClothingItem | null>(null);
   const [selectedBottom, setSelectedBottom] = useState<ClothingItem | null>(null);
   const [selectedShoes, setSelectedShoes] = useState<ClothingItem | null>(null);
   const [outfitName, setOutfitName] = useState("My Custom Outfit");
+  const [showPremiumDialog, setShowPremiumDialog] = useState(false);
+  const navigate = useNavigate();
   
   const tops = clothingItems.filter(item => 
     item.type === 'top' || item.type === 'sweater' || item.type === 'jacket'
@@ -67,31 +70,49 @@ const CreateOutfitSection = ({ clothingItems }: CreateOutfitSectionProps) => {
       return;
     }
     
-    toast.success("Opening fitting room with this outfit!");
-  };
-  
-  const handleAddToCalendar = () => {
-    if (!selectedTop || !selectedBottom || !selectedShoes) {
-      toast.error("Please select an item for each category");
+    if (!isPremium) {
+      setShowPremiumDialog(true);
       return;
     }
     
-    toast.success("Outfit added to your calendar for tomorrow!");
+    navigate('/fitting-room', { 
+      state: { 
+        outfitItems: [selectedTop.id, selectedBottom.id, selectedShoes.id],
+        outfitName
+      } 
+    });
+  };
+  
+  const handleClearSelection = () => {
+    setSelectedTop(null);
+    setSelectedBottom(null);
+    setSelectedShoes(null);
+    setOutfitName("My Custom Outfit");
   };
   
   const isOutfitComplete = selectedTop && selectedBottom && selectedShoes;
-  
+
   return (
     <div className="mb-12">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-400">
           Create Your Own Outfit
         </h2>
+        {isOutfitComplete && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleClearSelection}
+            className="text-white/70 hover:text-white"
+          >
+            <RotateCcw className="h-4 w-4 mr-2" />
+            Clear Selection
+          </Button>
+        )}
       </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Tops Section */}
           <Card className="bg-slate-900/60 border-white/10 overflow-hidden">
             <div className="p-4 border-b border-white/10">
               <h3 className="font-medium text-white">Tops</h3>
@@ -132,7 +153,6 @@ const CreateOutfitSection = ({ clothingItems }: CreateOutfitSectionProps) => {
             </CardContent>
           </Card>
           
-          {/* Bottoms Section */}
           <Card className="bg-slate-900/60 border-white/10 overflow-hidden">
             <div className="p-4 border-b border-white/10">
               <h3 className="font-medium text-white">Bottoms</h3>
@@ -173,7 +193,6 @@ const CreateOutfitSection = ({ clothingItems }: CreateOutfitSectionProps) => {
             </CardContent>
           </Card>
           
-          {/* Shoes Section */}
           <Card className="bg-slate-900/60 border-white/10 overflow-hidden">
             <div className="p-4 border-b border-white/10">
               <h3 className="font-medium text-white">Shoes</h3>
@@ -215,7 +234,6 @@ const CreateOutfitSection = ({ clothingItems }: CreateOutfitSectionProps) => {
           </Card>
         </div>
         
-        {/* Outfit Preview Section */}
         <div className="lg:col-span-2">
           <Card className="h-full bg-slate-900/60 border-white/10 overflow-hidden">
             <div className="p-4 border-b border-white/10">
@@ -293,30 +311,42 @@ const CreateOutfitSection = ({ clothingItems }: CreateOutfitSectionProps) => {
                   <Save className="mr-2 h-4 w-4" /> Save This Outfit
                 </Button>
                 
-                <div className="grid grid-cols-2 gap-3">
-                  <Button 
-                    variant="outline"
-                    disabled={!isOutfitComplete}
-                    className="border-purple-400/30 text-white hover:bg-white/10"
-                    onClick={handleTryOn}
-                  >
-                    <ArrowRightCircle className="mr-2 h-4 w-4" /> Try on Olivia
-                  </Button>
-                  
-                  <Button 
-                    variant="outline"
-                    disabled={!isOutfitComplete}
-                    className="border-purple-400/30 text-white hover:bg-white/10"
-                    onClick={handleAddToCalendar}
-                  >
-                    <Calendar className="mr-2 h-4 w-4" /> Add to Calendar
-                  </Button>
-                </div>
+                <Button 
+                  variant="outline"
+                  disabled={!isOutfitComplete}
+                  className="w-full border-purple-400/30 text-white hover:bg-white/10"
+                  onClick={handleTryOn}
+                >
+                  {!isPremium && <Lock className="mr-2 h-4 w-4" />}
+                  <ArrowRightCircle className="mr-2 h-4 w-4" /> 
+                  Try in Fitting Room
+                </Button>
               </div>
             </CardContent>
           </Card>
         </div>
       </div>
+
+      <Dialog open={showPremiumDialog} onOpenChange={setShowPremiumDialog}>
+        <DialogContent className="bg-slate-900 text-white border-white/10">
+          <DialogTitle>Premium Feature</DialogTitle>
+          <DialogDescription className="text-white/70">
+            Viewing this outfit on Olivia or your own photo is a Premium feature. Upgrade now to unlock.
+          </DialogDescription>
+          <div className="mt-4 flex justify-end">
+            <Button
+              variant="default"
+              className="bg-gradient-to-r from-purple-600 to-pink-600"
+              onClick={() => {
+                setShowPremiumDialog(false);
+                navigate('/settings?upgrade=true');
+              }}
+            >
+              Upgrade to Premium
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
