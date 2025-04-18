@@ -854,7 +854,17 @@ const Wardrobe = () => {
               </div>
             </motion.div>
             
-            <WardrobeGrid items={sortedItems} />
+            <WardrobeGrid 
+              items={sortedItems} 
+              onToggleFavorite={handleToggleFavorite}
+              onMatchItem={handleMatchItem}
+              onDeleteItem={handleDeleteItem}
+              onEditItem={handleEditItem}
+              compactView={showCompactView}
+              selectable={isSelectionMode}
+              selectedItems={selectedItems}
+              onToggleSelect={handleToggleSelect}
+            />
           </motion.div>
         </motion.div>
       </main>
