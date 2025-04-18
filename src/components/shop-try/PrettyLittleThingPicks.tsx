@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
@@ -25,11 +24,12 @@ const PrettyLittleThingPicks = ({ isPremiumUser, onTryItem, onUpgradeToPremium }
         name: 'Black Oversized Blazer',
         type: 'jacket',
         color: 'black',
-        season: 'all',
+        season: ['all'],
+        image: '',
         occasion: 'formal',
         brand: 'PrettyLittleThing',
         imageUrl: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&w=500&h=600',
-        price: '$49.99',
+        price: 49.99,
         tags: ['Power Boss', 'Office Chic'],
         affiliateUrl: 'https://www.prettylittlething.com/black-oversized-blazer.html'
       },
@@ -38,11 +38,12 @@ const PrettyLittleThingPicks = ({ isPremiumUser, onTryItem, onUpgradeToPremium }
         name: 'Cream Ribbed Bodycon Dress',
         type: 'dress',
         color: 'cream',
-        season: 'summer',
+        season: ['summer'],
+        image: '',
         occasion: 'party',
         brand: 'PrettyLittleThing',
         imageUrl: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=500&h=600',
-        price: '$32.99',
+        price: 32.99,
         tags: ['Date Night', 'Romantic'],
         affiliateUrl: 'https://www.prettylittlething.com/cream-ribbed-bodycon-dress.html'
       },
@@ -51,11 +52,12 @@ const PrettyLittleThingPicks = ({ isPremiumUser, onTryItem, onUpgradeToPremium }
         name: 'Light Wash Mom Jeans',
         type: 'pants',
         color: 'blue',
-        season: 'all',
+        season: ['all'],
+        image: '',
         occasion: 'casual',
         brand: 'PrettyLittleThing',
         imageUrl: 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=500&h=600',
-        price: '$38.99',
+        price: 38.99,
         tags: ['Everyday Casual', 'Boho Chic'],
         affiliateUrl: 'https://www.prettylittlething.com/light-wash-mom-jeans.html'
       },
@@ -64,11 +66,12 @@ const PrettyLittleThingPicks = ({ isPremiumUser, onTryItem, onUpgradeToPremium }
         name: 'Beige Oversized Sweatshirt',
         type: 'top',
         color: 'beige',
-        season: 'winter',
+        season: ['winter'],
+        image: '',
         occasion: 'casual',
         brand: 'PrettyLittleThing',
         imageUrl: 'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?auto=format&fit=crop&w=500&h=600',
-        price: '$24.99',
+        price: 24.99,
         tags: ['Minimalist', 'Cozy'],
         affiliateUrl: 'https://www.prettylittlething.com/beige-oversized-sweatshirt.html'
       }

@@ -1,4 +1,3 @@
-
 // src/lib/types.ts
 
 export type ClothingColor =
@@ -15,6 +14,9 @@ export type ClothingColor =
   | 'brown'
   | 'navy'
   | 'beige'
+  | 'cream'
+  | 'coral'
+  | 'burgundy'
   | 'multicolor';
 
 export type ClothingSeason = 'spring' | 'summer' | 'autumn' | 'winter' | 'all';
@@ -48,6 +50,7 @@ export type ClothingType =
   | 'accessories'
   | 'jacket'
   | 'top'
+  | 'swimwear'
   | 'other';
 
 export type ClothingCategory = 
@@ -97,10 +100,8 @@ export interface WeatherInfo {
   windSpeed?: number;
 }
 
-// Updated TimeOfDay type for calendar components
 export type TimeOfDay = 'morning' | 'afternoon' | 'evening' | 'night';
 
-// Updated Activity type for calendar components with additional activities
 export type Activity = 
   | 'work' 
   | 'casual' 
@@ -115,7 +116,6 @@ export type Activity =
   | 'dinner'
   | 'sport';
 
-// Added OutfitLogExtended type for OutfitGroupsSection
 export interface OutfitLog {
   id: string;
   outfitId: string;
@@ -150,22 +150,22 @@ export interface ClothingItem {
   timesWorn?: number;
   dateAdded?: Date;
   tags?: string[];
-  category?: ClothingCategory;  // Added category field to fix errors
+  category?: ClothingCategory;
+  occasion?: string;
+  affiliateUrl?: string;
 }
 
-// Interface for PersonalizedItem in style carousel (making season optional)
 export interface PersonalizedItem extends Omit<ClothingItem, 'season' | 'image'> {
   season?: ClothingSeason[];
   brand?: string;
-  category?: ClothingCategory;  // Fixed type to match ClothingCategory
+  category?: ClothingCategory;
   image?: string;
 }
 
-// Interface for TrendingClothingItem (making season optional)
 export interface TrendingClothingItem extends Omit<ClothingItem, 'season' | 'image'> {
   season?: ClothingSeason[];
   brand?: string;
-  category?: ClothingCategory;  // Fixed type to match ClothingCategory
+  category?: ClothingCategory;
   image?: string;
 }
 
@@ -177,8 +177,8 @@ export interface UserPreferences {
     [key in ClothingSeason]: {
       enabled: boolean;
       temperatureRange: [number, number];
-      timeOfYear?: [number, number]; // Optional: 1-3 representing early, mid, late in season
-      goToLook?: string; // Optional: reference to a favorite outfit for this season
+      timeOfYear?: [number, number];
+      goToLook?: string;
     };
   };
   outfitReminders: boolean;
@@ -197,7 +197,7 @@ export interface Outfit {
   name: string;
   items: string[];
   season: ClothingSeason[];
-  seasons?: ClothingSeason[]; // For backward compatibility
+  seasons?: ClothingSeason[];
   occasion: string;
   occasions?: string[];
   favorite?: boolean;
@@ -207,14 +207,13 @@ export interface Outfit {
   notes?: string;
   timesWorn?: number;
   personalityTags?: PersonalityTag[];
-  tags?: string[];  // Added for OutfitGroupsSection and OutfitPreview
-  colors?: string[]; // Added for filtering in Outfits page
-  colorScheme?: string; // Added for sample outfits in wardrobeData
+  tags?: string[];
+  colors?: string[];
+  colorScheme?: string;
 }
 
-// Interface specifically for shop items that extends ClothingItem
 export interface ShopItem extends Omit<ClothingItem, 'price'> {
-  price: string;
+  price: string | number;
   retailer: string;
   rating: number;
   reviewCount: number;

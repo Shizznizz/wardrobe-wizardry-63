@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
@@ -38,77 +37,81 @@ const UnifiedProductsCarousel = ({
   ];
 
   useEffect(() => {
-    // Sample data - in a real app this would come from an API or Supabase
     const sampleProducts: ClothingItem[] = [
       {
         id: 'prod-1',
         name: 'Satin Slip Dress',
         type: 'dress',
         color: 'coral',
-        season: 'summer',
+        season: ['summer'],
+        image: '',
         occasion: 'party',
         imageUrl: 'https://images.unsplash.com/photo-1566206091558-7f218b696731?auto=format&fit=crop&w=500&h=600',
         tags: ['Romantic', 'Date Night'],
-        price: '$45.99'
+        price: 45.99
       },
       {
         id: 'prod-2',
         name: 'Oversized Blazer',
         type: 'jacket',
         color: 'black',
-        season: 'all',
+        season: ['all'],
+        image: '',
         occasion: 'formal',
         imageUrl: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&w=500&h=600',
         tags: ['Power Boss', 'Office'],
-        price: '$59.99'
+        price: 59.99
       },
       {
         id: 'prod-3',
         name: 'Relaxed Jeans',
         type: 'pants',
         color: 'blue',
-        season: 'all',
+        season: ['all'],
+        image: '',
         occasion: 'casual',
         imageUrl: 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=500&h=600',
         tags: ['Everyday Casual', 'Effortless'],
-        price: '$38.99'
+        price: 38.99
       },
       {
         id: 'prod-4',
         name: 'Crochet Crop Top',
         type: 'top',
         color: 'cream',
-        season: 'summer',
+        season: ['summer'],
+        image: '',
         occasion: 'casual',
         imageUrl: 'https://images.unsplash.com/photo-1499939667766-4afceb292d05?auto=format&fit=crop&w=500&h=600',
         tags: ['Boho Chic', 'Festival'],
-        price: '$29.99'
+        price: 29.99
       },
       {
         id: 'prod-5',
         name: 'Boxy White Tee',
         type: 'top',
         color: 'white',
-        season: 'all',
+        season: ['all'],
+        image: '',
         occasion: 'casual',
         imageUrl: 'https://images.unsplash.com/photo-1523381294911-8d3cead13475?auto=format&fit=crop&w=500&h=600',
         tags: ['Minimalist', 'Everyday'],
-        price: '$19.99'
+        price: 19.99
       },
       {
         id: 'prod-6',
         name: 'Linen Wide-Leg Pants',
         type: 'pants',
         color: 'beige',
-        season: 'summer',
+        season: ['summer'],
+        image: '',
         occasion: 'casual',
         imageUrl: 'https://images.unsplash.com/photo-1594633313593-bab3825d0caf?auto=format&fit=crop&w=500&h=600',
         tags: ['Minimalist', 'Boho Chic'],
-        price: '$42.99'
+        price: 42.99
       }
     ];
 
-    // Filter products based on active mood if one is selected
     let filteredProducts = [...sampleProducts];
     if (activeMood) {
       filteredProducts = sampleProducts.filter(product => 

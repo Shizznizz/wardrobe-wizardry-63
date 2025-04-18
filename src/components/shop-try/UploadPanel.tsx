@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
@@ -42,6 +41,7 @@ interface UploadPanelProps {
   onSaveLook: () => void;
   onAddItem: (item: ClothingItem) => void;
   onShowPremiumPopup: () => void;
+  customSlot?: React.ReactNode;
 }
 
 const UploadPanel = ({
@@ -64,7 +64,8 @@ const UploadPanel = ({
   onShowOliviaImageGallery,
   onSaveLook,
   onAddItem,
-  onShowPremiumPopup
+  onShowPremiumPopup,
+  customSlot
 }: UploadPanelProps) => {
   const [activeTab, setActiveTab] = useState('photo');
   const isMobile = useIsMobile();
@@ -277,7 +278,8 @@ const UploadPanel = ({
                 isOliviaImage={isUsingOliviaImage}
               />
               
-              {/* AI Styling Tip */}
+              {customSlot}
+              
               <AnimatePresence>
                 {stylingTip && finalImage && (
                   <motion.div 
