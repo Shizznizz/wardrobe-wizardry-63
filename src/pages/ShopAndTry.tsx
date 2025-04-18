@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -9,16 +8,17 @@ import OutfitSubscriptionPopup from '@/components/OutfitSubscriptionPopup';
 import OliviaImageGallery from '@/components/outfits/OliviaImageGallery';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import PrettyLittleThingPicks from '@/components/shop-try/PrettyLittleThingPicks';
 
 import PremiumTryOnHero from '@/components/shop-try/PremiumTryOnHero';
 import WeatherBasedTips from '@/components/shop-try/WeatherBasedTips';
 import UploadPanel from '@/components/shop-try/UploadPanel';
 import FeedbackLoop from '@/components/shop-try/FeedbackLoop';
-import { FeedbackData } from '@/components/shop-try/FeedbackData';
 import UnifiedProductsCarousel from '@/components/shop-try/UnifiedProductsCarousel';
 import WishlistAndHistory from '@/components/shop-try/WishlistAndHistory';
 import FloatingOliviaWidget from '@/components/shop-try/FloatingOliviaWidget';
+import PrettyLittleThingPicks from '@/components/shop-try/PrettyLittleThingPicks';
+import OliviaDailyRecommendation from '@/components/shop-try/OliviaDailyRecommendation';
+import SheinAffiliatePicks from '@/components/shop-try/SheinAffiliatePicks';
 import PremiumTeaserSection from '@/components/shop-try/PremiumTeaserSection';
 
 const ShopAndTry = () => {
@@ -297,6 +297,13 @@ const ShopAndTry = () => {
             />
           </section>
 
+          <OliviaDailyRecommendation
+            isPremiumUser={isPremiumUser || isAuthenticated}
+            onTryItem={handleTryOnTrendingItem}
+            onUpgradeToPremium={handleShowPremiumPopup}
+            customLocation={customLocation}
+          />
+
           <div id="upload-section" className="scroll-mt-24">
             <WeatherBasedTips 
               userPhoto={userPhoto}
@@ -356,6 +363,12 @@ const ShopAndTry = () => {
           </section>
           
           <PrettyLittleThingPicks
+            isPremiumUser={isPremiumUser || isAuthenticated}
+            onTryItem={handleTryOnTrendingItem}
+            onUpgradeToPremium={handleShowPremiumPopup}
+          />
+          
+          <SheinAffiliatePicks
             isPremiumUser={isPremiumUser || isAuthenticated}
             onTryItem={handleTryOnTrendingItem}
             onUpgradeToPremium={handleShowPremiumPopup}

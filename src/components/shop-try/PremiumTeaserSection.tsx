@@ -1,99 +1,105 @@
 
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Crown, Sparkles, Zap, Calendar, CloudSun, Lock } from 'lucide-react';
+import { Crown, Sparkles, Clock, CloudLightning, Stars } from 'lucide-react';
 
 interface PremiumTeaserSectionProps {
   onUpgrade: () => void;
 }
 
 const PremiumTeaserSection = ({ onUpgrade }: PremiumTeaserSectionProps) => {
+  const features = [
+    {
+      id: 'ai-styling',
+      icon: <Sparkles className="h-5 w-5 text-yellow-400" />,
+      title: 'AI Outfit Generator',
+      description: 'Get personalized outfits created just for you based on your style preferences.',
+    },
+    {
+      id: 'early-access',
+      icon: <Clock className="h-5 w-5 text-blue-400" />,
+      title: 'Early Drops Access',
+      description: 'Be the first to shop and try on new collections before they go public.',
+    },
+    {
+      id: 'advanced-tools',
+      icon: <Stars className="h-5 w-5 text-purple-400" />,
+      title: 'Advanced Mix & Match',
+      description: 'Experiment with unlimited combinations of tops, bottoms, and accessories.',
+    },
+    {
+      id: 'weather-looks',
+      icon: <CloudLightning className="h-5 w-5 text-green-400" />,
+      title: 'Weather-Based Looks',
+      description: 'Automatically receive outfit suggestions tailored to the daily forecast.',
+    },
+  ];
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="mb-16 mt-20"
+      className="mb-16 rounded-xl overflow-hidden"
     >
-      <div className="rounded-2xl overflow-hidden bg-gradient-to-r from-indigo-900/80 via-purple-900/80 to-pink-900/80 border border-white/10 shadow-xl shadow-purple-900/20 relative">
-        {/* Background elements */}
-        <div className="absolute inset-0 overflow-hidden opacity-10">
-          <div className="absolute top-0 left-0 w-40 h-40 bg-white/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
-          <div className="absolute bottom-0 right-0 w-60 h-60 bg-pink-400/20 rounded-full blur-3xl translate-x-1/4 translate-y-1/4"></div>
-        </div>
+      <div className="relative">
+        <div 
+          className="absolute inset-0 bg-gradient-to-br from-purple-800/80 via-indigo-700/80 to-violet-900/80 z-0"
+          style={{ 
+            backgroundImage: 'url("https://images.unsplash.com/photo-1607083206968-13611e3d76db?auto=format&fit=crop&w=2000&q=80")',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            mixBlendMode: 'overlay',
+            opacity: 0.2
+          }}
+        ></div>
         
-        <div className="p-8 sm:p-12 relative z-10">
-          <div className="text-center max-w-3xl mx-auto">
-            <div className="flex justify-center mb-4">
-              <motion.div 
-                className="h-12 w-12 rounded-full bg-gradient-to-r from-yellow-400 to-amber-600 flex items-center justify-center"
-                animate={{ 
-                  scale: [1, 1.05, 1],
-                  rotate: [0, 5, 0, -5, 0]
-                }}
-                transition={{ 
-                  duration: 5, 
-                  repeat: Infinity,
-                  repeatType: "loop" 
-                }}
-              >
-                <Crown className="h-6 w-6 text-white" />
-              </motion.div>
+        <div className="bg-gradient-to-br from-purple-800/80 via-indigo-700/80 to-violet-900/80 relative z-10 px-6 py-12 md:py-16">
+          <div className="max-w-4xl mx-auto text-center">
+            <div className="inline-flex items-center justify-center mb-6 p-2 rounded-full bg-white/10 backdrop-blur-sm">
+              <Crown className="h-5 w-5 text-yellow-300 mr-2" />
+              <span className="text-sm font-medium text-white">Premium Experience</span>
             </div>
             
-            <motion.h2
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1, duration: 0.5 }}
-              className="text-3xl sm:text-4xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-purple-200 via-pink-200 to-yellow-200"
-            >
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
               Unlock Your Ultimate Wardrobe Experience
-            </motion.h2>
+            </h2>
             
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2, duration: 0.5 }}
-              className="text-white/80 text-lg mb-8 max-w-2xl mx-auto"
-            >
-              Get exclusive access to AI outfit generators, early drops, advanced mix & match tools, and weather-based daily looks tailored just for you.
-            </motion.p>
+            <p className="text-lg text-white/90 mb-8 max-w-2xl mx-auto">
+              Get exclusive access to AI outfit generators, early drops, advanced mix & match tools, and 
+              weather-based daily looks tailored just for you.
+            </p>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-              <div className="bg-white/5 rounded-xl p-5 backdrop-blur-sm border border-white/10">
-                <Sparkles className="h-8 w-8 text-pink-400 mb-3" />
-                <h3 className="font-semibold text-white text-lg mb-2">AI Style Generator</h3>
-                <p className="text-white/70">Unlimited AI-generated outfit suggestions based on your personal style.</p>
-              </div>
-              
-              <div className="bg-white/5 rounded-xl p-5 backdrop-blur-sm border border-white/10">
-                <CloudSun className="h-8 w-8 text-blue-400 mb-3" />
-                <h3 className="font-semibold text-white text-lg mb-2">Weather Styling</h3>
-                <p className="text-white/70">Daily recommendations based on local weather and your planned activities.</p>
-              </div>
-              
-              <div className="bg-white/5 rounded-xl p-5 backdrop-blur-sm border border-white/10">
-                <Calendar className="h-8 w-8 text-purple-400 mb-3" />
-                <h3 className="font-semibold text-white text-lg mb-2">Outfit Calendar</h3>
-                <p className="text-white/70">Plan your looks ahead of time and never repeat an outfit unintentionally.</p>
-              </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 max-w-4xl mx-auto">
+              {features.map((feature) => (
+                <motion.div
+                  key={feature.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 * features.indexOf(feature), duration: 0.4 }}
+                  className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20"
+                >
+                  <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center mb-3 mx-auto">
+                    {feature.icon}
+                  </div>
+                  <h3 className="font-medium text-white text-center mb-2">{feature.title}</h3>
+                  <p className="text-sm text-white/80 text-center">{feature.description}</p>
+                </motion.div>
+              ))}
             </div>
             
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.3, duration: 0.5 }}
+            <Button
+              size="lg"
+              onClick={onUpgrade}
+              className="bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-500 hover:to-amber-600 text-black font-medium shadow-xl shadow-amber-900/20 py-6 px-8"
             >
-              <Button 
-                onClick={onUpgrade}
-                size="lg"
-                className="bg-gradient-to-r from-purple-600 via-pink-600 to-amber-600 hover:opacity-90 text-white px-8 py-6 text-lg rounded-lg shadow-lg relative group overflow-hidden"
-              >
-                <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-purple-400/20 via-pink-400/20 to-amber-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-                <Lock className="mr-2 h-5 w-5" />
-                Upgrade to Premium
-              </Button>
-            </motion.div>
+              <Crown className="h-4 w-4 mr-2" />
+              Upgrade to Premium
+            </Button>
+            
+            <p className="text-xs text-white/60 mt-4">
+              Cancel anytime. Premium benefits are activated instantly upon subscription.
+            </p>
           </div>
         </div>
       </div>
