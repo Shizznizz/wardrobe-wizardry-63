@@ -270,50 +270,6 @@ const Wardrobe = () => {
     }
   };
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.05 }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        type: 'spring',
-        stiffness: 100,
-        damping: 10
-      }
-    }
-  };
-
-  useEffect(() => {
-    if (window.location.hash === '#upload') {
-      const uploadSection = document.getElementById('upload-section');
-      if (uploadSection) {
-        uploadSection.scrollIntoView({ behavior: 'smooth' });
-        const uploadButton = document.getElementById('upload-button');
-        if (uploadButton) {
-          uploadButton.click();
-        }
-      }
-    }
-  }, []);
-
-  const getOliviaTip = () => {
-    if (items.length <= 3) {
-      return "I see you're just starting to build your wardrobe! Try adding a few essential pieces like a versatile top, a pair of jeans, and shoes to start creating outfits.";
-    } else if (items.filter(item => item.favorite).length === 0) {
-      return "Don't forget to mark your favorite pieces! This helps me understand your style preferences when suggesting outfits.";
-    } else {
-      return "Great addition to your wardrobe! I've updated your style profile. Why not try matching this with other pieces to create a new outfit?";
-    }
-  };
-
   const applyFilters = () => {
     let filteredItems = [...items];
     
@@ -326,23 +282,27 @@ const Wardrobe = () => {
         case 'weather':
           const currentSeason: 'winter' | 'spring' | 'summer' | 'autumn' = 'spring';
           filteredItems = filteredItems.filter(item => 
-            item.season.includes(currentSeason) || item.season.includes('all')
+            item.season && Array.isArray(item.season) && 
+            (item.season.includes(currentSeason) || item.season.includes('all'))
           );
           break;
           
         case 'pairing':
           if (itemForPairing) {
             const relevantOutfits = outfits.filter(outfit => 
+              outfit.items && Array.isArray(outfit.items) &&
               outfit.items.includes(itemForPairing)
             );
             
             const pairingItemIds = new Set<string>();
             relevantOutfits.forEach(outfit => {
-              outfit.items.forEach(id => {
-                if (id !== itemForPairing) {
-                  pairingItemIds.add(id);
-                }
-              });
+              if (outfit.items && Array.isArray(outfit.items)) {
+                outfit.items.forEach(id => {
+                  if (id !== itemForPairing) {
+                    pairingItemIds.add(id);
+                  }
+                });
+              }
             });
             
             filteredItems = filteredItems.filter(item => 
@@ -356,8 +316,8 @@ const Wardrobe = () => {
           const versatileTypes = ['shirt', 'jeans', 'sneakers', 'sweater'];
           
           filteredItems = filteredItems.filter(item => 
-            popularColors.includes(item.color) || 
-            versatileTypes.includes(item.type) ||
+            (item.color && popularColors.includes(item.color)) || 
+            (item.type && versatileTypes.includes(item.type)) ||
             item.favorite
           );
           break;
@@ -367,20 +327,20 @@ const Wardrobe = () => {
     return [...filteredItems].sort((a, b) => {
       switch (sortOption) {
         case 'newest':
-          return new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime();
+          return new Date(b.dateAdded || 0).getTime() - new Date(a.dateAdded || 0).getTime();
         case 'favorites':
-          return Number(b.favorite) - Number(a.favorite);
+          return Number(b.favorite || false) - Number(a.favorite || false);
         case 'most-worn':
-          return b.timesWorn - a.timesWorn;
+          return (b.timesWorn || 0) - (a.timesWorn || 0);
         case 'color':
-          return a.color.localeCompare(b.color);
+          return (a.color || '').localeCompare(b.color || '');
         case 'most-matched':
-          return b.timesWorn - a.timesWorn;
+          return (b.timesWorn || 0) - (a.timesWorn || 0);
         case 'weather-fit':
           const currentSeason: 'winter' | 'spring' | 'summer' | 'autumn' = 'spring';
-          return b.season.includes(currentSeason) ? -1 : 1;
+          return (b.season && Array.isArray(b.season) && b.season.includes(currentSeason)) ? -1 : 1;
         case 'not-recent':
-          return a.timesWorn - b.timesWorn;
+          return (a.timesWorn || 0) - (b.timesWorn || 0);
         default:
           return 0;
       }

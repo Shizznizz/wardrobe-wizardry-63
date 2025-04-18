@@ -1,3 +1,4 @@
+
 import { motion } from 'framer-motion';
 import { Star, Tally4, Calendar, Tags, Heart, ArrowRight, Trash2, Edit } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -87,8 +88,8 @@ const WardrobeItemCard = ({
 
         <div className="relative aspect-square overflow-hidden">
           <OptimizedImage
-            src={item.imageUrl || item.image}
-            alt={item.name}
+            src={item.imageUrl || item.image || ''}
+            alt={item.name || 'Clothing item'}
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
             showSkeleton={true}
             aspectRatio="aspect-square"
@@ -138,11 +139,11 @@ const WardrobeItemCard = ({
           )}
           
           <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/80 to-transparent text-white">
-            <h3 className="font-semibold text-sm sm:text-base truncate">{item.name}</h3>
+            <h3 className="font-semibold text-sm sm:text-base truncate">{item.name || 'Untitled Item'}</h3>
             <div className="flex items-center text-xs text-gray-300 mt-1">
-              <span className="capitalize">{item.type}</span>
+              <span className="capitalize">{item.type || 'Unknown'}</span>
               <span className="mx-1.5">•</span>
-              <span className="capitalize">{item.color}</span>
+              <span className="capitalize">{item.color || 'Unknown'}</span>
             </div>
           </div>
         </div>
@@ -161,13 +162,13 @@ const WardrobeItemCard = ({
             </div>
 
             <div className="flex flex-wrap gap-1 pt-2 flex-grow">
-              {item.season && item.season.map((season) => (
+              {item.season && Array.isArray(item.season) && item.season.map((season) => (
                 <Badge key={season} variant="outline" className="text-[10px] h-5 px-1.5 border-blue-500/30 text-blue-100">
                   {season}
                 </Badge>
               ))}
               
-              {item.occasions && item.occasions.map((occasion) => (
+              {item.occasions && Array.isArray(item.occasions) && item.occasions.map((occasion) => (
                 <Badge key={occasion} variant="outline" className="text-[10px] h-5 px-1.5 border-purple-500/30 text-purple-100">
                   {occasion}
                 </Badge>
@@ -212,7 +213,7 @@ const WardrobeItemCard = ({
       <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
         <AlertDialogContent className="bg-slate-900 border-slate-700 text-white">
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete {item.name}?</AlertDialogTitle>
+            <AlertDialogTitle>Delete {item.name || 'this item'}?</AlertDialogTitle>
             <AlertDialogDescription className="text-gray-300">
               Are you sure you want to remove this item from your wardrobe? This action cannot be undone.
             </AlertDialogDescription>

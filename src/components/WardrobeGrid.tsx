@@ -28,9 +28,12 @@ const WardrobeGrid = ({
   onToggleSelect,
   onCreateOutfit
 }: WardrobeGridProps) => {
+  // Ensure items is always an array before rendering
+  const safeItems = Array.isArray(items) ? items : [];
+  
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-      {items.map((item) => (
+      {safeItems.map((item) => (
         <WardrobeItemCard
           key={item.id}
           item={item}
