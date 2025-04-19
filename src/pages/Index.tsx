@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+
+import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Sparkles } from 'lucide-react';
@@ -12,27 +13,6 @@ import TestimonialsCarousel from '@/components/TestimonialsCarousel';
 import StyleDiscoveryQuiz from '@/components/StyleDiscoveryQuiz';
 import { useAuth } from '@/hooks/useAuth';
 
-const testimonials = [
-  {
-    name: 'Emily Carter',
-    title: 'Fashion Blogger',
-    image: '/placeholder-user.jpg',
-    text: 'I\'ve always struggled with putting outfits together, but this app makes it so easy! The AI suggestions are spot-on, and I love being able to organize my wardrobe in one place.',
-  },
-  {
-    name: 'David Lee',
-    title: 'Software Engineer',
-    image: '/placeholder-user.jpg',
-    text: 'As someone who doesn\'t have a lot of time to shop, this app has been a game-changer. I can quickly find new clothes that fit my style and get personalized recommendations without spending hours browsing.',
-  },
-  {
-    name: 'Sarah Johnson',
-    title: 'Marketing Manager',
-    image: '/placeholder-user.jpg',
-    text: 'I love how this app helps me plan my outfits in advance. The calendar integration is a lifesaver, and I always feel confident and put-together thanks to the AI-powered style advice.',
-  },
-];
-
 const Index = () => {
   const { user } = useAuth();
   
@@ -42,11 +22,13 @@ const Index = () => {
       <BackgroundShapes />
       
       <main className="container mx-auto px-4 pt-32 md:pt-40 pb-20 relative z-10">
-        <div className="text-center max-w-4xl mx-auto mb-8 md:mb-12">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+        <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12 max-w-6xl mx-auto mb-16">
+          {/* Left side - Text content */}
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
+            className="flex-1"
           >
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
               AI-Powered Personal Wardrobe Stylist
@@ -56,7 +38,7 @@ const Index = () => {
             </p>
             
             {user ? (
-              <div className="flex flex-col sm:flex-row justify-center gap-4">
+              <div className="flex flex-col sm:flex-row gap-4">
                 <Button asChild size="lg" className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-6 rounded-lg shadow-lg hover:shadow-purple-700/20">
                   <Link to="/my-wardrobe">
                     Get Started
@@ -78,6 +60,32 @@ const Index = () => {
                 </Link>
               </Button>
             )}
+          </motion.div>
+          
+          {/* Right side - Olivia's introduction */}
+          <motion.div 
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="flex-1 relative"
+          >
+            <div className="relative">
+              <img 
+                src="/lovable-uploads/45448793-cb34-4e4c-9dd8-de95f86f25ca.png"
+                alt="Olivia Bloom - Your AI Stylist"
+                className="w-full max-w-md mx-auto rounded-2xl shadow-2xl shadow-purple-500/20"
+              />
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+                className="absolute -bottom-8 -left-4 bg-gradient-to-r from-purple-600/90 to-pink-600/90 p-6 rounded-2xl shadow-xl max-w-xs backdrop-blur-sm border border-white/10"
+              >
+                <p className="text-white text-lg font-medium">
+                  Hi, I'm Olivia Bloom, your personal AI stylist! Ready to help you create perfect outfits and organize your wardrobe.
+                </p>
+              </motion.div>
+            </div>
           </motion.div>
         </div>
         

@@ -20,16 +20,20 @@ const Feature = ({ icon, title, description, color, iconColor, delay }: FeatureP
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay }}
       viewport={{ once: true }}
+      whileHover={{ scale: 1.05 }}
       className="flex flex-col items-center text-center"
     >
-      <div className={cn(
-        "w-16 h-16 rounded-full flex items-center justify-center mb-4",
-        `bg-${color}-500/20`
-      )}>
+      <motion.div 
+        className={cn(
+          "w-16 h-16 rounded-full flex items-center justify-center mb-4",
+          `bg-${color}-500/20`
+        )}
+        whileHover={{ rotate: 5 }}
+      >
         <div className={cn("w-8 h-8", iconColor)}>
           {icon}
         </div>
-      </div>
+      </motion.div>
       <h3 className="text-xl font-semibold mb-2">{title}</h3>
       <p className="text-white/80">{description}</p>
     </motion.div>
@@ -40,21 +44,31 @@ const HowItWorks = () => {
   const isMobile = useIsMobile();
   
   return (
-    <div className="py-6">
-      <div className="mb-8 pb-2 border-b border-blue-500/20">
-        <h2 className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 pb-1`}>
-          <span className="flex items-center justify-center md:justify-start gap-2">
-            <Sparkles className={`${isMobile ? 'h-6 w-6' : 'h-7 w-7'} text-blue-400`} />
-            How It Works
-          </span>
-        </h2>
+    <div className="py-16">
+      <div className="mb-12 text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          viewport={{ once: true }}
+        >
+          <h2 className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 pb-1 mb-4`}>
+            <span className="flex items-center justify-center gap-2">
+              <Sparkles className={`${isMobile ? 'h-6 w-6' : 'h-7 w-7'} text-blue-400`} />
+              How It Works
+            </span>
+          </h2>
+          <p className="text-lg text-white/80 max-w-2xl mx-auto">
+            Experience the future of personal styling with AI-powered recommendations
+          </p>
+        </motion.div>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
         <Feature 
           icon={<Camera className="w-full h-full" />}
-          title="Digitize Your Wardrobe"
-          description="Upload photos of your clothing items or snap them directly in the app to build your digital wardrobe inventory."
+          title="Smart Wardrobe Organization"
+          description="Digitize your closet with AI-powered cataloging and get instant outfit combinations based on your style preferences."
           color="blue"
           iconColor="text-blue-400"
           delay={0.1}
@@ -62,8 +76,8 @@ const HowItWorks = () => {
         
         <Feature 
           icon={<Sparkles className="w-full h-full" />}
-          title="Get AI Outfit Suggestions"
-          description="Receive personalized outfit recommendations based on your style, the weather, and upcoming events in your calendar."
+          title="AI Style Assistant"
+          description="Get personalized outfit recommendations from Olivia based on weather, occasions, and your calendar events."
           color="purple"
           iconColor="text-purple-400"
           delay={0.2}
@@ -71,8 +85,8 @@ const HowItWorks = () => {
         
         <Feature 
           icon={<Shirt className="w-full h-full" />}
-          title="Try On Virtually"
-          description="See how outfits look on you or our virtual model Olivia before deciding what to wear or buy."
+          title="Virtual Try-On"
+          description="Preview outfits on your virtual model before wearing them, ensuring perfect style combinations every time."
           color="pink"
           iconColor="text-pink-400"
           delay={0.3}
