@@ -27,7 +27,11 @@ const Index = () => {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-5xl md:text-7xl font-bold text-center mb-16 leading-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400"
+          className="text-5xl md:text-7xl font-bold text-center mb-16 leading-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 relative"
+          style={{
+            textShadow: '0 0 40px rgba(167, 139, 250, 0.3)',
+            animation: 'pulse 3s infinite'
+          }}
         >
           The Future of Fashion
         </motion.h1>
@@ -108,7 +112,7 @@ const Index = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.4 }}
-                className="absolute -bottom-6 -left-6 bg-gradient-to-r from-purple-600/90 to-pink-600/90 p-8 rounded-2xl shadow-xl backdrop-blur-sm border border-white/20 hover:border-white/30 transition-all duration-300 hover:shadow-purple-500/30"
+                className="absolute md:-bottom-6 -bottom-24 md:-left-6 left-0 bg-gradient-to-r from-purple-600/90 to-pink-600/90 p-8 rounded-2xl shadow-xl backdrop-blur-sm border border-white/20 hover:border-white/30 transition-all duration-300 hover:shadow-purple-500/30 md:max-w-[90%] w-full md:w-auto"
                 style={{
                   boxShadow: '0 8px 32px -4px rgba(147, 51, 234, 0.3)'
                 }}
@@ -138,3 +142,4 @@ const Index = () => {
 };
 
 export default Index;
+

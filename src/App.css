@@ -341,3 +341,15 @@
     padding: 0.5rem 0.75rem !important;
   }
 }
+
+@keyframes pulse {
+  0% {
+    text-shadow: 0 0 40px rgba(167, 139, 250, 0.1);
+  }
+  50% {
+    text-shadow: 0 0 40px rgba(167, 139, 250, 0.4);
+  }
+  100% {
+    text-shadow: 0 0 40px rgba(167, 139, 250, 0.1);
+  }
+}
