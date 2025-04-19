@@ -28,13 +28,13 @@ const Index = () => {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
-            className="flex-1"
+            className="flex-1 space-y-6"
           >
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
-              AI-Powered Personal Wardrobe Stylist
+              The Future of Fashion
             </h1>
             <p className="text-xl md:text-2xl text-blue-100 mb-8">
-              Organize your wardrobe, discover new outfits, and get AI-powered style recommendations
+              AI-powered personal styling that transforms your wardrobe experience
             </p>
             
             {user ? (
@@ -69,20 +69,20 @@ const Index = () => {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="flex-1 relative"
           >
-            <div className="relative">
+            <div className="relative group">
               <img 
-                src="/lovable-uploads/45448793-cb34-4e4c-9dd8-de95f86f25ca.png"
+                src="/lovable-uploads/4e16d86c-652b-4717-958f-b48ce5663c9b.png"
                 alt="Olivia Bloom - Your AI Stylist"
-                className="w-full max-w-md mx-auto rounded-2xl shadow-2xl shadow-purple-500/20"
+                className="w-full max-w-md mx-auto rounded-2xl shadow-2xl shadow-purple-500/20 transition-transform group-hover:scale-105"
               />
               <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.4 }}
-                className="absolute -bottom-8 -left-4 bg-gradient-to-r from-purple-600/90 to-pink-600/90 p-6 rounded-2xl shadow-xl max-w-xs backdrop-blur-sm border border-white/10"
+                className="absolute -bottom-10 -left-4 bg-gradient-to-r from-purple-600/90 to-pink-600/90 p-6 rounded-2xl shadow-xl max-w-xs backdrop-blur-sm border border-white/10"
               >
                 <p className="text-white text-lg font-medium">
-                  Hi, I'm Olivia Bloom, your personal AI stylist! Ready to help you create perfect outfits and organize your wardrobe.
+                  Meet Olivia Bloom, your personal AI-powered stylist. Ready to help you create perfect outfits and organize your wardrobe.
                 </p>
               </motion.div>
             </div>
@@ -106,3 +106,4 @@ const Index = () => {
 };
 
 export default Index;
+
