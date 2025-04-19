@@ -49,6 +49,7 @@ const testimonials: Testimonial[] = [
   },
 ];
 
+// Remove the props as they're not needed anymore - we use the internal testimonials array
 const TestimonialsCarousel = () => {
   return (
     <div className="w-full py-16">

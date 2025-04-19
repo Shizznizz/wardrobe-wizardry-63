@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { UserPreferences, Outfit, ClothingItem } from '@/lib/types';
+import { OutfitLog } from '@/components/outfits/OutfitLogItem';
 
 // Set up Supabase client
 export const supabase = createClient(
@@ -97,7 +98,7 @@ export const getUserPreferences = async (userId: string) => {
       },
       outfitReminders: data.reminder_enabled || false,
       reminderTime: data.reminder_time || '08:00',
-      occasionPreferences: data.occasions_preferences || [],
+      occasionPreferences: data.occasion_preferences || [],
       climatePreferences: data.climate_preferences || [],
       weatherLocation: data.preferred_city ? {
         city: data.preferred_city,
@@ -112,4 +113,132 @@ export const getUserPreferences = async (userId: string) => {
   }
 };
 
-// ... keep existing code for other functions
+export const getOutfitLogs = async (userId: string) => {
+  try {
+    const { data, error } = await supabase
+      .from('outfit_logs')
+      .select('*')
+      .eq('user_id', userId)
+      .order('date', { ascending: false });
+    
+    if (error) {
+      console.error('Error fetching outfit logs:', error);
+      return { success: false, error };
+    }
+    
+    // Convert date strings to Date objects
+    const formattedLogs = data.map((log: any) => ({
+      ...log,
+      date: new Date(log.date)
+    })) as OutfitLog[];
+    
+    return { success: true, data: formattedLogs };
+  } catch (error) {
+    console.error('Exception fetching outfit logs:', error);
+    return { success: false, error };
+  }
+};
+
+export const saveOutfitLog = async (userId: string, log: Omit<OutfitLog, 'id'>) => {
+  try {
+    const logData = {
+      user_id: userId,
+      outfit_id: log.outfitId,
+      date: log.date.toISOString(),
+      time_of_day: log.timeOfDay,
+      notes: log.notes || null,
+      weather_condition: log.weatherCondition || null,
+      temperature: log.temperature || null
+    };
+    
+    const { data, error } = await supabase
+      .from('outfit_logs')
+      .insert([logData])
+      .select()
+      .single();
+    
+    if (error) {
+      console.error('Error saving outfit log:', error);
+      return { success: false, error };
+    }
+    
+    // Convert the returned data to OutfitLog format
+    const savedLog: OutfitLog = {
+      id: data.id,
+      outfitId: data.outfit_id,
+      date: new Date(data.date),
+      timeOfDay: data.time_of_day,
+      notes: data.notes,
+      weatherCondition: data.weather_condition,
+      temperature: data.temperature
+    };
+    
+    return { success: true, data: savedLog };
+  } catch (error) {
+    console.error('Exception saving outfit log:', error);
+    return { success: false, error };
+  }
+};
+
+export const updateOutfitLog = async (userId: string, logId: string, updates: Partial<OutfitLog>) => {
+  try {
+    // Convert OutfitLog format to database format
+    const updateData: any = {};
+    
+    if (updates.outfitId !== undefined) updateData.outfit_id = updates.outfitId;
+    if (updates.date !== undefined) updateData.date = updates.date.toISOString();
+    if (updates.timeOfDay !== undefined) updateData.time_of_day = updates.timeOfDay;
+    if (updates.notes !== undefined) updateData.notes = updates.notes;
+    if (updates.weatherCondition !== undefined) updateData.weather_condition = updates.weatherCondition;
+    if (updates.temperature !== undefined) updateData.temperature = updates.temperature;
+    
+    const { data, error } = await supabase
+      .from('outfit_logs')
+      .update(updateData)
+      .eq('id', logId)
+      .eq('user_id', userId)
+      .select()
+      .single();
+    
+    if (error) {
+      console.error('Error updating outfit log:', error);
+      return { success: false, error };
+    }
+    
+    // Convert the returned data to OutfitLog format
+    const updatedLog: OutfitLog = {
+      id: data.id,
+      outfitId: data.outfit_id,
+      date: new Date(data.date),
+      timeOfDay: data.time_of_day,
+      notes: data.notes,
+      weatherCondition: data.weather_condition,
+      temperature: data.temperature
+    };
+    
+    return { success: true, data: updatedLog };
+  } catch (error) {
+    console.error('Exception updating outfit log:', error);
+    return { success: false, error };
+  }
+};
+
+export const deleteOutfitLog = async (userId: string, logId: string) => {
+  try {
+    const { error } = await supabase
+      .from('outfit_logs')
+      .delete()
+      .eq('id', logId)
+      .eq('user_id', userId);
+    
+    if (error) {
+      console.error('Error deleting outfit log:', error);
+      return { success: false, error };
+    }
+    
+    return { success: true };
+  } catch (error) {
+    console.error('Exception deleting outfit log:', error);
+    return { success: false, error };
+  }
+};

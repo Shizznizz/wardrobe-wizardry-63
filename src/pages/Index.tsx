@@ -91,7 +91,7 @@ const Index = () => {
         
         <SectionDivider />
         
-        <TestimonialsCarousel testimonials={testimonials} />
+        <TestimonialsCarousel />
       </main>
     </div>
   );

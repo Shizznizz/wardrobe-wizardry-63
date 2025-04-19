@@ -26,7 +26,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Loader2, Save } from 'lucide-react';
-import { UserPreferences, ClothingColor } from '@/lib/types';
+import { UserPreferences, ClothingColor, PersonalityTag, BodyType } from '@/lib/types';
 import ColorSelector from './ColorSelector';
 import { Badge } from '@/components/ui/badge';
 
@@ -55,7 +55,7 @@ const UserPreferencesForm = ({ initialPreferences, onSave }: UserPreferencesForm
     defaultValues: {
       favoriteColors: initialPreferences.favoriteColors?.map(color => color as string) || [],
       favoriteStyles: initialPreferences.favoriteStyles || [],
-      personalityTags: initialPreferences.personalityTags || [],
+      personalityTags: initialPreferences.personalityTags?.map(tag => tag) || [],
       bodyType: initialPreferences.bodyType || 'not-specified',
       outfitReminders: initialPreferences.outfitReminders || false,
       reminderTime: initialPreferences.reminderTime || '08:00',
@@ -68,7 +68,7 @@ const UserPreferencesForm = ({ initialPreferences, onSave }: UserPreferencesForm
     form.reset({
       favoriteColors: initialPreferences.favoriteColors?.map(color => color as string) || [],
       favoriteStyles: initialPreferences.favoriteStyles || [],
-      personalityTags: initialPreferences.personalityTags || [],
+      personalityTags: initialPreferences.personalityTags?.map(tag => tag) || [],
       bodyType: initialPreferences.bodyType || 'not-specified',
       outfitReminders: initialPreferences.outfitReminders || false,
       reminderTime: initialPreferences.reminderTime || '08:00',
@@ -86,8 +86,8 @@ const UserPreferencesForm = ({ initialPreferences, onSave }: UserPreferencesForm
         ...initialPreferences,
         favoriteColors: values.favoriteColors as ClothingColor[],
         favoriteStyles: values.favoriteStyles,
-        personalityTags: values.personalityTags,
-        bodyType: values.bodyType,
+        personalityTags: values.personalityTags as PersonalityTag[],
+        bodyType: values.bodyType as BodyType,
         outfitReminders: values.outfitReminders,
         reminderTime: values.reminderTime,
         occasionPreferences: values.occasionPreferences,
