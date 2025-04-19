@@ -1,280 +1,528 @@
-import { useState, useCallback } from 'react';
-import { motion } from 'framer-motion';
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { 
-  Form, 
-  FormControl, 
-  FormField, 
-  FormItem, 
-  FormLabel, 
-  FormMessage 
-} from '@/components/ui/form';
-import { 
-  Tabs, 
-  TabsContent, 
-  TabsList, 
-  TabsTrigger 
-} from '@/components/ui/tabs';
-import { 
-  Palette, 
-  Shirt, 
-  Cloud, 
-  Calendar, 
-  Bell, 
-  Sparkles,
-  Save
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
-import { UserPreferences, ClothingColor, ClothingSeason, PersonalityTag } from '@/lib/types';
-import ColorPreferences from './ColorPreferences';
-import StylePreferences from './StylePreferences';
-import SeasonalPreferences from './SeasonalPreferences';
-import ReminderPreferences from './ReminderPreferences';
-import OccasionPreferences from './OccasionPreferences';
-import ClimatePreferences from './ClimatePreferences';
 
-// Extend the UserPreferences type with the new fields
-const formSchema = z.object({
-  favoriteColors: z.array(z.string()),
-  favoriteStyles: z.array(z.string()),
-  personalityTags: z.array(z.string()).optional(),
-  seasonalPreferences: z.record(z.object({
-    enabled: z.boolean(),
-    temperatureRange: z.tuple([z.number(), z.number()]),
-    timeOfYear: z.tuple([z.number(), z.number()]).optional()
-  })),
-  outfitReminders: z.boolean(),
-  reminderTime: z.string(),
-  occasionPreferences: z.array(z.string()).optional(),
-  climatePreferences: z.array(z.string()).optional()
-});
+import { useState, useEffect } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import * as z from 'zod';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Switch } from '@/components/ui/switch';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Loader2, Save } from 'lucide-react';
+import { UserPreferences, ClothingColor } from '@/lib/types';
+import ColorSelector from './ColorSelector';
+import { Badge } from '@/components/ui/badge';
 
 interface UserPreferencesFormProps {
   initialPreferences: UserPreferences;
   onSave: (preferences: UserPreferences) => void;
-  onCancel?: () => void;
 }
 
-const UserPreferencesForm = ({ initialPreferences, onSave, onCancel }: UserPreferencesFormProps) => {
-  const [activeTab, setActiveTab] = useState("colors");
+const formSchema = z.object({
+  favoriteColors: z.array(z.string()).min(1, 'Select at least one color'),
+  favoriteStyles: z.array(z.string()).min(1, 'Select at least one style'),
+  personalityTags: z.array(z.string()).optional(),
+  bodyType: z.string().optional(),
+  outfitReminders: z.boolean().default(false),
+  reminderTime: z.string().default('08:00'),
+  occasionPreferences: z.array(z.string()).optional(),
+  climatePreferences: z.array(z.string()).optional(),
+});
+
+const UserPreferencesForm = ({ initialPreferences, onSave }: UserPreferencesFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const form = useForm<UserPreferences>({
+  const [selectedTab, setSelectedTab] = useState('style');
+  
+  const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialPreferences,
+    defaultValues: {
+      favoriteColors: initialPreferences.favoriteColors?.map(color => color as string) || [],
+      favoriteStyles: initialPreferences.favoriteStyles || [],
+      personalityTags: initialPreferences.personalityTags || [],
+      bodyType: initialPreferences.bodyType || 'not-specified',
+      outfitReminders: initialPreferences.outfitReminders || false,
+      reminderTime: initialPreferences.reminderTime || '08:00',
+      occasionPreferences: initialPreferences.occasionPreferences || [],
+      climatePreferences: initialPreferences.climatePreferences || [],
+    },
   });
-
-  // Memoize the handleSubmit function to prevent unnecessary re-renders
-  const handleSubmit = useCallback(async (data: UserPreferences) => {
+  
+  useEffect(() => {
+    form.reset({
+      favoriteColors: initialPreferences.favoriteColors?.map(color => color as string) || [],
+      favoriteStyles: initialPreferences.favoriteStyles || [],
+      personalityTags: initialPreferences.personalityTags || [],
+      bodyType: initialPreferences.bodyType || 'not-specified',
+      outfitReminders: initialPreferences.outfitReminders || false,
+      reminderTime: initialPreferences.reminderTime || '08:00',
+      occasionPreferences: initialPreferences.occasionPreferences || [],
+      climatePreferences: initialPreferences.climatePreferences || [],
+    });
+  }, [initialPreferences, form]);
+  
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsSubmitting(true);
+    
     try {
-      // Make a copy of the data to ensure all fields have proper types
-      const typedData: UserPreferences = {
-        ...data,
-        favoriteColors: data.favoriteColors as ClothingColor[],
+      // Merge form values with existing preferences to ensure we don't lose data
+      const updatedPreferences: UserPreferences = {
+        ...initialPreferences,
+        favoriteColors: values.favoriteColors as ClothingColor[],
+        favoriteStyles: values.favoriteStyles,
+        personalityTags: values.personalityTags,
+        bodyType: values.bodyType,
+        outfitReminders: values.outfitReminders,
+        reminderTime: values.reminderTime,
+        occasionPreferences: values.occasionPreferences,
+        climatePreferences: values.climatePreferences,
       };
-      await onSave(typedData);
-      toast.success("Your preferences have been saved!");
-    } catch (error) {
-      console.error("Failed to save preferences:", error);
-      toast.error("Failed to save your preferences. Please try again.");
+      
+      await onSave(updatedPreferences);
     } finally {
       setIsSubmitting(false);
     }
-  }, [onSave]);
+  };
+  
+  const colorOptions: { label: string; value: ClothingColor }[] = [
+    { label: 'Black', value: 'black' },
+    { label: 'White', value: 'white' },
+    { label: 'Gray', value: 'gray' },
+    { label: 'Blue', value: 'blue' },
+    { label: 'Green', value: 'green' },
+    { label: 'Red', value: 'red' },
+    { label: 'Yellow', value: 'yellow' },
+    { label: 'Purple', value: 'purple' },
+    { label: 'Pink', value: 'pink' },
+    { label: 'Orange', value: 'orange' },
+    { label: 'Brown', value: 'brown' },
+    { label: 'Navy', value: 'navy' },
+    { label: 'Beige', value: 'beige' },
+    { label: 'Burgundy', value: 'burgundy' },
+  ];
+  
+  const styleOptions = [
+    { label: 'Casual', value: 'casual' },
+    { label: 'Business Casual', value: 'business casual' },
+    { label: 'Formal', value: 'formal' },
+    { label: 'Sportswear', value: 'sportswear' },
+    { label: 'Minimalist', value: 'minimalist' },
+    { label: 'Vintage', value: 'vintage' },
+    { label: 'Bohemian', value: 'bohemian' },
+    { label: 'Streetwear', value: 'streetwear' },
+    { label: 'Preppy', value: 'preppy' },
+    { label: 'Romantic', value: 'romantic' },
+    { label: 'Elegant', value: 'elegant' },
+    { label: 'Smart Casual', value: 'smart casual' },
+    { label: 'Trendy', value: 'trendy' },
+  ];
+  
+  const personalityOptions = [
+    { label: 'Minimalist', value: 'minimalist' },
+    { label: 'Bold', value: 'bold' },
+    { label: 'Trendy', value: 'trendy' },
+    { label: 'Classic', value: 'classic' },
+    { label: 'Casual', value: 'casual' },
+    { label: 'Formal', value: 'formal' },
+    { label: 'Sporty', value: 'sporty' },
+    { label: 'Elegant', value: 'elegant' },
+    { label: 'Vintage', value: 'vintage' },
+    { label: 'Bohemian', value: 'bohemian' },
+    { label: 'Preppy', value: 'preppy' },
+    { label: 'Artistic', value: 'artistic' },
+  ];
+  
+  const occasionOptions = [
+    { label: 'Everyday', value: 'everyday' },
+    { label: 'Work', value: 'work' },
+    { label: 'Casual', value: 'casual' },
+    { label: 'Formal', value: 'formal' },
+    { label: 'Party', value: 'party' },
+    { label: 'Date Night', value: 'date' },
+    { label: 'Special Occasion', value: 'special' },
+    { label: 'Travel', value: 'travel' },
+    { label: 'Workout', value: 'workout' },
+    { label: 'Beach', value: 'beach' },
+    { label: 'Vacation', value: 'vacation' },
+  ];
+  
+  const climateOptions = [
+    { label: 'Hot/Summer', value: 'hot' },
+    { label: 'Cold/Winter', value: 'cold' },
+    { label: 'Mild/Spring', value: 'mild' },
+    { label: 'Rainy', value: 'rainy' },
+    { label: 'Windy', value: 'windy' },
+    { label: 'Humid', value: 'humid' },
+    { label: 'Dry', value: 'dry' },
+    { label: 'I am flexible', value: 'flexible' },
+  ];
+  
+  const bodyTypeOptions = [
+    { label: 'Hourglass', value: 'hourglass' },
+    { label: 'Apple', value: 'apple' },
+    { label: 'Pear', value: 'pear' },
+    { label: 'Rectangle', value: 'rectangle' },
+    { label: 'Inverted Triangle', value: 'inverted-triangle' },
+    { label: 'I prefer not to specify', value: 'not-specified' },
+  ];
 
   return (
-    <div className="w-full">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid grid-cols-3 md:grid-cols-6 mb-4">
-              <TabsTrigger value="colors" className="flex items-center gap-2">
-                <Palette className="w-4 h-4" /> 
-                <span className="hidden sm:inline">Colors</span>
-              </TabsTrigger>
-              <TabsTrigger value="styles" className="flex items-center gap-2">
-                <Shirt className="w-4 h-4" />
-                <span className="hidden sm:inline">Styles</span>
-              </TabsTrigger>
-              <TabsTrigger value="seasons" className="flex items-center gap-2">
-                <Calendar className="w-4 h-4" />
-                <span className="hidden sm:inline">Seasons</span>
-              </TabsTrigger>
-              <TabsTrigger value="reminders" className="flex items-center gap-2">
-                <Bell className="w-4 h-4" />
-                <span className="hidden sm:inline">Reminders</span>
-              </TabsTrigger>
-              <TabsTrigger value="occasions" className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4" />
-                <span className="hidden sm:inline">Occasions</span>
-              </TabsTrigger>
-              <TabsTrigger value="climate" className="flex items-center gap-2">
-                <Cloud className="w-4 h-4" />
-                <span className="hidden sm:inline">Climate</span>
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="colors" className="pt-4 space-y-6">
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <Tabs value={selectedTab} onValueChange={setSelectedTab}>
+          <TabsList className="grid grid-cols-4 mb-8">
+            <TabsTrigger value="style">Style</TabsTrigger>
+            <TabsTrigger value="body">Body</TabsTrigger>
+            <TabsTrigger value="occasions">Occasions</TabsTrigger>
+            <TabsTrigger value="notifications">Notifications</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="style" className="space-y-6">
+            <div className="space-y-6">
               <FormField
                 control={form.control}
                 name="favoriteColors"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-lg font-medium">Choose your favorite colors</FormLabel>
-                    <FormControl>
-                      <ColorPreferences 
-                        value={field.value as ClothingColor[]} 
-                        onChange={field.onChange} 
+                    <FormLabel className="text-lg font-medium text-white">Favorite Colors</FormLabel>
+                    <FormDescription className="text-blue-100/80">
+                      Select colors you prefer for your clothing items
+                    </FormDescription>
+                    <div className="mt-3">
+                      <ColorSelector
+                        selected={field.value}
+                        options={colorOptions}
+                        onChange={(colors) => field.onChange(colors)}
                       />
-                    </FormControl>
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            </TabsContent>
-
-            <TabsContent value="styles" className="pt-4 space-y-6">
+              
               <FormField
                 control={form.control}
                 name="favoriteStyles"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-lg font-medium">Select your favorite clothing styles</FormLabel>
-                    <FormControl>
-                      <StylePreferences 
-                        value={field.value} 
-                        onChange={field.onChange} 
-                      />
-                    </FormControl>
+                    <FormLabel className="text-lg font-medium text-white">Favorite Styles</FormLabel>
+                    <FormDescription className="text-blue-100/80">
+                      Select clothing styles you prefer
+                    </FormDescription>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-3">
+                      {styleOptions.map((style) => (
+                        <FormField
+                          key={style.value}
+                          control={form.control}
+                          name="favoriteStyles"
+                          render={({ field }) => {
+                            return (
+                              <FormItem
+                                key={style.value}
+                                className="flex items-center space-x-2 space-y-0"
+                              >
+                                <FormControl>
+                                  <Checkbox
+                                    checked={field.value?.includes(style.value)}
+                                    onCheckedChange={(checked) => {
+                                      return checked
+                                        ? field.onChange([...field.value, style.value])
+                                        : field.onChange(
+                                            field.value?.filter(
+                                              (value) => value !== style.value
+                                            )
+                                          );
+                                    }}
+                                  />
+                                </FormControl>
+                                <FormLabel className="text-sm font-normal cursor-pointer">
+                                  {style.label}
+                                </FormLabel>
+                              </FormItem>
+                            );
+                          }}
+                        />
+                      ))}
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-
+              
               <FormField
                 control={form.control}
                 name="personalityTags"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-lg font-medium">Your style personality</FormLabel>
-                    <FormControl>
-                      <StylePreferences 
-                        value={field.value as string[] || []} 
-                        onChange={field.onChange}
-                        isPersonalityTags={true}
-                      />
-                    </FormControl>
+                    <FormLabel className="text-lg font-medium text-white">Style Personality</FormLabel>
+                    <FormDescription className="text-blue-100/80">
+                      How would you describe your fashion personality?
+                    </FormDescription>
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      {personalityOptions.map((tag) => {
+                        const isSelected = field.value?.includes(tag.value);
+                        return (
+                          <Badge
+                            key={tag.value}
+                            variant="outline"
+                            className={`cursor-pointer px-3 py-1 ${
+                              isSelected
+                                ? 'bg-purple-500/30 border-purple-400/50 text-white'
+                                : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10'
+                            }`}
+                            onClick={() => {
+                              const currentValues = field.value || [];
+                              const newValues = isSelected
+                                ? currentValues.filter((v) => v !== tag.value)
+                                : [...currentValues, tag.value];
+                              field.onChange(newValues);
+                            }}
+                          >
+                            {tag.label}
+                          </Badge>
+                        );
+                      })}
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            </TabsContent>
-
-            <TabsContent value="seasons" className="pt-4 space-y-6">
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="body" className="space-y-6">
+            <FormField
+              control={form.control}
+              name="bodyType"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-lg font-medium text-white">Body Type</FormLabel>
+                  <FormDescription className="text-blue-100/80">
+                    Select your body type for more accurate outfit recommendations
+                  </FormDescription>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    value={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="bg-slate-800/50 border-white/10 text-white">
+                        <SelectValue placeholder="Select your body type" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="bg-slate-800 border-white/10 text-white">
+                      {bodyTypeOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <div className="p-4 bg-slate-800/30 border border-purple-500/20 rounded-md">
+              <h3 className="font-medium text-white mb-2">What are body types?</h3>
+              <p className="text-sm text-white/80 mb-3">
+                Body types help our AI suggest outfits that complement your natural shape:
+              </p>
+              <ul className="space-y-2 text-sm text-white/70">
+                <li><strong className="text-white">Hourglass:</strong> Similar shoulder and hip width with a defined waist</li>
+                <li><strong className="text-white">Apple:</strong> Fuller bust/midsection with slimmer legs</li>
+                <li><strong className="text-white">Pear:</strong> Narrower shoulders with wider hips</li>
+                <li><strong className="text-white">Rectangle:</strong> Similar measurements throughout with less waist definition</li>
+                <li><strong className="text-white">Inverted Triangle:</strong> Broader shoulders with narrower hips</li>
+              </ul>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="occasions" className="space-y-6">
+            <FormField
+              control={form.control}
+              name="occasionPreferences"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-lg font-medium text-white">Occasions</FormLabel>
+                  <FormDescription className="text-blue-100/80">
+                    What occasions do you need outfits for?
+                  </FormDescription>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-3">
+                    {occasionOptions.map((occasion) => (
+                      <FormField
+                        key={occasion.value}
+                        control={form.control}
+                        name="occasionPreferences"
+                        render={({ field }) => {
+                          return (
+                            <FormItem
+                              key={occasion.value}
+                              className="flex items-center space-x-2 space-y-0"
+                            >
+                              <FormControl>
+                                <Checkbox
+                                  checked={field.value?.includes(occasion.value)}
+                                  onCheckedChange={(checked) => {
+                                    return checked
+                                      ? field.onChange([...field.value || [], occasion.value])
+                                      : field.onChange(
+                                          field.value?.filter(
+                                            (value) => value !== occasion.value
+                                          )
+                                        );
+                                  }}
+                                />
+                              </FormControl>
+                              <FormLabel className="text-sm font-normal cursor-pointer">
+                                {occasion.label}
+                              </FormLabel>
+                            </FormItem>
+                          );
+                        }}
+                      />
+                    ))}
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="climatePreferences"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-lg font-medium text-white">Climate Preferences</FormLabel>
+                  <FormDescription className="text-blue-100/80">
+                    What climate conditions do you dress for?
+                  </FormDescription>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-3">
+                    {climateOptions.map((climate) => (
+                      <FormField
+                        key={climate.value}
+                        control={form.control}
+                        name="climatePreferences"
+                        render={({ field }) => {
+                          return (
+                            <FormItem
+                              key={climate.value}
+                              className="flex items-center space-x-2 space-y-0"
+                            >
+                              <FormControl>
+                                <Checkbox
+                                  checked={field.value?.includes(climate.value)}
+                                  onCheckedChange={(checked) => {
+                                    return checked
+                                      ? field.onChange([...field.value || [], climate.value])
+                                      : field.onChange(
+                                          field.value?.filter(
+                                            (value) => value !== climate.value
+                                          )
+                                        );
+                                  }}
+                                />
+                              </FormControl>
+                              <FormLabel className="text-sm font-normal cursor-pointer">
+                                {climate.label}
+                              </FormLabel>
+                            </FormItem>
+                          );
+                        }}
+                      />
+                    ))}
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </TabsContent>
+          
+          <TabsContent value="notifications" className="space-y-6">
+            <FormField
+              control={form.control}
+              name="outfitReminders"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border border-white/10 p-4 shadow-sm">
+                  <div className="space-y-0.5">
+                    <FormLabel className="text-base">Daily Outfit Reminders</FormLabel>
+                    <FormDescription>
+                      Receive daily notifications for outfit suggestions
+                    </FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      className="data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-purple-600 data-[state=checked]:to-pink-600"
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            
+            {form.watch("outfitReminders") && (
               <FormField
                 control={form.control}
-                name="seasonalPreferences"
+                name="reminderTime"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-lg font-medium">Set your seasonal preferences</FormLabel>
+                    <FormLabel>Reminder Time</FormLabel>
                     <FormControl>
-                      <SeasonalPreferences 
-                        value={field.value} 
-                        onChange={field.onChange} 
+                      <Input
+                        type="time"
+                        {...field}
+                        className="bg-slate-800/50 border-white/10 text-white"
                       />
                     </FormControl>
+                    <FormDescription>
+                      What time would you like to receive notifications?
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            </TabsContent>
-
-            <TabsContent value="reminders" className="pt-4 space-y-6">
-              <FormField
-                control={form.control}
-                name="outfitReminders"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-lg font-medium">Daily outfit reminders</FormLabel>
-                    <FormControl>
-                      <ReminderPreferences 
-                        enabled={field.value} 
-                        onToggle={field.onChange}
-                        reminderTime={form.watch("reminderTime")}
-                        onTimeChange={(time) => form.setValue("reminderTime", time)} 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </TabsContent>
-
-            <TabsContent value="occasions" className="pt-4 space-y-6">
-              <FormField
-                control={form.control}
-                name="occasionPreferences"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-lg font-medium">Preferences for specific occasions</FormLabel>
-                    <FormControl>
-                      <OccasionPreferences 
-                        value={field.value as string[] || []} 
-                        onChange={field.onChange} 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </TabsContent>
-
-            <TabsContent value="climate" className="pt-4 space-y-6">
-              <FormField
-                control={form.control}
-                name="climatePreferences"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-lg font-medium">Climate preferences (optional)</FormLabel>
-                    <FormControl>
-                      <ClimatePreferences 
-                        value={field.value as string[] || []} 
-                        onChange={field.onChange} 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </TabsContent>
-          </Tabs>
-
-          <div className="flex justify-end space-x-4 pt-4">
-            {onCancel && (
-              <Button 
-                type="button" 
-                variant="outline"
-                onClick={onCancel}
-              >
-                Cancel
-              </Button>
             )}
-            <Button 
-              type="submit" 
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
-              disabled={isSubmitting}
-            >
-              <Save className="mr-2 h-4 w-4" />
-              {isSubmitting ? "Saving..." : "Save Preferences"}
-            </Button>
-          </div>
-        </form>
-      </Form>
-    </div>
+          </TabsContent>
+        </Tabs>
+        
+        <div className="mt-8 flex justify-end">
+          <Button 
+            type="submit" 
+            disabled={isSubmitting}
+            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="mr-2 h-4 w-4" />
+                Save Preferences
+              </>
+            )}
+          </Button>
+        </div>
+      </form>
+    </Form>
   );
 };
 

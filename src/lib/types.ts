@@ -36,6 +36,14 @@ export type PersonalityTag =
   | 'preppy'
   | 'artistic';
 
+export type BodyType = 
+  | 'hourglass'
+  | 'apple'
+  | 'pear'
+  | 'rectangle'
+  | 'inverted-triangle'
+  | 'not-specified';
+
 export type ClothingType = 
   | 'shirt'
   | 'sweater'
@@ -175,6 +183,7 @@ export interface UserPreferences {
   favoriteColors: ClothingColor[];
   favoriteStyles: string[];
   personalityTags?: PersonalityTag[];
+  bodyType?: BodyType;
   seasonalPreferences: {
     [key in ClothingSeason]: {
       enabled: boolean;

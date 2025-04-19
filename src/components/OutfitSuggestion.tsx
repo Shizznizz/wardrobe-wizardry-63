@@ -60,7 +60,7 @@ const OutfitSuggestion = ({
       });
       
       // Navigate to the outfits page
-      navigate("/outfits");
+      navigate("/mix-and-match");
     }
   };
   
