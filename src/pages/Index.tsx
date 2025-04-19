@@ -21,18 +21,25 @@ const Index = () => {
       <Header />
       <BackgroundShapes />
       
-      <main className="container mx-auto px-4 pt-32 md:pt-40 pb-20 relative z-10">
-        <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12 max-w-6xl mx-auto mb-16">
-          {/* Left side - Text content */}
+      <main className="container mx-auto px-4 pt-20 md:pt-28 pb-20 relative z-10">
+        {/* Title Section - Full Width */}
+        <motion.h1 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-5xl md:text-7xl font-bold text-center mb-16 leading-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400"
+        >
+          The Future of Fashion
+        </motion.h1>
+        
+        <div className="flex flex-col md:flex-row items-start gap-8 md:gap-12 max-w-6xl mx-auto">
+          {/* Left side - Text content and CTAs */}
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
             className="flex-1 space-y-6"
           >
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
-              The Future of Fashion
-            </h1>
             <p className="text-xl md:text-2xl text-blue-100 mb-8">
               AI-powered personal styling that transforms your wardrobe experience
             </p>
@@ -79,7 +86,7 @@ const Index = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.4 }}
-                className="absolute -bottom-10 -left-4 bg-gradient-to-r from-purple-600/90 to-pink-600/90 p-6 rounded-2xl shadow-xl max-w-xs backdrop-blur-sm border border-white/10"
+                className="absolute -bottom-6 -left-6 bg-gradient-to-r from-purple-600/90 to-pink-600/90 p-6 rounded-2xl shadow-xl max-w-xs backdrop-blur-sm border border-white/10"
               >
                 <p className="text-white text-lg font-medium">
                   Meet Olivia Bloom, your personal AI-powered stylist. Ready to help you create perfect outfits and organize your wardrobe.
@@ -106,4 +113,3 @@ const Index = () => {
 };
 
 export default Index;
-
