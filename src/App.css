@@ -341,3 +341,39 @@
     padding: 0.5rem 0.75rem !important;
   }
 }
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient {
+  background-size: 200% auto;
+  animation: gradient 8s linear infinite;
+}
+
+.neo-blur {
+  position: relative;
+  overflow: hidden;
+}
+
+.neo-blur::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: inherit;
+  filter: blur(10px);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.neo-blur:hover::before {
+  opacity: 0.5;
+}
