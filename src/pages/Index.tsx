@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -11,6 +12,7 @@ import VerticalFeatureTimeline from '@/components/VerticalFeatureTimeline';
 import InsightsCarousel from '@/components/InsightsCarousel';
 import TestimonialsCarousel from '@/components/TestimonialsCarousel';
 import StyleDiscoveryQuiz from '@/components/StyleDiscoveryQuiz';
+import OliviaStyleAdvice from '@/components/OliviaStyleAdvice';
 import { useAuth } from '@/hooks/useAuth';
 
 const Index = () => {
@@ -129,6 +131,10 @@ const Index = () => {
         <SectionDivider variant="dotted" />
         
         <VerticalFeatureTimeline />
+        
+        <SectionDivider />
+        
+        <OliviaStyleAdvice className="mt-16 mb-24" />
         
         <HowItWorks />
         
