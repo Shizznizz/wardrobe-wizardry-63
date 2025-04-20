@@ -2,15 +2,12 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { 
-  Jacket, 
-  ShirtRound, 
-  Pants, 
-  Footprints, 
-  Watch, 
-  Layers, 
   ChevronRight, 
-  ChevronLeft 
+  ChevronLeft,
+  Watch,
+  Layers
 } from 'lucide-react';
+import { PantsIcon, ShirtIcon } from '@/components/ui/icons';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
 interface CategoryFiltersProps {
@@ -21,10 +18,10 @@ interface CategoryFiltersProps {
 const CategoryFilters = ({ selectedCategory, onSelectCategory }: CategoryFiltersProps) => {
   const categories = [
     { id: 'all', name: 'All', icon: <Layers className="h-4 w-4" /> },
-    { id: 'outerwear', name: 'Outerwear', icon: <Jacket className="h-4 w-4" /> },
-    { id: 'top', name: 'Tops', icon: <ShirtRound className="h-4 w-4" /> },
-    { id: 'bottom', name: 'Bottoms', icon: <Pants className="h-4 w-4" /> },
-    { id: 'shoes', name: 'Shoes', icon: <Footprints className="h-4 w-4" /> },
+    { id: 'outerwear', name: 'Outerwear', icon: <ShirtIcon className="h-4 w-4" /> },
+    { id: 'top', name: 'Tops', icon: <ShirtIcon className="h-4 w-4" /> },
+    { id: 'bottom', name: 'Bottoms', icon: <PantsIcon className="h-4 w-4" /> },
+    { id: 'shoes', name: 'Shoes', icon: <Watch className="h-4 w-4" /> },
     { id: 'accessories', name: 'Accessories', icon: <Watch className="h-4 w-4" /> }
   ];
   
