@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+
+import React from 'react';
+import { Route, Routes } from 'react-router-dom';
 import { AuthProvider } from '@/hooks/useAuth';
 import { ThemeProvider } from "@/components/theme-provider"
 import Index from '@/pages/Index';
@@ -16,21 +17,17 @@ function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-react-theme">
       <AuthProvider>
-        <Router>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/my-wardrobe" element={<MyWardrobe />} />
-            <Route path="/style-quiz" element={<StyleQuiz />} />
-            <Route path="/premium" element={<Premium />} />
-            <Route path="/fitting-room" element={<FittingRoom />} />
-            <Route path="/shop-and-try" element={<ShopAndTry />} />
-            <Route path="/calendar" element={<CalendarPage />} />
-
-            {/* Add the route to the MixAndMatch page */}
-            <Route path="/mix-and-match" element={<MixAndMatch />} />
-          </Routes>
-        </Router>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/my-wardrobe" element={<MyWardrobe />} />
+          <Route path="/style-quiz" element={<StyleQuiz />} />
+          <Route path="/premium" element={<Premium />} />
+          <Route path="/fitting-room" element={<FittingRoom />} />
+          <Route path="/shop-and-try" element={<ShopAndTry />} />
+          <Route path="/calendar" element={<CalendarPage />} />
+          <Route path="/mix-and-match" element={<MixAndMatch />} />
+        </Routes>
       </AuthProvider>
     </ThemeProvider>
   );
