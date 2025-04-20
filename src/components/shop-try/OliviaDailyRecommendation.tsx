@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
@@ -7,7 +8,8 @@ import { ClothingItem, WeatherInfo } from '@/lib/types';
 import { supabase } from '@/integrations/supabase/client';
 import { generateRandomWeather } from '@/services/WeatherService';
 import { toast } from 'sonner';
-import { Avatar, AvatarImage, AvatarFallback, Badge } from '@/components/ui/avatar';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 
 interface OliviaDailyRecommendationProps {
   isPremiumUser: boolean;
@@ -191,7 +193,7 @@ const OliviaDailyRecommendation = ({
                   <div className="grid grid-cols-2 gap-3 text-sm text-white/70">
                     <div className="flex items-center">
                       <Wind className="h-4 w-4 mr-1.5 text-blue-400" />
-                      Wind: {weatherInfo.wind || "Light"} km/h
+                      Wind: {weatherInfo.windSpeed || "Light"} km/h
                     </div>
                     <div className="flex items-center">
                       <Droplet className="h-4 w-4 mr-1.5 text-blue-400" />
