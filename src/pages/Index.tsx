@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -8,7 +7,8 @@ import Header from '@/components/Header';
 import BackgroundShapes from '@/components/BackgroundShapes';
 import SectionDivider from '@/components/SectionDivider';
 import HowItWorks from '@/components/HowItWorks';
-import VerticalStepCards from '@/components/VerticalStepCards';
+import VerticalFeatureTimeline from '@/components/VerticalFeatureTimeline';
+import InsightsCarousel from '@/components/InsightsCarousel';
 import TestimonialsCarousel from '@/components/TestimonialsCarousel';
 import StyleDiscoveryQuiz from '@/components/StyleDiscoveryQuiz';
 import { useAuth } from '@/hooks/useAuth';
@@ -22,7 +22,6 @@ const Index = () => {
       <BackgroundShapes />
       
       <main className="container mx-auto px-4 pt-20 md:pt-28 pb-20 relative z-10">
-        {/* Title Section */}
         <motion.h1 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -37,7 +36,6 @@ const Index = () => {
         </motion.h1>
         
         <div className="flex flex-col md:flex-row items-start gap-8 md:gap-12 max-w-6xl mx-auto">
-          {/* Left side - Text content and CTAs */}
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -86,7 +84,6 @@ const Index = () => {
             )}
           </motion.div>
           
-          {/* Right side - Olivia's introduction */}
           <motion.div 
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -125,15 +122,19 @@ const Index = () => {
           </motion.div>
         </div>
         
+        <SectionDivider variant="gradient" />
+        
+        <InsightsCarousel />
+        
+        <SectionDivider variant="dotted" />
+        
+        <VerticalFeatureTimeline />
+        
         <HowItWorks />
         
         <SectionDivider />
         
         {user && <StyleDiscoveryQuiz />}
-        
-        <VerticalStepCards />
-        
-        <SectionDivider />
         
         <TestimonialsCarousel />
       </main>
@@ -142,4 +143,3 @@ const Index = () => {
 };
 
 export default Index;
-
