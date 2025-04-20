@@ -1,9 +1,7 @@
 
 import React from 'react';
-import { motion } from 'framer-motion';
 import { ClothingItem } from '@/lib/types';
-import { cn } from '@/lib/utils';
-import OptimizedImage from '@/components/ui/optimized-image';
+import { PlusCircle } from 'lucide-react';
 
 interface OutfitCanvasProps {
   selectedItems: ClothingItem[];
@@ -11,96 +9,66 @@ interface OutfitCanvasProps {
 }
 
 const OutfitCanvas = ({ selectedItems, onItemClick }: OutfitCanvasProps) => {
+  // Group items by category for display
+  const itemsByCategory: Record<string, ClothingItem | undefined> = {};
+  
+  selectedItems.forEach(item => {
+    if (item.category) {
+      itemsByCategory[item.category] = item;
+    }
+  });
+  
+  // Define the categories in order from top to bottom
+  const categories = [
+    { id: 'outerwear', label: 'Outerwear' },
+    { id: 'top', label: 'Top' },
+    { id: 'bottom', label: 'Bottom' },
+    { id: 'shoes', label: 'Shoes' },
+    { id: 'accessories', label: 'Accessories' }
+  ];
+  
   return (
-    <div className="relative w-full aspect-[3/4] bg-slate-900/50 rounded-xl overflow-hidden border border-white/10">
-      <div className="absolute inset-0 grid grid-rows-[1fr,1.2fr,0.8fr,0.6fr] gap-2 p-4">
-        {/* Top section (shirts, tops) */}
-        <div className="relative">
-          {selectedItems
-            .filter(item => item.category === 'top')
-            .map(item => (
-              <motion.div
-                key={item.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                onClick={() => onItemClick(item)}
-                className="absolute inset-0 cursor-pointer hover:scale-105 transition-transform"
-              >
-                <OptimizedImage
-                  src={item.imageUrl || item.image || ''}
-                  alt={item.name}
-                  className="w-full h-full object-contain"
-                />
-              </motion.div>
-            ))}
-        </div>
-
-        {/* Middle section (pants, skirts) */}
-        <div className="relative">
-          {selectedItems
-            .filter(item => item.category === 'bottom')
-            .map(item => (
-              <motion.div
-                key={item.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                onClick={() => onItemClick(item)}
-                className="absolute inset-0 cursor-pointer hover:scale-105 transition-transform"
-              >
-                <OptimizedImage
-                  src={item.imageUrl || item.image || ''}
-                  alt={item.name}
-                  className="w-full h-full object-contain"
-                />
-              </motion.div>
-            ))}
-        </div>
-
-        {/* Shoes section */}
-        <div className="relative">
-          {selectedItems
-            .filter(item => item.category === 'shoes')
-            .map(item => (
-              <motion.div
-                key={item.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                onClick={() => onItemClick(item)}
-                className="absolute inset-0 cursor-pointer hover:scale-105 transition-transform"
-              >
-                <OptimizedImage
-                  src={item.imageUrl || item.image || ''}
-                  alt={item.name}
-                  className="w-full h-full object-contain"
-                />
-              </motion.div>
-            ))}
-        </div>
-
-        {/* Accessories section */}
-        <div className="relative">
-          {selectedItems
-            .filter(item => item.category === 'accessories')
-            .map(item => (
-              <motion.div
-                key={item.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                onClick={() => onItemClick(item)}
-                className="absolute inset-0 cursor-pointer hover:scale-105 transition-transform"
-              >
-                <OptimizedImage
-                  src={item.imageUrl || item.image || ''}
-                  alt={item.name}
-                  className="w-full h-full object-contain"
-                />
-              </motion.div>
-            ))}
-        </div>
+    <div className="bg-slate-800/50 rounded-xl border border-white/10 p-4 h-full flex flex-col">
+      <h3 className="text-white font-medium mb-4 text-center">Your Outfit</h3>
+      
+      <div className="flex-grow space-y-3">
+        {categories.map(category => {
+          const item = itemsByCategory[category.id];
+          
+          return (
+            <div key={category.id} className="relative">
+              <div className="text-xs text-white/60 mb-1">{category.label}</div>
+              
+              {item ? (
+                <div 
+                  className="h-24 bg-slate-700/50 rounded-lg overflow-hidden relative group cursor-pointer"
+                  onClick={() => onItemClick(item)}
+                >
+                  <img 
+                    src={item.imageUrl || item.image || '/placeholder.svg'} 
+                    alt={item.name}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="text-white text-xs">Click to remove</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="h-24 bg-slate-700/30 rounded-lg border border-dashed border-white/20 flex items-center justify-center">
+                  <PlusCircle className="h-6 w-6 text-white/30" />
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      
+      <div className="mt-4 text-center text-xs text-white/60">
+        {selectedItems.length === 0 ? (
+          <p>Select clothing items below to build your outfit</p>
+        ) : (
+          <p>Click on an item to remove it</p>
+        )}
       </div>
     </div>
   );

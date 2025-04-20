@@ -66,6 +66,9 @@ const CreateOutfitSection = ({ clothingItems, isPremium = false }: CreateOutfitS
 
     // Here you would typically save to your backend
     toast.success("Outfit saved successfully!");
+    setSelectedItems([]);
+    setOutfitName('');
+    setSelectedVibe('');
   };
 
   return (

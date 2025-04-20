@@ -1,8 +1,7 @@
 
 import React from 'react';
-import { Drawer, DrawerContent, DrawerTrigger } from '@/components/ui/drawer';
 import { ClothingItem } from '@/lib/types';
-import WardrobeGrid from '@/components/WardrobeGrid';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface WardrobeDrawerProps {
   items: ClothingItem[];
@@ -11,37 +10,64 @@ interface WardrobeDrawerProps {
   selectedItems: ClothingItem[];
 }
 
-const WardrobeDrawer = ({
-  items,
-  selectedCategory,
+const WardrobeDrawer = ({ 
+  items, 
+  selectedCategory, 
   onSelectItem,
   selectedItems
 }: WardrobeDrawerProps) => {
-  const filteredItems = items.filter(
-    item => item.category === selectedCategory
-  );
-
-  const handleToggleFavorite = () => {}; // No-op for now
-  const handleMatchItem = (item: ClothingItem) => onSelectItem(item);
-
+  // Filter items by category
+  const filteredItems = items.filter(item => {
+    if (selectedCategory === 'all') return true;
+    return item.category === selectedCategory;
+  });
+  
+  // Check if an item is already selected
+  const isItemSelected = (item: ClothingItem) => {
+    return selectedItems.some(selectedItem => selectedItem.id === item.id);
+  };
+  
   return (
-    <Drawer>
-      <DrawerTrigger asChild>
-        <button className="w-full py-3 px-4 bg-slate-800/50 hover:bg-slate-800/70 rounded-lg border border-white/10 text-white/70 text-sm transition-colors">
-          Open Wardrobe ({filteredItems.length} items)
-        </button>
-      </DrawerTrigger>
-      <DrawerContent className="bg-slate-900 border-t border-white/10">
-        <div className="max-h-[80vh] overflow-y-auto p-6">
-          <WardrobeGrid
-            items={filteredItems}
-            onToggleFavorite={handleToggleFavorite}
-            onMatchItem={handleMatchItem}
-            compactView={true}
-          />
-        </div>
-      </DrawerContent>
-    </Drawer>
+    <div className="bg-slate-800/30 rounded-xl border border-white/10 p-4">
+      <h3 className="text-white font-medium mb-4">Your Wardrobe</h3>
+      
+      <ScrollArea className="h-48">
+        {filteredItems.length > 0 ? (
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
+            {filteredItems.map(item => (
+              <div
+                key={item.id}
+                className={`
+                  relative aspect-square overflow-hidden rounded-md cursor-pointer 
+                  border transition-all duration-200 group
+                  ${isItemSelected(item) 
+                    ? 'border-purple-500 ring-2 ring-purple-500/50' 
+                    : 'border-white/20 hover:border-white/40'}
+                `}
+                onClick={() => onSelectItem(item)}
+              >
+                <img 
+                  src={item.imageUrl || item.image || '/placeholder.svg'} 
+                  alt={item.name}
+                  className="w-full h-full object-cover"
+                />
+                
+                {/* Overlay on hover */}
+                <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="text-white text-xs text-center px-1">
+                    {isItemSelected(item) ? 'Selected' : 'Add to outfit'}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="h-full flex items-center justify-center text-white/60">
+            <p>No items found in this category</p>
+          </div>
+        )}
+      </ScrollArea>
+    </div>
   );
 };
 
