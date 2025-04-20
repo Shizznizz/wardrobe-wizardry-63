@@ -1,10 +1,10 @@
 
 import { motion } from "framer-motion";
-import { ColorWheelIcon, TrendingUp, CalendarDays } from "lucide-react";
+import { Palette, TrendingUp, CalendarDays } from "lucide-react";
 
 const insights = [
   {
-    icon: <ColorWheelIcon className="h-6 w-6 text-blue-300" />,
+    icon: <Palette className="h-6 w-6 text-blue-300" />,
     title: "Color Harmony",
     description: "Mix and match colors from the same palette for a cohesive look. Try complementary colors for a bold statement!"
   },
