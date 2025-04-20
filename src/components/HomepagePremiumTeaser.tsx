@@ -2,7 +2,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Sparkles, Zap, Star } from 'lucide-react';
+import { Sparkles, Zap, Star, MessageCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const HomepagePremiumTeaser = () => {
