@@ -30,15 +30,20 @@ const WeatherSection = ({ onWeatherUpdate, onSituationChange }: WeatherSectionPr
     if (country) {
       const cities = getCitiesByCountry(country);
       setAvailableCities(cities);
+      
+      // If the current city is not available in the new country, set the first available city
+      if (cities.length > 0 && !cities.includes(city)) {
+        setCity(cities[0]);
+      }
     }
-  }, [country]);
+  }, [country, city]);
   
   const handleCountryChange = (value: string) => {
     setCountry(value);
-    setCity(''); // Reset city when country changes
     const cities = getCitiesByCountry(value);
     if (cities.length > 0) {
       setCity(cities[0]); // Set first city as default
+      saveLocation(cities[0], value);
     }
   };
   
@@ -58,7 +63,7 @@ const WeatherSection = ({ onWeatherUpdate, onSituationChange }: WeatherSectionPr
   };
   
   return (
-    <div className="neo-blur border border-white/10 rounded-xl p-4 space-y-4 w-[450px]">
+    <div className="neo-blur border border-white/10 rounded-xl p-4 space-y-4 w-[475px]">
       <div className="flex items-center justify-between mb-2">
         <h3 className="text-lg font-medium text-white">Weather & Location</h3>
         <Button 
@@ -79,7 +84,7 @@ const WeatherSection = ({ onWeatherUpdate, onSituationChange }: WeatherSectionPr
               <SelectTrigger className="bg-white/5 border-white/10">
                 <SelectValue placeholder="Select country" />
               </SelectTrigger>
-              <SelectContent className="bg-slate-900 border-white/10">
+              <SelectContent className="bg-slate-900 border-white/10 max-h-[200px]">
                 {countries.map(c => (
                   <SelectItem key={c.code} value={c.code}>
                     {c.name}
@@ -95,7 +100,7 @@ const WeatherSection = ({ onWeatherUpdate, onSituationChange }: WeatherSectionPr
               <SelectTrigger className="bg-white/5 border-white/10">
                 <SelectValue placeholder="Select city" />
               </SelectTrigger>
-              <SelectContent className="bg-slate-900 border-white/10">
+              <SelectContent className="bg-slate-900 border-white/10 max-h-[200px]">
                 {availableCities.map(cityName => (
                   <SelectItem key={cityName} value={cityName}>
                     {cityName}

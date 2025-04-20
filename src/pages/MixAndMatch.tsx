@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -117,7 +118,7 @@ const MixAndMatch = () => {
             transition={{ delay: 0.1, duration: 0.5 }}
             className="mb-8"
           >
-            <div className="grid grid-cols-1 md:grid-cols-[350px,1fr] gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <WeatherSection 
                 onWeatherUpdate={handleWeatherUpdate} 
                 onSituationChange={handleSituationChange}
