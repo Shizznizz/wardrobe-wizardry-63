@@ -1,15 +1,18 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Cloud, Sun, Droplets, Thermometer, MapPin, RefreshCw } from 'lucide-react';
+import { MapPin, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { WeatherInfo } from '@/lib/types';
 import WeatherWidget from '@/components/WeatherWidget';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { countries } from '@/data/countries';
+import { getCitiesByCountry } from '@/services/LocationService';
+import { useLocationStorage } from '@/hooks/useLocationStorage';
 
 interface WeatherSectionProps {
   onWeatherUpdate: (weather: WeatherInfo) => void;
@@ -17,43 +20,45 @@ interface WeatherSectionProps {
 }
 
 const WeatherSection = ({ onWeatherUpdate, onSituationChange }: WeatherSectionProps) => {
-  const [city, setCity] = useState<string>('San Francisco');
-  const [country, setCountry] = useState<string>('USA');
+  const { savedLocation, saveLocation } = useLocationStorage();
+  const [country, setCountry] = useState<string>(savedLocation?.country || 'US');
+  const [city, setCity] = useState<string>(savedLocation?.city || 'San Francisco');
   const [situation, setSituation] = useState<string>('casual');
+  const [availableCities, setAvailableCities] = useState<string[]>([]);
+  
+  useEffect(() => {
+    if (country) {
+      const cities = getCitiesByCountry(country);
+      setAvailableCities(cities);
+    }
+  }, [country]);
+  
+  const handleCountryChange = (value: string) => {
+    setCountry(value);
+    setCity(''); // Reset city when country changes
+    const cities = getCitiesByCountry(value);
+    if (cities.length > 0) {
+      setCity(cities[0]); // Set first city as default
+    }
+  };
+  
+  const handleCityChange = (value: string) => {
+    setCity(value);
+    saveLocation(value, country);
+  };
   
   const handleSituationChange = (value: string) => {
     setSituation(value);
     onSituationChange(value);
   };
-  
-  const handleUpdateLocation = () => {
-    if (!city || !country) {
-      toast.error('Please enter both city and country');
-      return;
-    }
-    toast.success(`Location updated to ${city}, ${country}`);
-  };
-  
-  const handleDetectLocation = () => {
-    // This would use the browser's geolocation API in a real implementation
-    toast.success('Detecting your location...');
-    setTimeout(() => {
-      setCity('San Francisco');
-      setCountry('USA');
-      toast.success('Location detected: San Francisco, USA');
-    }, 1000);
-  };
 
   const handleRefreshWeather = () => {
     toast.success('Refreshing weather data...');
-    // Trigger weather update
-    if (city && country) {
-      handleUpdateLocation();
-    }
+    // WeatherWidget will handle the refresh internally
   };
   
   return (
-    <div className="neo-blur border border-white/10 rounded-xl p-4 space-y-4">
+    <div className="neo-blur border border-white/10 rounded-xl p-4 space-y-4 w-[450px]">
       <div className="flex items-center justify-between mb-2">
         <h3 className="text-lg font-medium text-white">Weather & Location</h3>
         <Button 
@@ -67,41 +72,38 @@ const WeatherSection = ({ onWeatherUpdate, onSituationChange }: WeatherSectionPr
       </div>
       
       <div className="grid gap-3">
-        <div className="flex gap-2">
-          <Input 
-            placeholder="City" 
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-            className="bg-white/5 border-white/10"
-          />
-          <Input 
-            placeholder="Country" 
-            value={country}
-            onChange={(e) => setCountry(e.target.value)}
-            className="bg-white/5 border-white/10"
-          />
-        </div>
-        
-        <div className="flex gap-2">
-          <Button 
-            variant="outline" 
-            size="sm"
-            className="w-full bg-white/5 border-white/10 hover:bg-white/10 text-white"
-            onClick={handleUpdateLocation}
-          >
-            <MapPin className="h-4 w-4 mr-2" />
-            Update Location
-          </Button>
+        <div className="grid grid-cols-2 gap-2">
+          <div className="space-y-2">
+            <Label className="text-sm text-white/70">Country</Label>
+            <Select value={country} onValueChange={handleCountryChange}>
+              <SelectTrigger className="bg-white/5 border-white/10">
+                <SelectValue placeholder="Select country" />
+              </SelectTrigger>
+              <SelectContent className="bg-slate-900 border-white/10">
+                {countries.map(c => (
+                  <SelectItem key={c.code} value={c.code}>
+                    {c.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           
-          <Button 
-            variant="outline" 
-            size="sm"
-            className="w-full bg-white/5 border-white/10 hover:bg-white/10 text-white"
-            onClick={handleDetectLocation}
-          >
-            <MapPin className="h-4 w-4 mr-2" />
-            Detect Location
-          </Button>
+          <div className="space-y-2">
+            <Label className="text-sm text-white/70">City</Label>
+            <Select value={city} onValueChange={handleCityChange}>
+              <SelectTrigger className="bg-white/5 border-white/10">
+                <SelectValue placeholder="Select city" />
+              </SelectTrigger>
+              <SelectContent className="bg-slate-900 border-white/10">
+                {availableCities.map(cityName => (
+                  <SelectItem key={cityName} value={cityName}>
+                    {cityName}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
       
