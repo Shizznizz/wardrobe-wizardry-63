@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -21,7 +20,6 @@ const Index = () => {
   const { user } = useAuth();
   const [showOliviaAssistant, setShowOliviaAssistant] = useState(false);
   
-  // Display Olivia assistant with a slight delay after page load
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowOliviaAssistant(true);
@@ -185,7 +183,64 @@ const Index = () => {
         
         <SectionDivider variant="gradient" />
         
-        <InsightsCarousel />
+        {/* Fresh Look CTA Section */}
+        <motion.div 
+          className="max-w-6xl mx-auto py-20 relative"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+        >
+          <div className="flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12">
+            <div className="flex-1 relative">
+              <motion.img 
+                src="/lovable-uploads/4e16d86c-652b-4717-958f-b48ce5663c9b.png"
+                alt="Olivia Bloom - Your AI Stylist"
+                className="w-full max-w-md mx-auto rounded-2xl shadow-2xl"
+                initial={{ scale: 0.95 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 0.5 }}
+              />
+              <div className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-r from-purple-600/20 to-pink-600/20 rounded-full filter blur-xl"></div>
+            </div>
+            
+            <div className="flex-1 text-center md:text-left">
+              <motion.h2 
+                className="text-3xl md:text-4xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                Ready to discover a fresh look?
+              </motion.h2>
+              <motion.p 
+                className="text-xl text-white/80 mb-8"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+              >
+                Let's find the perfect outfit that matches your vibe today!
+              </motion.p>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+              >
+                <Button 
+                  asChild
+                  size="lg" 
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white px-8 py-6 rounded-xl h-auto text-lg font-medium shadow-lg hover:shadow-purple-500/30 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1"
+                >
+                  <Link to={user ? "/my-wardrobe" : "/auth"} className="flex items-center">
+                    <Sparkles className="mr-2 h-5 w-5" />
+                    Get Started
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Link>
+                </Button>
+              </motion.div>
+            </div>
+          </div>
+        </motion.div>
         
         <SectionDivider variant="dotted" />
         
