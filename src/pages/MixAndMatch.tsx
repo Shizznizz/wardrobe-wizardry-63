@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -101,24 +100,24 @@ const MixAndMatch = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className="mb-6 text-center"
+            className="text-center mb-8"
           >
-            <h1 className="text-3xl md:text-4xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-coral-400 to-pink-400">
-              Style Mixer
+            <h1 className="text-4xl md:text-5xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-coral-400">
+              Mix and Match Your Perfect Outfit
             </h1>
-            <p className="text-lg text-white/70 max-w-2xl mx-auto">
-              Discover your perfect outfit with Olivia's AI-powered styling
+            <p className="text-lg md:text-xl text-white/70 max-w-3xl mx-auto">
+              Let Olivia help you mix and match your wardrobe to create the perfect outfit for any occasion
             </p>
           </motion.div>
           
-          {/* 1️⃣ Section: Weather & Olivia's Recommendation - Top priority */}
+          {/* Weather & Olivia's Recommendation - Top priority */}
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, duration: 0.5 }}
             className="mb-8"
           >
-            <div className="grid grid-cols-1 md:grid-cols-[300px,1fr] gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-[350px,1fr] gap-6">
               <WeatherSection 
                 onWeatherUpdate={handleWeatherUpdate} 
                 onSituationChange={handleSituationChange}
