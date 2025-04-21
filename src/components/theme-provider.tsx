@@ -33,8 +33,8 @@ export function ThemeProvider({
     // No-op: theme is always dark
   };
 
-  const value = {
-    theme: "dark",
+  const value: ThemeProviderState = {
+    theme: "dark" as Theme, // Explicitly cast as the Theme type
     setTheme,
   };
 
