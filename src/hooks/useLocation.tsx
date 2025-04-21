@@ -12,6 +12,8 @@ export function useLocation() {
   const [isDetecting, setIsDetecting] = useState(false);
   const [isSavingPreference, setIsSavingPreference] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
+  const [usingSavedPreference, setUsingSavedPreference] = useState(false);
+  const [locationChangedManually, setLocationChangedManually] = useState(false);
   const initialLoadRef = useRef(true);
   const loadedRef = useRef(false);
   const { user } = useAuth();
@@ -44,6 +46,7 @@ export function useLocation() {
             country: data.preferred_country,
             city: data.preferred_city || ''
           };
+          setUsingSavedPreference(true);
         }
       }
       
@@ -52,6 +55,7 @@ export function useLocation() {
         setCountry(savedLocation.country);
         setCity(savedLocation.city || '');
         setHasChanges(false);
+        setUsingSavedPreference(true);
       }
       
       initialLoadRef.current = false;
@@ -75,6 +79,7 @@ export function useLocation() {
         setCountry(location.country);
         setCity(location.city || '');
         setHasChanges(true);
+        setLocationChangedManually(true);
         
         if (isNewLocation) {
           toast.success(`Location detected: ${location.city ? location.city + ', ' : ''}${getCountryName(location.country)}`, {
@@ -94,6 +99,15 @@ export function useLocation() {
     } finally {
       setIsDetecting(false);
     }
+  };
+
+  // Clear location selection
+  const clearLocation = () => {
+    setCountry('');
+    setCity('');
+    setHasChanges(true);
+    setLocationChangedManually(true);
+    setUsingSavedPreference(false);
   };
 
   // Save location preference to Supabase and localStorage
@@ -137,6 +151,7 @@ export function useLocation() {
       }
 
       setHasChanges(false);
+      setUsingSavedPreference(true);
       
       toast.success('Location preference saved', {
         duration: 3000, // Shorter toast duration
@@ -160,6 +175,8 @@ export function useLocation() {
       setCountry(newCountry);
       setCity(''); // Reset city when country changes
       setHasChanges(true);
+      setLocationChangedManually(true);
+      setUsingSavedPreference(false);
     }
   };
 
@@ -168,6 +185,8 @@ export function useLocation() {
     if (newCity !== city) {
       setCity(newCity);
       setHasChanges(true);
+      setLocationChangedManually(true);
+      setUsingSavedPreference(false);
     }
   };
 
@@ -177,8 +196,11 @@ export function useLocation() {
     isDetecting,
     isSavingPreference,
     hasChanges,
+    usingSavedPreference,
+    locationChangedManually,
     detectLocation,
     saveLocationPreference,
+    clearLocation,
     handleCountryChange,
     handleCityChange
   };

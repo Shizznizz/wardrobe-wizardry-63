@@ -20,8 +20,13 @@ const citiesByCountry: Record<string, string[]> = {
   'RU': ['Moscow', 'Saint Petersburg', 'Novosibirsk', 'Yekaterinburg', 'Kazan', 'Omsk', 'Samara', 'Rostov-on-Don', 'Ufa', 'Krasnoyarsk'],
 };
 
-export const getCitiesByCountry = (countryCode: string): string[] => {
-  return citiesByCountry[countryCode] || [];
+export const getCitiesByCountry = (countryCode: string, searchQuery?: string): string[] => {
+  const cities = citiesByCountry[countryCode] || [];
+  
+  if (!searchQuery) return cities;
+  
+  const lowerCaseQuery = searchQuery.toLowerCase();
+  return cities.filter(city => city.toLowerCase().includes(lowerCaseQuery));
 };
 
 export const getCountryName = (countryCode: string): string => {
