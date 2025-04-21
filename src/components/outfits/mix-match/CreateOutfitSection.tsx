@@ -1,163 +1,96 @@
 
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import React from 'react';
+import { Sparkles, Plus, Wand2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { ClothingItem } from '@/lib/types';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { ClothingItem, Outfit } from '@/lib/types';
-import OutfitCanvas from './outfit-builder/OutfitCanvas';
-import WardrobeDrawer from './outfit-builder/WardrobeDrawer';
-import CategoryFilters from './outfit-builder/CategoryFilters';
-import { PersonStanding, Save } from 'lucide-react';
-import { cn } from '@/lib/utils';
 
 interface CreateOutfitSectionProps {
   clothingItems: ClothingItem[];
-  isPremium?: boolean;
+  isPremium: boolean;
 }
 
-const CreateOutfitSection = ({ clothingItems, isPremium = false }: CreateOutfitSectionProps) => {
-  const [selectedCategory, setSelectedCategory] = useState<string>('top');
-  const [selectedItems, setSelectedItems] = useState<ClothingItem[]>([]);
-  const [outfitName, setOutfitName] = useState<string>('');
-  const [selectedVibe, setSelectedVibe] = useState<string>('');
-
-  const vibeOptions = [
-    'Casual', 'Formal', 'Business', 'Party', 'Romantic', 
-    'Power Boss', 'Creative', 'Sporty', 'Boho', 'Minimal'
-  ];
-
-  const handleSelectItem = (item: ClothingItem) => {
-    // Remove any existing item of the same category
-    const filteredItems = selectedItems.filter(
-      selected => selected.category !== item.category
-    );
-    setSelectedItems([...filteredItems, item]);
+const CreateOutfitSection = ({ clothingItems, isPremium }: CreateOutfitSectionProps) => {
+  const navigate = useNavigate();
+  
+  const handleCreateOutfit = () => {
+    toast.info("Opening outfit builder...");
+    // In a real app, this would navigate to a outfit builder page or open a modal
   };
-
-  const handleRemoveItem = (item: ClothingItem) => {
-    setSelectedItems(selectedItems.filter(
-      selected => selected.id !== item.id
-    ));
+  
+  const handleOliviaCreate = () => {
+    toast.success("Olivia is creating a custom outfit for you!");
+    // In a real app, this would trigger the AI to generate an outfit
   };
-
-  const handleSaveOutfit = () => {
-    if (selectedItems.length === 0) {
-      toast.error("Please select at least one item for your outfit");
-      return;
-    }
-
-    if (!outfitName) {
-      toast.error("Please give your outfit a name");
-      return;
-    }
-
-    const newOutfit: Outfit = {
-      id: Date.now().toString(),
-      name: outfitName,
-      items: selectedItems.map(item => item.id),
-      season: ['all'], // Default to all seasons
-      occasion: selectedVibe.toLowerCase() || 'casual',
-      createdAt: new Date(),
-      dateAdded: new Date(),
-      tags: selectedVibe ? [selectedVibe] : []
-    };
-
-    // Here you would typically save to your backend
-    toast.success("Outfit saved successfully!");
-    setSelectedItems([]);
-    setOutfitName('');
-    setSelectedVibe('');
-  };
-
+  
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="p-6 rounded-xl bg-slate-900/50 backdrop-blur-sm border border-white/10"
-    >
-      <div className="max-w-5xl mx-auto space-y-6">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-white mb-2">Create Your Own Outfit</h2>
-          <p className="text-white/70">
-            Choose items from your personal wardrobe to build outfits you love – for any mood, event, or weather.
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-[1fr,2fr] gap-6">
-          {/* Left side - Canvas */}
-          <OutfitCanvas
-            selectedItems={selectedItems}
-            onItemClick={handleRemoveItem}
-          />
-
-          {/* Right side - Controls */}
-          <div className="space-y-6">
-            <Input
-              placeholder="Name your outfit..."
-              value={outfitName}
-              onChange={(e) => setOutfitName(e.target.value)}
-              className="bg-black/20 border-white/10"
-            />
-
-            <div className="space-y-2">
-              <h3 className="text-sm font-medium text-white/70">Select your vibe:</h3>
-              <div className="flex flex-wrap gap-2">
-                {vibeOptions.map(vibe => (
-                  <Badge
-                    key={vibe}
-                    variant="outline"
-                    className={cn(
-                      "cursor-pointer hover:bg-purple-500/20",
-                      selectedVibe === vibe && "bg-purple-500 text-white"
-                    )}
-                    onClick={() => setSelectedVibe(vibe)}
-                  >
-                    {vibe}
-                  </Badge>
-                ))}
-              </div>
+    <Card className="overflow-hidden border border-white/10 bg-gradient-to-br from-purple-900/30 to-indigo-900/30 backdrop-blur-md">
+      <CardContent className="p-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <Sparkles className="h-5 w-5 text-purple-400" />
+              <h3 className="text-xl font-semibold text-white">Create Your Own Look</h3>
             </div>
-
-            <div className="flex gap-2">
-              <Button 
-                className="w-full bg-gradient-to-r from-purple-600 to-pink-600"
-                onClick={handleSaveOutfit}
-              >
-                <Save className="w-4 h-4 mr-2" />
-                Save Outfit
-              </Button>
-              
-              {isPremium && (
-                <Button 
-                  variant="outline"
-                  className="w-full border-purple-500/30 hover:bg-purple-500/20"
-                >
-                  <PersonStanding className="w-4 h-4 mr-2" />
-                  Try on Olivia
-                </Button>
+            <p className="text-white/70 text-sm max-w-xl">
+              Mix and match items from your wardrobe to create a custom outfit, or let Olivia design one for you based on your preferences
+            </p>
+          </div>
+          
+          <div className="flex flex-wrap gap-3">
+            <Button 
+              variant="default" 
+              size="lg"
+              onClick={handleCreateOutfit}
+              className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Create Outfit
+            </Button>
+            
+            <Button 
+              variant="outline" 
+              size="lg"
+              onClick={handleOliviaCreate}
+              className="border-purple-500/30 text-white hover:bg-white/10"
+              disabled={!isPremium}
+            >
+              <Wand2 className="mr-2 h-4 w-4" />
+              Let Olivia Create
+              {!isPremium && (
+                <Badge variant="outline" className="ml-2 bg-purple-500/20 text-purple-300 border-none text-xs">
+                  Premium
+                </Badge>
               )}
-            </div>
+            </Button>
           </div>
         </div>
-
-        {/* Bottom - Category filters and wardrobe drawer */}
-        <div className="space-y-4">
-          <CategoryFilters
-            selectedCategory={selectedCategory}
-            onSelectCategory={setSelectedCategory}
-          />
-          
-          <WardrobeDrawer
-            items={clothingItems}
-            selectedCategory={selectedCategory}
-            onSelectItem={handleSelectItem}
-            selectedItems={selectedItems}
-          />
+        
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+          {clothingItems.slice(0, 5).map((item) => (
+            <div 
+              key={item.id} 
+              className="relative group overflow-hidden rounded-lg border border-white/10 bg-slate-800/50 aspect-square"
+            >
+              <img 
+                src={item.imageUrl} 
+                alt={item.name}
+                className="w-full h-full object-cover transition-all duration-300 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                <div className="p-2 w-full">
+                  <p className="text-white text-xs font-medium truncate">{item.name}</p>
+                  <p className="text-white/70 text-xs truncate">{item.category}</p>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
-      </div>
-    </motion.section>
+      </CardContent>
+    </Card>
   );
 };
 

@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -7,6 +8,12 @@ import { OutfitProvider } from '@/hooks/useOutfitContext';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import WardrobeControls from '@/components/wardrobe/WardrobeControls';
+import WeatherSection from '@/components/outfits/mix-match/WeatherSection';
+import OliviaRecommendationSection from '@/components/outfits/mix-match/OliviaRecommendationSection';
+import CreateOutfitSection from '@/components/outfits/mix-match/CreateOutfitSection';
+import ContextAdjustmentSection from '@/components/outfits/mix-match/ContextAdjustmentSection';
+import OutfitCollectionSection from '@/components/outfits/mix-match/OutfitCollectionSection';
+import SuggestedOutfitsSection from '@/components/outfits/mix-match/SuggestedOutfitsSection';
 
 const MixAndMatch = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');

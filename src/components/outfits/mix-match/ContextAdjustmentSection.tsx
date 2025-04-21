@@ -1,31 +1,16 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
+import { Sun, Moon, CloudSun, Calendar, RefreshCw, Thermometer } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from '@/components/ui/select';
-import { 
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { 
-  Calendar, 
-  Clock, 
-  Leaf, 
-  Luggage, 
-  RefreshCw, 
-  Sun, 
-  Thermometer 
-} from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface ContextAdjustmentSectionProps {
   season: string;
@@ -33,7 +18,7 @@ interface ContextAdjustmentSectionProps {
   timeOfDay: string;
   temperature: number;
   weatherCondition: string;
-  onContextChange: (key: string, value: string | number) => void;
+  onContextChange: (contextKey: string, value: string | number) => void;
   onRefreshOutfit: () => void;
 }
 
@@ -46,150 +31,180 @@ const ContextAdjustmentSection = ({
   onContextChange,
   onRefreshOutfit
 }: ContextAdjustmentSectionProps) => {
+  const isMobile = useIsMobile();
+
+  const handleSeasonChange = (value: string) => {
+    onContextChange('season', value);
+  };
+
+  const handleOccasionChange = (value: string) => {
+    onContextChange('occasion', value);
+  };
+
+  const handleTimeOfDayChange = (value: string) => {
+    onContextChange('timeOfDay', value);
+  };
+
+  const handleTemperatureChange = (value: number[]) => {
+    onContextChange('temperature', value[0]);
+  };
+
+  const handleWeatherConditionChange = (value: string) => {
+    onContextChange('weatherCondition', value);
+  };
+
   return (
     <div className="rounded-xl border border-white/10 overflow-hidden bg-slate-900/50 backdrop-blur-md p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h3 className="text-xl font-semibold text-white">Adjust Context & Weather</h3>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                className="border-purple-400/30 bg-purple-500/10 text-purple-300 hover:bg-purple-500/20"
-                onClick={onRefreshOutfit}
-              >
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Refresh Look
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom" className="bg-slate-900 text-white">
-              <p>Get a new outfit based on your current settings</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Season selector */}
-        <div className="space-y-2">
-          <Label className="flex items-center text-white">
-            <Leaf className="h-4 w-4 mr-2 text-green-400" />
-            Season
-          </Label>
-          <Select 
-            value={season} 
-            onValueChange={(value) => onContextChange('season', value)}
-          >
-            <SelectTrigger className="bg-slate-800/70 border-white/10">
-              <SelectValue placeholder="Select season" />
-            </SelectTrigger>
-            <SelectContent className="bg-slate-900 border-white/10 text-white">
-              <SelectItem value="spring">Spring</SelectItem>
-              <SelectItem value="summer">Summer</SelectItem>
-              <SelectItem value="autumn">Autumn</SelectItem>
-              <SelectItem value="winter">Winter</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        
-        {/* Occasion selector */}
-        <div className="space-y-2">
-          <Label className="flex items-center text-white">
-            <Luggage className="h-4 w-4 mr-2 text-yellow-400" />
-            Occasion
-          </Label>
-          <Select 
-            value={occasion} 
-            onValueChange={(value) => onContextChange('occasion', value)}
-          >
-            <SelectTrigger className="bg-slate-800/70 border-white/10">
-              <SelectValue placeholder="Select occasion" />
-            </SelectTrigger>
-            <SelectContent className="bg-slate-900 border-white/10 text-white">
-              <SelectItem value="casual">Casual</SelectItem>
-              <SelectItem value="work">Work</SelectItem>
-              <SelectItem value="formal">Formal</SelectItem>
-              <SelectItem value="date">Date</SelectItem>
-              <SelectItem value="sport">Sport</SelectItem>
-              <SelectItem value="party">Party</SelectItem>
-              <SelectItem value="travel">Travel</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        
-        {/* Time of day selector */}
-        <div className="space-y-2">
-          <Label className="flex items-center text-white">
-            <Clock className="h-4 w-4 mr-2 text-blue-400" />
-            Time of Day
-          </Label>
-          <Select 
-            value={timeOfDay} 
-            onValueChange={(value) => onContextChange('timeOfDay', value)}
-          >
-            <SelectTrigger className="bg-slate-800/70 border-white/10">
-              <SelectValue placeholder="Select time" />
-            </SelectTrigger>
-            <SelectContent className="bg-slate-900 border-white/10 text-white">
-              <SelectItem value="morning">Morning</SelectItem>
-              <SelectItem value="afternoon">Afternoon</SelectItem>
-              <SelectItem value="evening">Evening</SelectItem>
-              <SelectItem value="night">Night</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        
-        {/* Temperature slider */}
-        <div className="space-y-4 lg:col-span-2">
-          <Label className="flex items-center text-white">
-            <Thermometer className="h-4 w-4 mr-2 text-red-400" />
-            Temperature: {temperature}°C
-          </Label>
-          <Slider
-            value={[temperature]}
-            min={-10}
-            max={40}
-            step={1}
-            onValueChange={(value) => onContextChange('temperature', value[0])}
-            className="py-4"
-          />
-        </div>
-        
-        {/* Weather condition selector */}
-        <div className="space-y-2">
-          <Label className="flex items-center text-white">
-            <Sun className="h-4 w-4 mr-2 text-amber-400" />
-            Weather Condition
-          </Label>
-          <Select 
-            value={weatherCondition} 
-            onValueChange={(value) => onContextChange('weatherCondition', value)}
-          >
-            <SelectTrigger className="bg-slate-800/70 border-white/10">
-              <SelectValue placeholder="Select condition" />
-            </SelectTrigger>
-            <SelectContent className="bg-slate-900 border-white/10 text-white">
-              <SelectItem value="clear">Clear</SelectItem>
-              <SelectItem value="cloudy">Cloudy</SelectItem>
-              <SelectItem value="rain">Rain</SelectItem>
-              <SelectItem value="snow">Snow</SelectItem>
-              <SelectItem value="fog">Fog</SelectItem>
-              <SelectItem value="windy">Windy</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-      
-      <div className="mt-6 pt-6 border-t border-white/10 flex justify-center">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-xl font-semibold text-white">Adjust Your Style Context</h3>
         <Button 
-          className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-md shadow-purple-900/20"
+          variant="outline"
+          size="sm"
           onClick={onRefreshOutfit}
+          className="bg-slate-800/60 border-white/10 text-white"
         >
           <RefreshCw className="h-4 w-4 mr-2" />
-          Update Recommendations
+          Refresh Outfit
         </Button>
       </div>
+      
+      <p className="text-white/70 text-sm mb-6">
+        Fine-tune your outfit recommendations by adjusting these parameters
+      </p>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <Card className="bg-slate-800/50 border-white/5">
+          <CardContent className="p-4">
+            <div className="flex justify-between items-center mb-2">
+              <h4 className="text-sm font-medium text-white">Season</h4>
+              <Badge variant="outline" className="bg-slate-700/50 text-xs">
+                {season.charAt(0).toUpperCase() + season.slice(1)}
+              </Badge>
+            </div>
+            <Select value={season} onValueChange={handleSeasonChange}>
+              <SelectTrigger className="bg-slate-700/50 border-white/10">
+                <SelectValue placeholder="Select season" />
+              </SelectTrigger>
+              <SelectContent className="bg-slate-800 border-white/10">
+                <SelectItem value="spring">Spring</SelectItem>
+                <SelectItem value="summer">Summer</SelectItem>
+                <SelectItem value="fall">Fall</SelectItem>
+                <SelectItem value="winter">Winter</SelectItem>
+                <SelectItem value="all">All Seasons</SelectItem>
+              </SelectContent>
+            </Select>
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-slate-800/50 border-white/5">
+          <CardContent className="p-4">
+            <div className="flex justify-between items-center mb-2">
+              <h4 className="text-sm font-medium text-white">Occasion</h4>
+              <Badge variant="outline" className="bg-slate-700/50 text-xs">
+                {occasion.charAt(0).toUpperCase() + occasion.slice(1)}
+              </Badge>
+            </div>
+            <Select value={occasion} onValueChange={handleOccasionChange}>
+              <SelectTrigger className="bg-slate-700/50 border-white/10">
+                <SelectValue placeholder="Select occasion" />
+              </SelectTrigger>
+              <SelectContent className="bg-slate-800 border-white/10">
+                <SelectItem value="casual">Casual</SelectItem>
+                <SelectItem value="work">Work</SelectItem>
+                <SelectItem value="formal">Formal</SelectItem>
+                <SelectItem value="party">Party</SelectItem>
+                <SelectItem value="sport">Sport/Active</SelectItem>
+              </SelectContent>
+            </Select>
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-slate-800/50 border-white/5">
+          <CardContent className="p-4">
+            <div className="flex justify-between items-center mb-2">
+              <h4 className="text-sm font-medium text-white">Time of Day</h4>
+              <div className="flex items-center">
+                {timeOfDay === 'morning' && <Sun className="h-4 w-4 text-yellow-400 mr-1" />}
+                {timeOfDay === 'afternoon' && <CloudSun className="h-4 w-4 text-blue-400 mr-1" />}
+                {timeOfDay === 'evening' && <Moon className="h-4 w-4 text-purple-400 mr-1" />}
+                <Badge variant="outline" className="bg-slate-700/50 text-xs">
+                  {timeOfDay.charAt(0).toUpperCase() + timeOfDay.slice(1)}
+                </Badge>
+              </div>
+            </div>
+            <RadioGroup
+              value={timeOfDay}
+              onValueChange={handleTimeOfDayChange}
+              className="flex justify-between"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="morning" id="morning" className="text-yellow-400" />
+                <Label htmlFor="morning" className="text-white/80 text-sm">Morning</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="afternoon" id="afternoon" className="text-blue-400" />
+                <Label htmlFor="afternoon" className="text-white/80 text-sm">Afternoon</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="evening" id="evening" className="text-purple-400" />
+                <Label htmlFor="evening" className="text-white/80 text-sm">Evening</Label>
+              </div>
+            </RadioGroup>
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-slate-800/50 border-white/5">
+          <CardContent className="p-4">
+            <div className="flex justify-between items-center mb-2">
+              <h4 className="text-sm font-medium text-white">Weather Condition</h4>
+              <Badge variant="outline" className="bg-slate-700/50 text-xs">
+                {weatherCondition.charAt(0).toUpperCase() + weatherCondition.slice(1)}
+              </Badge>
+            </div>
+            <Select value={weatherCondition} onValueChange={handleWeatherConditionChange}>
+              <SelectTrigger className="bg-slate-700/50 border-white/10">
+                <SelectValue placeholder="Select weather" />
+              </SelectTrigger>
+              <SelectContent className="bg-slate-800 border-white/10">
+                <SelectItem value="clear">Clear</SelectItem>
+                <SelectItem value="cloudy">Cloudy</SelectItem>
+                <SelectItem value="rainy">Rainy</SelectItem>
+                <SelectItem value="snowy">Snowy</SelectItem>
+                <SelectItem value="windy">Windy</SelectItem>
+              </SelectContent>
+            </Select>
+          </CardContent>
+        </Card>
+      </div>
+      
+      <Card className="bg-slate-800/50 border-white/5 mb-4">
+        <CardContent className="p-4">
+          <div className="flex justify-between items-center mb-2">
+            <div className="flex items-center">
+              <Thermometer className="h-4 w-4 mr-2 text-red-400" />
+              <h4 className="text-sm font-medium text-white">Temperature</h4>
+            </div>
+            <Badge variant="outline" className="bg-slate-700/50 text-xs">
+              {temperature}°C
+            </Badge>
+          </div>
+          <Slider 
+            defaultValue={[temperature]} 
+            min={-10} 
+            max={40} 
+            step={1}
+            onValueChange={handleTemperatureChange}
+            className="mt-6"
+          />
+          <div className="flex justify-between mt-2 text-xs text-white/60">
+            <span>Cold</span>
+            <span>Cool</span>
+            <span>Mild</span>
+            <span>Warm</span>
+            <span>Hot</span>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
