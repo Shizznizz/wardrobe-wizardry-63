@@ -10,7 +10,7 @@ import StyleQuiz from '@/pages/StyleQuiz';
 import Premium from '@/pages/Premium';
 import FittingRoom from '@/pages/FittingRoom';
 import ShopAndTry from '@/pages/ShopAndTry';
-import CalendarPage from '@/pages/CalendarPage';
+import StylePlanner from '@/pages/StylePlanner';
 import MixAndMatch from '@/pages/MixAndMatch';
 
 function App() {
@@ -25,7 +25,7 @@ function App() {
           <Route path="/premium" element={<Premium />} />
           <Route path="/fitting-room" element={<FittingRoom />} />
           <Route path="/shop-and-try" element={<ShopAndTry />} />
-          <Route path="/calendar" element={<CalendarPage />} />
+          <Route path="/style-planner" element={<StylePlanner />} />
           <Route path="/mix-and-match" element={<MixAndMatch />} />
         </Routes>
       </AuthProvider>
