@@ -1,11 +1,9 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Check } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import sampleOutfits from '@/lib/wardrobeData'; // Assumes export
-import sampleClothingItems from '@/lib/wardrobeData'; // Assumes export
+import { sampleOutfits, sampleClothingItems } from '@/lib/wardrobeData'; // Changed to named imports
 import OliviaRecommendationAfterQuiz from './OliviaRecommendationAfterQuiz';
 
 const questions = [
@@ -49,13 +47,10 @@ const questions = [
 const StyleQuiz = ({ onComplete }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  // Show recommendation after quiz
   const [showRecommendation, setShowRecommendation] = useState(false);
   const [recommendedOutfit, setRecommendedOutfit] = useState(null);
 
-  // Best-fit outfit recommender: naive match, but can expand later
   const findRecommendedOutfit = (answers) => {
-    // Example: filter by "style", "activity" or fallback to random sample
     let match;
     if (answers.style) {
       match = sampleOutfits.find(
@@ -86,11 +81,10 @@ const StyleQuiz = ({ onComplete }) => {
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
-      // Quiz complete: run recommendation
       const outfit = findRecommendedOutfit(newAnswers);
       setRecommendedOutfit(outfit ?? null);
       setShowRecommendation(true);
-      if (onComplete) onComplete(newAnswers); // preserve legacy
+      if (onComplete) onComplete(newAnswers);
     }
   };
 
@@ -113,73 +107,71 @@ const StyleQuiz = ({ onComplete }) => {
             />
           ))}
         </div>
-        {/* Quiz questions and recommendation */}
         <AnimatePresence mode="wait">
-        {!showRecommendation ? (
-          <motion.div
-            key={`question-${currentQuestion}`}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-            className="space-y-6"
-          >
-            <h3 className="text-xl font-semibold text-white mb-4">
-              {currentQ.question}
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-              {currentQ.options.map((option) => {
-                const isSelected = answers[currentQ.id] === option;
-                return (
-                  <Button
-                    key={option}
-                    onClick={() => handleAnswer(option)}
-                    className={`flex flex-col h-[48px] sm:h-[56px] w-full min-w-0 py-3 px-3 text-sm font-medium items-center justify-center gap-2 rounded-lg
-                      transition-all border
-                      truncate whitespace-nowrap
-                      ${
-                        isSelected
-                          ? 'bg-gradient-to-br from-purple-600 to-pink-600 text-white border-purple-400'
-                          : 'bg-white/5 hover:bg-white/10 text-white/90 border-white/10'
-                      }`}
-                    variant="outline"
-                    style={{
-                      maxWidth: '100%',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      height: 'auto'
-                    }}
-                  >
-                    <div
-                      className={`w-8 h-8 rounded-full flex items-center justify-center mb-1 shrink-0
-                        ${isSelected ? 'bg-white/20' : 'bg-white/10'}
-                      `}
+          {!showRecommendation ? (
+            <motion.div
+              key={`question-${currentQuestion}`}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-6"
+            >
+              <h3 className="text-xl font-semibold text-white mb-4">
+                {currentQ.question}
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                {currentQ.options.map((option) => {
+                  const isSelected = answers[currentQ.id] === option;
+                  return (
+                    <Button
+                      key={option}
+                      onClick={() => handleAnswer(option)}
+                      className={`flex flex-col h-[48px] sm:h-[56px] w-full min-w-0 py-3 px-3 text-sm font-medium items-center justify-center gap-2 rounded-lg
+                        transition-all border
+                        truncate whitespace-nowrap
+                        ${
+                          isSelected
+                            ? 'bg-gradient-to-br from-purple-600 to-pink-600 text-white border-purple-400'
+                            : 'bg-white/5 hover:bg-white/10 text-white/90 border-white/10'
+                        }`}
+                      variant="outline"
+                      style={{
+                        maxWidth: '100%',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        height: 'auto'
+                      }}
                     >
-                      {isSelected ? (
-                        <Check className="h-4 w-4 text-white" />
-                      ) : (
-                        <ArrowRight className="h-4 w-4 text-white/80" />
-                      )}
-                    </div>
-                    <span
-                      className="truncate text-center text-base leading-tight px-1"
-                      style={{ width: "100%" }}
-                    >
-                      {option}
-                    </span>
-                  </Button>
-                );
-              })}
-            </div>
-          </motion.div>
-        ) : (
-          // Olivia's recommendation, AI-chosen from wardrobe
-          <OliviaRecommendationAfterQuiz
-            quizAnswers={answers}
-            outfit={recommendedOutfit}
-            clothingItems={sampleClothingItems}
-          />
-        )}
+                      <div
+                        className={`w-8 h-8 rounded-full flex items-center justify-center mb-1 shrink-0
+                          ${isSelected ? 'bg-white/20' : 'bg-white/10'}
+                        `}
+                      >
+                        {isSelected ? (
+                          <Check className="h-4 w-4 text-white" />
+                        ) : (
+                          <ArrowRight className="h-4 w-4 text-white/80" />
+                        )}
+                      </div>
+                      <span
+                        className="truncate text-center text-base leading-tight px-1"
+                        style={{ width: "100%" }}
+                      >
+                        {option}
+                      </span>
+                    </Button>
+                  );
+                })}
+              </div>
+            </motion.div>
+          ) : (
+            <OliviaRecommendationAfterQuiz
+              quizAnswers={answers}
+              outfit={recommendedOutfit}
+              clothingItems={sampleClothingItems}
+            />
+          )}
         </AnimatePresence>
       </CardContent>
     </Card>
