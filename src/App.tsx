@@ -12,6 +12,7 @@ import FittingRoom from '@/pages/FittingRoom';
 import ShopAndTry from '@/pages/ShopAndTry';
 import StylePlanner from '@/pages/StylePlanner';
 import MixAndMatch from '@/pages/MixAndMatch';
+import Settings from '@/pages/Settings';
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
             <Route path="/shop-and-try" element={<ShopAndTry />} />
             <Route path="/style-planner" element={<StylePlanner />} />
             <Route path="/mix-and-match" element={<MixAndMatch />} />
+            <Route path="/settings" element={<Settings />} />
           </Routes>
         </PageLayout>
       </AuthProvider>

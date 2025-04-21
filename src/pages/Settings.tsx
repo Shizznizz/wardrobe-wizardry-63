@@ -1,7 +1,6 @@
 
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
-import { useIsMobile } from '@/hooks/use-mobile';
 import AppearanceSettings from '@/components/settings/AppearanceSettings';
 import NotificationSettings from '@/components/settings/NotificationSettings';
 import PreferenceSettings from '@/components/settings/PreferenceSettings';
@@ -9,8 +8,6 @@ import LegalInformationSettings from '@/components/settings/LegalInformationSett
 import DataManagementSettings from '@/components/settings/DataManagementSettings';
 
 const Settings = () => {
-  const isMobile = useIsMobile();
-  
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
