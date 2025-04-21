@@ -64,26 +64,24 @@ const ClothingDetailsForm = ({
             >
               <SelectValue placeholder="Select type" />
             </SelectTrigger>
-            <SelectContent className="bg-slate-800 border-slate-700 text-white">
-              <ScrollArea className="h-[200px]">
-                <SelectItem value="shirt">Shirt</SelectItem>
-                <SelectItem value="t-shirt">T-Shirt</SelectItem>
-                <SelectItem value="sweater">Sweater</SelectItem>
-                <SelectItem value="hoodie">Hoodie</SelectItem>
-                <SelectItem value="jacket">Jacket</SelectItem>
-                <SelectItem value="coat">Coat</SelectItem>
-                <SelectItem value="dress">Dress</SelectItem>
-                <SelectItem value="skirt">Skirt</SelectItem>
-                <SelectItem value="pants">Pants</SelectItem>
-                <SelectItem value="jeans">Jeans</SelectItem>
-                <SelectItem value="shorts">Shorts</SelectItem>
-                <SelectItem value="shoes">Shoes</SelectItem>
-                <SelectItem value="boots">Boots</SelectItem>
-                <SelectItem value="sneakers">Sneakers</SelectItem>
-                <SelectItem value="sandals">Sandals</SelectItem>
-                <SelectItem value="accessory">Accessory</SelectItem>
-                <SelectItem value="other">Other</SelectItem>
-              </ScrollArea>
+            <SelectContent className="bg-slate-800 border-slate-700 text-white max-h-[50vh]">
+              <SelectItem value="shirt">Shirt</SelectItem>
+              <SelectItem value="t-shirt">T-Shirt</SelectItem>
+              <SelectItem value="sweater">Sweater</SelectItem>
+              <SelectItem value="hoodie">Hoodie</SelectItem>
+              <SelectItem value="jacket">Jacket</SelectItem>
+              <SelectItem value="coat">Coat</SelectItem>
+              <SelectItem value="dress">Dress</SelectItem>
+              <SelectItem value="skirt">Skirt</SelectItem>
+              <SelectItem value="pants">Pants</SelectItem>
+              <SelectItem value="jeans">Jeans</SelectItem>
+              <SelectItem value="shorts">Shorts</SelectItem>
+              <SelectItem value="shoes">Shoes</SelectItem>
+              <SelectItem value="boots">Boots</SelectItem>
+              <SelectItem value="sneakers">Sneakers</SelectItem>
+              <SelectItem value="sandals">Sandals</SelectItem>
+              <SelectItem value="accessory">Accessory</SelectItem>
+              <SelectItem value="other">Other</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -100,27 +98,25 @@ const ClothingDetailsForm = ({
             >
               <SelectValue placeholder="Select color" />
             </SelectTrigger>
-            <SelectContent className="bg-slate-800 border-slate-700 text-white">
-              <ScrollArea className="h-[200px]">
-                <SelectItem value="black">Black</SelectItem>
-                <SelectItem value="white">White</SelectItem>
-                <SelectItem value="gray">Gray</SelectItem>
-                <SelectItem value="red">Red</SelectItem>
-                <SelectItem value="blue">Blue</SelectItem>
-                <SelectItem value="navy">Navy</SelectItem>
-                <SelectItem value="green">Green</SelectItem>
-                <SelectItem value="yellow">Yellow</SelectItem>
-                <SelectItem value="purple">Purple</SelectItem>
-                <SelectItem value="pink">Pink</SelectItem>
-                <SelectItem value="orange">Orange</SelectItem>
-                <SelectItem value="brown">Brown</SelectItem>
-                <SelectItem value="beige">Beige</SelectItem>
-                <SelectItem value="cream">Cream</SelectItem>
-                <SelectItem value="burgundy">Burgundy</SelectItem>
-                <SelectItem value="coral">Coral</SelectItem>
-                <SelectItem value="rose">Rose</SelectItem>
-                <SelectItem value="multicolor">Multicolor</SelectItem>
-              </ScrollArea>
+            <SelectContent className="bg-slate-800 border-slate-700 text-white max-h-[50vh]">
+              <SelectItem value="black">Black</SelectItem>
+              <SelectItem value="white">White</SelectItem>
+              <SelectItem value="gray">Gray</SelectItem>
+              <SelectItem value="red">Red</SelectItem>
+              <SelectItem value="blue">Blue</SelectItem>
+              <SelectItem value="navy">Navy</SelectItem>
+              <SelectItem value="green">Green</SelectItem>
+              <SelectItem value="yellow">Yellow</SelectItem>
+              <SelectItem value="purple">Purple</SelectItem>
+              <SelectItem value="pink">Pink</SelectItem>
+              <SelectItem value="orange">Orange</SelectItem>
+              <SelectItem value="brown">Brown</SelectItem>
+              <SelectItem value="beige">Beige</SelectItem>
+              <SelectItem value="cream">Cream</SelectItem>
+              <SelectItem value="burgundy">Burgundy</SelectItem>
+              <SelectItem value="coral">Coral</SelectItem>
+              <SelectItem value="rose">Rose</SelectItem>
+              <SelectItem value="multicolor">Multicolor</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -138,21 +134,19 @@ const ClothingDetailsForm = ({
           >
             <SelectValue placeholder="Select material" />
           </SelectTrigger>
-          <SelectContent className="bg-slate-800 border-slate-700 text-white">
-            <ScrollArea className="h-[200px]">
-              <SelectItem value="cotton">Cotton</SelectItem>
-              <SelectItem value="wool">Wool</SelectItem>
-              <SelectItem value="silk">Silk</SelectItem>
-              <SelectItem value="polyester">Polyester</SelectItem>
-              <SelectItem value="leather">Leather</SelectItem>
-              <SelectItem value="denim">Denim</SelectItem>
-              <SelectItem value="linen">Linen</SelectItem>
-              <SelectItem value="cashmere">Cashmere</SelectItem>
-              <SelectItem value="nylon">Nylon</SelectItem>
-              <SelectItem value="spandex">Spandex</SelectItem>
-              <SelectItem value="velvet">Velvet</SelectItem>
-              <SelectItem value="other">Other</SelectItem>
-            </ScrollArea>
+          <SelectContent className="bg-slate-800 border-slate-700 text-white max-h-[50vh]">
+            <SelectItem value="cotton">Cotton</SelectItem>
+            <SelectItem value="wool">Wool</SelectItem>
+            <SelectItem value="silk">Silk</SelectItem>
+            <SelectItem value="polyester">Polyester</SelectItem>
+            <SelectItem value="leather">Leather</SelectItem>
+            <SelectItem value="denim">Denim</SelectItem>
+            <SelectItem value="linen">Linen</SelectItem>
+            <SelectItem value="cashmere">Cashmere</SelectItem>
+            <SelectItem value="nylon">Nylon</SelectItem>
+            <SelectItem value="spandex">Spandex</SelectItem>
+            <SelectItem value="velvet">Velvet</SelectItem>
+            <SelectItem value="other">Other</SelectItem>
           </SelectContent>
         </Select>
       </div>

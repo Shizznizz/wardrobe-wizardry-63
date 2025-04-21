@@ -13,7 +13,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 interface UploadModalProps {
   onUpload: (item: any) => void;
   buttonText?: string;
-  children?: React.ReactNode; // Add support for children
+  children?: React.ReactNode;
 }
 
 const UploadModal = ({ onUpload, buttonText = "Add Item", children }: UploadModalProps) => {
@@ -113,7 +113,7 @@ const UploadModal = ({ onUpload, buttonText = "Add Item", children }: UploadModa
         color,
         material,
         seasons,
-        imageUrl: imagePreview,
+        image: imagePreview,
         favorite,
         timesWorn: 0,
         occasions: [], // Adding empty array for occasions to prevent errors
@@ -143,8 +143,28 @@ const UploadModal = ({ onUpload, buttonText = "Add Item", children }: UploadModa
     }
   };
 
+  const resetForm = () => {
+    setName('');
+    setType('');
+    setColor('');
+    setMaterial('');
+    setSeasons([]);
+    setFavorite(false);
+    setImagePreview(null);
+    setImageFile(null);
+    setValidationErrors([]);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog 
+      open={open} 
+      onOpenChange={(newOpen) => {
+        if (!newOpen) {
+          resetForm();
+        }
+        setOpen(newOpen);
+      }}
+    >
       <DialogTrigger asChild>
         {children || (
           <Button className="space-x-2 group">
@@ -153,9 +173,9 @@ const UploadModal = ({ onUpload, buttonText = "Add Item", children }: UploadModa
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-hidden">
+      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-hidden bg-slate-900 border-slate-700">
         <DialogHeader>
-          <DialogTitle className="text-center">Add Clothing Item</DialogTitle>
+          <DialogTitle className="text-center text-white">Add Clothing Item</DialogTitle>
           <DialogDescription className="sr-only">
             Add a new item to your wardrobe
           </DialogDescription>
@@ -202,14 +222,22 @@ const UploadModal = ({ onUpload, buttonText = "Add Item", children }: UploadModa
         </ScrollArea>
 
         <DialogFooter className="mt-4">
-          <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+          <Button 
+            type="button" 
+            variant="outline" 
+            onClick={() => {
+              resetForm();
+              setOpen(false);
+            }}
+            className="bg-transparent border-slate-600 text-white hover:bg-slate-800"
+          >
             Cancel
           </Button>
           <Button 
             type="button" 
             onClick={handleSubmit}
             disabled={isSubmitting || isLoading}
-            className="relative"
+            className="relative bg-blue-600 hover:bg-blue-700 text-white"
           >
             {isSubmitting || isLoading ? (
               <>
