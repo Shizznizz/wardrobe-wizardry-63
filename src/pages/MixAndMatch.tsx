@@ -1,20 +1,16 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import { sampleOutfits, sampleClothingItems } from '@/lib/wardrobeData';
 import { WeatherInfo } from '@/lib/types';
 import { OutfitProvider } from '@/hooks/useOutfitContext';
-
-// Import main section components
-import WeatherSection from '@/components/outfits/mix-match/WeatherSection';
-import OliviaRecommendationSection from '@/components/outfits/mix-match/OliviaRecommendationSection';
-import CreateOutfitSection from '@/components/outfits/mix-match/CreateOutfitSection';
-import OutfitCollectionSection from '@/components/outfits/mix-match/OutfitCollectionSection';
-import ContextAdjustmentSection from '@/components/outfits/mix-match/ContextAdjustmentSection';
-import SuggestedOutfitsSection from '@/components/outfits/mix-match/SuggestedOutfitsSection';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
+import WardrobeControls from '@/components/wardrobe/WardrobeControls';
 
 const MixAndMatch = () => {
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [showCompactView, setShowCompactView] = useState(false);
   const [weather, setWeather] = useState<WeatherInfo | null>(null);
   const [situation, setSituation] = useState<string | null>('casual');
   const [season, setSeason] = useState<string>('spring');
@@ -24,12 +20,41 @@ const MixAndMatch = () => {
   const [weatherCondition, setWeatherCondition] = useState<string>('clear');
   const [isLoading, setIsLoading] = useState(true);
   const [selectedOutfitId, setSelectedOutfitId] = useState<string | null>(null);
-  
-  // Memoize outfit collections to prevent unnecessary recalculations
+  const { user } = useAuth();
+  const [profile, setProfile] = useState<{ first_name: string | null } | null>(null);
+
+  useEffect(() => {
+    if (user?.id) {
+      supabase
+        .from('profiles')
+        .select('first_name')
+        .eq('id', user.id)
+        .single()
+        .then(({ data, error }) => {
+          if (!error && data) {
+            setProfile(data);
+          }
+        });
+    }
+  }, [user?.id]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 800);
+    
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (!selectedOutfitId && sampleOutfits.length > 0) {
+      setSelectedOutfitId(sampleOutfits[0].id);
+    }
+  }, [selectedOutfitId]);
+
   const personalOutfits = sampleOutfits.filter(outfit => outfit.favorite);
   const popularOutfits = sampleOutfits.slice().sort(() => 0.5 - Math.random());
-  
-  // Handler for weather updates from the weather widget
+
   const handleWeatherUpdate = useCallback((weatherData: WeatherInfo) => {
     setWeather(weatherData);
     if (weatherData.temperature) {
@@ -39,7 +64,7 @@ const MixAndMatch = () => {
       setWeatherCondition(weatherData.condition.toLowerCase());
     }
   }, []);
-  
+
   const handleSituationChange = useCallback((newSituation: string) => {
     setSituation(newSituation);
     setOccasion(newSituation);
@@ -69,26 +94,9 @@ const MixAndMatch = () => {
   }, []);
 
   const handleRefreshOutfit = useCallback(() => {
-    // Randomly select a new outfit
     const availableOutfits = sampleOutfits.filter(outfit => outfit.id !== selectedOutfitId);
     const randomIndex = Math.floor(Math.random() * availableOutfits.length);
     setSelectedOutfitId(availableOutfits[randomIndex].id);
-  }, [selectedOutfitId]);
-
-  // Simulate loading state for better UX
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 800);
-    
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Initialize with a random outfit
-  useEffect(() => {
-    if (!selectedOutfitId && sampleOutfits.length > 0) {
-      setSelectedOutfitId(sampleOutfits[0].id);
-    }
   }, [selectedOutfitId]);
 
   return (
@@ -104,14 +112,22 @@ const MixAndMatch = () => {
             className="text-center mb-8"
           >
             <h1 className="text-4xl md:text-5xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-coral-400">
-              Mix and Match Your Perfect Outfit
+              {profile?.first_name ? `Hi ${profile.first_name}, Olivia's got a perfect outfit for you today!` : 'Mix and Match Your Perfect Outfit'}
             </h1>
             <p className="text-lg md:text-xl text-white/70 max-w-3xl mx-auto">
-              Let Olivia help you mix and match your wardrobe to create the perfect outfit for any occasion
+              Let Olivia create a fresh outfit for you based on today's weather and your style.
             </p>
           </motion.div>
+
+          <div className="flex justify-end mb-6">
+            <WardrobeControls
+              viewMode={viewMode}
+              showCompactView={showCompactView}
+              onViewModeChange={setViewMode}
+              onCompactViewChange={setShowCompactView}
+            />
+          </div>
           
-          {/* Weather & Olivia's Recommendation - Top priority */}
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -130,7 +146,6 @@ const MixAndMatch = () => {
             </div>
           </motion.section>
           
-          {/* 2️⃣ Section: "Create Your Own Outfit" */}
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -143,7 +158,6 @@ const MixAndMatch = () => {
             />
           </motion.section>
           
-          {/* 3️⃣ Section: "Adjust Context" */}
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -161,7 +175,6 @@ const MixAndMatch = () => {
             />
           </motion.section>
           
-          {/* 4️⃣ Section: "My Outfit Collection" */}
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -174,7 +187,6 @@ const MixAndMatch = () => {
             />
           </motion.section>
           
-          {/* 5️⃣ Section: "Suggested For You" */}
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
