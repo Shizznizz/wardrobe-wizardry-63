@@ -1,6 +1,7 @@
 
 import { toast } from 'sonner';
 import PremiumExperience from './PremiumExperience';
+import Footer from '@/components/Footer';
 
 interface PageLayoutProps {
   children: React.ReactNode;
@@ -12,12 +13,16 @@ const PageLayout = ({ children }: PageLayoutProps) => {
   };
 
   return (
-    <>
-      {children}
-      <div className="pb-48">
+    <div className="min-h-screen flex flex-col">
+      <main className="flex-grow">
+        {children}
+      </main>
+      
+      <div className="mt-auto">
         <PremiumExperience onUpgrade={handleUpgradeToPremium} />
+        <Footer />
       </div>
-    </>
+    </div>
   );
 };
 
