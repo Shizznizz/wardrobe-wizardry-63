@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Clock, AlertTriangle, TrendingUp, Shirt } from 'lucide-react';
-import { ClothingItem } from '@/lib/types';
+import { ClothingItem, ClothingSeason } from '@/lib/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { differenceInMonths, differenceInDays, format } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -58,7 +58,7 @@ const WardrobeInsights = ({ items }: WardrobeInsightsProps) => {
     
     // Current season
     const currentMonth = new Date().getMonth();
-    let currentSeason: string;
+    let currentSeason: ClothingSeason;
     
     if (currentMonth >= 2 && currentMonth <= 4) currentSeason = 'spring';
     else if (currentMonth >= 5 && currentMonth <= 7) currentSeason = 'summer';

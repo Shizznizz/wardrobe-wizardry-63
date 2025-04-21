@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Filter, CloudSun, Calendar, Layers, Tag, Clock, Circle, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -14,18 +13,10 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
-
-interface FilterState {
-  category: ClothingType | null;
-  color: ClothingColor | null;
-  occasion: ClothingOccasion | null;
-  timeFrame: 'all' | 'recent' | '3months' | '6months';
-  favorite: boolean | null;
-  weatherAppropriate: boolean | null;
-}
+import { WardrobeFilters } from '@/lib/wardrobe/enhancedFilterUtils';
 
 interface EnhancedWardrobeFiltersProps {
-  onFilterChange: (filters: FilterState) => void;
+  onFilterChange: (filters: WardrobeFilters) => void;
   totalItems: number;
   filteredCount: number;
   temperature?: number;
@@ -76,18 +67,19 @@ const EnhancedWardrobeFilters = ({
   temperature,
   weatherCondition 
 }: EnhancedWardrobeFiltersProps) => {
-  const [filters, setFilters] = useState<FilterState>({
+  const [filters, setFilters] = useState<WardrobeFilters>({
     category: null,
     color: null,
     occasion: null,
     timeFrame: 'all',
     favorite: null,
-    weatherAppropriate: null
+    weatherAppropriate: null,
+    searchQuery: ''
   });
   
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
   
-  const updateFilters = (newFilters: Partial<FilterState>) => {
+  const updateFilters = (newFilters: Partial<WardrobeFilters>) => {
     const updated = { ...filters, ...newFilters };
     setFilters(updated);
     onFilterChange(updated);
@@ -112,13 +104,14 @@ const EnhancedWardrobeFilters = ({
   };
   
   const clearFilters = () => {
-    const resetFilters = {
+    const resetFilters: WardrobeFilters = {
       category: null,
       color: null,
       occasion: null,
       timeFrame: 'all',
       favorite: null,
-      weatherAppropriate: null
+      weatherAppropriate: null,
+      searchQuery: ''
     };
     setFilters(resetFilters);
     setActiveFilters([]);

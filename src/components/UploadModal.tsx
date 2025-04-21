@@ -13,9 +13,10 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 interface UploadModalProps {
   onUpload: (item: any) => void;
   buttonText?: string;
+  children?: React.ReactNode; // Add support for children
 }
 
-const UploadModal = ({ onUpload, buttonText = "Add Item" }: UploadModalProps) => {
+const UploadModal = ({ onUpload, buttonText = "Add Item", children }: UploadModalProps) => {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
   const [type, setType] = useState<ClothingType | ''>('');
@@ -145,10 +146,12 @@ const UploadModal = ({ onUpload, buttonText = "Add Item" }: UploadModalProps) =>
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="space-x-2 group">
-          <span>{buttonText}</span>
-          <Camera className="h-4 w-4 transition-transform group-hover:scale-110" />
-        </Button>
+        {children || (
+          <Button className="space-x-2 group">
+            <span>{buttonText}</span>
+            <Camera className="h-4 w-4 transition-transform group-hover:scale-110" />
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-md max-h-[90vh] overflow-hidden">
         <DialogHeader>

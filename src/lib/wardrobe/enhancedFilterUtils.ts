@@ -1,5 +1,5 @@
 
-import { ClothingItem, ClothingType, ClothingColor, ClothingOccasion } from '@/lib/types';
+import { ClothingItem, ClothingType, ClothingColor, ClothingOccasion, ClothingSeason } from '@/lib/types';
 import { differenceInDays, differenceInMonths } from 'date-fns';
 
 // Define the filter state interface
@@ -78,7 +78,7 @@ export const filterByWeather = (
   if (weatherAppropriate !== true || !temperature) return items;
   
   // Determine season based on temperature
-  let currentSeason: string;
+  let currentSeason: ClothingSeason;
   
   if (temperature < 5) currentSeason = 'winter';
   else if (temperature >= 5 && temperature < 15) currentSeason = 'autumn';

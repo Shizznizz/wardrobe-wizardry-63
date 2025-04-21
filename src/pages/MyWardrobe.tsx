@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -88,7 +87,6 @@ const MyWardrobe = () => {
   const isMobile = useIsMobile();
   const { user } = useAuth();
 
-  // Fetch user profile if logged in
   useEffect(() => {
     if (user?.id) {
       supabase
@@ -104,13 +102,10 @@ const MyWardrobe = () => {
     }
   }, [user?.id]);
 
-  // Get weather data for weather-based filtering
   useEffect(() => {
     const fetchWeather = async () => {
       try {
-        // Simplified example - in a real app, you would use a weather API
-        // or fetch from your own backend service
-        setTemperature(18);  // Example: 18°C
+        setTemperature(18);
         setWeatherCondition('clear');
       } catch (error) {
         console.error('Failed to fetch weather data:', error);
@@ -152,7 +147,6 @@ const MyWardrobe = () => {
     loadItems();
   }, []);
 
-  // Apply filters whenever items or filter settings change
   useEffect(() => {
     const applyAllFilters = () => {
       const filtered = applyFilters(items, { ...filters, searchQuery }, temperature, weatherCondition);
@@ -207,7 +201,6 @@ const MyWardrobe = () => {
   };
 
   const handleEditItem = (item: ClothingItem) => {
-    // Update the item in the items array
     const updatedItems = items.map(i => 
       i.id === item.id ? item : i
     );
