@@ -7,16 +7,19 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { toast } from 'sonner';
 import { ClothingItem, Outfit, ClothingType } from '@/lib/types';
 import { sampleClothingItems, sampleOutfits } from '@/lib/wardrobeData';
-import { filterItemsByCategory, applySmartFilter, sortItems } from '@/lib/wardrobe/filterUtils';
+import { supabase } from '@/integrations/supabase/client';
+import { applyFilters, WardrobeFilters } from '@/lib/wardrobe/enhancedFilterUtils';
 import Header from '@/components/Header';
 import WardrobeGrid from '@/components/WardrobeGrid';
-import WardrobeFilters from '@/components/wardrobe/WardrobeFilters';
 import WardrobeControls from '@/components/wardrobe/WardrobeControls';
+import WardrobeInsights from '@/components/wardrobe/WardrobeInsights';
+import WardrobeSearch from '@/components/wardrobe/WardrobeSearch';
+import EnhancedWardrobeFilters from '@/components/wardrobe/EnhancedWardrobeFilters';
 import UploadModal from '@/components/UploadModal';
+import OutfitMatchModal from '@/components/OutfitMatchModal';
 import { Button } from '@/components/ui/button';
 import { Confetti } from '@/components/ui/confetti';
-import OutfitMatchModal from '@/components/OutfitMatchModal';
-import { Shirt, Sparkles, X, Check, Trash2 } from 'lucide-react';
+import { Shirt, Sparkles, X, Check, Trash2, Upload } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -55,25 +58,67 @@ const itemVariants = {
 const MyWardrobe = () => {
   const [items, setItems] = useState<ClothingItem[]>([]);
   const [outfits, setOutfits] = useState<Outfit[]>([]);
+  const [filteredItems, setFilteredItems] = useState<ClothingItem[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
   const [hasAddedItem, setHasAddedItem] = useState(false);
-  const [sortOption, setSortOption] = useState<string>('newest');
   const [showCompactView, setShowCompactView] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<ClothingType | null>(null);
   const [matchModalOpen, setMatchModalOpen] = useState(false);
   const [selectedItemForMatch, setSelectedItemForMatch] = useState<ClothingItem | null>(null);
   const [clearWardrobeDialogOpen, setClearWardrobeDialogOpen] = useState(false);
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [smartFilter, setSmartFilter] = useState<string | null>(null);
-  const [itemForPairing, setItemForPairing] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [temperature, setTemperature] = useState<number | undefined>(undefined);
+  const [weatherCondition, setWeatherCondition] = useState<string | undefined>(undefined);
+  const [profile, setProfile] = useState<{ first_name: string | null } | null>(null);
+  const [filters, setFilters] = useState<WardrobeFilters>({
+    category: null,
+    color: null,
+    occasion: null,
+    timeFrame: 'all',
+    favorite: null,
+    weatherAppropriate: null,
+    searchQuery: ''
+  });
 
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const { user } = useAuth();
+
+  // Fetch user profile if logged in
+  useEffect(() => {
+    if (user?.id) {
+      supabase
+        .from('profiles')
+        .select('first_name')
+        .eq('id', user.id)
+        .single()
+        .then(({ data, error }) => {
+          if (!error && data) {
+            setProfile(data);
+          }
+        });
+    }
+  }, [user?.id]);
+
+  // Get weather data for weather-based filtering
+  useEffect(() => {
+    const fetchWeather = async () => {
+      try {
+        // Simplified example - in a real app, you would use a weather API
+        // or fetch from your own backend service
+        setTemperature(18);  // Example: 18°C
+        setWeatherCondition('clear');
+      } catch (error) {
+        console.error('Failed to fetch weather data:', error);
+      }
+    };
+    
+    fetchWeather();
+  }, []);
 
   useEffect(() => {
     const loadItems = () => {
@@ -107,8 +152,20 @@ const MyWardrobe = () => {
     loadItems();
   }, []);
 
+  // Apply filters whenever items or filter settings change
+  useEffect(() => {
+    const applyAllFilters = () => {
+      const filtered = applyFilters(items, { ...filters, searchQuery }, temperature, weatherCondition);
+      setFilteredItems(filtered);
+    };
+    
+    applyAllFilters();
+  }, [items, filters, searchQuery, temperature, weatherCondition]);
+
   const handleUpload = (newItem: ClothingItem) => {
-    setItems(prev => [newItem, ...prev]);
+    const updatedItems = [newItem, ...items];
+    setItems(updatedItems);
+    localStorage.setItem('wardrobeItems', JSON.stringify(updatedItems));
     toast.success('New item added to your wardrobe!');
     
     if (!hasAddedItem) {
@@ -118,13 +175,14 @@ const MyWardrobe = () => {
   };
 
   const handleToggleFavorite = (id: string) => {
-    setItems(prev => 
-      prev.map(item => 
-        item.id === id 
-          ? { ...item, favorite: !item.favorite } 
-          : item
-      )
+    const updatedItems = items.map(item => 
+      item.id === id 
+        ? { ...item, favorite: !item.favorite } 
+        : item
     );
+    
+    setItems(updatedItems);
+    localStorage.setItem('wardrobeItems', JSON.stringify(updatedItems));
     
     const item = items.find(item => item.id === id);
     if (item) {
@@ -136,7 +194,9 @@ const MyWardrobe = () => {
   const handleDeleteItem = (id: string) => {
     const itemToDelete = items.find(item => item.id === id);
     if (itemToDelete) {
-      setItems(prev => prev.filter(item => item.id !== id));
+      const updatedItems = items.filter(item => item.id !== id);
+      setItems(updatedItems);
+      localStorage.setItem('wardrobeItems', JSON.stringify(updatedItems));
       toast.success(`${itemToDelete.name} has been removed from your wardrobe`);
     }
   };
@@ -146,12 +206,24 @@ const MyWardrobe = () => {
     setMatchModalOpen(true);
   };
 
+  const handleEditItem = (item: ClothingItem) => {
+    // Update the item in the items array
+    const updatedItems = items.map(i => 
+      i.id === item.id ? item : i
+    );
+    
+    setItems(updatedItems);
+    localStorage.setItem('wardrobeItems', JSON.stringify(updatedItems));
+    toast.success(`${item.name} has been updated`);
+  };
+
   const handleClearWardrobe = () => {
     setClearWardrobeDialogOpen(true);
   };
 
   const confirmClearWardrobe = () => {
     setItems([]);
+    localStorage.setItem('wardrobeItems', JSON.stringify([]));
     setClearWardrobeDialogOpen(false);
     toast.success("Your wardrobe has been cleared");
   };
@@ -169,39 +241,13 @@ const MyWardrobe = () => {
     );
   };
 
-  const handleSmartFilter = (filterType: string, itemId?: string) => {
-    if (filterType === smartFilter && itemId === itemForPairing) {
-      setSmartFilter(null);
-      setItemForPairing(null);
-      return;
-    }
-    
-    setSmartFilter(filterType);
-    if (itemId) {
-      setItemForPairing(itemId);
-    } else {
-      setItemForPairing(null);
-    }
-    
-    const filterMessages = {
-      'weather': 'Showing items suitable for current weather',
-      'pairing': itemId ? `Showing items that pair well with selected item` : null,
-      'olivia': "Showing Olivia's suggested pairings for your style"
-    };
-
-    const message = filterMessages[filterType as keyof typeof filterMessages];
-    if (message) toast.success(message);
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
   };
 
-  const filteredAndSortedItems = sortItems(
-    applySmartFilter(
-      filterItemsByCategory(items, selectedCategory),
-      smartFilter,
-      itemForPairing,
-      outfits
-    ),
-    sortOption
-  );
+  const handleFilterChange = (newFilters: any) => {
+    setFilters(newFilters);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white overflow-x-hidden max-w-[100vw]">
@@ -227,16 +273,22 @@ const MyWardrobe = () => {
               animate={{ opacity: 1, y: 0 }}
               className="w-full"
             >
-              <h1 className="text-3xl md:text-5xl font-bold mb-6 md:mb-10 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
-                Your Digital Wardrobe
+              <h1 className="text-3xl md:text-5xl font-bold mb-6 md:mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
+                {profile?.first_name ? `${profile.first_name}'s Digital Wardrobe` : 'Your Digital Wardrobe'}
               </h1>
               <p className="text-base md:text-lg text-white/80 mb-6">
-                Browse, organize, and visualize your clothes collection with powerful AI-driven insights.
+                Browse, organize, and visualize your entire clothes collection with powerful AI-driven insights.
               </p>
               <div className="flex flex-wrap gap-3">
-                <div id="upload-button">
-                  <UploadModal onUpload={handleUpload} />
-                </div>
+                <UploadModal onUpload={handleUpload}>
+                  <Button 
+                    size="lg" 
+                    className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-90 shadow-lg"
+                  >
+                    <Upload className="mr-2 h-4 w-4" /> Add Clothing Item
+                  </Button>
+                </UploadModal>
+                
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button 
@@ -282,45 +334,74 @@ const MyWardrobe = () => {
             variants={itemVariants} 
             className="flex flex-col w-full"
           >
-            <div className="flex flex-wrap justify-between items-center mb-6 md:mb-10 w-full">
-              <div className="relative">
-                <h2 className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
-                  {user?.email ? `Hi ${user.email.split('@')[0]}, here's your wardrobe` : "My Wardrobe"}
-                  {selectedCategory && (
-                    <span className="ml-2 text-lg md:text-xl text-white/90">
-                      (<span className="capitalize">{selectedCategory}</span>)
-                    </span>
-                  )}
-                </h2>
-                <div className="h-1 w-3/4 mt-2 bg-gradient-to-r from-blue-400/70 via-purple-400/70 to-pink-400/70 rounded-full shadow-[0_0_10px_rgba(168,85,247,0.5)]"></div>
+            <div className="relative mb-6">
+              <h2 className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 mb-3">
+                {user?.email ? `${profile?.first_name || user.email.split('@')[0]}'s Collection` : "My Collection"}
+              </h2>
+              <div className="h-1 w-3/4 bg-gradient-to-r from-blue-400/70 via-purple-400/70 to-pink-400/70 rounded-full shadow-[0_0_10px_rgba(168,85,247,0.5)]"></div>
+            </div>
+          
+            <WardrobeInsights items={items} />
+            
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-6">
+              <div className="md:col-span-2">
+                <WardrobeSearch onSearch={handleSearch} />
+              </div>
+              <div className="md:col-span-3 flex justify-end">
+                <WardrobeControls
+                  viewMode={viewMode}
+                  showCompactView={showCompactView}
+                  onViewModeChange={setViewMode}
+                  onCompactViewChange={setShowCompactView}
+                />
               </div>
             </div>
 
-            <WardrobeFilters
-              smartFilter={smartFilter}
-              onApplySmartFilter={handleSmartFilter}
-              itemForPairing={itemForPairing}
+            <EnhancedWardrobeFilters
+              onFilterChange={handleFilterChange}
+              totalItems={items.length}
+              filteredCount={filteredItems.length}
+              temperature={temperature}
+              weatherCondition={weatherCondition}
             />
 
-            <div className="flex justify-end mb-6">
-              <WardrobeControls
-                viewMode={viewMode}
-                showCompactView={showCompactView}
-                onViewModeChange={setViewMode}
-                onCompactViewChange={setShowCompactView}
+            <div className="mt-6">
+              <WardrobeGrid
+                items={filteredItems}
+                onToggleFavorite={handleToggleFavorite}
+                onMatchItem={handleMatchItem}
+                onDeleteItem={handleDeleteItem}
+                onEditItem={handleEditItem}
+                compactView={showCompactView}
+                selectable={isSelectionMode}
+                selectedItems={selectedItems}
+                onToggleSelect={handleToggleSelect}
               />
+              
+              {filteredItems.length === 0 && (
+                <div className="text-center py-10">
+                  <p className="text-lg text-white/70">No items found matching your filters</p>
+                  <Button 
+                    variant="link" 
+                    className="text-purple-400 mt-2"
+                    onClick={() => {
+                      setFilters({
+                        category: null,
+                        color: null,
+                        occasion: null,
+                        timeFrame: 'all',
+                        favorite: null,
+                        weatherAppropriate: null,
+                        searchQuery: ''
+                      });
+                      setSearchQuery('');
+                    }}
+                  >
+                    Clear all filters
+                  </Button>
+                </div>
+              )}
             </div>
-
-            <WardrobeGrid
-              items={filteredAndSortedItems}
-              onToggleFavorite={handleToggleFavorite}
-              onMatchItem={handleMatchItem}
-              onDeleteItem={handleDeleteItem}
-              compactView={showCompactView}
-              selectable={isSelectionMode}
-              selectedItems={selectedItems}
-              onToggleSelect={handleToggleSelect}
-            />
           </motion.div>
         </motion.div>
       </main>
