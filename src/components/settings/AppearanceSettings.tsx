@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { useTheme } from '@/components/ThemeProvider';
+import { useTheme } from '@/components/theme-provider';
 
 const AppearanceSettings = () => {
   const { theme, setTheme } = useTheme();
