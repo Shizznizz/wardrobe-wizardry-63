@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Button } from '@/components/ui/button';
 import { Camera, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
-import { ClothingType, ClothingColor, ClothingMaterial, ClothingSeason } from '@/lib/types';
+import { ClothingType, ClothingColor, ClothingMaterial, ClothingSeason, ClothingOccasion } from '@/lib/types';
 import ImageUploader from './wardrobe/ImageUploader';
 import ClothingDetailsForm from './wardrobe/ClothingDetailsForm';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -105,6 +105,9 @@ const UploadModal = ({ onUpload, buttonText = "Add Item", children }: UploadModa
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       
+      // Default occasions
+      const defaultOccasions: ClothingOccasion[] = ['casual'];
+      
       // Create new item
       const newItem = {
         id: Date.now().toString(),
@@ -112,11 +115,13 @@ const UploadModal = ({ onUpload, buttonText = "Add Item", children }: UploadModa
         type,
         color,
         material,
-        seasons,
+        season: seasons,  // Make sure we're using the right property name
+        seasons: seasons, // For compatibility
         image: imagePreview,
+        imageUrl: imagePreview,
         favorite,
         timesWorn: 0,
-        occasions: [], // Adding empty array for occasions to prevent errors
+        occasions: defaultOccasions,
         dateAdded: new Date()
       };
       

@@ -26,21 +26,34 @@ const EditItemDialog = ({ item, isOpen, onClose, onSave }: EditItemDialogProps) 
   const [type, setType] = useState<ClothingType | ''>(item?.type || '');
   const [color, setColor] = useState<ClothingColor | ''>(item?.color || '');
   const [material, setMaterial] = useState<ClothingMaterial | ''>(item?.material || '');
-  const [seasons, setSeasons] = useState<ClothingSeason[]>(item?.season || []);
+  const [seasons, setSeasons] = useState<ClothingSeason[]>([]);
   const [favorite, setFavorite] = useState(item?.favorite || false);
-  const [imageUrl, setImageUrl] = useState(item?.imageUrl || '');
-  const [occasions, setOccasions] = useState<ClothingOccasion[]>(item?.occasions as ClothingOccasion[] || []);
+  const [imageUrl, setImageUrl] = useState(item?.imageUrl || item?.image || '');
+  const [occasions, setOccasions] = useState<ClothingOccasion[]>([]);
   
   useEffect(() => {
     if (item) {
       setName(item.name);
       setType(item.type);
       setColor(item.color);
-      setMaterial(item.material);
-      setSeasons(item.season);
-      setFavorite(item.favorite);
-      setImageUrl(item.imageUrl);
-      setOccasions(item.occasions as ClothingOccasion[] || []);
+      setMaterial(item.material || '');
+      
+      // Handle seasons field - use either season or seasons array
+      const itemSeasons = Array.isArray(item.season) ? item.season : 
+                         (Array.isArray(item.seasons) ? item.seasons : []);
+      setSeasons(itemSeasons);
+      
+      setFavorite(item.favorite || false);
+      setImageUrl(item.imageUrl || item.image || '');
+      
+      // Handle occasions field
+      const itemOccasions = Array.isArray(item.occasions) ? item.occasions : 
+                           (typeof item.occasion === 'string' ? [item.occasion] : ['casual']);
+      setOccasions(itemOccasions);
+      
+      console.log("Item loaded in edit dialog:", item);
+      console.log("Seasons loaded:", itemSeasons);
+      console.log("Occasions loaded:", itemOccasions);
     }
   }, [item]);
   
@@ -76,12 +89,14 @@ const EditItemDialog = ({ item, isOpen, onClose, onSave }: EditItemDialogProps) 
       color,
       material: material as ClothingMaterial,
       season: seasons,
+      seasons: seasons, // Set both for compatibility
       favorite,
       imageUrl,
-      image: item.image || '/placeholder.svg',
-      occasions: occasions || []
+      image: imageUrl, // Set both for compatibility
+      occasions: occasions.length > 0 ? occasions : ['casual']
     };
     
+    console.log("Saving updated item:", updatedItem);
     onSave(updatedItem);
     toast.success(`${name} has been updated`);
     onClose();

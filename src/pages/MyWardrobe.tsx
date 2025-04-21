@@ -157,7 +157,16 @@ const MyWardrobe = () => {
   }, [items, filters, searchQuery, temperature, weatherCondition]);
 
   const handleUpload = (newItem: ClothingItem) => {
-    const updatedItems = [newItem, ...items];
+    const itemToSave = {
+      ...newItem,
+      season: Array.isArray(newItem.season) ? newItem.season : [],
+      seasons: Array.isArray(newItem.season) ? newItem.season : [],
+      occasions: Array.isArray(newItem.occasions) ? newItem.occasions : ['casual'],
+      dateAdded: new Date(),
+      timesWorn: 0
+    };
+    
+    const updatedItems = [itemToSave, ...items];
     setItems(updatedItems);
     localStorage.setItem('wardrobeItems', JSON.stringify(updatedItems));
     toast.success('New item added to your wardrobe!');
@@ -168,21 +177,22 @@ const MyWardrobe = () => {
     }
   };
 
-  const handleToggleFavorite = (id: string) => {
-    const updatedItems = items.map(item => 
-      item.id === id 
-        ? { ...item, favorite: !item.favorite } 
-        : item
+  const handleEditItem = (item: ClothingItem) => {
+    console.log("Editing item:", item);
+    
+    const updatedItems = items.map(i => 
+      i.id === item.id ? {
+        ...item,
+        season: Array.isArray(item.season) ? item.season : [],
+        seasons: Array.isArray(item.season) ? item.season : [],
+        occasions: Array.isArray(item.occasions) ? item.occasions : ['casual']
+      } : i
     );
     
+    console.log("Updated items:", updatedItems);
     setItems(updatedItems);
     localStorage.setItem('wardrobeItems', JSON.stringify(updatedItems));
-    
-    const item = items.find(item => item.id === id);
-    if (item) {
-      const action = !item.favorite ? 'added to' : 'removed from';
-      toast.success(`${item.name} ${action} favorites`);
-    }
+    toast.success(`${item.name} has been updated`);
   };
 
   const handleDeleteItem = (id: string) => {
@@ -198,16 +208,6 @@ const MyWardrobe = () => {
   const handleMatchItem = (item: ClothingItem) => {
     setSelectedItemForMatch(item);
     setMatchModalOpen(true);
-  };
-
-  const handleEditItem = (item: ClothingItem) => {
-    const updatedItems = items.map(i => 
-      i.id === item.id ? item : i
-    );
-    
-    setItems(updatedItems);
-    localStorage.setItem('wardrobeItems', JSON.stringify(updatedItems));
-    toast.success(`${item.name} has been updated`);
   };
 
   const handleClearWardrobe = () => {

@@ -67,6 +67,13 @@ const WardrobeItemCard = ({
     }
   };
 
+  // Ensure we always have arrays for seasons and occasions
+  const seasons = Array.isArray(item.season) ? item.season : 
+                 (Array.isArray(item.seasons) ? item.seasons : []);
+  
+  const occasions = Array.isArray(item.occasions) ? item.occasions : 
+                   (typeof item.occasion === 'string' ? [item.occasion] : []);
+
   return (
     <>
       <motion.div
@@ -162,14 +169,16 @@ const WardrobeItemCard = ({
             </div>
 
             <div className="flex flex-wrap gap-1 pt-2 flex-grow">
-              {item.season && Array.isArray(item.season) && item.season.map((season) => (
-                <Badge key={season} variant="outline" className="text-[10px] h-5 px-1.5 border-blue-500/30 text-blue-100">
+              {/* Display seasons */}
+              {seasons.length > 0 && seasons.map((season) => (
+                <Badge key={`season-${season}`} variant="outline" className="text-[10px] h-5 px-1.5 border-blue-500/30 text-blue-100">
                   {season}
                 </Badge>
               ))}
               
-              {item.occasions && Array.isArray(item.occasions) && item.occasions.map((occasion) => (
-                <Badge key={occasion} variant="outline" className="text-[10px] h-5 px-1.5 border-purple-500/30 text-purple-100">
+              {/* Display occasions */}
+              {occasions.length > 0 && occasions.map((occasion) => (
+                <Badge key={`occasion-${occasion}`} variant="outline" className="text-[10px] h-5 px-1.5 border-purple-500/30 text-purple-100">
                   {occasion}
                 </Badge>
               ))}
