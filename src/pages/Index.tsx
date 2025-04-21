@@ -1,5 +1,4 @@
-
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Sparkles, Zap, MessageCircle, Star } from 'lucide-react';
@@ -16,27 +15,64 @@ import OliviaStyleAdvice from '@/components/OliviaStyleAdvice';
 import OliviaBloomAssistant from '@/components/OliviaBloomAssistant';
 import HomepagePremiumTeaser from '@/components/HomepagePremiumTeaser';
 import { useAuth } from '@/hooks/useAuth';
+import AIStylistChat from '@/components/shop-try/AIStylistChat';
 
 const Index = () => {
   const { user } = useAuth();
   const [showOliviaAssistant, setShowOliviaAssistant] = useState(false);
-  
-  // Display Olivia assistant with a slight delay after page load
+  const [openChat, setOpenChat] = useState(false);
+  const insightsRef = useRef<HTMLDivElement>(null);
+  const [hasShown, setHasShown] = useState(false);
+
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowOliviaAssistant(true);
-    }, 1500);
-    
-    return () => clearTimeout(timer);
+    if (!insightsRef.current) return;
+    const observer = new window.IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (entry.isIntersecting) {
+          setShowOliviaAssistant(true);
+          setHasShown(true);
+        }
+      },
+      {
+        threshold: 0.4,
+      }
+    );
+    observer.observe(insightsRef.current);
+    return () => {
+      if (insightsRef.current) observer.unobserve(insightsRef.current);
+    };
+  }, [insightsRef, hasShown]);
+
+  useEffect(() => {
+    if (!insightsRef.current) return;
+    const obs = new window.IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (!entry.isIntersecting && !openChat && hasShown) {
+          setShowOliviaAssistant(false);
+        }
+      },
+      {
+        threshold: 0,
+      }
+    );
+    obs.observe(insightsRef.current);
+    return () => {
+      if (insightsRef.current) obs.unobserve(insightsRef.current);
+    };
+  }, [insightsRef, openChat, hasShown]);
+
+  const handleOpenChat = useCallback(() => {
+    setOpenChat(true);
   }, []);
-  
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white overflow-x-hidden">
       <Header />
       <BackgroundShapes />
       
       <main className="container mx-auto px-4 pt-20 md:pt-28 pb-20 relative z-10">
-        {/* Hero Section with improved layout and messaging */}
         <motion.div 
           className="max-w-6xl mx-auto relative"
           initial={{ opacity: 0 }}
@@ -185,7 +221,9 @@ const Index = () => {
         
         <SectionDivider variant="gradient" />
         
-        <InsightsCarousel />
+        <div ref={insightsRef} id="style-intelligence-section">
+          <InsightsCarousel />
+        </div>
         
         <SectionDivider variant="dotted" />
         
@@ -208,9 +246,8 @@ const Index = () => {
         {user && <StyleDiscoveryQuiz />}
       </main>
       
-      {/* Animated Olivia Assistant */}
       <AnimatePresence>
-        {showOliviaAssistant && (
+        {showOliviaAssistant && !openChat && (
           <OliviaBloomAssistant 
             message="Need help finding your perfect style? I'd love to assist you!"
             timing="long"
@@ -219,6 +256,17 @@ const Index = () => {
             autoClose={false}
             position="bottom-right"
             showChatIcon={true}
+            onAction={handleOpenChat}
+          />
+        )}
+      </AnimatePresence>
+      
+      <AnimatePresence>
+        {openChat && (
+          <AIStylistChat
+            isPremiumUser={true}
+            onUpgradeToPremium={() => {}}
+            onClose={() => setOpenChat(false)}
           />
         )}
       </AnimatePresence>
