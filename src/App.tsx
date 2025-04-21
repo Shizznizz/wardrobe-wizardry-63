@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { AuthProvider } from '@/hooks/useAuth';
@@ -16,7 +17,7 @@ import Settings from '@/pages/Settings';
 
 function App() {
   return (
-    <ThemeProvider defaultTheme="dark" storageKey="vite-react-theme">
+    <ThemeProvider>
       <AuthProvider>
         <PageLayout>
           <Routes>
