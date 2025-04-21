@@ -11,9 +11,33 @@ interface PremiumExperienceProps {
 const PremiumExperience = ({ onUpgrade }: PremiumExperienceProps) => {
   const { isAuthenticated } = useAuth();
   
-  // Don't show for authenticated users
-  if (isAuthenticated) return null;
+  // If user is authenticated, show a different premium message
+  if (isAuthenticated) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="bg-gradient-to-br from-slate-900/95 via-purple-900/95 to-slate-900/95 backdrop-blur-lg border-t border-white/10 py-4 px-4"
+      >
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row justify-between items-center text-center md:text-left">
+            <div className="flex items-center mb-4 md:mb-0">
+              <Crown className="h-5 w-5 text-yellow-400 mr-2" />
+              <h2 className="text-lg font-medium text-white">
+                You're enjoying Premium features!
+              </h2>
+            </div>
+            <p className="text-white/70 text-sm">
+              Thank you for being a premium member. Enjoy exclusive access to all features.
+            </p>
+          </div>
+        </div>
+      </motion.div>
+    );
+  }
 
+  // For non-authenticated users, show the full premium experience banner
   const features = [
     {
       id: 'chat',
@@ -46,7 +70,7 @@ const PremiumExperience = ({ onUpgrade }: PremiumExperienceProps) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="fixed bottom-0 left-0 right-0 z-40 bg-gradient-to-br from-slate-900/95 via-purple-900/95 to-slate-900/95 backdrop-blur-lg border-t border-white/10 py-6 px-4"
+      className="bg-gradient-to-br from-slate-900/95 via-purple-900/95 to-slate-900/95 backdrop-blur-lg border-t border-white/10 py-6 px-4"
     >
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col items-center text-center mb-6">
