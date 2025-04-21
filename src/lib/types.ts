@@ -6,19 +6,19 @@ export type ClothingColor =
   | 'gray'
   | 'red'
   | 'blue'
+  | 'navy'
   | 'green'
   | 'yellow'
   | 'purple'
   | 'pink'
   | 'orange'
   | 'brown'
-  | 'navy'
   | 'beige'
   | 'cream'
-  | 'coral'
   | 'burgundy'
-  | 'multicolor'
-  | 'rose';
+  | 'coral'
+  | 'rose'
+  | 'multicolor';
 
 export type ClothingSeason = 'spring' | 'summer' | 'autumn' | 'winter' | 'all';
 
