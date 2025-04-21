@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+
+import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Check } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { sampleOutfits, sampleClothingItems } from '@/lib/wardrobeData'; // Changed to named imports
+import { sampleOutfits, sampleClothingItems } from '@/lib/wardrobeData';
 import OliviaRecommendationAfterQuiz from './OliviaRecommendationAfterQuiz';
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip';
 
 const questions = [
   {
@@ -43,6 +45,109 @@ const questions = [
     options: ['Yes, surprise me!', 'I like to stick with what I know', "Let's try something new but safe"]
   }
 ];
+
+// Utility to dynamically adjust font size based on text length
+const getFontSizeClass = (text: string) => {
+  if (text.length > 28) return 'text-xs';
+  if (text.length > 20) return 'text-sm';
+  return 'text-base';
+};
+
+function QuizOptionButton({
+  children,
+  selected,
+  onClick,
+  leftIcon,
+  className,
+  ...props
+}: {
+  children: string;
+  selected: boolean;
+  onClick: () => void;
+  leftIcon: React.ReactNode;
+  className?: string;
+}) {
+  // Detect if the text is overflowing the button to trigger a tooltip
+  const textRef = useRef<HTMLSpanElement>(null);
+  const [isOverflowing, setIsOverflowing] = useState(false);
+
+  useEffect(() => {
+    const checkOverflow = () => {
+      const span = textRef.current;
+      if (span) {
+        setIsOverflowing(span.scrollHeight > span.offsetHeight + 2);
+      }
+    };
+    checkOverflow();
+    window.addEventListener('resize', checkOverflow);
+    return () => window.removeEventListener('resize', checkOverflow);
+  }, [children]);
+
+  return (
+    <TooltipProvider>
+      <Tooltip delayDuration={50}>
+        <TooltipTrigger asChild>
+          <Button
+            onClick={onClick}
+            aria-pressed={selected}
+            className={`
+              flex flex-col min-h-12 w-full min-w-0 py-3 px-4 items-center justify-center gap-2 rounded-lg truncate
+              whitespace-normal border transition-all relative
+              ${selected
+                ? 'bg-gradient-to-br from-purple-600 to-pink-600 text-white border-purple-400'
+                : 'bg-white/5 hover:bg-white/10 text-white/90 border-white/10'
+              }
+              ${getFontSizeClass(children)}
+              ${className || ''}
+            `}
+            variant="outline"
+            style={{
+              maxWidth: '100%',
+              overflow: 'visible', // allow button to expand down, but not side
+              textOverflow: 'clip',
+              lineHeight: 1.22,
+              minHeight: 48,
+              height: 'auto',
+              wordBreak: 'break-word',
+              whiteSpace: 'normal'
+            }}
+            {...props}
+          >
+            <div
+              className={`
+                w-8 h-8 rounded-full flex items-center justify-center mb-1 shrink-0
+                ${selected ? 'bg-white/20' : 'bg-white/10'}
+              `}
+            >
+              {leftIcon}
+            </div>
+            {/* Use break-all to wrap long words, and set max height for text to allow tooltip for overflow */}
+            <span
+              ref={textRef}
+              className={`truncate text-center leading-tight px-1 w-full max-w-full break-words block ${getFontSizeClass(children)}`}
+              style={{
+                display: 'block',
+                maxWidth: '100%',
+                overflowWrap: 'break-word',
+                // Set max height roughly for 2 lines so tooltip triggers on overflow
+                maxHeight: 40,
+                minHeight: 16,
+                whiteSpace: 'normal',
+              }}
+            >
+              {children}
+            </span>
+          </Button>
+        </TooltipTrigger>
+        {isOverflowing && (
+          <TooltipContent side="top" className="max-w-xs break-words">
+            {children}
+          </TooltipContent>
+        )}
+      </Tooltip>
+    </TooltipProvider>
+  );
+}
 
 const StyleQuiz = ({ onComplete }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -124,43 +229,17 @@ const StyleQuiz = ({ onComplete }) => {
                 {currentQ.options.map((option) => {
                   const isSelected = answers[currentQ.id] === option;
                   return (
-                    <Button
+                    <QuizOptionButton
                       key={option}
+                      selected={isSelected}
                       onClick={() => handleAnswer(option)}
-                      className={`flex flex-col h-[48px] sm:h-[56px] w-full min-w-0 py-3 px-3 text-sm font-medium items-center justify-center gap-2 rounded-lg
-                        transition-all border
-                        truncate whitespace-nowrap
-                        ${
-                          isSelected
-                            ? 'bg-gradient-to-br from-purple-600 to-pink-600 text-white border-purple-400'
-                            : 'bg-white/5 hover:bg-white/10 text-white/90 border-white/10'
-                        }`}
-                      variant="outline"
-                      style={{
-                        maxWidth: '100%',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        height: 'auto'
-                      }}
+                      leftIcon={isSelected
+                        ? <Check className="h-4 w-4 text-white" />
+                        : <ArrowRight className="h-4 w-4 text-white/80" />
+                      }
                     >
-                      <div
-                        className={`w-8 h-8 rounded-full flex items-center justify-center mb-1 shrink-0
-                          ${isSelected ? 'bg-white/20' : 'bg-white/10'}
-                        `}
-                      >
-                        {isSelected ? (
-                          <Check className="h-4 w-4 text-white" />
-                        ) : (
-                          <ArrowRight className="h-4 w-4 text-white/80" />
-                        )}
-                      </div>
-                      <span
-                        className="truncate text-center text-base leading-tight px-1"
-                        style={{ width: "100%" }}
-                      >
-                        {option}
-                      </span>
-                    </Button>
+                      {option}
+                    </QuizOptionButton>
                   );
                 })}
               </div>
