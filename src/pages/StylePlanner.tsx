@@ -12,7 +12,7 @@ import { useLocationStorage } from '@/hooks/useLocationStorage';
 import { format } from 'date-fns';
 import ScrollToTop from '@/components/ScrollToTop';
 
-const Calendar = () => {
+const StylePlanner = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [items, setItems] = useState(sampleClothingItems);
   const [outfits, setOutfits] = useState(sampleOutfits);
@@ -141,4 +141,4 @@ const Calendar = () => {
   );
 };
 
-export default Calendar;
+export default StylePlanner;
