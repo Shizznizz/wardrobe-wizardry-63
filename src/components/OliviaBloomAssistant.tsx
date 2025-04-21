@@ -1,11 +1,11 @@
-
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageCircle, X, Sparkles, MinusCircle, PlusCircle } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { ClothingItem, Outfit, WeatherInfo } from '@/lib/types';
 import { cn } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface OliviaBloomAssistantProps {
   message: string;
@@ -17,20 +17,24 @@ interface OliviaBloomAssistantProps {
   outfit?: Outfit;
   items?: ClothingItem[];
   weather?: WeatherInfo;
-  position?: 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left' | 'center';
+  position?: 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left' | 'center' | 'mobile';
   autoClose?: boolean;
   compact?: boolean;
   initialDelay?: number;
   showChatIcon?: boolean;
 }
 
-const getPositionClasses = (position: string) => {
+const getPositionClasses = (position: string, isMobile: boolean) => {
+  if (isMobile || position === 'mobile') {
+    return 'fixed inset-x-4 bottom-4 z-50';
+  }
+  
   switch(position) {
     case 'bottom-left': return 'bottom-10 left-10';
     case 'top-right': return 'top-10 right-10';
     case 'top-left': return 'top-10 left-10';
     case 'center': return 'bottom-28 left-1/2 -translate-x-1/2';
-    default: return 'bottom-10 right-10'; // Changed from bottom-6 to bottom-10 for more space
+    default: return 'bottom-10 right-10';
   }
 };
 
@@ -53,12 +57,13 @@ const OliviaBloomAssistant = ({
   outfit,
   items,
   weather,
-  position = 'bottom-right',
+  position = 'mobile',
   autoClose = true,
   compact = false,
   initialDelay = 0,
   showChatIcon = false
 }: OliviaBloomAssistantProps) => {
+  const isMobile = useIsMobile();
   const [isVisible, setIsVisible] = useState(true);
   const [expanded, setExpanded] = useState(!compact);
   const [minimized, setMinimized] = useState(false);
@@ -100,7 +105,7 @@ const OliviaBloomAssistant = ({
     <AnimatePresence>
       {isVisible && (
         <motion.div
-          className={`fixed z-50 ${getPositionClasses(position)} flex items-end`}
+          className={`${getPositionClasses(position, isMobile)} fixed`}
           initial={{ opacity: 0, y: 20, scale: 0.8 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 10, scale: 0.8 }}
