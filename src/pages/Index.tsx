@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -206,7 +205,7 @@ const Index = () => {
                     stiffness: 300,
                     damping: 20
                   }}
-                  className="absolute -bottom-6 right-0 md:-right-8 max-w-xs transform rotate-2 z-20"
+                  className="absolute -bottom-14 right-0 md:-right-8 max-w-xs transform rotate-2 z-20"
                 >
                   <div className="bg-gradient-to-r from-purple-600/90 to-pink-600/90 p-6 rounded-xl shadow-xl backdrop-blur-sm border border-white/20 text-white">
                     <p className="text-lg font-medium">
