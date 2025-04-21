@@ -2,9 +2,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Check } from 'lucide-react';
+// REMOVE ARROWS FROM BUTTONS, ONLY TEXT
+// import { ArrowRight, Check } from 'lucide-react'; 
 import { Card, CardContent } from '@/components/ui/card';
-import { sampleOutfits, sampleClothingItems } from '@/lib/wardrobeData';
+import { sampleOutfits, sampleClothingItems } from '@/lib/wardrobeData'; // FIX NAMED IMPORTS
 import OliviaRecommendationAfterQuiz from './OliviaRecommendationAfterQuiz';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip';
 
@@ -46,36 +47,36 @@ const questions = [
   }
 ];
 
-// Utility to dynamically adjust font size based on text length
+// Computes font size class based on text length (for visible text, not for tooltip)
 const getFontSizeClass = (text: string) => {
-  if (text.length > 28) return 'text-xs';
-  if (text.length > 20) return 'text-sm';
+  if (text.length > 40) return 'text-xs';
+  if (text.length > 28) return 'text-sm';
   return 'text-base';
 };
 
+// Quiz button component: adjusts appearance and tooltip for long text nicely
 function QuizOptionButton({
   children,
   selected,
   onClick,
-  leftIcon,
   className,
   ...props
 }: {
   children: string;
   selected: boolean;
   onClick: () => void;
-  leftIcon: React.ReactNode;
   className?: string;
 }) {
-  // Detect if the text is overflowing the button to trigger a tooltip
   const textRef = useRef<HTMLSpanElement>(null);
   const [isOverflowing, setIsOverflowing] = useState(false);
 
+  // Checks if actual lines are cut off
   useEffect(() => {
     const checkOverflow = () => {
       const span = textRef.current;
       if (span) {
-        setIsOverflowing(span.scrollHeight > span.offsetHeight + 2);
+        // Overflow if scrollHeight > offsetHeight by about 1px or more
+        setIsOverflowing(span.scrollHeight > span.offsetHeight + 1);
       }
     };
     checkOverflow();
@@ -83,19 +84,20 @@ function QuizOptionButton({
     return () => window.removeEventListener('resize', checkOverflow);
   }, [children]);
 
+  // Tooltip only if overflow detected
   return (
     <TooltipProvider>
-      <Tooltip delayDuration={50}>
+      <Tooltip delayDuration={30}>
         <TooltipTrigger asChild>
           <Button
             onClick={onClick}
             aria-pressed={selected}
             className={`
-              flex flex-col min-h-12 w-full min-w-0 py-3 px-4 items-center justify-center gap-2 rounded-lg truncate
-              whitespace-normal border transition-all relative
+              flex flex-col min-h-12 w-full min-w-0 py-3 px-4 items-center justify-center gap-2 rounded-lg text-center border transition-all relative
+              whitespace-normal truncate
               ${selected
-                ? 'bg-gradient-to-br from-purple-600 to-pink-600 text-white border-purple-400'
-                : 'bg-white/5 hover:bg-white/10 text-white/90 border-white/10'
+                ? "bg-gradient-to-br from-[#9b87f5] to-pink-500 text-white border-[#9b87f5]/80"
+                : "bg-white/10 hover:bg-white/15 text-white/90 border-white/10"
               }
               ${getFontSizeClass(children)}
               ${className || ''}
@@ -103,36 +105,31 @@ function QuizOptionButton({
             variant="outline"
             style={{
               maxWidth: '100%',
-              overflow: 'visible', // allow button to expand down, but not side
-              textOverflow: 'clip',
-              lineHeight: 1.22,
               minHeight: 48,
               height: 'auto',
+              paddingTop: 14,
+              paddingBottom: 14,
               wordBreak: 'break-word',
-              whiteSpace: 'normal'
+              whiteSpace: 'normal',
+              fontWeight: 500,
+              overflow: 'visible',
+              boxShadow: selected
+                ? '0 0 0 2px #9b87f544'
+                : undefined,
+              transition: 'background 0.2s, color 0.2s, border 0.2s, box-shadow 0.2s'
             }}
             {...props}
           >
-            <div
-              className={`
-                w-8 h-8 rounded-full flex items-center justify-center mb-1 shrink-0
-                ${selected ? 'bg-white/20' : 'bg-white/10'}
-              `}
-            >
-              {leftIcon}
-            </div>
-            {/* Use break-all to wrap long words, and set max height for text to allow tooltip for overflow */}
+            {/* No icon/arrows! */}
             <span
               ref={textRef}
-              className={`truncate text-center leading-tight px-1 w-full max-w-full break-words block ${getFontSizeClass(children)}`}
+              className={`truncate text-center leading-tight px-2 w-full max-w-full break-words block ${getFontSizeClass(children)}`}
               style={{
                 display: 'block',
                 maxWidth: '100%',
+                fontWeight: selected ? 700 : 500,
                 overflowWrap: 'break-word',
-                // Set max height roughly for 2 lines so tooltip triggers on overflow
-                maxHeight: 40,
-                minHeight: 16,
-                whiteSpace: 'normal',
+                wordBreak: 'break-word'
               }}
             >
               {children}
@@ -140,7 +137,7 @@ function QuizOptionButton({
           </Button>
         </TooltipTrigger>
         {isOverflowing && (
-          <TooltipContent side="top" className="max-w-xs break-words">
+          <TooltipContent side="top" className="max-w-xs break-words whitespace-pre-line">
             {children}
           </TooltipContent>
         )}
@@ -155,6 +152,7 @@ const StyleQuiz = ({ onComplete }) => {
   const [showRecommendation, setShowRecommendation] = useState(false);
   const [recommendedOutfit, setRecommendedOutfit] = useState(null);
 
+  // Matching based on "style" first, then "activity" as fallback, then random. Can be improved for AI integration.
   const findRecommendedOutfit = (answers) => {
     let match;
     if (answers.style) {
@@ -233,10 +231,6 @@ const StyleQuiz = ({ onComplete }) => {
                       key={option}
                       selected={isSelected}
                       onClick={() => handleAnswer(option)}
-                      leftIcon={isSelected
-                        ? <Check className="h-4 w-4 text-white" />
-                        : <ArrowRight className="h-4 w-4 text-white/80" />
-                      }
                     >
                       {option}
                     </QuizOptionButton>
@@ -258,3 +252,4 @@ const StyleQuiz = ({ onComplete }) => {
 };
 
 export default StyleQuiz;
+
