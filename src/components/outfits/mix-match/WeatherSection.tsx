@@ -11,7 +11,7 @@ import WeatherWidget from '@/components/WeatherWidget';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { countries } from '@/data/countries';
 import { getCitiesByCountry } from '@/services/LocationService';
-import { useLocationStorage } from '@/hooks/useLocationStorage';
+import { useLocation } from '@/hooks/useLocation';
 import StyleQuiz from './StyleQuiz';
 
 interface WeatherSectionProps {
@@ -20,44 +20,46 @@ interface WeatherSectionProps {
 }
 
 const WeatherSection = ({ onWeatherUpdate, onSituationChange }: WeatherSectionProps) => {
-  const { savedLocation, saveLocation } = useLocationStorage();
-  const [country, setCountry] = useState<string>(savedLocation?.country || 'US');
-  const [city, setCity] = useState<string>(savedLocation?.city || 'San Francisco');
+  const { 
+    country, 
+    city, 
+    handleCountryChange, 
+    handleCityChange, 
+    detectLocation, 
+    saveLocationPreference, 
+    isDetecting, 
+    isSavingPreference 
+  } = useLocation();
   const [availableCities, setAvailableCities] = useState<string[]>([]);
   const [quizComplete, setQuizComplete] = useState(false);
+  const [weatherKey, setWeatherKey] = useState(0); // Used to force WeatherWidget refresh
   
   useEffect(() => {
     if (country) {
       const cities = getCitiesByCountry(country);
       setAvailableCities(cities);
-      
-      if (cities.length > 0 && !cities.includes(city)) {
-        setCity(cities[0]);
-      }
     }
-  }, [country, city]);
+  }, [country]);
   
-  const handleCountryChange = (value: string) => {
-    setCountry(value);
-    const cities = getCitiesByCountry(value);
-    if (cities.length > 0) {
-      setCity(cities[0]);
-      saveLocation(cities[0], value);
-    }
-  };
-  
-  const handleCityChange = (value: string) => {
-    setCity(value);
-    saveLocation(value, country);
-  };
-
   const handleQuizComplete = (answers: Record<string, string>) => {
     setQuizComplete(true);
     onSituationChange(answers.activity.toLowerCase());
   };
 
   const handleRefreshWeather = () => {
+    setWeatherKey(prev => prev + 1);
     toast.success('Refreshing weather data...');
+  };
+
+  const handleSaveLocation = async () => {
+    if (country && city) {
+      const success = await saveLocationPreference();
+      if (success) {
+        handleRefreshWeather();
+      }
+    } else {
+      toast.error('Please select both country and city');
+    }
   };
   
   return (
@@ -95,9 +97,13 @@ const WeatherSection = ({ onWeatherUpdate, onSituationChange }: WeatherSectionPr
             
             <div className="space-y-2">
               <Label className="text-sm text-white/70">City</Label>
-              <Select value={city} onValueChange={handleCityChange}>
+              <Select 
+                value={city} 
+                onValueChange={handleCityChange}
+                disabled={!country || availableCities.length === 0}
+              >
                 <SelectTrigger className="bg-white/5 border-white/10">
-                  <SelectValue placeholder="Select city" />
+                  <SelectValue placeholder={!country ? "Select country first" : "Select city"} />
                 </SelectTrigger>
                 <SelectContent className="bg-slate-900 border-white/10 max-h-[200px]">
                   {availableCities.map(cityName => (
@@ -109,14 +115,43 @@ const WeatherSection = ({ onWeatherUpdate, onSituationChange }: WeatherSectionPr
               </Select>
             </div>
           </div>
+          
+          <div className="flex gap-2 justify-between">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={detectLocation} 
+              disabled={isDetecting}
+              className="text-xs border-white/20 text-white/70 flex-1"
+            >
+              {isDetecting ? 'Detecting...' : (
+                <>
+                  <MapPin className="h-3 w-3 mr-1" />
+                  Use Current Location
+                </>
+              )}
+            </Button>
+            
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleSaveLocation} 
+              disabled={isSavingPreference || !country || !city}
+              className="text-xs border-white/20 text-white/70 flex-1"
+            >
+              {isSavingPreference ? 'Saving...' : 'Save Preference'}
+            </Button>
+          </div>
         </div>
         
         <WeatherWidget 
+          key={weatherKey}
           className="my-4"
           onWeatherChange={onWeatherUpdate}
           city={city}
           country={country}
           showToasts={true}
+          savePreferences={false} // We handle saving with explicit button
         />
       </div>
 

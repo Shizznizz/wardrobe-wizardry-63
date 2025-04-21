@@ -1,7 +1,7 @@
 
+import React from 'react';
 import { AlertCircle } from 'lucide-react';
 import { WeatherInfo } from '@/lib/types';
-import { motion } from 'framer-motion';
 
 interface WeatherErrorProps {
   error: string;
@@ -10,32 +10,27 @@ interface WeatherErrorProps {
 
 const WeatherError = ({ error, weather }: WeatherErrorProps) => {
   return (
-    <div className="bg-gradient-to-br from-red-500/50 to-orange-600/50 rounded-2xl p-6 border border-white/20 shadow-lg">
-      <div className="flex flex-col items-center text-center space-y-3">
-        <motion.div
-          animate={{ 
-            scale: [1, 1.1, 1],
-            transition: { duration: 2, repeat: Infinity } 
-          }}
-          className="text-white"
-        >
-          <AlertCircle size={40} />
-        </motion.div>
-        
-        <div>
-          <h3 className="text-lg font-medium text-white mb-1">Weather Data Error</h3>
-          <p className="text-sm text-white/80 mb-1">{error}</p>
-          
-          {weather && (
-            <div className="mt-3 bg-black/20 p-2 rounded-lg">
-              <p className="text-sm text-white">Showing estimated weather instead</p>
-              <p className="text-white font-medium mt-1">
-                {weather.temperature}°C, {weather.condition}
-              </p>
-            </div>
-          )}
+    <div className="text-center p-2">
+      <div className="bg-red-900/50 rounded-lg p-3 mb-2 border border-red-500/40">
+        <div className="flex items-center justify-center mb-1">
+          <AlertCircle className="text-red-400 w-5 h-5 mr-2" />
+          <h3 className="font-medium text-white">Weather Data Error</h3>
         </div>
+        <p className="text-sm text-white/80 mb-2">
+          {error.includes('city not found') ? 
+            `Weather data not available for ${weather?.city || 'this location'}` : 
+            error}
+        </p>
       </div>
+      
+      {weather && (
+        <div className="text-sm text-white/70 p-2 bg-slate-800/50 rounded-lg border border-white/10">
+          <p>Showing estimated weather instead</p>
+          <div className="font-medium mt-1">
+            {weather.temperature}°C, {weather.condition}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

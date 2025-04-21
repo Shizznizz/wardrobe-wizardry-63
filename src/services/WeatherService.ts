@@ -15,6 +15,10 @@ export const getIconName = (condition: string): string => {
 };
 
 export const fetchWeatherData = async (city: string, country: string): Promise<WeatherInfo> => {
+  if (!city || !country) {
+    throw new Error('City and country are required');
+  }
+
   const apiKey = '72b9c69df76684e113804b44895d2599';
   const url = `https://api.openweathermap.org/data/2.5/weather?q=${city},${country}&appid=${apiKey}&units=metric&lang=nl`;
   
@@ -27,7 +31,8 @@ export const fetchWeatherData = async (city: string, country: string): Promise<W
   }
   
   if (!response.ok) {
-    throw new Error(`Weather data not available for ${city}, ${country}`);
+    const errorMsg = data.message || `Weather data not available for ${city}, ${country}`;
+    throw new Error(errorMsg);
   }
   
   console.log("Weather data received:", data);

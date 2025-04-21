@@ -12,10 +12,7 @@ export function useLocation() {
   const [isDetecting, setIsDetecting] = useState(false);
   const [isSavingPreference, setIsSavingPreference] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
-  const [usingSavedPreference, setUsingSavedPreference] = useState(false);
-  const [locationChangedManually, setLocationChangedManually] = useState(false);
   const initialLoadRef = useRef(true);
-  const prevLocationRef = useRef({ country: '', city: '' });
   const loadedRef = useRef(false);
   const { user } = useAuth();
 
@@ -54,17 +51,9 @@ export function useLocation() {
       if (savedLocation && savedLocation.country) {
         setCountry(savedLocation.country);
         setCity(savedLocation.city || '');
-        setUsingSavedPreference(true);
         setHasChanges(false);
-        
-        // Store initial values for comparison
-        prevLocationRef.current = {
-          country: savedLocation.country,
-          city: savedLocation.city || ''
-        };
       }
       
-      // Mark that initial load is complete
       initialLoadRef.current = false;
     } catch (error) {
       console.error('Failed to load saved location:', error);
@@ -75,7 +64,6 @@ export function useLocation() {
   // Detect user's location using browser geolocation API
   const detectLocation = async () => {
     setIsDetecting(true);
-    setLocationChangedManually(true);
     
     try {
       const location = await getCurrentLocation();
@@ -87,7 +75,6 @@ export function useLocation() {
         setCountry(location.country);
         setCity(location.city || '');
         setHasChanges(true);
-        setUsingSavedPreference(false);
         
         if (isNewLocation) {
           toast.success(`Location detected: ${location.city ? location.city + ', ' : ''}${getCountryName(location.country)}`, {
@@ -121,15 +108,11 @@ export function useLocation() {
     }
     
     setIsSavingPreference(true);
-    setLocationChangedManually(true);
     
     try {
       // Always save to localStorage as fallback
       const locationData = { country, city };
       localStorage.setItem('userLocation', JSON.stringify(locationData));
-      
-      // Check if the location has actually changed
-      const isLocationChanged = country !== prevLocationRef.current.country || city !== prevLocationRef.current.city;
       
       // If user is logged in, save to Supabase as well
       if (user) {
@@ -153,18 +136,11 @@ export function useLocation() {
         }
       }
 
-      setUsingSavedPreference(true);
       setHasChanges(false);
       
-      // Update reference for comparison
-      prevLocationRef.current = { country, city };
-      
-      // Only show toast if actually changed
-      if (isLocationChanged) {
-        toast.success('Location preference saved', {
-          duration: 3000, // Shorter toast duration
-        });
-      }
+      toast.success('Location preference saved', {
+        duration: 3000, // Shorter toast duration
+      });
       
       return true;
     } catch (error) {
@@ -178,33 +154,12 @@ export function useLocation() {
     }
   };
 
-  // Clear current location selection
-  const clearLocation = () => {
-    setLocationChangedManually(true);
-    
-    // Only show toast if values are actually cleared (not already empty)
-    const wasPopulated = country !== '' || city !== '';
-    
-    setCountry('');
-    setCity('');
-    setUsingSavedPreference(false);
-    setHasChanges(true);
-    
-    if (wasPopulated) {
-      toast.success('Location cleared', {
-        duration: 3000, // Shorter toast duration
-      });
-    }
-  };
-
   // Update country selection
   const handleCountryChange = (newCountry: string) => {
     if (newCountry !== country) {
       setCountry(newCountry);
       setCity(''); // Reset city when country changes
       setHasChanges(true);
-      setUsingSavedPreference(false);
-      setLocationChangedManually(true);
     }
   };
 
@@ -213,8 +168,6 @@ export function useLocation() {
     if (newCity !== city) {
       setCity(newCity);
       setHasChanges(true);
-      setUsingSavedPreference(false);
-      setLocationChangedManually(true);
     }
   };
 
@@ -224,11 +177,8 @@ export function useLocation() {
     isDetecting,
     isSavingPreference,
     hasChanges,
-    usingSavedPreference,
-    locationChangedManually,
     detectLocation,
     saveLocationPreference,
-    clearLocation,
     handleCountryChange,
     handleCityChange
   };
