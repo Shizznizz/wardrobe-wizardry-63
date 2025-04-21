@@ -1,10 +1,11 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { toast } from 'sonner';
-import { ClothingItem, Outfit, ClothingType } from '@/lib/types';
+import { ClothingItem, Outfit, ClothingType, ClothingSeason, ClothingOccasion } from '@/lib/types';
 import { sampleClothingItems, sampleOutfits } from '@/lib/wardrobeData';
 import { supabase } from '@/integrations/supabase/client';
 import { applyFilters, WardrobeFilters } from '@/lib/wardrobe/enhancedFilterUtils';
@@ -157,11 +158,15 @@ const MyWardrobe = () => {
   }, [items, filters, searchQuery, temperature, weatherCondition]);
 
   const handleUpload = (newItem: ClothingItem) => {
-    const itemToSave = {
+    // Make sure we convert any string occasions to proper ClothingOccasion type
+    const safeOccasions = Array.isArray(newItem.occasions) 
+      ? newItem.occasions.filter(occ => typeof occ === 'string') as ClothingOccasion[]
+      : ['casual'] as ClothingOccasion[];
+    
+    const itemToSave: ClothingItem = {
       ...newItem,
       season: Array.isArray(newItem.season) ? newItem.season : [],
-      seasons: Array.isArray(newItem.season) ? newItem.season : [],
-      occasions: Array.isArray(newItem.occasions) ? newItem.occasions : ['casual'],
+      occasions: safeOccasions,
       dateAdded: new Date(),
       timesWorn: 0
     };
@@ -180,12 +185,16 @@ const MyWardrobe = () => {
   const handleEditItem = (item: ClothingItem) => {
     console.log("Editing item:", item);
     
+    // Make sure we convert any string occasions to proper ClothingOccasion type
+    const safeOccasions = Array.isArray(item.occasions) 
+      ? item.occasions.filter(occ => typeof occ === 'string') as ClothingOccasion[]
+      : ['casual'] as ClothingOccasion[];
+    
     const updatedItems = items.map(i => 
       i.id === item.id ? {
         ...item,
         season: Array.isArray(item.season) ? item.season : [],
-        seasons: Array.isArray(item.season) ? item.season : [],
-        occasions: Array.isArray(item.occasions) ? item.occasions : ['casual']
+        occasions: safeOccasions
       } : i
     );
     
@@ -202,6 +211,19 @@ const MyWardrobe = () => {
       setItems(updatedItems);
       localStorage.setItem('wardrobeItems', JSON.stringify(updatedItems));
       toast.success(`${itemToDelete.name} has been removed from your wardrobe`);
+    }
+  };
+
+  const handleToggleFavorite = (id: string) => {
+    const updatedItems = items.map(item => 
+      item.id === id ? { ...item, favorite: !item.favorite } : item
+    );
+    setItems(updatedItems);
+    localStorage.setItem('wardrobeItems', JSON.stringify(updatedItems));
+    
+    const item = updatedItems.find(item => item.id === id);
+    if (item) {
+      toast.success(item.favorite ? `${item.name} added to favorites` : `${item.name} removed from favorites`);
     }
   };
 

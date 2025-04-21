@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
-import { ClothingItem } from '@/lib/types';
+import { ClothingItem, ClothingSeason, ClothingOccasion } from '@/lib/types';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import {
@@ -68,11 +68,11 @@ const WardrobeItemCard = ({
   };
 
   // Ensure we always have arrays for seasons and occasions
-  const seasons = Array.isArray(item.season) ? item.season : 
-                 (Array.isArray(item.seasons) ? item.seasons : []);
+  const seasons = Array.isArray(item.season) ? item.season : [];
   
-  const occasions = Array.isArray(item.occasions) ? item.occasions : 
-                   (typeof item.occasion === 'string' ? [item.occasion] : []);
+  const occasions = Array.isArray(item.occasions) 
+    ? item.occasions.filter(occ => typeof occ === 'string') as ClothingOccasion[]
+    : ['casual'] as ClothingOccasion[];
 
   return (
     <>

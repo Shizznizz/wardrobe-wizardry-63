@@ -38,17 +38,17 @@ const EditItemDialog = ({ item, isOpen, onClose, onSave }: EditItemDialogProps) 
       setColor(item.color);
       setMaterial(item.material || '');
       
-      // Handle seasons field - use either season or seasons array
-      const itemSeasons = Array.isArray(item.season) ? item.season : 
-                         (Array.isArray(item.seasons) ? item.seasons : []);
+      // Handle seasons field - use season array
+      const itemSeasons = Array.isArray(item.season) ? item.season : [];
       setSeasons(itemSeasons);
       
       setFavorite(item.favorite || false);
       setImageUrl(item.imageUrl || item.image || '');
       
-      // Handle occasions field
-      const itemOccasions = Array.isArray(item.occasions) ? item.occasions : 
-                           (typeof item.occasion === 'string' ? [item.occasion] : ['casual']);
+      // Handle occasions field - ensure we're using ClothingOccasion[]
+      const itemOccasions = Array.isArray(item.occasions) 
+        ? item.occasions.filter(occ => typeof occ === 'string') as ClothingOccasion[]
+        : ['casual'] as ClothingOccasion[];
       setOccasions(itemOccasions);
       
       console.log("Item loaded in edit dialog:", item);
@@ -89,11 +89,10 @@ const EditItemDialog = ({ item, isOpen, onClose, onSave }: EditItemDialogProps) 
       color,
       material: material as ClothingMaterial,
       season: seasons,
-      seasons: seasons, // Set both for compatibility
       favorite,
       imageUrl,
       image: imageUrl, // Set both for compatibility
-      occasions: occasions.length > 0 ? occasions : ['casual']
+      occasions: occasions.length > 0 ? occasions : ['casual'] as ClothingOccasion[]
     };
     
     console.log("Saving updated item:", updatedItem);
