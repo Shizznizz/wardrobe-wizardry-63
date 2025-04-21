@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -47,14 +46,14 @@ const questions = [
   }
 ];
 
-// Computes font size class based on text length (for visible text, not for tooltip)
+// Computes font size class based on text length (adaptive for mobile too)
 const getFontSizeClass = (text: string) => {
-  if (text.length > 40) return 'text-xs';
-  if (text.length > 28) return 'text-sm';
+  if (text.length > 44) return 'text-xs';
+  if (text.length > 32) return 'text-sm';
   return 'text-base';
 };
 
-// Quiz button component: adjusts appearance and tooltip for long text nicely
+// Enhanced Quiz button with strong color feedback & improved text handling
 function QuizOptionButton({
   children,
   selected,
@@ -70,13 +69,11 @@ function QuizOptionButton({
   const textRef = useRef<HTMLSpanElement>(null);
   const [isOverflowing, setIsOverflowing] = useState(false);
 
-  // Checks if actual lines are cut off
   useEffect(() => {
     const checkOverflow = () => {
       const span = textRef.current;
       if (span) {
-        // Overflow if scrollHeight > offsetHeight by about 1px or more
-        setIsOverflowing(span.scrollHeight > span.offsetHeight + 1);
+        setIsOverflowing(span.scrollHeight > span.offsetHeight + 1 || span.scrollWidth > span.offsetWidth + 1);
       }
     };
     checkOverflow();
@@ -84,60 +81,60 @@ function QuizOptionButton({
     return () => window.removeEventListener('resize', checkOverflow);
   }, [children]);
 
-  // Tooltip only if overflow detected
+  // Responsive styles
+  const baseSelected = "bg-gradient-to-br from-[#9b87f5] to-pink-500 text-white border-[#9b87f5]/80 shadow-md";
+  const baseUnselected = "bg-white/15 hover:bg-white/20 text-white/90 border-white/10";
+  const responsiveLayout = `
+    flex flex-col items-center justify-center w-full min-w-0 px-3 py-3 
+    rounded-xl border text-center whitespace-normal
+    transition-all duration-150 relative
+    min-h-12 sm:min-h-[52px] md:min-h-[56px]
+  `;
+
   return (
     <TooltipProvider>
-      <Tooltip delayDuration={30}>
+      <Tooltip delayDuration={40}>
         <TooltipTrigger asChild>
           <Button
             onClick={onClick}
             aria-pressed={selected}
-            className={`
-              flex flex-col min-h-12 w-full min-w-0 py-3 px-4 items-center justify-center gap-2 rounded-lg text-center border transition-all relative
-              whitespace-normal truncate
-              ${selected
-                ? "bg-gradient-to-br from-[#9b87f5] to-pink-500 text-white border-[#9b87f5]/80"
-                : "bg-white/10 hover:bg-white/15 text-white/90 border-white/10"
-              }
-              ${getFontSizeClass(children)}
-              ${className || ''}
-            `}
+            className={`${responsiveLayout} ${selected ? baseSelected : baseUnselected}
+              ${getFontSizeClass(children)} ${className || ''}`}
             variant="outline"
             style={{
+              userSelect: 'none',
               maxWidth: '100%',
-              minHeight: 48,
+              paddingLeft: 16, paddingRight: 16,
+              fontWeight: selected ? 700 : 500,
+              lineHeight: 1.25,
               height: 'auto',
-              paddingTop: 14,
-              paddingBottom: 14,
               wordBreak: 'break-word',
-              whiteSpace: 'normal',
-              fontWeight: 500,
-              overflow: 'visible',
-              boxShadow: selected
-                ? '0 0 0 2px #9b87f544'
-                : undefined,
-              transition: 'background 0.2s, color 0.2s, border 0.2s, box-shadow 0.2s'
+              boxShadow: selected ? '0 0 0 2px #9b87f555' : undefined,
             }}
             {...props}
           >
-            {/* No icon/arrows! */}
             <span
               ref={textRef}
-              className={`truncate text-center leading-tight px-2 w-full max-w-full break-words block ${getFontSizeClass(children)}`}
               style={{
+                width: '100%',
                 display: 'block',
-                maxWidth: '100%',
-                fontWeight: selected ? 700 : 500,
+                whiteSpace: 'normal',
                 overflowWrap: 'break-word',
-                wordBreak: 'break-word'
+                wordBreak: 'break-word',
+                fontSize: selected ? '1rem' : undefined, // finer tweak
+                textAlign: 'center',
               }}
+              className={`block py-1 px-1 leading-tight ${getFontSizeClass(children)} transition-all`}
             >
               {children}
             </span>
           </Button>
         </TooltipTrigger>
         {isOverflowing && (
-          <TooltipContent side="top" className="max-w-xs break-words whitespace-pre-line">
+          <TooltipContent
+            side="top"
+            className="max-w-xs break-words whitespace-pre-line text-sm font-medium"
+          >
             {children}
           </TooltipContent>
         )}
@@ -252,4 +249,3 @@ const StyleQuiz = ({ onComplete }) => {
 };
 
 export default StyleQuiz;
-
