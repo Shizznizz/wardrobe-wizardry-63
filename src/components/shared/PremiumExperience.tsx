@@ -1,8 +1,17 @@
 
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Crown, MessageCircle, Shirt, ShoppingBag, Sparkles } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { 
+  Crown, 
+  MessageCircle, 
+  Shirt, 
+  ShoppingBag, 
+  Sparkles,
+  Info
+} from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { Link } from 'react-router-dom';
 
 interface PremiumExperienceProps {
   onUpgrade: () => void;
@@ -37,31 +46,50 @@ const PremiumExperience = ({ onUpgrade }: PremiumExperienceProps) => {
     );
   }
 
-  // For non-authenticated users, show the full premium experience banner
   const features = [
     {
       id: 'chat',
       icon: <MessageCircle className="h-5 w-5 text-yellow-400" />,
       title: 'Chat with Olivia',
-      description: 'Get instant, personalized styling advice for any occasion'
+      description: 'Get instant, personalized styling advice for any occasion',
+      tooltip: 'Get 24/7 access to AI-powered fashion advice'
     },
     {
       id: 'try-on',
       icon: <Shirt className="h-5 w-5 text-blue-400" />,
       title: 'Outfit Try-On',
-      description: 'Visualize looks by trying them on with your photo'
+      description: 'Visualize looks by trying them on with your photo',
+      tooltip: 'See how outfits look on you before buying'
     },
     {
       id: 'early-access',
       icon: <ShoppingBag className="h-5 w-5 text-purple-400" />,
       title: 'Exclusive Early Access',
-      description: 'Shop new collections before they go public'
+      description: 'Shop new collections before they go public',
+      tooltip: 'Be the first to access new styles and collections'
     },
     {
       id: 'personalization',
       icon: <Sparkles className="h-5 w-5 text-pink-400" />,
       title: 'AI Outfit Generator',
-      description: 'Get outfits created just for you based on your style'
+      description: 'Get outfits created just for you based on your style',
+      tooltip: 'Personalized outfit recommendations using AI'
+    }
+  ];
+
+  const plans = [
+    {
+      id: 'weekly',
+      period: 'Weekly',
+      price: '€2.99',
+      interval: 'week'
+    },
+    {
+      id: 'monthly',
+      period: 'Monthly',
+      price: '€8.99',
+      interval: 'month',
+      popular: true
     }
   ];
 
@@ -86,15 +114,15 @@ const PremiumExperience = ({ onUpgrade }: PremiumExperienceProps) => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
           {features.map((feature) => (
             <motion.div
               key={feature.id}
-              whileHover={{ scale: 1.02 }}
-              className="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10"
+              whileHover={{ scale: 1.02, backgroundColor: 'rgba(255, 255, 255, 0.08)' }}
+              className="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10 transition-all duration-300"
             >
-              <div className="flex items-start">
-                <div className="h-10 w-10 rounded-full flex items-center justify-center bg-white/10 backdrop-blur-sm">
+              <div className="flex items-start group">
+                <div className="h-10 w-10 rounded-full flex items-center justify-center bg-white/10 backdrop-blur-sm group-hover:bg-white/15 transition-colors">
                   {feature.icon}
                 </div>
                 <div className="ml-3">
@@ -106,7 +134,37 @@ const PremiumExperience = ({ onUpgrade }: PremiumExperienceProps) => {
           ))}
         </div>
 
-        <div className="flex justify-center">
+        <div className="flex flex-col md:flex-row justify-center items-center gap-4 mb-8">
+          {plans.map((plan) => (
+            <motion.div
+              key={plan.id}
+              whileHover={{ scale: 1.02 }}
+              className={`relative p-6 rounded-xl backdrop-blur-sm border ${
+                plan.popular 
+                  ? 'border-yellow-400/30 bg-white/10' 
+                  : 'border-white/10 bg-white/5'
+              }`}
+            >
+              {plan.popular && (
+                <Badge 
+                  variant="gradient" 
+                  className="absolute -top-3 left-1/2 -translate-x-1/2"
+                >
+                  Best Value
+                </Badge>
+              )}
+              <div className="text-center">
+                <h3 className="text-lg font-medium text-white mb-2">{plan.period}</h3>
+                <div className="flex items-baseline justify-center">
+                  <span className="text-3xl font-bold text-white">{plan.price}</span>
+                  <span className="text-sm text-white/70 ml-1">/{plan.interval}</span>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        <div className="flex flex-col items-center gap-4">
           <motion.div
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -114,17 +172,25 @@ const PremiumExperience = ({ onUpgrade }: PremiumExperienceProps) => {
             <Button
               onClick={onUpgrade}
               size="lg"
-              className="bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-500 hover:to-amber-600 text-black font-semibold shadow-lg shadow-amber-500/20 py-6 px-8"
+              className="bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-500 hover:to-amber-600 text-black font-semibold shadow-lg shadow-amber-500/20 py-6 px-8 border border-yellow-300/20"
             >
               <Crown className="mr-2 h-5 w-5" />
               Upgrade to Premium Now
             </Button>
           </motion.div>
-        </div>
 
-        <p className="text-center text-white/60 text-xs mt-4">
-          Cancel anytime. Premium benefits are activated instantly upon subscription.
-        </p>
+          <Link 
+            to="/premium" 
+            className="group inline-flex items-center text-sm text-white/60 hover:text-white/80 transition-colors"
+          >
+            <Info className="h-4 w-4 mr-1" />
+            Learn more about Premium features
+          </Link>
+
+          <p className="text-center text-white/60 text-xs mt-2">
+            Cancel anytime. Premium benefits are activated instantly upon subscription.
+          </p>
+        </div>
       </div>
     </motion.div>
   );
