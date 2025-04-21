@@ -64,32 +64,26 @@ const WeatherWidget = ({
       }
     };
 
-    // Only save preferences if city or country actually changed
     if (city !== locationRef.current.city || country !== locationRef.current.country) {
       saveUserPreferences();
     }
   }, [city, country, user, savePreferences]);
 
   useEffect(() => {
-    // Check if location has actually changed
     const hasLocationChanged = city !== prevLocationRef.current.city || country !== prevLocationRef.current.country;
-    
     if (city !== locationRef.current.city || country !== locationRef.current.country) {
       locationRef.current = { city, country };
       fetchedRef.current = false;
     }
 
     const fetchWeather = async () => {
-      // Avoid fetching weather if we've already fetched it for this location
       if (fetchedRef.current && !hasLocationChanged) {
         return;
       }
-      
       if (!city || !country) {
         if (!weather) {
           const randomWeather = generateRandomWeather();
           setWeather(randomWeather);
-          
           if (onWeatherChange) {
             onWeatherChange(randomWeather);
           }
@@ -100,60 +94,47 @@ const WeatherWidget = ({
 
       setIsLoading(true);
       setError(null);
-      
       try {
         const weatherData = await fetchWeatherData(city, country);
-        
         setWeather(weatherData);
-        
         if (onWeatherChange) {
           onWeatherChange(weatherData);
         }
-
-        // Only show toast if explicitly enabled AND location has changed
         if (showToasts && hasLocationChanged) {
           toast.success(`Weather updated for ${weatherData.city}`, {
-            // Add shorter duration to avoid toast staying too long
             duration: 3000
           });
         }
-        
         fetchedRef.current = true;
       } catch (err) {
         console.error('Error fetching weather:', err);
-        
         const errorMsg = err instanceof Error ? err.message : 'Unable to fetch weather data. Please try again.';
         setError(errorMsg);
-        
         if (!weather) {
           const randomWeather = generateRandomWeather(city, country);
           setWeather(randomWeather);
-          
           if (onWeatherChange) {
             onWeatherChange(randomWeather);
           }
-          
           if (showToasts) {
-            toast.error("Couldn't fetch real weather data, using estimates instead", {
-              duration: 3000
-            });
+            toast.error("Couldn't fetch real weather data, using estimates instead", { duration: 3000 });
           }
         }
       } finally {
         setIsLoading(false);
       }
     };
-    
     fetchWeather();
-    
-    // Update previous location after fetch is completed
     prevLocationRef.current = { city, country };
-    
-    // No interval-based updates or polling - only fetch when props change
   }, [city, country, onWeatherChange, showToasts]);
 
+  // Update: Responsive wrapper
   return (
-    <div className={cn(`overflow-hidden rounded-lg shadow-sm backdrop-blur-sm transition-all duration-300 bg-white/5 dark:bg-gray-900/20 border border-white/10 ${isMobile ? 'p-2' : 'p-4'}`, className)}>
+    <div className={cn(
+      "overflow-hidden rounded-lg shadow-sm backdrop-blur-sm transition-all duration-300 bg-white/5 dark:bg-gray-900/20 border border-white/10",
+      isMobile ? "w-full p-2 max-w-full" : "p-4 max-w-md",
+      className
+    )}>
       {isLoading ? (
         <WeatherLoading />
       ) : error ? (
