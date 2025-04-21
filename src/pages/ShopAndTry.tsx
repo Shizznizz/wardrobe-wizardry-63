@@ -13,6 +13,7 @@ import PremiumTryOnHero from '@/components/shop-try/PremiumTryOnHero';
 import WeatherBasedTips from '@/components/shop-try/WeatherBasedTips';
 import UploadPanel from '@/components/shop-try/UploadPanel';
 import FeedbackLoop from '@/components/shop-try/FeedbackLoop';
+import { FeedbackData } from '@/components/shop-try/FeedbackData';
 import UnifiedProductsCarousel from '@/components/shop-try/UnifiedProductsCarousel';
 import WishlistAndHistory from '@/components/shop-try/WishlistAndHistory';
 import FloatingOliviaWidget from '@/components/shop-try/FloatingOliviaWidget';
