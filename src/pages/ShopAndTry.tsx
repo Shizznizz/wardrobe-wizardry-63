@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import Header from '@/components/Header';
@@ -19,8 +19,6 @@ import FloatingOliviaWidget from '@/components/shop-try/FloatingOliviaWidget';
 import PrettyLittleThingPicks from '@/components/shop-try/PrettyLittleThingPicks';
 import OliviaDailyRecommendation from '@/components/shop-try/OliviaDailyRecommendation';
 import SheinAffiliatePicks from '@/components/shop-try/SheinAffiliatePicks';
-import PremiumTeaserSection from '@/components/shop-try/PremiumTeaserSection';
-import { FeedbackData } from '@/components/shop-try/FeedbackData';
 
 const ShopAndTry = () => {
   const { isAuthenticated } = useAuth();
@@ -380,8 +378,6 @@ const ShopAndTry = () => {
             onTryItem={handleTryOnTrendingItem}
             onUpgradeToPremium={handleShowPremiumPopup}
           />
-          
-          <PremiumTeaserSection onUpgrade={handleShowPremiumPopup} />
           
           <FloatingOliviaWidget
             isPremiumUser={isPremiumUser || isAuthenticated}
