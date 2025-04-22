@@ -96,6 +96,47 @@ const MyWardrobe = () => {
     loadItems();
   }, [user, navigate]);
 
+  const loadItems = async () => {
+    if (!user) return;
+
+    try {
+      setIsLoading(true);
+      const { data, error } = await supabase
+        .from('clothing_items')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('date_added', { ascending: false });
+
+      if (error) {
+        console.error("Error loading items:", error);
+        setLoadError("Failed to load your wardrobe items");
+        return;
+      }
+
+      const formattedItems: ClothingItem[] = data.map(item => ({
+        id: item.id,
+        name: item.name,
+        type: item.type,
+        color: item.color,
+        material: item.material || '',
+        season: item.season || ['all'],
+        occasions: item.occasions || ['casual'],
+        favorite: item.favorite || false,
+        imageUrl: item.image_url,
+        image: item.image_url,
+        timesWorn: item.times_worn || 0,
+        dateAdded: new Date(item.date_added)
+      }));
+
+      setItems(formattedItems);
+    } catch (error) {
+      console.error("Failed to load wardrobe items:", error);
+      setLoadError("Failed to load your wardrobe items. Please try again later.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (user?.id) {
       supabase
@@ -123,48 +164,6 @@ const MyWardrobe = () => {
     
     fetchWeather();
   }, []);
-
-  useEffect(() => {
-    const loadItems = async () => {
-      try {
-        setIsLoading(true);
-        const { data, error } = await supabase
-          .from('clothing_items')
-          .select('*')
-          .eq('user_id', user.id)
-          .order('date_added', { ascending: false });
-
-        if (error) {
-          console.error("Error loading items:", error);
-          setLoadError("Failed to load your wardrobe items");
-          return;
-        }
-
-        // Convert database items to ClothingItem type
-        const formattedItems: ClothingItem[] = data.map(item => ({
-          id: item.id,
-          name: item.name,
-          type: item.type,
-          color: item.color,
-          material: item.material || '',
-          season: item.season || ['all'],
-          occasions: item.occasions || ['casual'],
-          favorite: item.favorite || false,
-          imageUrl: item.image_url,
-          image: item.image_url, // For compatibility
-          timesWorn: item.times_worn || 0,
-          dateAdded: new Date(item.date_added)
-        }));
-
-        setItems(formattedItems);
-      } catch (error) {
-        console.error("Failed to load wardrobe items:", error);
-        setLoadError("Failed to load your wardrobe items. Please try again later.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-  }, [user?.id]);
 
   useEffect(() => {
     const applyAllFilters = () => {
@@ -314,11 +313,24 @@ const MyWardrobe = () => {
     setClearWardrobeDialogOpen(true);
   };
 
-  const confirmClearWardrobe = () => {
-    setItems([]);
-    localStorage.setItem('wardrobeItems', JSON.stringify([]));
-    setClearWardrobeDialogOpen(false);
-    toast.success("Your wardrobe has been cleared");
+  const confirmClearWardrobe = async () => {
+    if (!user) return;
+    
+    try {
+      const { error } = await supabase
+        .from('clothing_items')
+        .delete()
+        .eq('user_id', user.id);
+        
+      if (error) throw error;
+      
+      setItems([]);
+      setClearWardrobeDialogOpen(false);
+      toast.success("Your wardrobe has been cleared");
+    } catch (error) {
+      console.error('Error clearing wardrobe:', error);
+      toast.error('Failed to clear wardrobe. Please try again.');
+    }
   };
 
   const toggleSelectionMode = () => {
@@ -459,40 +471,60 @@ const MyWardrobe = () => {
             />
 
             <div className="mt-6">
-              <WardrobeGrid
-                items={filteredItems}
-                onToggleFavorite={handleToggleFavorite}
-                onMatchItem={handleMatchItem}
-                onDeleteItem={handleDeleteItem}
-                onEditItem={handleEditItem}
-                compactView={showCompactView}
-                selectable={isSelectionMode}
-                selectedItems={selectedItems}
-                onToggleSelect={handleToggleSelect}
-              />
-              
-              {filteredItems.length === 0 && (
+              {isLoading ? (
                 <div className="text-center py-10">
-                  <p className="text-lg text-white/70">No items found matching your filters</p>
+                  <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-purple-500 mb-4"></div>
+                  <p className="text-white/70">Loading your wardrobe...</p>
+                </div>
+              ) : loadError ? (
+                <div className="text-center py-10 text-red-400">
+                  <p className="mb-2">{loadError}</p>
                   <Button 
-                    variant="link" 
-                    className="text-purple-400 mt-2"
-                    onClick={() => {
-                      setFilters({
-                        category: null,
-                        color: null,
-                        occasion: null,
-                        timeFrame: 'all',
-                        favorite: null,
-                        weatherAppropriate: null,
-                        searchQuery: ''
-                      });
-                      setSearchQuery('');
-                    }}
+                    variant="outline" 
+                    onClick={loadItems} 
+                    className="border-red-400 text-red-400 hover:bg-red-400/10"
                   >
-                    Clear all filters
+                    Try Again
                   </Button>
                 </div>
+              ) : (
+                <>
+                  <WardrobeGrid
+                    items={filteredItems}
+                    onToggleFavorite={handleToggleFavorite}
+                    onMatchItem={handleMatchItem}
+                    onDeleteItem={handleDeleteItem}
+                    onEditItem={handleEditItem}
+                    compactView={showCompactView}
+                    selectable={isSelectionMode}
+                    selectedItems={selectedItems}
+                    onToggleSelect={handleToggleSelect}
+                  />
+                  
+                  {filteredItems.length === 0 && (
+                    <div className="text-center py-10">
+                      <p className="text-lg text-white/70">No items found matching your filters</p>
+                      <Button 
+                        variant="link" 
+                        className="text-purple-400 mt-2"
+                        onClick={() => {
+                          setFilters({
+                            category: null,
+                            color: null,
+                            occasion: null,
+                            timeFrame: 'all',
+                            favorite: null,
+                            weatherAppropriate: null,
+                            searchQuery: ''
+                          });
+                          setSearchQuery('');
+                        }}
+                      >
+                        Clear all filters
+                      </Button>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </motion.div>
