@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -14,6 +13,8 @@ import CreateOutfitSection from '@/components/outfits/mix-match/CreateOutfitSect
 import ContextAdjustmentSection from '@/components/outfits/mix-match/ContextAdjustmentSection';
 import OutfitCollectionSection from '@/components/outfits/mix-match/OutfitCollectionSection';
 import SuggestedOutfitsSection from '@/components/outfits/mix-match/SuggestedOutfitsSection';
+import { Suspense, lazy } from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const MixAndMatch = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -105,6 +106,10 @@ const MixAndMatch = () => {
     setSelectedOutfitId(availableOutfits[randomIndex].id);
   }, [selectedOutfitId]);
 
+  const LazyCreateOutfitSection = lazy(() => import('@/components/outfits/mix-match/CreateOutfitSection'));
+  const LazyOutfitCollectionSection = lazy(() => import('@/components/outfits/mix-match/OutfitCollectionSection'));
+  const LazySuggestedOutfitsSection = lazy(() => import('@/components/outfits/mix-match/SuggestedOutfitsSection'));
+
   return (
     <OutfitProvider>
       <div className="min-h-screen bg-gradient-to-b from-slate-950 to-indigo-950 text-white">
@@ -159,7 +164,7 @@ const MixAndMatch = () => {
               </div>
             </div>
           </motion.section>
-          {/* Create Outfit Section */}
+          {/* Create Outfit Section - lazy loaded */}
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -168,10 +173,12 @@ const MixAndMatch = () => {
           >
             <div className="w-full flex justify-center">
               <div className="w-full max-w-4xl">
-                <CreateOutfitSection 
-                  clothingItems={sampleClothingItems}
-                  isPremium={false}
-                />
+                <Suspense fallback={<Skeleton className="w-full h-32 rounded-xl bg-slate-800" />}>
+                  <LazyCreateOutfitSection 
+                    clothingItems={sampleClothingItems}
+                    isPremium={false}
+                  />
+                </Suspense>
               </div>
             </div>
           </motion.section>
@@ -196,7 +203,7 @@ const MixAndMatch = () => {
               </div>
             </div>
           </motion.section>
-          {/* Outfit Collection Section */}
+          {/* Outfit Collection Section - lazy loaded */}
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -205,14 +212,16 @@ const MixAndMatch = () => {
           >
             <div className="w-full flex justify-center">
               <div className="w-full max-w-4xl">
-                <OutfitCollectionSection
-                  outfits={sampleOutfits}
-                  clothingItems={sampleClothingItems}
-                />
+                <Suspense fallback={<Skeleton className="w-full h-40 rounded-xl bg-slate-800" />}>
+                  <LazyOutfitCollectionSection
+                    outfits={sampleOutfits}
+                    clothingItems={sampleClothingItems}
+                  />
+                </Suspense>
               </div>
             </div>
           </motion.section>
-          {/* Suggested Outfits Section */}
+          {/* Suggested Outfits Section - lazy loaded */}
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -221,14 +230,16 @@ const MixAndMatch = () => {
           >
             <div className="w-full flex justify-center">
               <div className="w-full max-w-4xl">
-                <SuggestedOutfitsSection
-                  outfits={popularOutfits.slice(0, 6)}
-                  clothingItems={sampleClothingItems}
-                  weather={{
-                    temperature: temperature,
-                    condition: weatherCondition,
-                  }}
-                />
+                <Suspense fallback={<Skeleton className="w-full h-32 rounded-xl bg-slate-800" />}>
+                  <LazySuggestedOutfitsSection
+                    outfits={popularOutfits.slice(0, 6)}
+                    clothingItems={sampleClothingItems}
+                    weather={{
+                      temperature: temperature,
+                      condition: weatherCondition,
+                    }}
+                  />
+                </Suspense>
               </div>
             </div>
           </motion.section>
@@ -239,4 +250,3 @@ const MixAndMatch = () => {
 };
 
 export default MixAndMatch;
-
