@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Camera, AlertCircle } from 'lucide-react';
@@ -29,9 +29,19 @@ const UploadModal = ({ onUpload, buttonText = "Add Item", children }: UploadModa
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [attemptedSubmit, setAttemptedSubmit] = useState(false);
 
   const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
   const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/jpg', 'image/png'];
+
+  // Reset validation errors when form fields change
+  useEffect(() => {
+    if (attemptedSubmit) {
+      // Only validate again if user has attempted to submit once
+      const errors = validateForm();
+      setValidationErrors(errors);
+    }
+  }, [name, type, color, material, seasons, imagePreview, attemptedSubmit]);
 
   const handleImageChange = (file: File) => {
     // Validate file type
@@ -89,10 +99,14 @@ const UploadModal = ({ onUpload, buttonText = "Add Item", children }: UploadModa
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Set flag to show validations as user edits
+    setAttemptedSubmit(true);
+    
     // Validate form
     const errors = validateForm();
+    setValidationErrors(errors);
+    
     if (errors.length > 0) {
-      setValidationErrors(errors);
       return;
     }
 
@@ -137,6 +151,7 @@ const UploadModal = ({ onUpload, buttonText = "Add Item", children }: UploadModa
       setFavorite(false);
       setImagePreview(null);
       setImageFile(null);
+      setAttemptedSubmit(false);
       
       setOpen(false);
     } catch (error) {
@@ -158,6 +173,7 @@ const UploadModal = ({ onUpload, buttonText = "Add Item", children }: UploadModa
     setImagePreview(null);
     setImageFile(null);
     setValidationErrors([]);
+    setAttemptedSubmit(false);
   };
 
   return (
