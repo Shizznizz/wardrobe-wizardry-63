@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -84,9 +83,18 @@ const MyWardrobe = () => {
     searchQuery: ''
   });
 
+  const { user } = useAuth();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const { user } = useAuth();
+
+  useEffect(() => {
+    if (!user) {
+      navigate('/auth');
+      return;
+    }
+
+    loadItems();
+  }, [user, navigate]);
 
   useEffect(() => {
     if (user?.id) {
@@ -117,36 +125,46 @@ const MyWardrobe = () => {
   }, []);
 
   useEffect(() => {
-    const loadItems = () => {
-      setIsLoading(true);
+    const loadItems = async () => {
       try {
-        const savedItems = localStorage.getItem('wardrobeItems');
-        if (savedItems) {
-          setItems(JSON.parse(savedItems));
-        } else {
-          setItems(sampleClothingItems);
-          localStorage.setItem('wardrobeItems', JSON.stringify(sampleClothingItems));
+        setIsLoading(true);
+        const { data, error } = await supabase
+          .from('clothing_items')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('date_added', { ascending: false });
+
+        if (error) {
+          console.error("Error loading items:", error);
+          setLoadError("Failed to load your wardrobe items");
+          return;
         }
-        
-        const savedOutfits = localStorage.getItem('outfits');
-        if (savedOutfits) {
-          setOutfits(JSON.parse(savedOutfits));
-        } else {
-          setOutfits(sampleOutfits);
-          localStorage.setItem('outfits', JSON.stringify(sampleOutfits));
-        }
+
+        // Convert database items to ClothingItem type
+        const formattedItems: ClothingItem[] = data.map(item => ({
+          id: item.id,
+          name: item.name,
+          type: item.type,
+          color: item.color,
+          material: item.material || '',
+          season: item.season || ['all'],
+          occasions: item.occasions || ['casual'],
+          favorite: item.favorite || false,
+          imageUrl: item.image_url,
+          image: item.image_url, // For compatibility
+          timesWorn: item.times_worn || 0,
+          dateAdded: new Date(item.date_added)
+        }));
+
+        setItems(formattedItems);
       } catch (error) {
         console.error("Failed to load wardrobe items:", error);
         setLoadError("Failed to load your wardrobe items. Please try again later.");
-        setItems(sampleClothingItems);
-        setOutfits(sampleOutfits);
       } finally {
         setIsLoading(false);
       }
     };
-
-    loadItems();
-  }, []);
+  }, [user?.id]);
 
   useEffect(() => {
     const applyAllFilters = () => {
@@ -157,73 +175,133 @@ const MyWardrobe = () => {
     applyAllFilters();
   }, [items, filters, searchQuery, temperature, weatherCondition]);
 
-  const handleUpload = (newItem: ClothingItem) => {
-    // Make sure we convert any string occasions to proper ClothingOccasion type
-    const safeOccasions = Array.isArray(newItem.occasions) 
-      ? newItem.occasions.filter(occ => typeof occ === 'string') as ClothingOccasion[]
-      : ['casual'] as ClothingOccasion[];
-    
-    const itemToSave: ClothingItem = {
-      ...newItem,
-      season: Array.isArray(newItem.season) ? newItem.season : [],
-      occasions: safeOccasions,
-      dateAdded: new Date(),
-      timesWorn: 0
-    };
-    
-    const updatedItems = [itemToSave, ...items];
-    setItems(updatedItems);
-    localStorage.setItem('wardrobeItems', JSON.stringify(updatedItems));
-    toast.success('New item added to your wardrobe!');
-    
-    if (!hasAddedItem) {
-      setShowConfetti(true);
-      setHasAddedItem(true);
+  const handleUpload = async (newItem: ClothingItem) => {
+    if (!user) {
+      toast.error('Please sign in to add items');
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('clothing_items')
+        .insert([{
+          user_id: user.id,
+          name: newItem.name,
+          type: newItem.type,
+          color: newItem.color,
+          material: newItem.material,
+          season: newItem.season,
+          occasions: newItem.occasions,
+          favorite: newItem.favorite,
+          image_url: newItem.imageUrl || newItem.image,
+          times_worn: 0
+        }])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      const formattedItem: ClothingItem = {
+        id: data.id,
+        name: data.name,
+        type: data.type,
+        color: data.color,
+        material: data.material || '',
+        season: data.season || ['all'],
+        occasions: data.occasions || ['casual'],
+        favorite: data.favorite || false,
+        imageUrl: data.image_url,
+        image: data.image_url,
+        timesWorn: data.times_worn || 0,
+        dateAdded: new Date(data.date_added)
+      };
+
+      setItems(prevItems => [formattedItem, ...prevItems]);
+      toast.success('New item added to your wardrobe!');
+      
+      if (!hasAddedItem) {
+        setShowConfetti(true);
+        setHasAddedItem(true);
+      }
+    } catch (error) {
+      console.error('Error adding item:', error);
+      toast.error('Failed to add item. Please try again.');
     }
   };
 
-  const handleEditItem = (item: ClothingItem) => {
-    console.log("Editing item:", item);
-    
-    // Make sure we convert any string occasions to proper ClothingOccasion type
-    const safeOccasions = Array.isArray(item.occasions) 
-      ? item.occasions.filter(occ => typeof occ === 'string') as ClothingOccasion[]
-      : ['casual'] as ClothingOccasion[];
-    
-    const updatedItems = items.map(i => 
-      i.id === item.id ? {
-        ...item,
-        season: Array.isArray(item.season) ? item.season : [],
-        occasions: safeOccasions
-      } : i
-    );
-    
-    console.log("Updated items:", updatedItems);
-    setItems(updatedItems);
-    localStorage.setItem('wardrobeItems', JSON.stringify(updatedItems));
-    toast.success(`${item.name} has been updated`);
-  };
+  const handleEditItem = async (updatedItem: ClothingItem) => {
+    try {
+      const { error } = await supabase
+        .from('clothing_items')
+        .update({
+          name: updatedItem.name,
+          type: updatedItem.type,
+          color: updatedItem.color,
+          material: updatedItem.material,
+          season: updatedItem.season,
+          occasions: updatedItem.occasions,
+          favorite: updatedItem.favorite,
+          image_url: updatedItem.imageUrl || updatedItem.image
+        })
+        .eq('id', updatedItem.id);
 
-  const handleDeleteItem = (id: string) => {
-    const itemToDelete = items.find(item => item.id === id);
-    if (itemToDelete) {
-      const updatedItems = items.filter(item => item.id !== id);
-      setItems(updatedItems);
-      localStorage.setItem('wardrobeItems', JSON.stringify(updatedItems));
-      toast.success(`${itemToDelete.name} has been removed from your wardrobe`);
+      if (error) throw error;
+
+      setItems(prevItems =>
+        prevItems.map(item =>
+          item.id === updatedItem.id ? updatedItem : item
+        )
+      );
+      toast.success(`${updatedItem.name} has been updated`);
+    } catch (error) {
+      console.error('Error updating item:', error);
+      toast.error('Failed to update item. Please try again.');
     }
   };
 
-  const handleToggleFavorite = (id: string) => {
-    const updatedItems = items.map(item => 
-      item.id === id ? { ...item, favorite: !item.favorite } : item
-    );
-    setItems(updatedItems);
-    localStorage.setItem('wardrobeItems', JSON.stringify(updatedItems));
-    
-    const item = updatedItems.find(item => item.id === id);
-    if (item) {
-      toast.success(item.favorite ? `${item.name} added to favorites` : `${item.name} removed from favorites`);
+  const handleDeleteItem = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('clothing_items')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setItems(items.filter(item => item.id !== id));
+      toast.success('Item removed from your wardrobe');
+    } catch (error) {
+      console.error('Error deleting item:', error);
+      toast.error('Failed to delete item. Please try again.');
+    }
+  };
+
+  const handleToggleFavorite = async (id: string) => {
+    const itemToUpdate = items.find(item => item.id === id);
+    if (!itemToUpdate) return;
+
+    try {
+      const { error } = await supabase
+        .from('clothing_items')
+        .update({ favorite: !itemToUpdate.favorite })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setItems(prevItems =>
+        prevItems.map(item =>
+          item.id === id ? { ...item, favorite: !item.favorite } : item
+        )
+      );
+
+      toast.success(
+        itemToUpdate.favorite 
+          ? `${itemToUpdate.name} removed from favorites` 
+          : `${itemToUpdate.name} added to favorites`
+      );
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+      toast.error('Failed to update favorite status. Please try again.');
     }
   };
 

@@ -9,6 +9,54 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      clothing_items: {
+        Row: {
+          color: string
+          date_added: string | null
+          favorite: boolean | null
+          id: string
+          image_url: string | null
+          last_worn: string | null
+          material: string | null
+          name: string
+          occasions: string[] | null
+          season: string[] | null
+          times_worn: number | null
+          type: string
+          user_id: string
+        }
+        Insert: {
+          color: string
+          date_added?: string | null
+          favorite?: boolean | null
+          id?: string
+          image_url?: string | null
+          last_worn?: string | null
+          material?: string | null
+          name: string
+          occasions?: string[] | null
+          season?: string[] | null
+          times_worn?: number | null
+          type: string
+          user_id: string
+        }
+        Update: {
+          color?: string
+          date_added?: string | null
+          favorite?: boolean | null
+          id?: string
+          image_url?: string | null
+          last_worn?: string | null
+          material?: string | null
+          name?: string
+          occasions?: string[] | null
+          season?: string[] | null
+          times_worn?: number | null
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       outfit_logs: {
         Row: {
           activity: string | null
