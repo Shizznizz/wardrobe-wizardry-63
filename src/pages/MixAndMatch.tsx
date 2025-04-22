@@ -110,23 +110,23 @@ const MixAndMatch = () => {
     <OutfitProvider>
       <div className="min-h-screen bg-gradient-to-b from-slate-950 to-indigo-950 text-white">
         <Header />
-        
-        <main className="container mx-auto px-4 py-6 pt-20 max-w-6xl">
+
+        <main className="container mx-auto px-2 sm:px-4 py-6 pt-20 max-w-6xl">
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className="text-center mb-8"
+            className="text-center mb-8 px-2"
           >
-            <h1 className="text-4xl md:text-5xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-coral-400">
+            <h1 className="text-3xl xs:text-4xl md:text-5xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-coral-400 text-balance">
               {profile?.first_name ? `Hi ${profile.first_name}, Olivia's got a perfect outfit for you today!` : 'Mix and Match Your Perfect Outfit'}
             </h1>
-            <p className="text-lg md:text-xl text-white/70 max-w-3xl mx-auto">
+            <p className="text-base xs:text-lg md:text-xl text-white/70 max-w-3xl mx-auto text-balance">
               Let Olivia create a fresh outfit for you based on today's weather and your style.
             </p>
           </motion.div>
 
-          <div className="flex justify-end mb-6">
+          <div className="flex flex-col-reverse sm:flex-row sm:justify-end mb-4 sm:mb-6 gap-2">
             <WardrobeControls
               viewMode={viewMode}
               showCompactView={showCompactView}
@@ -134,7 +134,7 @@ const MixAndMatch = () => {
               onCompactViewChange={setShowCompactView}
             />
           </div>
-          
+
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -152,7 +152,7 @@ const MixAndMatch = () => {
               />
             </div>
           </motion.section>
-          
+
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -164,7 +164,7 @@ const MixAndMatch = () => {
               isPremium={false}
             />
           </motion.section>
-          
+
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -181,7 +181,7 @@ const MixAndMatch = () => {
               onRefreshOutfit={handleRefreshOutfit}
             />
           </motion.section>
-          
+
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -193,7 +193,7 @@ const MixAndMatch = () => {
               clothingItems={sampleClothingItems}
             />
           </motion.section>
-          
+
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

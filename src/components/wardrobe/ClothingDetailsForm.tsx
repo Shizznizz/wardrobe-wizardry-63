@@ -51,7 +51,7 @@ const ClothingDetailsForm = ({
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="type">Type</Label>
           <Select
@@ -64,8 +64,11 @@ const ClothingDetailsForm = ({
             >
               <SelectValue placeholder="Select type" />
             </SelectTrigger>
-            <SelectContent className="bg-slate-900 border-slate-700 text-white">
-              <ScrollArea className="h-60">
+            <SelectContent
+              className="bg-slate-900 border-slate-700 text-white max-h-56 sm:max-h-60 overflow-y-auto"
+              style={{ maxHeight: 220, overflowY: 'auto' }}
+            >
+              <ScrollArea className="h-56">
                 <div className="p-1">
                   <SelectItem value="shirt">Shirt</SelectItem>
                   <SelectItem value="t-shirt">T-Shirt</SelectItem>
@@ -102,8 +105,11 @@ const ClothingDetailsForm = ({
             >
               <SelectValue placeholder="Select color" />
             </SelectTrigger>
-            <SelectContent className="bg-slate-900 border-slate-700 text-white">
-              <ScrollArea className="h-60">
+            <SelectContent
+              className="bg-slate-900 border-slate-700 text-white max-h-56 sm:max-h-60 overflow-y-auto"
+              style={{ maxHeight: 220, overflowY: 'auto' }}
+            >
+              <ScrollArea className="h-56">
                 <div className="p-1">
                   <SelectItem value="black">Black</SelectItem>
                   <SelectItem value="white">White</SelectItem>
@@ -142,8 +148,11 @@ const ClothingDetailsForm = ({
           >
             <SelectValue placeholder="Select material" />
           </SelectTrigger>
-          <SelectContent className="bg-slate-900 border-slate-700 text-white">
-            <ScrollArea className="h-60">
+          <SelectContent
+            className="bg-slate-900 border-slate-700 text-white max-h-56 sm:max-h-60 overflow-y-auto"
+            style={{ maxHeight: 220, overflowY: 'auto' }}
+          >
+            <ScrollArea className="h-56">
               <div className="p-1">
                 <SelectItem value="cotton">Cotton</SelectItem>
                 <SelectItem value="wool">Wool</SelectItem>
