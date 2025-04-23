@@ -2,6 +2,7 @@
 import React from 'react';
 import WardrobeItemCard from '@/components/WardrobeItemCard';
 import { ClothingItem } from '@/lib/types';
+import { cn } from '@/lib/utils';
 
 interface WardrobeGridProps {
   items: ClothingItem[];
@@ -13,7 +14,7 @@ interface WardrobeGridProps {
   selectable?: boolean;
   selectedItems?: string[];
   onToggleSelect?: (id: string) => void;
-  onCreateOutfit?: (name: string, itemIds: string[]) => void;
+  viewMode?: 'grid' | 'list';
 }
 
 const WardrobeGrid = ({
@@ -26,13 +27,17 @@ const WardrobeGrid = ({
   selectable = false,
   selectedItems = [],
   onToggleSelect,
-  onCreateOutfit
+  viewMode = 'grid'
 }: WardrobeGridProps) => {
   // Ensure items is always an array before rendering
   const safeItems = Array.isArray(items) ? items : [];
   
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+    <div className={cn(
+      viewMode === 'grid' 
+        ? "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"
+        : "flex flex-col space-y-4"
+    )}>
       {safeItems.map((item) => (
         <WardrobeItemCard
           key={item.id}
@@ -45,6 +50,7 @@ const WardrobeGrid = ({
           selectable={selectable}
           isSelected={selectable && selectedItems.includes(item.id)}
           onToggleSelect={onToggleSelect}
+          viewMode={viewMode}
         />
       ))}
     </div>
