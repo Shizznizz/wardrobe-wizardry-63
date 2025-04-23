@@ -24,9 +24,9 @@ const WelcomeMessage = () => {
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="bg-gradient-to-r from-slate-800/40 to-purple-900/40 backdrop-blur-sm p-4 rounded-lg border border-white/10 shadow-lg flex items-center gap-4"
+      className="bg-gradient-to-r from-slate-800/40 to-purple-900/40 backdrop-blur-sm p-4 rounded-lg border border-white/10 shadow-lg flex items-center gap-4 w-full max-w-md mx-auto"
     >
-      <Avatar className="h-12 w-12 border-2 border-purple-500/30">
+      <Avatar className="h-12 w-12 border-2 border-purple-500/30 flex-shrink-0">
         <AvatarImage 
           src="/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png" 
           alt="Olivia Bloom" 
@@ -36,7 +36,7 @@ const WelcomeMessage = () => {
         </AvatarFallback>
       </Avatar>
       
-      <div>
+      <div className="flex-1 overflow-hidden">
         <div className="flex items-center mb-1">
           <h2 className="text-lg font-medium text-white">Olivia Bloom</h2>
           <span className="ml-2 text-xs bg-purple-500/20 text-purple-200 px-2 py-0.5 rounded-full">
@@ -44,7 +44,7 @@ const WelcomeMessage = () => {
           </span>
         </div>
         
-        <p className="text-white/90">
+        <p className="text-white/90 truncate">
           {displayedText}
           <motion.span 
             animate={{ opacity: [1, 0] }}
