@@ -4,6 +4,7 @@ import { Route, Routes } from 'react-router-dom';
 import { AuthProvider } from '@/hooks/useAuth';
 import { ThemeProvider } from "@/components/theme-provider"
 import PageLayout from '@/components/shared/PageLayout';
+import ScrollToTop from '@/components/ScrollToTop';
 import Index from '@/pages/Index';
 import Auth from '@/pages/Auth';
 import MyWardrobe from '@/pages/MyWardrobe';
@@ -20,6 +21,7 @@ function App() {
     <ThemeProvider>
       <AuthProvider>
         <PageLayout>
+          <ScrollToTop />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
