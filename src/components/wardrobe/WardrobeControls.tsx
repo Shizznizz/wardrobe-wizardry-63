@@ -25,7 +25,7 @@ const WardrobeControls = ({
   onCompactViewChange,
 }: WardrobeControlsProps) => {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex flex-col sm:flex-row items-center gap-3 w-full max-w-md mx-auto">
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -33,21 +33,21 @@ const WardrobeControls = ({
               type="single" 
               value={viewMode} 
               onValueChange={(value) => value && onViewModeChange(value as 'grid' | 'list')}
-              className="bg-slate-900/60 p-1 rounded-full backdrop-blur-sm border border-white/10 shadow-md"
+              className="bg-slate-900/60 p-1.5 rounded-full backdrop-blur-sm border border-white/10 shadow-md flex-1 sm:flex-none"
             >
               <ToggleGroupItem 
                 value="grid" 
-                className="rounded-full h-7 w-7 p-0 data-[state=on]:bg-gradient-to-r data-[state=on]:from-indigo-600 data-[state=on]:to-purple-600 transition-all duration-300"
+                className="rounded-full h-9 w-9 sm:h-8 sm:w-8 p-0 data-[state=on]:bg-gradient-to-r data-[state=on]:from-indigo-600 data-[state=on]:to-purple-600 transition-all duration-300"
                 aria-label="Grid view"
               >
-                <Grid3X3 className="h-3.5 w-3.5" />
+                <Grid3X3 className="h-4 w-4" />
               </ToggleGroupItem>
               <ToggleGroupItem 
                 value="list" 
-                className="rounded-full h-7 w-7 p-0 data-[state=on]:bg-gradient-to-r data-[state=on]:from-indigo-600 data-[state=on]:to-purple-600 transition-all duration-300"
+                className="rounded-full h-9 w-9 sm:h-8 sm:w-8 p-0 data-[state=on]:bg-gradient-to-r data-[state=on]:from-indigo-600 data-[state=on]:to-purple-600 transition-all duration-300"
                 aria-label="List view"
               >
-                <List className="h-3.5 w-3.5" />
+                <List className="h-4 w-4" />
               </ToggleGroupItem>
             </ToggleGroup>
           </TooltipTrigger>
@@ -61,7 +61,7 @@ const WardrobeControls = ({
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="flex items-center gap-2 bg-slate-900/60 p-2 pl-3 pr-4 rounded-full backdrop-blur-sm border border-white/10 shadow-md transition-all duration-300 hover:border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/10 group">
+              <div className="flex items-center gap-2 bg-slate-900/60 p-2 pl-3 pr-4 rounded-full backdrop-blur-sm border border-white/10 shadow-md transition-all duration-300 hover:border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/10 group flex-1 sm:flex-none justify-center">
                 <Switch 
                   id="compact-view" 
                   checked={showCompactView} 

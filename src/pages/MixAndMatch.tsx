@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -13,6 +14,7 @@ import CreateOutfitSection from '@/components/outfits/mix-match/CreateOutfitSect
 import ContextAdjustmentSection from '@/components/outfits/mix-match/ContextAdjustmentSection';
 import OutfitCollectionSection from '@/components/outfits/mix-match/OutfitCollectionSection';
 import SuggestedOutfitsSection from '@/components/outfits/mix-match/SuggestedOutfitsSection';
+import MixMatchActions from '@/components/outfits/mix-match/MixMatchActions';
 import { Suspense, lazy } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -126,18 +128,24 @@ const MixAndMatch = () => {
                 ? `Hi ${profile.first_name}, Olivia's got a perfect outfit for you today!`
                 : 'Mix and Match Your Perfect Outfit'}
             </h1>
-            <p className="text-base xs:text-lg md:text-xl text-white/70 max-w-3xl mx-auto text-balance">
+            <p className="text-base xs:text-lg md:text-xl text-white/70 max-w-3xl mx-auto text-balance mb-6">
               Let Olivia create a fresh outfit for you based on today's weather and your style.
             </p>
+            
+            <div className="flex flex-col items-center space-y-6">
+              <div className="flex justify-center w-full">
+                <WardrobeControls
+                  viewMode={viewMode}
+                  showCompactView={showCompactView}
+                  onViewModeChange={setViewMode}
+                  onCompactViewChange={setShowCompactView}
+                />
+              </div>
+              
+              <MixMatchActions />
+            </div>
           </motion.div>
-          <div className="flex flex-col-reverse sm:flex-row sm:justify-end mb-4 sm:mb-6 gap-2">
-            <WardrobeControls
-              viewMode={viewMode}
-              showCompactView={showCompactView}
-              onViewModeChange={setViewMode}
-              onCompactViewChange={setShowCompactView}
-            />
-          </div>
+
           {/* Responsive grid for Weather and Olivia Recommendation */}
           <motion.section
             initial={{ opacity: 0, y: 20 }}
