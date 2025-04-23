@@ -37,14 +37,14 @@ const WardrobeControls = ({
             >
               <ToggleGroupItem 
                 value="grid" 
-                className="rounded-full h-7 w-7 p-0 data-[state=on]:bg-gradient-to-r data-[state=on]:from-indigo-600 data-[state=on]:to-purple-600"
+                className="rounded-full h-7 w-7 p-0 data-[state=on]:bg-gradient-to-r data-[state=on]:from-indigo-600 data-[state=on]:to-purple-600 transition-all duration-300"
                 aria-label="Grid view"
               >
                 <Grid3X3 className="h-3.5 w-3.5" />
               </ToggleGroupItem>
               <ToggleGroupItem 
                 value="list" 
-                className="rounded-full h-7 w-7 p-0 data-[state=on]:bg-gradient-to-r data-[state=on]:from-indigo-600 data-[state=on]:to-purple-600"
+                className="rounded-full h-7 w-7 p-0 data-[state=on]:bg-gradient-to-r data-[state=on]:from-indigo-600 data-[state=on]:to-purple-600 transition-all duration-300"
                 aria-label="List view"
               >
                 <List className="h-3.5 w-3.5" />
@@ -66,7 +66,7 @@ const WardrobeControls = ({
                   id="compact-view" 
                   checked={showCompactView} 
                   onCheckedChange={onCompactViewChange}
-                  className="data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-indigo-600 data-[state=checked]:to-purple-600 data-[state=unchecked]:bg-slate-700/60"
+                  className="data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-indigo-600 data-[state=checked]:to-purple-600 data-[state=unchecked]:bg-slate-700/60 transition-colors duration-300"
                 />
                 <Label 
                   htmlFor="compact-view" 

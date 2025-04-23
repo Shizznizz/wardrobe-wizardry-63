@@ -29,11 +29,11 @@ const WardrobeGrid = ({
   onToggleSelect,
   viewMode = 'grid'
 }: WardrobeGridProps) => {
-  // Ensure items is always an array before rendering
   const safeItems = Array.isArray(items) ? items : [];
   
   return (
     <div className={cn(
+      "transition-all duration-300",
       viewMode === 'grid' 
         ? "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"
         : "flex flex-col space-y-4"
