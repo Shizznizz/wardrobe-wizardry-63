@@ -220,6 +220,13 @@ const Index = () => {
         </motion.div>
         
         <SectionDivider variant="gradient" />
+
+        {user && (
+          <>
+            <StyleDiscoveryQuiz />
+            <SectionDivider variant="dotted" />
+          </>
+        )}
         
         <div ref={insightsRef} id="style-intelligence-section">
           <InsightsCarousel />
