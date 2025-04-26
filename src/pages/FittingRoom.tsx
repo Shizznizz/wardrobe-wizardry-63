@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useShowroom } from '@/hooks/useShowroom';
 import { useOutfitState } from '@/hooks/useOutfitState';
@@ -422,7 +421,9 @@ const FittingRoom = () => {
               name: "Perfect Outfit for Today",
               seasons: ["summer"],
               occasions: ["casual"],
-              items: [] 
+              items: [],
+              season: ["summer"],
+              occasion: "casual"
             }}
             onPreview={handleOutfitPreview}
             className="mb-12"
