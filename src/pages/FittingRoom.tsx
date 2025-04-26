@@ -10,6 +10,22 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { ClothingSeason, ClothingOccasion, WeatherInfo, Outfit } from '@/lib/types';
 
+import WelcomeMessage from '@/components/fitting-room/WelcomeMessage';
+import UserPhotoSection from '@/components/showroom/UserPhotoSection';
+import ShowroomDialogs from '@/components/showroom/ShowroomDialogs';
+import NoOutfitsMessage from '@/components/fitting-room/NoOutfitsMessage';
+import OutfitPreviewArea from '@/components/fitting-room/OutfitPreviewArea';
+import NoPhotoMessage from '@/components/fitting-room/NoPhotoMessage';
+import WardrobeOutfitSelector from '@/components/fitting-room/WardrobeOutfitSelector';
+import OliviaRecommendationBox from '@/components/fitting-room/OliviaRecommendationBox';
+import OutfitFilters from '@/components/fitting-room/OutfitFilters';
+import OutfitCarousel from '@/components/fitting-room/OutfitCarousel';
+import UserPhotoDisplay from '@/components/fitting-room/UserPhotoDisplay';
+import StyleOfTheDay from '@/components/fitting-room/StyleOfTheDay';
+import TrendingLooks from '@/components/fitting-room/TrendingLooks';
+import Sparkles from '@/components/fitting-room/Sparkles';
+import OliviaOutfitPick from '@/components/fitting-room/OliviaOutfitPick';
+
 const FittingRoom = () => {
   const isMobile = useIsMobile();
 
