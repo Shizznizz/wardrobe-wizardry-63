@@ -87,6 +87,8 @@ const FittingRoom = () => {
     resetSelection = () => {},
     handlePreviewNow = () => {},
     setShowOliviaImageGallery = () => {},
+    setIsProcessingTryOn,
+    setFinalImage,
   } = useShowroom();
 
   const userOutfits = Array.isArray(outfits) ? outfits : [];
