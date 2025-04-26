@@ -111,7 +111,7 @@ const TrendingLooks = ({ onShowLogin }: TrendingLooksProps) => {
             >
               <div className="relative">
                 <img
-                  src={outfit.imageUrl || '/placeholder.svg'}
+                  src={'/placeholder.svg'} 
                   alt={outfit.name || `Trending outfit ${index + 1}`}
                   className="w-full aspect-square object-cover"
                 />

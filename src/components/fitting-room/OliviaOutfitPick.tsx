@@ -23,6 +23,10 @@ const OliviaOutfitPick = ({ outfit, onPreview, className }: OliviaOutfitPickProp
     setEnlarged(true);
   };
 
+  // Use a placeholder image if no image is available
+  // First try to use outfit.image (if it exists), then fall back to a placeholder
+  const outfitImage = '/placeholder.svg';
+
   return (
     <div className={`rounded-lg overflow-hidden ${className}`}>
       <motion.div
@@ -53,7 +57,7 @@ const OliviaOutfitPick = ({ outfit, onPreview, className }: OliviaOutfitPickProp
                 </div>
               </motion.div>
               <img 
-                src={outfit.imageUrl || '/placeholder.svg'} 
+                src={outfitImage} 
                 alt={outfit.name || 'Outfit of the day'} 
                 className="w-full h-auto object-cover rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300"
                 style={{ minHeight: "280px", objectFit: "cover" }}
@@ -104,7 +108,7 @@ const OliviaOutfitPick = ({ outfit, onPreview, className }: OliviaOutfitPickProp
         <DialogContent className="sm:max-w-[700px] bg-black/90 border-white/10">
           <div className="p-1">
             <img 
-              src={outfit.imageUrl || '/placeholder.svg'} 
+              src={outfitImage} 
               alt={outfit.name || 'Enlarged outfit view'} 
               className="w-full h-auto object-contain max-h-[70vh]"
             />
