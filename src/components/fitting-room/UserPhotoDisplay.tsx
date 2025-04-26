@@ -1,9 +1,10 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { User, Camera, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import { X, RefreshCw, Camera } from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import OliviaImageBadge from '@/components/outfits/OliviaImageBadge';
 
 interface UserPhotoDisplayProps {
   userPhoto: string | null;
@@ -12,51 +13,54 @@ interface UserPhotoDisplayProps {
   className?: string;
 }
 
-const UserPhotoDisplay = ({ 
-  userPhoto, 
-  isUsingOliviaImage, 
-  onResetPhoto,
-  className
-}: UserPhotoDisplayProps) => {
+const UserPhotoDisplay = ({ userPhoto, isUsingOliviaImage, onResetPhoto, className = '' }: UserPhotoDisplayProps) => {
+  const [isHovered, setIsHovered] = useState(false);
+
   if (!userPhoto) return null;
-  
+
   return (
-    <motion.div 
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.4 }}
-      className={cn(
-        "relative rounded-lg overflow-hidden border border-white/10 shadow-xl",
-        "bg-gradient-to-br from-slate-900/80 via-slate-900/60 to-purple-900/30",
-        className
-      )}
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className={`relative ${className}`}
     >
-      <div className="aspect-[3/4] w-full relative">
-        <img 
-          src={userPhoto} 
-          alt="Your model" 
-          className="w-full h-full object-cover"
-        />
-        
-        {isUsingOliviaImage && (
-          <div className="absolute top-3 left-3 bg-purple-600/80 backdrop-blur-sm rounded-full py-1 px-2.5 text-xs text-white flex items-center">
-            <User className="h-3 w-3 mr-1.5" />
-            Olivia's Image
+      <Card className="border-white/10 bg-black/50 backdrop-blur-sm rounded-lg overflow-hidden shadow-xl">
+        <div 
+          className="relative rounded-lg overflow-hidden"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          <OliviaImageBadge isVisible={isUsingOliviaImage} large />
+          
+          <div className="aspect-auto max-h-[500px] overflow-hidden flex items-center justify-center">
+            <img 
+              src={userPhoto} 
+              alt={isUsingOliviaImage ? "Olivia as your model" : "Your photo"} 
+              className="w-full h-auto object-contain max-h-[500px]"
+            />
           </div>
-        )}
-        
-        <div className="absolute bottom-3 right-3 flex gap-2">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="bg-black/50 hover:bg-black/70 text-white border-white/20 backdrop-blur-sm text-xs h-8"
-            onClick={onResetPhoto}
+          
+          <motion.div 
+            className="absolute inset-0 bg-gradient-to-b from-black/0 via-transparent to-black/60 flex items-end justify-center p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: isHovered ? 1 : 0 }}
+            transition={{ duration: 0.2 }}
           >
-            <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
-            Change
-          </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onResetPhoto}
+                className="bg-black/30 backdrop-blur-sm border-white/20 text-white hover:bg-black/50"
+              >
+                <X className="h-4 w-4 mr-2" />
+                Change Model
+              </Button>
+            </div>
+          </motion.div>
         </div>
-      </div>
+      </Card>
     </motion.div>
   );
 };
