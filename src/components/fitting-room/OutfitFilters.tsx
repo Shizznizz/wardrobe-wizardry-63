@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Heart, SunMedium, Briefcase, Moon, Coffee, Sparkles, Filter, ChevronDown, X, ChevronUp } from 'lucide-react';
@@ -6,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface OutfitFiltersProps {
   selectedSeason: ClothingSeason | null;
@@ -35,7 +37,7 @@ const OutfitFilters = ({
   
   const isMobile = useIsMobile();
   const [expanded, setExpanded] = useState(!isMobile);
-  const [showAllFilters, setShowAllFilters] = useState(false);
+  const [activeTab, setActiveTab] = useState<string>("seasons");
   
   const clearFilters = () => {
     if (selectedSeason) {
@@ -60,7 +62,6 @@ const OutfitFilters = ({
   const activeCount = getActiveFiltersCount();
   
   const toggleExpanded = () => setExpanded(!expanded);
-  const toggleShowAllFilters = () => setShowAllFilters(!showAllFilters);
   
   const getSeasonIcon = (season: ClothingSeason) => {
     switch (season) {
@@ -91,8 +92,6 @@ const OutfitFilters = ({
         return <Coffee className="w-3.5 h-3.5 mr-1.5" />;
     }
   };
-  
-  const displayedOccasions = showAllFilters ? occasions : occasions.slice(0, 2);
   
   return (
     <div className={cn("neo-blur backdrop-blur-sm border border-white/10 rounded-lg shadow-lg mb-6", className)}>
@@ -131,7 +130,7 @@ const OutfitFilters = ({
             variant="ghost" 
             size="sm" 
             onClick={toggleExpanded}
-            className="h-7 text-xs md:hidden"
+            className="h-7 text-xs"
           >
             <ChevronDown className={`h-4 w-4 transition-transform ${expanded ? 'rotate-180' : ''}`} />
           </Button>
@@ -147,89 +146,64 @@ const OutfitFilters = ({
             transition={{ duration: 0.2 }}
             className="overflow-hidden"
           >
-            <div className={cn(
-              "p-4 space-y-4 md:space-y-0 md:flex md:items-center md:gap-6",
-              "transition-all duration-200"
-            )}>
-              <div className="space-y-2 md:flex-grow">
-                <span className="text-xs text-white/60 block md:mb-2">Season:</span>
-                <div className={cn(
-                  "grid grid-cols-2 md:flex md:flex-wrap gap-2",
-                  "md:items-center"
-                )}>
-                  {seasons.map((season) => (
-                    <Button
-                      key={season}
-                      variant={selectedSeason === season ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => onSeasonChange(season)}
-                      className={cn(
-                        "text-xs h-8 w-full md:w-auto transition-all duration-200",
-                        selectedSeason === season ? 
-                          "bg-purple-600 hover:bg-purple-700 text-white" : 
-                          "border-white/20 text-white hover:bg-white/10 hover:text-white"
-                      )}
-                    >
-                      {getSeasonIcon(season)}
-                      {season.charAt(0).toUpperCase() + season.slice(1)}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-2 md:flex-grow">
-                <span className="text-xs text-white/60 block md:mb-2">Occasion:</span>
-                <div className={cn(
-                  "grid grid-cols-2 md:flex md:flex-wrap gap-2",
-                  "md:items-center"
-                )}>
-                  {displayedOccasions.map((occasion) => (
-                    <Button
-                      key={occasion}
-                      variant={selectedOccasion === occasion ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => onOccasionChange(occasion)}
-                      className={cn(
-                        "text-xs h-8 w-full md:w-auto transition-all duration-200",
-                        selectedOccasion === occasion ? 
-                          "bg-purple-600 hover:bg-purple-700 text-white" : 
-                          "border-white/20 text-white hover:bg-white/10 hover:text-white"
-                      )}
-                    >
-                      {getOccasionIcon(occasion)}
-                      {occasion.charAt(0).toUpperCase() + occasion.slice(1)}
-                    </Button>
-                  ))}
-                </div>
-
-                {isMobile && occasions.length > 2 && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={toggleShowAllFilters}
-                    className="w-full text-xs text-white/70 hover:text-white mt-2"
-                  >
-                    {showAllFilters ? (
-                      <>
-                        <ChevronUp className="h-3 w-3 mr-1.5" />
-                        Show Less
-                      </>
-                    ) : (
-                      <>
-                        <ChevronDown className="h-3 w-3 mr-1.5" />
-                        Show More ({occasions.length - 2} more)
-                      </>
-                    )}
-                  </Button>
-                )}
-              </div>
-
+            <div className="p-4">
+              <Tabs defaultValue="seasons" value={activeTab} onValueChange={setActiveTab} className="w-full">
+                <TabsList className="grid grid-cols-2 mb-4 bg-slate-800/60">
+                  <TabsTrigger value="seasons" className="data-[state=active]:bg-purple-600">Seasons</TabsTrigger>
+                  <TabsTrigger value="occasions" className="data-[state=active]:bg-blue-600">Occasions</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="seasons" className="mt-0">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {seasons.map((season) => (
+                      <Button
+                        key={season}
+                        variant={selectedSeason === season ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => onSeasonChange(season)}
+                        className={cn(
+                          "text-xs h-10 transition-all duration-200 flex items-center justify-center",
+                          selectedSeason === season ? 
+                            "bg-purple-600 hover:bg-purple-700 text-white shadow-lg shadow-purple-600/20" : 
+                            "border-white/20 text-white hover:bg-white/10 hover:text-white"
+                        )}
+                      >
+                        {getSeasonIcon(season)}
+                        {season.charAt(0).toUpperCase() + season.slice(1)}
+                      </Button>
+                    ))}
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="occasions" className="mt-0">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {occasions.map((occasion) => (
+                      <Button
+                        key={occasion}
+                        variant={selectedOccasion === occasion ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => onOccasionChange(occasion)}
+                        className={cn(
+                          "text-xs h-10 transition-all duration-200 flex items-center justify-center",
+                          selectedOccasion === occasion ? 
+                            "bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/20" : 
+                            "border-white/20 text-white hover:bg-white/10 hover:text-white"
+                        )}
+                      >
+                        {getOccasionIcon(occasion)}
+                        {occasion.charAt(0).toUpperCase() + occasion.slice(1)}
+                      </Button>
+                    ))}
+                  </div>
+                </TabsContent>
+              </Tabs>
+              
               <Button
                 variant={showFavoritesOnly ? "default" : "outline"}
                 size="sm"
                 onClick={onFavoritesToggle}
                 className={cn(
-                  "text-xs h-8 md:self-end w-full md:w-auto transition-all duration-200",
+                  "text-xs h-10 w-full mt-4 transition-all duration-200",
                   showFavoritesOnly ? 
                     "bg-pink-600 hover:bg-pink-700 text-white" : 
                     "border-white/20 text-white hover:bg-white/10 hover:text-white"
@@ -238,19 +212,19 @@ const OutfitFilters = ({
                 <Heart className={`w-3.5 h-3.5 mr-1.5 ${showFavoritesOnly ? "fill-current" : ""}`} />
                 Favorites Only
               </Button>
+              
+              {filteredOutfits === 0 && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="mt-4"
+                >
+                  <div className="bg-slate-900/50 rounded-lg p-3 border border-white/5 text-sm text-white/70">
+                    No outfits match the current filters. Try removing some filters.
+                  </div>
+                </motion.div>
+              )}
             </div>
-
-            {filteredOutfits === 0 && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="px-4 pb-4"
-              >
-                <div className="bg-slate-900/50 rounded-lg p-3 border border-white/5 text-sm text-white/70">
-                  No outfits match the current filters. Try removing some filters.
-                </div>
-              </motion.div>
-            )}
           </motion.div>
         )}
       </AnimatePresence>

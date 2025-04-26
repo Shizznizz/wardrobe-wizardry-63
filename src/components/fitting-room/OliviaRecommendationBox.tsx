@@ -58,10 +58,10 @@ const OliviaRecommendationBox = ({
 
     const weatherTemp = weather?.temperature || 20;
     const suitableOutfits = outfits.filter(outfit => {
-      if (!outfit.season) return false;
-      if (weatherTemp < 10) return outfit.season.includes('winter');
-      if (weatherTemp < 20) return outfit.season.includes('spring') || outfit.season.includes('autumn');
-      return outfit.season.includes('summer');
+      if (!outfit.seasons) return false;
+      if (weatherTemp < 10) return outfit.seasons.includes('winter');
+      if (weatherTemp < 20) return outfit.seasons.includes('spring') || outfit.seasons.includes('autumn');
+      return outfit.seasons.includes('summer');
     });
 
     return suitableOutfits[Math.floor(Math.random() * suitableOutfits.length)] || outfits[0];
@@ -135,23 +135,23 @@ const OliviaRecommendationBox = ({
   return (
     <div className="space-y-4">
       <motion.div 
-        className="glass-dark border border-white/10 rounded-xl p-4 shadow-xl shadow-purple-900/10 overflow-hidden"
+        className="glass-dark border border-white/10 rounded-xl p-5 shadow-xl shadow-purple-900/10 overflow-hidden"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
       >
         <div className="flex items-start gap-3">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex-shrink-0 flex items-center justify-center">
-            <Sparkles className="h-5 w-5 text-white" />
+          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex-shrink-0 flex items-center justify-center">
+            <Sparkles className="h-6 w-6 text-white" />
           </div>
           
           <div className="flex-grow">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="font-medium text-white">Olivia's Suggestions</h3>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-medium text-white text-lg">Olivia's Suggestions</h3>
               <div className="flex items-center gap-2">
                 <Badge 
                   variant="outline" 
-                  className="bg-white/10 border-white/20 text-xs flex items-center gap-1 px-2 py-0.5"
+                  className="bg-white/10 border-white/20 text-xs flex items-center gap-1 px-2.5 py-1"
                 >
                   {getWeatherIcon()}
                   <span>{weather?.condition || 'Sunny'}, {weather?.temperature || '22'}°C</span>
@@ -159,7 +159,7 @@ const OliviaRecommendationBox = ({
               </div>
             </div>
             
-            <div className="min-h-[90px] bg-slate-900/50 rounded-lg p-3 border border-white/5 mb-3 relative">
+            <div className="min-h-[95px] bg-slate-900/50 rounded-lg p-4 border border-white/5 mb-3 relative">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={currentMessage}
@@ -168,35 +168,35 @@ const OliviaRecommendationBox = ({
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <p className="text-white/90">
+                  <p className="text-white/90 text-base">
                     {currentMessage}
                     {isTyping && <span className="ml-1 animate-pulse">|</span>}
                   </p>
                 </motion.div>
               </AnimatePresence>
               
-              <div className="flex flex-wrap gap-1 mt-3">
+              <div className="flex flex-wrap gap-2 mt-4">
                 {!isTyping && (
                   <>
                     <Badge 
                       onClick={() => handleTagClick('today')}
-                      className="bg-purple-500/20 text-purple-200 border-purple-500/30 text-xs cursor-pointer hover:bg-purple-500/30 transition-colors"
+                      className="bg-purple-500/20 text-purple-200 border-purple-500/30 text-xs cursor-pointer hover:bg-purple-500/30 transition-colors py-1.5 px-3 flex items-center"
                     >
-                      <Calendar className="h-3 w-3 mr-1" />
+                      <Calendar className="h-3.5 w-3.5 mr-1.5" />
                       Today's Look
                     </Badge>
                     <Badge 
                       onClick={() => handleTagClick('weather')}
-                      className="bg-blue-500/20 text-blue-200 border-blue-500/30 text-xs cursor-pointer hover:bg-blue-500/30 transition-colors"
+                      className="bg-blue-500/20 text-blue-200 border-blue-500/30 text-xs cursor-pointer hover:bg-blue-500/30 transition-colors py-1.5 px-3 flex items-center"
                     >
                       {getWeatherIcon()}
-                      Weather-Ready
+                      <span className="ml-1.5">Weather-Ready</span>
                     </Badge>
                     <Badge 
                       onClick={() => handleTagClick('style')}
-                      className="bg-pink-500/20 text-pink-200 border-pink-500/30 text-xs cursor-pointer hover:bg-pink-500/30 transition-colors"
+                      className="bg-pink-500/20 text-pink-200 border-pink-500/30 text-xs cursor-pointer hover:bg-pink-500/30 transition-colors py-1.5 px-3 flex items-center"
                     >
-                      <Shirt className="h-3 w-3 mr-1" />
+                      <Shirt className="h-3.5 w-3.5 mr-1.5" />
                       Style Match
                     </Badge>
                   </>
@@ -204,30 +204,27 @@ const OliviaRecommendationBox = ({
               </div>
             </div>
             
-            <div className="flex justify-end">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={handleRefreshSuggestion}
-                disabled={isRefreshing}
-                className={cn(
-                  "text-xs text-white/80 hover:text-white border-white/10 hover:bg-white/5",
-                  "bg-gradient-to-r from-slate-900/80 to-purple-900/20",
-                  "transition-all duration-200 hover:scale-105"
-                )}
-              >
-                {isRefreshing ? (
-                  <span className="animate-spin">
-                    <RefreshCw className="h-3.5 w-3.5" />
-                  </span>
-                ) : (
-                  <>
-                    <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
-                    Refresh Suggestion
-                  </>
-                )}
-              </Button>
-            </div>
+            <Button 
+              variant="outline" 
+              onClick={handleRefreshSuggestion}
+              disabled={isRefreshing}
+              className={cn(
+                "w-full text-sm text-white hover:text-white border-white/10 hover:bg-white/10",
+                "bg-gradient-to-r from-slate-900/80 to-purple-900/20",
+                "transition-all duration-300 hover:scale-102 py-6 px-4"
+              )}
+            >
+              {isRefreshing ? (
+                <span className="animate-spin">
+                  <RefreshCw className="h-4 w-4" />
+                </span>
+              ) : (
+                <>
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Refresh Suggestion
+                </>
+              )}
+            </Button>
           </div>
         </div>
       </motion.div>

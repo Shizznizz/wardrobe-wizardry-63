@@ -1,69 +1,117 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { User, Sparkles, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Outfit } from '@/lib/types';
-import { Badge } from '@/components/ui/badge';
+import { Eye, Sparkles } from 'lucide-react';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 
 interface OliviaOutfitPickProps {
-  outfit: Outfit | null;
+  outfit: Outfit;
   onPreview: (outfit: Outfit) => void;
   className?: string;
 }
 
 const OliviaOutfitPick = ({ outfit, onPreview, className }: OliviaOutfitPickProps) => {
-  if (!outfit) return null;
+  const [enlarged, setEnlarged] = useState(false);
 
-  const handlePreviewClick = () => {
+  const handlePreview = () => {
     onPreview(outfit);
+  };
+  
+  const handleImageClick = () => {
+    setEnlarged(true);
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: 0.2 }}
-      className={`glass-dark rounded-lg border border-white/10 overflow-hidden ${className}`}
-    >
-      <div className="p-4">
-        <div className="flex items-center gap-2 mb-4">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-            <Sparkles className="h-4 w-4 text-white" />
+    <div className={`rounded-lg overflow-hidden ${className}`}>
+      <motion.div
+        className="glass-dark border border-white/10 rounded-lg overflow-hidden"
+        whileHover={{ scale: 1.02 }}
+        transition={{ duration: 0.2 }}
+      >
+        <div className="p-4">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-medium text-white flex items-center">
+              <Sparkles className="h-4 w-4 text-purple-400 mr-2" />
+              Olivia's Pick for Today
+            </h3>
           </div>
-          <h3 className="text-lg font-medium text-white">Olivia's Pick for Today</h3>
-        </div>
-
-        <div className="relative rounded-lg overflow-hidden mb-4 aspect-[3/4]">
-          <img
-            src="/lovable-uploads/413b249c-e4b5-48cd-a468-d23b2a23eca2.png"
-            alt={outfit.name}
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/50"></div>
-          <div className="absolute bottom-3 left-3">
-            <Badge className="bg-purple-500/70 text-white border-none">
-              Perfect for {outfit.occasion || 'today'}
-            </Badge>
+          
+          <div className="flex flex-col md:flex-row gap-4">
+            <div 
+              className="relative md:w-2/3 cursor-pointer overflow-hidden rounded-lg" 
+              onClick={handleImageClick}
+            >
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 hover:opacity-100 flex items-center justify-center transition-opacity duration-300"
+                initial={{ opacity: 0 }}
+                whileHover={{ opacity: 1 }}
+              >
+                <div className="bg-black/40 backdrop-blur-sm p-2 rounded-full">
+                  <Eye className="h-6 w-6 text-white" />
+                </div>
+              </motion.div>
+              <img 
+                src={outfit.imageUrl || '/placeholder.svg'} 
+                alt={outfit.name || 'Outfit of the day'} 
+                className="w-full h-auto object-cover rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300"
+                style={{ minHeight: "280px", objectFit: "cover" }}
+              />
+            </div>
+            
+            <div className="md:w-1/3 flex flex-col justify-between">
+              <div>
+                <h4 className="text-lg font-medium text-white mb-2">
+                  {outfit.name || 'Perfect for Today'}
+                </h4>
+                <p className="text-sm text-white/70 mb-4 line-clamp-3">
+                  This outfit is perfect for today's weather and your style preferences. The colors complement your profile perfectly!
+                </p>
+                <div className="flex flex-wrap gap-1 mb-4">
+                  {outfit.seasons && outfit.seasons.map((season) => (
+                    <span 
+                      key={season} 
+                      className="text-xs py-1 px-2 bg-purple-500/20 text-purple-200 rounded-full"
+                    >
+                      {season}
+                    </span>
+                  ))}
+                  {outfit.occasions && outfit.occasions.map((occasion) => (
+                    <span 
+                      key={occasion} 
+                      className="text-xs py-1 px-2 bg-blue-500/20 text-blue-200 rounded-full"
+                    >
+                      {occasion}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              
+              <Button
+                onClick={handlePreview}
+                className="w-full mt-2 bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white transition-all duration-300 transform hover:scale-105 py-6"
+              >
+                <Eye className="w-5 h-5 mr-2" />
+                Try This Look
+              </Button>
+            </div>
           </div>
         </div>
-
-        <div className="space-y-3">
-          <p className="text-white/80 text-sm leading-relaxed">
-            This look uses pieces you haven't worn in a while and fits today's weather perfectly. 
-            Light, comfy, and confident – just like you.
-          </p>
-
-          <Button
-            onClick={handlePreviewClick}
-            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 text-white group"
-          >
-            Try This Look
-            <ArrowRight className="h-4 w-4 ml-2 transition-transform group-hover:translate-x-1" />
-          </Button>
-        </div>
-      </div>
-    </motion.div>
+      </motion.div>
+      
+      <Dialog open={enlarged} onOpenChange={setEnlarged}>
+        <DialogContent className="sm:max-w-[700px] bg-black/90 border-white/10">
+          <div className="p-1">
+            <img 
+              src={outfit.imageUrl || '/placeholder.svg'} 
+              alt={outfit.name || 'Enlarged outfit view'} 
+              className="w-full h-auto object-contain max-h-[70vh]"
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 };
 

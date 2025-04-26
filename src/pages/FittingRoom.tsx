@@ -271,7 +271,7 @@ const FittingRoom = () => {
           transition={{ duration: 0.3 }}
           className="mt-8 mb-12"
         >
-          <h2 className="text-xl font-semibold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-purple-200">Select Your Model</h2>
+          <h2 className="text-xl font-semibold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-purple-200">Select Your Model</h2>
           
           <UserPhotoSection 
             userPhoto={userPhoto} 
@@ -282,25 +282,14 @@ const FittingRoom = () => {
           />
         </motion.div>
         
-        <div className="mt-10">
+        <div className="mt-12">
           <motion.div 
             className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
-            {userPhoto && (
-              <div>
-                <h2 className="text-xl font-semibold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-purple-200">Your Model</h2>
-                <UserPhotoDisplay 
-                  userPhoto={userPhoto}
-                  isUsingOliviaImage={isUsingOliviaImage}
-                  onResetPhoto={resetSelection}
-                />
-              </div>
-            )}
-            
-            <div>
+            <div className="order-2 lg:order-1">
               <h2 className="text-xl font-semibold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-purple-200">Olivia's Suggestions</h2>
               <OliviaRecommendationBox 
                 weather={currentWeather} 
@@ -311,6 +300,17 @@ const FittingRoom = () => {
                 outfits={safeFilteredOutfits}
               />
             </div>
+            
+            {userPhoto && (
+              <div className="order-1 lg:order-2">
+                <h2 className="text-xl font-semibold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-purple-200">Your Model</h2>
+                <UserPhotoDisplay 
+                  userPhoto={userPhoto}
+                  isUsingOliviaImage={isUsingOliviaImage}
+                  onResetPhoto={resetSelection}
+                />
+              </div>
+            )}
           </motion.div>
           
           <div className="mt-14" id="outfits-section">
@@ -323,6 +323,7 @@ const FittingRoom = () => {
               onFavoritesToggle={toggleFavorites}
               totalOutfits={userOutfits.length}
               filteredOutfits={safeFilteredOutfits.length}
+              className="shadow-xl shadow-purple-900/10"
             />
             
             {!Array.isArray(safeFilteredOutfits) || safeFilteredOutfits.length === 0 ? (
