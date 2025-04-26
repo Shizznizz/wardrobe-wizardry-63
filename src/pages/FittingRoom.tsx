@@ -8,24 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Share2, Download, Heart, Info, ArrowUp } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import VirtualFittingRoom from '@/components/VirtualFittingRoom';
-import UserPhotoSection from '@/components/showroom/UserPhotoSection';
-import ShowroomDialogs from '@/components/showroom/ShowroomDialogs';
-import WelcomeMessage from '@/components/fitting-room/WelcomeMessage';
-import NoOutfitsMessage from '@/components/fitting-room/NoOutfitsMessage';
-import OutfitPreviewArea from '@/components/fitting-room/OutfitPreviewArea';
-import NoPhotoMessage from '@/components/fitting-room/NoPhotoMessage';
 import { ClothingSeason, ClothingOccasion, WeatherInfo, Outfit } from '@/lib/types';
-import WardrobeOutfitSelector from '@/components/fitting-room/WardrobeOutfitSelector';
-
-import OliviaRecommendationBox from '@/components/fitting-room/OliviaRecommendationBox';
-import OutfitFilters from '@/components/fitting-room/OutfitFilters';
-import OutfitCarousel from '@/components/fitting-room/OutfitCarousel';
-import UserPhotoDisplay from '@/components/fitting-room/UserPhotoDisplay';
-import StyleOfTheDay from '@/components/fitting-room/StyleOfTheDay';
-import TrendingLooks from '@/components/fitting-room/TrendingLooks';
-import Sparkles from '@/components/fitting-room/Sparkles';
-import OliviaOutfitPick from '@/components/fitting-room/OliviaOutfitPick';
 
 const FittingRoom = () => {
   const isMobile = useIsMobile();
@@ -140,6 +123,7 @@ const FittingRoom = () => {
 
   const handleOutfitPreview = (outfit: Outfit) => {
     if (!outfit) return;
+    
     handleSelectOutfit(outfit);
     setTriedOnCount(prev => prev + 1);
     setIsSelectingOutfit(false);
@@ -149,13 +133,26 @@ const FittingRoom = () => {
         setIsProcessingTryOn(true);
         setFinalImage(null);
 
+        if (window.navigator.vibrate) {
+          window.navigator.vibrate(100);
+        }
+
         setTimeout(() => {
           setFinalImage(userPhoto);
           setIsProcessingTryOn(false);
-          toast.success('Virtual try-on complete!');
+          
+          toast.success('Virtual try-on complete!', {
+            duration: 2000,
+            position: isMobile ? 'bottom' : 'top-right',
+            className: isMobile 
+              ? 'bg-purple-600 text-white rounded-full shadow-lg bottom-4' 
+              : ''
+          });
         }, 1500);
       } else {
-        toast.info('Please select a photo first or use Olivia as your model');
+        toast.info('Please select a photo first or use Olivia as your model', {
+          position: isMobile ? 'bottom' : 'top-right'
+        });
       }
     }, 100);
   };
@@ -273,7 +270,14 @@ const FittingRoom = () => {
   const hasPhoto = userPhoto !== null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white overflow-x-hidden">
+    <div className={`
+      min-h-screen 
+      bg-gradient-to-b 
+      from-slate-950 
+      to-purple-950 
+      text-white 
+      ${isMobile ? 'overflow-x-hidden' : 'overflow-x-hidden'}
+    `}>
       <Header />
       
       <main className="container mx-auto px-4 pt-20 pb-32 max-w-[1600px] relative">
