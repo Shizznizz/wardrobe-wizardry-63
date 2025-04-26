@@ -47,7 +47,11 @@ const ShowroomDialogs = ({
       <Dialog open={showOliviaImageGallery} onOpenChange={onCloseOliviaImageGallery}>
         <DialogContent className="sm:max-w-[900px] p-0 bg-black/90 border-white/10 overflow-hidden">
           <div className="p-1">
-            <OliviaImageGallery onSelectImage={onSelectOliviaImage} />
+            <OliviaImageGallery 
+              isOpen={showOliviaImageGallery} 
+              onClose={onCloseOliviaImageGallery} 
+              onSelectImage={onSelectOliviaImage} 
+            />
           </div>
           <Button 
             className="absolute top-4 right-4 rounded-full w-8 h-8 p-0 bg-black/40"

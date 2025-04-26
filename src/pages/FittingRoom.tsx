@@ -159,7 +159,7 @@ const FittingRoom = () => {
           
           toast.success('Virtual try-on complete!', {
             duration: 2000,
-            position: isMobile ? 'bottom' : 'top-right',
+            position: isMobile ? 'bottom-center' : 'top-center',
             className: isMobile 
               ? 'bg-purple-600 text-white rounded-full shadow-lg bottom-4' 
               : ''
@@ -167,7 +167,7 @@ const FittingRoom = () => {
         }, 1500);
       } else {
         toast.info('Please select a photo first or use Olivia as your model', {
-          position: isMobile ? 'bottom' : 'top-right'
+          position: isMobile ? 'bottom-center' : 'top-center'
         });
       }
     }, 100);
