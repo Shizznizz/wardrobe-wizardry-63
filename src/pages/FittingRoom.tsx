@@ -141,6 +141,21 @@ const FittingRoom = () => {
     handleSelectOutfit(outfit);
     setTriedOnCount(prev => prev + 1);
     setIsSelectingOutfit(false);
+
+    setTimeout(() => {
+      if (userPhoto) {
+        setIsProcessingTryOn(true);
+        setFinalImage(null);
+
+        setTimeout(() => {
+          setFinalImage(userPhoto);
+          setIsProcessingTryOn(false);
+          toast.success('Virtual try-on complete!');
+        }, 1500);
+      } else {
+        toast.info('Please select a photo first or use Olivia as your model');
+      }
+    }, 100);
   };
 
   const handleDownload = async () => {
@@ -414,7 +429,6 @@ const FittingRoom = () => {
             )}
           </motion.div>
 
-          {/* Highlight outfit pick of the day */}
           <OliviaOutfitPick 
             outfit={safeFilteredOutfits[0] || { 
               id: "pick-of-day", 

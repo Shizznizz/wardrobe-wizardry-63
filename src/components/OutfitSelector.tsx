@@ -19,13 +19,30 @@ interface OutfitSelectorProps {
   clothingItems: ClothingItem[];
   onSelect: (outfit: Outfit) => void;
   selectedOutfitId?: string;
+  autoTryOn?: boolean;
 }
 
-const OutfitSelector = ({ outfits, clothingItems, onSelect, selectedOutfitId }: OutfitSelectorProps) => {
+const OutfitSelector = ({ 
+  outfits, 
+  clothingItems, 
+  onSelect, 
+  selectedOutfitId,
+  autoTryOn = true // Default to true for automatic try-on
+}: OutfitSelectorProps) => {
   const isMobile = useIsMobile();
 
   const handleSelect = (outfit: Outfit) => {
     onSelect(outfit);
+    
+    if (autoTryOn) {
+      // Scroll to preview section after a short delay to allow state updates
+      setTimeout(() => {
+        const previewSection = document.getElementById('preview-section');
+        if (previewSection) {
+          previewSection.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    }
   };
 
   return (

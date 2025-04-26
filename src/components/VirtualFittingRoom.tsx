@@ -1,4 +1,3 @@
-
 import { ClothingItem, Outfit } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
@@ -20,7 +19,7 @@ interface VirtualFittingRoomProps {
   isOliviaImage?: boolean;
 }
 
-const VirtualFittingRoom = ({ 
+const VirtualFittingRoom = ({
   finalImage, 
   outfit, 
   clothingItems,
@@ -80,6 +79,35 @@ const VirtualFittingRoom = ({
 
   const previewItems = clothingItems.slice(0, isMobile ? 3 : 4);
 
+  if (isProcessing) {
+    return (
+      <div className={`neo-blur border border-white/10 rounded-lg p-3 sm:p-4 space-y-3 sm:space-y-4 ${className}`}>
+        <div className="space-y-3 sm:space-y-4">
+          <div className="relative w-full aspect-square rounded-lg bg-white/5 overflow-hidden">
+            {userPhoto && (
+              <img 
+                src={userPhoto} 
+                alt="Base photo" 
+                className="w-full h-full object-cover opacity-50"
+              />
+            )}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="text-center">
+                <motion.div 
+                  className="w-16 h-16 border-t-2 border-purple-500 rounded-full mx-auto mb-4"
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                />
+                <p className="text-white/70 text-sm">Creating your preview...</p>
+                <p className="text-white/50 text-xs mt-2">This may take a moment</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
   if (userPhoto && !finalImage && !isProcessing) {
     return (
       <div className={`neo-blur border border-white/10 rounded-lg p-3 sm:p-4 h-full ${className}`}>
