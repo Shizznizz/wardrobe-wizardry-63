@@ -180,15 +180,15 @@ const UploadModal = ({ onUpload, buttonText = "Add Item", children }: UploadModa
         )}
       </DialogTrigger>
       
-      <DialogContent className="fixed inset-0 flex flex-col bg-gradient-to-b from-slate-900 via-purple-900/90 to-slate-900 border-slate-700 p-0 gap-0 max-h-[100dvh] h-full sm:h-auto sm:max-h-[90vh] sm:min-h-0 sm:rounded-lg sm:relative sm:inset-auto">
+      <DialogContent className="fixed inset-0 flex flex-col bg-gradient-to-b from-slate-900 via-purple-900/90 to-slate-900 border-slate-700 p-0 gap-0 max-h-[100dvh] h-[100dvh] w-full max-w-full sm:h-auto sm:max-h-[90vh] sm:min-h-0 sm:rounded-lg sm:relative sm:inset-auto sm:max-w-lg m-0">
         <DialogHeader className="p-4 border-b border-slate-700/50 sticky top-0 z-10 bg-inherit backdrop-blur-sm">
-          <DialogTitle className="text-center text-white text-xl">Add Clothing Item</DialogTitle>
+          <DialogTitle className="text-center text-white text-xl font-semibold">Add Clothing Item</DialogTitle>
           <DialogDescription className="sr-only">
             Add a new item to your wardrobe
           </DialogDescription>
         </DialogHeader>
         
-        <div className="flex-1 overflow-y-auto min-h-0 px-4">
+        <div className="flex-1 overflow-y-auto min-h-0 px-4 py-2 overscroll-contain">
           {validationErrors.length > 0 && (
             <Alert variant="destructive" className="my-4 bg-red-900/20 border-red-500/50">
               <AlertCircle className="h-4 w-4" />
@@ -203,12 +203,13 @@ const UploadModal = ({ onUpload, buttonText = "Add Item", children }: UploadModa
             </Alert>
           )}
           
-          <form onSubmit={handleSubmit} className="space-y-4 py-4">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <ImageUploader 
               imagePreview={imagePreview}
               onImageChange={handleImageChange}
               onClearImage={clearImage}
               label="Upload an image (PNG, JPG, or JPEG, max 10MB)"
+              className="sm:max-w-[300px] mx-auto"
             />
             
             <ClothingDetailsForm
