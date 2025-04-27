@@ -34,50 +34,27 @@ export const MobileMenu = ({
     };
   }, [isOpen]);
   
-  const menuVariants = {
-    closed: {
-      x: '100%',
-      transition: {
-        type: 'spring',
-        stiffness: 400,
-        damping: 40
-      }
-    },
-    open: {
-      x: '0%',
-      transition: {
-        type: 'spring',
-        stiffness: 400,
-        damping: 30
-      }
-    }
-  };
-
   return (
     <AnimatePresence>
       {isOpen && (
         <>
           <motion.div
             initial={{ opacity: 0 }}
-            animate={{ opacity: 0.7 }}
+            animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
             className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[1000]"
             onClick={onClose}
           />
           
-          <motion.div
-            className="fixed top-0 right-0 bottom-0 w-[75%] max-w-sm bg-gradient-to-b from-purple-950 to-slate-950 z-[1001] border-l border-white/10 pt-safe-top pb-safe-bottom"
-            variants={menuVariants}
-            initial="closed"
-            animate="open"
-            exit="closed"
-            style={{ height: '100%', overflowY: 'auto' }}
+          <div
+            className="fixed top-0 right-0 bottom-0 w-[75%] max-w-sm bg-gradient-to-b from-purple-950 to-slate-950 z-[1001] border-l border-white/10 flex flex-col h-[100dvh]"
           >
-            <div className="flex justify-end px-4 py-3 sticky top-0 bg-gradient-to-b from-purple-950 to-purple-950/95 z-10">
+            <div className="sticky top-0 px-4 py-3 bg-gradient-to-b from-purple-950 to-purple-950/95 z-10 border-b border-white/10">
               <Button
                 variant="ghost"
                 size="icon"
-                className="text-white hover:bg-white/10"
+                className="text-white hover:bg-white/10 ml-auto block"
                 onClick={onClose}
                 aria-label="Close menu"
               >
@@ -85,39 +62,37 @@ export const MobileMenu = ({
               </Button>
             </div>
             
-            <ScrollArea className="h-[calc(100%-60px)]">
-              <div className="px-4 py-2">
-                <div className="space-y-1 mb-8">
-                  {navItems.map((item) => (
-                    <Link
-                      key={item.path}
-                      to={item.path}
-                      onClick={onClose}
-                      className={cn(
-                        "block py-3.5 px-4 rounded-lg text-lg transition-colors",
-                        currentPath === item.path
-                          ? "bg-white/10 text-white font-medium"
-                          : "text-white/70 hover:bg-white/5 hover:text-white"
-                      )}
-                    >
-                      {item.name}
-                    </Link>
-                  ))}
-                </div>
-                
-                <div className="pt-4 border-t border-white/10">
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-900/20 py-3"
-                    onClick={onSignOut}
+            <ScrollArea className="flex-1 px-4 py-2">
+              <div className="space-y-1 mb-8">
+                {navItems.map((item) => (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    onClick={onClose}
+                    className={cn(
+                      "block py-3.5 px-4 rounded-lg text-lg transition-colors",
+                      currentPath === item.path
+                        ? "bg-white/10 text-white font-medium"
+                        : "text-white/70 hover:bg-white/5 hover:text-white"
+                    )}
                   >
-                    <LogOut className="mr-2 h-5 w-5" />
-                    Sign Out
-                  </Button>
-                </div>
+                    {item.name}
+                  </Link>
+                ))}
+              </div>
+              
+              <div className="pt-4 border-t border-white/10">
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-900/20 py-3"
+                  onClick={onSignOut}
+                >
+                  <LogOut className="mr-2 h-5 w-5" />
+                  Sign Out
+                </Button>
               </div>
             </ScrollArea>
-          </motion.div>
+          </div>
         </>
       )}
     </AnimatePresence>
