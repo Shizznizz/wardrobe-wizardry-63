@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -46,22 +45,22 @@ const ShowroomDialogs = ({
     <>
       {/* Olivia Image Gallery Dialog */}
       <Dialog open={showOliviaImageGallery} onOpenChange={onCloseOliviaImageGallery}>
-        <DialogContent className="sm:max-w-[900px] p-0 bg-black/90 border-white/10 overflow-hidden">
+        <DialogContent className="sm:max-w-[900px] p-0 bg-black/90 border-white/10 overflow-hidden max-h-[95vh]">
           <DialogTitle className="sr-only">
             <VisuallyHidden>Olivia Image Gallery</VisuallyHidden>
           </DialogTitle>
           <div className="p-1">
             <OliviaImageGallery 
               isOpen={showOliviaImageGallery} 
-              onClose={onCloseOliviaImageGallery} 
+              onClose={onCloseOliviaImageGallery}
               onSelectImage={onSelectOliviaImage} 
             />
           </div>
           <Button 
-            className="absolute top-4 right-4 rounded-full w-8 h-8 p-0 bg-black/40"
+            className="absolute top-2 right-2 rounded-full w-6 h-6 p-0 bg-black/40"
             onClick={onCloseOliviaImageGallery}
           >
-            <X className="h-4 w-4" />
+            <X className="h-3 w-3" />
           </Button>
         </DialogContent>
       </Dialog>

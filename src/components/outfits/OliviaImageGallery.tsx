@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { X, Check } from 'lucide-react';
@@ -66,8 +65,8 @@ const OliviaImageGallery = ({ isOpen, onClose, onSelectImage }: OliviaImageGalle
   };
 
   return (
-    <div className="p-4">
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 py-4">
+    <div className="p-2">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 py-2">
         {oliviaImages.map((image) => (
           <motion.div
             key={image.id}
@@ -84,13 +83,13 @@ const OliviaImageGallery = ({ isOpen, onClose, onSelectImage }: OliviaImageGalle
             />
             
             {selectedImageId === image.id && (
-              <div className="absolute top-2 right-2 bg-purple-600 rounded-full p-1">
+              <div className="absolute top-1 right-1 bg-purple-600 rounded-full p-1">
                 <Check className="h-3 w-3 text-white" />
               </div>
             )}
             
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity">
-              <div className="absolute bottom-1 left-1 right-1 text-xs text-white/90 bg-black/50 p-1 rounded text-center">
+              <div className="absolute bottom-1 left-1 right-1 text-[10px] text-white/90 bg-black/50 p-1 rounded text-center">
                 {image.alt}
               </div>
             </div>
@@ -98,18 +97,18 @@ const OliviaImageGallery = ({ isOpen, onClose, onSelectImage }: OliviaImageGalle
         ))}
       </div>
       
-      <div className="flex flex-row justify-end space-x-2 pt-2 sticky bottom-0 bg-black/90 p-4 mt-2">
+      <div className="flex flex-row justify-end space-x-2 sticky bottom-0 bg-black/90 p-3 mt-2 -mx-2 -mb-2 border-t border-white/10">
         <Button 
           variant="ghost" 
           onClick={onClose}
-          className="text-white/70 hover:text-white hover:bg-white/10 text-sm py-1 h-8"
+          className="text-white/70 hover:text-white hover:bg-white/10 text-xs py-1 h-7"
         >
           Cancel
         </Button>
         <Button 
           onClick={handleConfirmSelection}
           disabled={selectedImageId === null}
-          className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-sm py-1 h-8"
+          className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-xs py-1 h-7"
         >
           Use Selected
         </Button>
