@@ -1,11 +1,11 @@
 
-import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
+import { useEffect } from 'react';
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -22,6 +22,18 @@ export const MobileMenu = ({
   currentPath,
   onSignOut
 }: MobileMenuProps) => {
+  // Lock body scroll when menu is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+  
   const menuVariants = {
     closed: {
       x: '100%',
@@ -59,8 +71,9 @@ export const MobileMenu = ({
             initial="closed"
             animate="open"
             exit="closed"
+            style={{ height: '100%', overflowY: 'auto' }}
           >
-            <div className="flex justify-end px-4 py-3">
+            <div className="flex justify-end px-4 py-3 sticky top-0 bg-gradient-to-b from-purple-950 to-purple-950/95 z-10">
               <Button
                 variant="ghost"
                 size="icon"

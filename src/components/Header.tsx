@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu } from 'lucide-react';
@@ -9,10 +10,6 @@ import { toast } from 'sonner';
 import { UserMenu } from './header/UserMenu';
 import { MobileMenu } from './header/MobileMenu';
 import { DesktopNavigation } from './header/DesktopNavigation';
-import { WeatherInfo } from '@/lib/types';
-
-interface HeaderProps {
-}
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
