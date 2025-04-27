@@ -1,4 +1,3 @@
-
 import { ClothingType, ClothingColor, ClothingMaterial, ClothingSeason } from '@/lib/types';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -106,30 +105,82 @@ const ClothingDetailsForm = ({
               <SelectValue placeholder="Select color" />
             </SelectTrigger>
             <SelectContent
-              className="bg-slate-900 border-slate-700 text-white max-h-56 sm:max-h-60 overflow-y-auto"
-              style={{ maxHeight: 220, overflowY: 'auto' }}
+              align="center"
+              className="bg-slate-900 border-slate-700 text-white max-h-[300px] overflow-y-auto"
             >
-              <ScrollArea className="h-56">
-                <div className="p-1">
-                  <SelectItem value="black">Black</SelectItem>
-                  <SelectItem value="white">White</SelectItem>
-                  <SelectItem value="gray">Gray</SelectItem>
-                  <SelectItem value="red">Red</SelectItem>
-                  <SelectItem value="blue">Blue</SelectItem>
-                  <SelectItem value="navy">Navy</SelectItem>
-                  <SelectItem value="green">Green</SelectItem>
-                  <SelectItem value="yellow">Yellow</SelectItem>
-                  <SelectItem value="purple">Purple</SelectItem>
-                  <SelectItem value="pink">Pink</SelectItem>
-                  <SelectItem value="orange">Orange</SelectItem>
-                  <SelectItem value="brown">Brown</SelectItem>
-                  <SelectItem value="beige">Beige</SelectItem>
-                  <SelectItem value="cream">Cream</SelectItem>
-                  <SelectItem value="burgundy">Burgundy</SelectItem>
-                  <SelectItem value="coral">Coral</SelectItem>
-                  <SelectItem value="rose">Rose</SelectItem>
-                  <SelectItem value="multicolor">Multicolor</SelectItem>
-                </div>
+              <ScrollArea className="h-[300px] w-full p-1">
+                <SelectItem value="black" className="flex items-center">
+                  <div className="w-4 h-4 rounded-full bg-black mr-2 border border-white/20" />
+                  Black
+                </SelectItem>
+                <SelectItem value="white" className="flex items-center">
+                  <div className="w-4 h-4 rounded-full bg-white mr-2 border border-slate-200" />
+                  White
+                </SelectItem>
+                <SelectItem value="gray" className="flex items-center">
+                  <div className="w-4 h-4 rounded-full bg-gray-500 mr-2" />
+                  Gray
+                </SelectItem>
+                <SelectItem value="red" className="flex items-center">
+                  <div className="w-4 h-4 rounded-full bg-red-500 mr-2" />
+                  Red
+                </SelectItem>
+                <SelectItem value="blue" className="flex items-center">
+                  <div className="w-4 h-4 rounded-full bg-blue-500 mr-2" />
+                  Blue
+                </SelectItem>
+                <SelectItem value="navy" className="flex items-center">
+                  <div className="w-4 h-4 rounded-full bg-blue-900 mr-2" />
+                  Navy
+                </SelectItem>
+                <SelectItem value="green" className="flex items-center">
+                  <div className="w-4 h-4 rounded-full bg-green-500 mr-2" />
+                  Green
+                </SelectItem>
+                <SelectItem value="yellow" className="flex items-center">
+                  <div className="w-4 h-4 rounded-full bg-yellow-400 mr-2" />
+                  Yellow
+                </SelectItem>
+                <SelectItem value="purple" className="flex items-center">
+                  <div className="w-4 h-4 rounded-full bg-purple-500 mr-2" />
+                  Purple
+                </SelectItem>
+                <SelectItem value="pink" className="flex items-center">
+                  <div className="w-4 h-4 rounded-full bg-pink-500 mr-2" />
+                  Pink
+                </SelectItem>
+                <SelectItem value="orange" className="flex items-center">
+                  <div className="w-4 h-4 rounded-full bg-orange-500 mr-2" />
+                  Orange
+                </SelectItem>
+                <SelectItem value="brown" className="flex items-center">
+                  <div className="w-4 h-4 rounded-full bg-amber-800 mr-2" />
+                  Brown
+                </SelectItem>
+                <SelectItem value="beige" className="flex items-center">
+                  <div className="w-4 h-4 rounded-full bg-amber-100 mr-2 border border-slate-200" />
+                  Beige
+                </SelectItem>
+                <SelectItem value="cream" className="flex items-center">
+                  <div className="w-4 h-4 rounded-full bg-amber-50 mr-2 border border-slate-200" />
+                  Cream
+                </SelectItem>
+                <SelectItem value="burgundy" className="flex items-center">
+                  <div className="w-4 h-4 rounded-full bg-red-900 mr-2" />
+                  Burgundy
+                </SelectItem>
+                <SelectItem value="coral" className="flex items-center">
+                  <div className="w-4 h-4 rounded-full bg-red-400 mr-2" />
+                  Coral
+                </SelectItem>
+                <SelectItem value="rose" className="flex items-center">
+                  <div className="w-4 h-4 rounded-full bg-rose-400 mr-2" />
+                  Rose
+                </SelectItem>
+                <SelectItem value="multicolor" className="flex items-center">
+                  <div className="w-4 h-4 rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 mr-2" />
+                  Multicolor
+                </SelectItem>
               </ScrollArea>
             </SelectContent>
           </Select>
