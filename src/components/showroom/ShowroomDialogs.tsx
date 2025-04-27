@@ -1,10 +1,11 @@
 
 import React from 'react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { X, CreditCard, Badge } from 'lucide-react';
 import OliviaImageGallery from '@/components/outfits/OliviaImageGallery';
 import { toast } from 'sonner';
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 
 interface ShowroomDialogsProps {
   showStatusBar: boolean;
@@ -46,6 +47,9 @@ const ShowroomDialogs = ({
       {/* Olivia Image Gallery Dialog */}
       <Dialog open={showOliviaImageGallery} onOpenChange={onCloseOliviaImageGallery}>
         <DialogContent className="sm:max-w-[900px] p-0 bg-black/90 border-white/10 overflow-hidden">
+          <DialogTitle className="sr-only">
+            <VisuallyHidden>Olivia Image Gallery</VisuallyHidden>
+          </DialogTitle>
           <div className="p-1">
             <OliviaImageGallery 
               isOpen={showOliviaImageGallery} 
@@ -65,6 +69,9 @@ const ShowroomDialogs = ({
       {/* Subscription Popup Dialog */}
       <Dialog open={showSubscriptionPopup} onOpenChange={onCloseSubscriptionPopup}>
         <DialogContent className="sm:max-w-[500px] p-6 bg-slate-900 border-purple-500/20">
+          <DialogTitle className="sr-only">
+            <VisuallyHidden>Upgrade to Premium</VisuallyHidden>
+          </DialogTitle>
           <div className="text-center mb-6">
             <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-pink-600 rounded-full mx-auto flex items-center justify-center mb-4">
               <Badge className="h-8 w-8 text-white" />
@@ -147,7 +154,7 @@ const ShowroomDialogs = ({
             </div>,
             {
               duration: 5000,
-              position: 'bottom-center'
+              position: isMobile ? "bottom-center" : "top-center"
             }
           )}
         </div>

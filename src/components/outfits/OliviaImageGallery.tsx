@@ -98,7 +98,7 @@ const OliviaImageGallery = ({ isOpen, onClose, onSelectImage }: OliviaImageGalle
         ))}
       </div>
       
-      <div className="flex flex-row justify-end space-x-2 pt-2">
+      <div className="flex flex-row justify-end space-x-2 pt-2 sticky bottom-0 bg-black/90 p-4 mt-2">
         <Button 
           variant="ghost" 
           onClick={onClose}
