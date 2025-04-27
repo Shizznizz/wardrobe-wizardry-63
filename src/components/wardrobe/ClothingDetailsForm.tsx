@@ -65,26 +65,58 @@ const ClothingDetailsForm = ({
             </SelectTrigger>
             <SelectContent
               className="bg-slate-900 border-slate-700 text-white max-h-56 sm:max-h-60 overflow-y-auto"
-              style={{ maxHeight: 220, overflowY: 'auto' }}
+              style={{ maxHeight: 300, overflowY: 'auto' }}
             >
-              <ScrollArea className="h-56">
+              <ScrollArea className="h-[300px]">
                 <div className="p-1">
-                  <SelectItem value="shirt">Shirt</SelectItem>
                   <SelectItem value="t-shirt">T-Shirt</SelectItem>
+                  <SelectItem value="shirt">Shirt</SelectItem>
+                  <SelectItem value="blouse">Blouse</SelectItem>
+                  <SelectItem value="tank-top">Tank Top</SelectItem>
+                  <SelectItem value="crop-top">Crop Top</SelectItem>
                   <SelectItem value="sweater">Sweater</SelectItem>
+                  <SelectItem value="cardigan">Cardigan</SelectItem>
                   <SelectItem value="hoodie">Hoodie</SelectItem>
+                  <SelectItem value="sweatshirt">Sweatshirt</SelectItem>
+                  
                   <SelectItem value="jacket">Jacket</SelectItem>
+                  <SelectItem value="blazer">Blazer</SelectItem>
                   <SelectItem value="coat">Coat</SelectItem>
+                  <SelectItem value="windbreaker">Windbreaker</SelectItem>
+                  <SelectItem value="vest">Vest</SelectItem>
+                  
                   <SelectItem value="dress">Dress</SelectItem>
-                  <SelectItem value="skirt">Skirt</SelectItem>
+                  <SelectItem value="maxi-dress">Maxi Dress</SelectItem>
+                  <SelectItem value="mini-dress">Mini Dress</SelectItem>
+                  <SelectItem value="jumpsuit">Jumpsuit</SelectItem>
+                  <SelectItem value="romper">Romper</SelectItem>
+                  
                   <SelectItem value="pants">Pants</SelectItem>
                   <SelectItem value="jeans">Jeans</SelectItem>
                   <SelectItem value="shorts">Shorts</SelectItem>
-                  <SelectItem value="shoes">Shoes</SelectItem>
-                  <SelectItem value="boots">Boots</SelectItem>
+                  <SelectItem value="skirt">Skirt</SelectItem>
+                  <SelectItem value="leggings">Leggings</SelectItem>
+                  <SelectItem value="joggers">Joggers</SelectItem>
+                  <SelectItem value="sweatpants">Sweatpants</SelectItem>
+                  
                   <SelectItem value="sneakers">Sneakers</SelectItem>
+                  <SelectItem value="boots">Boots</SelectItem>
                   <SelectItem value="sandals">Sandals</SelectItem>
-                  <SelectItem value="accessory">Accessory</SelectItem>
+                  <SelectItem value="heels">Heels</SelectItem>
+                  <SelectItem value="flats">Flats</SelectItem>
+                  <SelectItem value="loafers">Loafers</SelectItem>
+                  
+                  <SelectItem value="belt">Belt</SelectItem>
+                  <SelectItem value="scarf">Scarf</SelectItem>
+                  <SelectItem value="hat">Hat</SelectItem>
+                  <SelectItem value="gloves">Gloves</SelectItem>
+                  <SelectItem value="bag">Bag</SelectItem>
+                  <SelectItem value="jewelry">Jewelry</SelectItem>
+                  <SelectItem value="sunglasses">Sunglasses</SelectItem>
+                  
+                  <SelectItem value="swimwear">Swimwear</SelectItem>
+                  <SelectItem value="sleepwear">Sleepwear</SelectItem>
+                  <SelectItem value="activewear">Activewear</SelectItem>
                   <SelectItem value="other">Other</SelectItem>
                 </div>
               </ScrollArea>
