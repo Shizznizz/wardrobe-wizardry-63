@@ -177,7 +177,7 @@ const Index = () => {
               className="flex-1 relative order-1 md:order-2 w-full md:w-auto"
             >
               <motion.div 
-                className="relative group"
+                className="relative group mb-16 md:mb-8" // Added more bottom margin for mobile
                 animate={{ 
                   y: [0, -10, 0] 
                 }}
@@ -205,10 +205,10 @@ const Index = () => {
                     stiffness: 300,
                     damping: 20
                   }}
-                  className="absolute -bottom-14 right-0 md:-right-8 max-w-xs transform rotate-2 z-20"
+                  className="absolute -bottom-14 sm:-bottom-12 md:-bottom-10 right-0 md:-right-8 max-w-xs transform rotate-2 z-20 mb-4 sm:mb-2" // Added bottom margin
                 >
-                  <div className="bg-gradient-to-r from-purple-600/90 to-pink-600/90 p-6 rounded-xl shadow-xl backdrop-blur-sm border border-white/20 text-white">
-                    <p className="text-base sm:text-lg font-medium">
+                  <div className="bg-gradient-to-r from-purple-600/90 to-pink-600/90 p-4 sm:p-5 md:p-6 rounded-xl shadow-xl backdrop-blur-sm border border-white/20 text-white">
+                    <p className="text-sm sm:text-base md:text-lg font-medium">
                       Hi! I'm Olivia Bloom, your personal AI style advisor. Let me help you look and feel amazing!
                     </p>
                     <div className="w-4 h-4 bg-pink-600 absolute -bottom-2 right-12 rotate-45"></div>
@@ -228,7 +228,7 @@ const Index = () => {
           </>
         )}
         
-        <div ref={insightsRef} id="style-intelligence-section">
+        <div ref={insightsRef} id="style-intelligence-section" className="mt-16 md:mt-20"> {/* Added top margin */}
           <InsightsCarousel />
         </div>
         
