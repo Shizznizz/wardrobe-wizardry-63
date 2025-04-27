@@ -17,7 +17,7 @@ const Header = () => {
   const location = useLocation();
   const isMobile = useIsMobile();
   const navigate = useNavigate();
-  const { user, signOut } = useAuth();
+  const { user, signOut, isAuthenticated } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -35,10 +35,9 @@ const Header = () => {
   const handleSignOut = async () => {
     try {
       await signOut();
-      toast.success("Signed out successfully");
       navigate("/");
     } catch (error) {
-      toast.error("Failed to sign out");
+      console.error("Error signing out:", error);
     }
   };
 
@@ -50,7 +49,7 @@ const Header = () => {
     { name: 'Home', path: '/' },
   ];
   
-  if (user) {
+  if (isAuthenticated) {
     navItems = [
       ...navItems,
       { name: 'My Wardrobe', path: '/my-wardrobe' },
@@ -59,6 +58,11 @@ const Header = () => {
       { name: 'Fitting Room', path: '/fitting-room' },
       { name: 'Shop & Try', path: '/shop-and-try' },
       { name: 'Settings', path: '/settings' },
+    ];
+  } else {
+    navItems = [
+      ...navItems,
+      { name: 'Login', path: '/auth' }
     ];
   }
 
