@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -83,7 +84,7 @@ const Index = () => {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-5xl md:text-7xl font-bold text-center mb-8 md:mb-6 leading-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 relative"
+            className="text-4xl sm:text-5xl md:text-7xl font-bold text-center mb-6 md:mb-6 leading-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 relative"
             style={{
               textShadow: '0 0 40px rgba(167, 139, 250, 0.3)',
               animation: 'pulse 3s infinite'
@@ -96,12 +97,12 @@ const Index = () => {
             initial={{ opacity: 0, y: -15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="text-xl md:text-2xl text-center text-blue-100 mb-12 max-w-3xl mx-auto"
+            className="text-lg sm:text-xl md:text-2xl text-center text-blue-100 mb-12 max-w-3xl mx-auto px-4"
           >
             Discover your unique style identity with Olivia Bloom, your personal AI stylist who understands exactly what makes you shine.
           </motion.p>
           
-          <div className="flex flex-col md:flex-row items-center gap-10 md:gap-16 max-w-6xl mx-auto mb-16">
+          <div className="flex flex-col md:flex-row items-center gap-8 md:gap-16 max-w-6xl mx-auto mb-16">
             <motion.div 
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -133,26 +134,25 @@ const Index = () => {
               </div>
               
               {user ? (
-                <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                <div className="flex flex-col sm:flex-row gap-4 pt-6">
                   <Button 
                     asChild 
                     size="lg" 
-                    className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white px-8 py-6 rounded-xl shadow-lg hover:shadow-purple-500/30 transition-all duration-300 transform hover:scale-105 hover:translate-y-[-2px] font-medium"
+                    className="bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 text-white px-8 py-6 rounded-xl shadow-lg hover:shadow-purple-500/30 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 text-lg font-medium w-full sm:w-auto"
                   >
-                    <Link to="/my-wardrobe" className="flex items-center">
-                      Start Styling
-                      <ArrowRight className="ml-2 h-5 w-5" />
+                    <Link to="/style-quiz" className="flex items-center justify-center">
+                      <Star className="mr-2 h-5 w-5" />
+                      Take Style Quiz
                     </Link>
                   </Button>
                   <Button 
                     asChild 
                     size="lg" 
-                    variant="outline" 
-                    className="border-purple-400/30 text-white hover:bg-white/10 px-8 py-6 rounded-xl transition-all duration-300 hover:border-purple-400/50 hover:shadow-purple-500/20 transform hover:scale-105 font-medium"
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:opacity-90 text-white px-8 py-6 rounded-xl shadow-lg hover:shadow-blue-500/30 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 text-lg font-medium w-full sm:w-auto"
                   >
-                    <Link to="/style-quiz" className="flex items-center">
-                      <Star className="mr-2 h-5 w-5" />
-                      Take Style Quiz
+                    <Link to="/my-wardrobe" className="flex items-center justify-center">
+                      Start Styling
+                      <ArrowRight className="ml-2 h-5 w-5" />
                     </Link>
                   </Button>
                 </div>
@@ -160,9 +160,9 @@ const Index = () => {
                 <Button 
                   asChild 
                   size="lg" 
-                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white px-8 py-6 rounded-xl shadow-lg hover:shadow-purple-500/30 transition-all duration-300 transform hover:scale-105 hover:translate-y-[-2px] mt-6 font-medium"
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 text-white px-8 py-6 rounded-xl shadow-lg hover:shadow-purple-500/30 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 mt-6 font-medium w-full sm:w-auto"
                 >
-                  <Link to="/auth" className="flex items-center">
+                  <Link to="/auth" className="flex items-center justify-center">
                     Get Started
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
@@ -174,7 +174,7 @@ const Index = () => {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
-              className="flex-1 relative order-1 md:order-2"
+              className="flex-1 relative order-1 md:order-2 w-full md:w-auto"
             >
               <motion.div 
                 className="relative group"
@@ -208,7 +208,7 @@ const Index = () => {
                   className="absolute -bottom-14 right-0 md:-right-8 max-w-xs transform rotate-2 z-20"
                 >
                   <div className="bg-gradient-to-r from-purple-600/90 to-pink-600/90 p-6 rounded-xl shadow-xl backdrop-blur-sm border border-white/20 text-white">
-                    <p className="text-lg font-medium">
+                    <p className="text-base sm:text-lg font-medium">
                       Hi! I'm Olivia Bloom, your personal AI style advisor. Let me help you look and feel amazing!
                     </p>
                     <div className="w-4 h-4 bg-pink-600 absolute -bottom-2 right-12 rotate-45"></div>
