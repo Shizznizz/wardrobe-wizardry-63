@@ -1,3 +1,4 @@
+
 // src/lib/types.ts
 
 export type ClothingColor =
@@ -87,7 +88,10 @@ export type ClothingType =
   | 'swimwear'
   | 'sleepwear'
   | 'activewear'
-  | 'other';
+  | 'other'
+  | 'shoes'         // Adding the missing types causing errors
+  | 'accessories'
+  | 'top';
 
 export type ClothingCategory = 
   | 'top'
