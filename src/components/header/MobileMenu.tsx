@@ -34,6 +34,11 @@ export const MobileMenu = ({
     };
   }, [isOpen]);
   
+  // Add Quizzes to navItems if it's not already there
+  const menuItems = navItems.some(item => item.path === '/quizzes') 
+    ? navItems 
+    : [...navItems, { name: "Quizzes", path: "/quizzes" }];
+  
   return (
     <AnimatePresence>
       {isOpen && (
@@ -60,7 +65,7 @@ export const MobileMenu = ({
             
             <ScrollArea className="flex-1 px-4 py-2">
               <div className="space-y-1 mb-8">
-                {navItems.map((item) => (
+                {menuItems.map((item) => (
                   <Link
                     key={item.path}
                     to={item.path}

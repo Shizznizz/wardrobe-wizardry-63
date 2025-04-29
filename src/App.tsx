@@ -15,6 +15,7 @@ import ShopAndTry from '@/pages/ShopAndTry';
 import StylePlanner from '@/pages/StylePlanner';
 import MixAndMatch from '@/pages/MixAndMatch';
 import Settings from '@/pages/Settings';
+import Quizzes from '@/pages/Quizzes';
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
             <Route path="/style-planner" element={<StylePlanner />} />
             <Route path="/mix-and-match" element={<MixAndMatch />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/quizzes" element={<Quizzes />} />
           </Routes>
         </PageLayout>
       </AuthProvider>
