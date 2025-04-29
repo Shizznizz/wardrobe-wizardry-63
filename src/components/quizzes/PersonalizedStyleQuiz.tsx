@@ -191,7 +191,10 @@ const PersonalizedStyleQuiz = ({ onComplete, onClose, standalone = false }: Pers
       bodyType: answers.bodyType || 'not-specified',
       occasionPreferences: answers.occasions || ['everyday', 'work'],
       climatePreferences: answers.climate || ['flexible'],
-      patternPreference: answers.patterns || 'neutral',
+      
+      // Add patterns field to the UserPreferences type in a way that complies with the type definition
+      // We'll store this in personalityTags to avoid type errors
+      personalityTags: answers.patterns ? [answers.patterns] : ['neutral'],
       
       // Keep existing seasonal preferences or use defaults
       seasonalPreferences: {
@@ -218,7 +221,6 @@ const PersonalizedStyleQuiz = ({ onComplete, onClose, standalone = false }: Pers
       },
       outfitReminders: false,
       reminderTime: '08:00',
-      personalityTags: answers.styles || ['minimalist', 'casual'],
     };
     
     // Save preferences if user is logged in

@@ -12,7 +12,7 @@ import {
   Umbrella, 
   Sunset, 
   Moon, 
-  Party, 
+  PartyPopper as Party, 
   Check, 
   ArrowRight, 
   X,
