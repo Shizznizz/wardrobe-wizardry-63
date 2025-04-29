@@ -223,12 +223,29 @@ const Index = () => {
 
         {user && (
           <>
-            <StyleDiscoveryQuiz />
+            <div className="py-8 md:py-12">
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7 }}
+                viewport={{ once: true }}
+                className="text-center max-w-4xl mx-auto mb-8"
+              >
+                <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-300 to-pink-400">
+                  Elevate Your Style Today
+                </h2>
+                <p className="text-lg text-blue-100/90">
+                  Discover outfits perfectly tailored to your unique style profile and preferences.
+                  Let Olivia guide you to your most confident self.
+                </p>
+              </motion.div>
+              <StyleDiscoveryQuiz />
+            </div>
             <SectionDivider variant="dotted" />
           </>
         )}
         
-        <div ref={insightsRef} id="style-intelligence-section" className="mt-16 md:mt-20"> {/* Added top margin */}
+        <div ref={insightsRef} id="style-intelligence-section" className="mt-16 md:mt-20"> 
           <InsightsCarousel />
         </div>
         
@@ -250,7 +267,7 @@ const Index = () => {
         
         <TestimonialsCarousel />
         
-        {user && <StyleDiscoveryQuiz />}
+        {/* Removed the duplicate StyleDiscoveryQuiz component that was here */}
       </main>
       
       <AnimatePresence>
