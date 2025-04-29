@@ -53,11 +53,11 @@ const Quizzes = () => {
                 <TabsList className="grid grid-cols-2 w-full max-w-md">
                   <TabsTrigger value="personalized" className="px-8 py-3">
                     <ClipboardList className="mr-2 h-4 w-4" />
-                    <span>Style Quiz</span>
+                    <span>Find Your Style</span>
                   </TabsTrigger>
                   <TabsTrigger value="mood" className="px-8 py-3">
                     <Sparkles className="mr-2 h-4 w-4" />
-                    <span>Mood Quiz</span>
+                    <span>Mood Matcher</span>
                   </TabsTrigger>
                 </TabsList>
               </div>
@@ -66,7 +66,7 @@ const Quizzes = () => {
                 <TabsContent value="personalized" className="mt-0">
                   <Card>
                     <CardHeader className="bg-gradient-to-r from-slate-800 to-slate-900">
-                      <CardTitle>Personalized Style Quiz</CardTitle>
+                      <CardTitle>Find Your Style</CardTitle>
                       <CardDescription className="text-slate-300">
                         Discover your unique style identity with a comprehensive assessment
                       </CardDescription>
@@ -84,10 +84,10 @@ const Quizzes = () => {
                       <div className="flex justify-center">
                         <Button 
                           onClick={() => handleStartQuiz('personalized')}
-                          className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-10"
+                          className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-10"
                           size="lg"
                         >
-                          Start Style Quiz
+                          See My Style
                         </Button>
                       </div>
                     </CardContent>
@@ -97,7 +97,7 @@ const Quizzes = () => {
                 <TabsContent value="mood" className="mt-0">
                   <Card>
                     <CardHeader className="bg-gradient-to-r from-purple-800 to-pink-800">
-                      <CardTitle>Olivia's Mood Matcher</CardTitle>
+                      <CardTitle>What's Your Mood Today?</CardTitle>
                       <CardDescription className="text-pink-200">
                         Fun, quick quiz to match your current mood with the perfect outfit
                       </CardDescription>
@@ -106,10 +106,10 @@ const Quizzes = () => {
                       <div className="mb-6">
                         <h3 className="font-semibold text-lg mb-2">How it works:</h3>
                         <ul className="space-y-2 list-disc list-inside text-slate-300">
-                          <li>Answer a few fun questions about your current mood</li>
-                          <li>Let Olivia analyze your vibe for today</li>
-                          <li>Get an instant outfit recommendation that matches your mood</li>
-                          <li>Perfect for when you need quick inspiration!</li>
+                          <li>Answer a few fun questions about your current mood 🎭</li>
+                          <li>Let Olivia analyze your vibe for today ✨</li>
+                          <li>Get an instant outfit recommendation that matches your mood 👗</li>
+                          <li>Perfect for when you need quick inspiration! 💫</li>
                         </ul>
                       </div>
                       <div className="flex justify-center">
@@ -118,7 +118,7 @@ const Quizzes = () => {
                           className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white px-10"
                           size="lg"
                         >
-                          Match My Mood
+                          Let's Get Stylin'!
                         </Button>
                       </div>
                     </CardContent>

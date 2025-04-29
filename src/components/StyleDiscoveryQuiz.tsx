@@ -2,7 +2,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Coffee, Sparkles, Umbrella, Sunset, Moon, Check, ArrowRight, X } from 'lucide-react';
-import { Party } from '@/components/ui/icons';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -26,30 +25,30 @@ const StyleDiscoveryQuiz = ({ onClose }: StyleDiscoveryQuizProps) => {
       id: 'mood',
       question: "How are you feeling today?",
       options: [
-        { value: 'energetic', label: 'Energetic', icon: Sparkles },
-        { value: 'relaxed', label: 'Relaxed', icon: Sunset },
-        { value: 'focused', label: 'Focused', icon: Coffee },
-        { value: 'playful', label: 'Playful', icon: Party },
+        { value: 'energetic', label: 'Energetic 🌟', icon: Sparkles },
+        { value: 'relaxed', label: 'Relaxed 😌', icon: Sunset },
+        { value: 'focused', label: 'Focused 🧠', icon: Coffee },
+        { value: 'playful', label: 'Playful 🎉', icon: Sparkles },
       ],
     },
     {
       id: 'weather',
       question: "What's the weather like?",
       options: [
-        { value: 'sunny', label: 'Sunny', icon: Sunset },
-        { value: 'rainy', label: 'Rainy', icon: Umbrella },
-        { value: 'cloudy', label: 'Cloudy', icon: Moon },
-        { value: 'mixed', label: 'Mixed', icon: Coffee },
+        { value: 'sunny', label: 'Sunny 🌞', icon: Sunset },
+        { value: 'rainy', label: 'Rainy ☔', icon: Umbrella },
+        { value: 'cloudy', label: 'Cloudy ☁️', icon: Moon },
+        { value: 'mixed', label: 'Mixed 🌈', icon: Coffee },
       ],
     },
     {
       id: 'occasion',
       question: "What's your main activity today?",
       options: [
-        { value: 'work', label: 'Work', icon: Coffee },
-        { value: 'casual', label: 'Casual Hangout', icon: Sunset },
-        { value: 'date', label: 'Date Night', icon: Moon },
-        { value: 'party', label: 'Party', icon: Party },
+        { value: 'work', label: 'Work 💼', icon: Coffee },
+        { value: 'casual', label: 'Casual Hangout 🛋️', icon: Sunset },
+        { value: 'date', label: 'Date Night 💖', icon: Moon },
+        { value: 'party', label: 'Party 🎊', icon: Sparkles },
       ],
     },
   ];
@@ -76,24 +75,24 @@ const StyleDiscoveryQuiz = ({ onClose }: StyleDiscoveryQuizProps) => {
   
   const getOutfitSuggestion = () => {
     const moodOutfits: Record<string, string> = {
-      'energetic': 'vibrant athleisure',
-      'relaxed': 'comfortable casual',
-      'focused': 'business casual',
+      'energetic': 'vibrant and bold',
+      'relaxed': 'comfortable and flowy',
+      'focused': 'structured and clean',
       'playful': 'fun and colorful'
     };
     
     const weatherOutfits: Record<string, string> = {
       'sunny': 'light and airy',
       'rainy': 'waterproof and practical',
-      'cloudy': 'layers and textures',
-      'mixed': 'versatile and adaptable'
+      'cloudy': 'layered and versatile',
+      'mixed': 'adaptable with accessories'
     };
     
     const occasionOutfits: Record<string, string> = {
-      'work': 'professional and polished',
+      'work': 'professional yet stylish',
       'casual': 'effortless and comfortable',
-      'date': 'sophisticated and romantic',
-      'party': 'bold and statement-making'
+      'date': 'romantic and flattering',
+      'party': 'statement-making and festive'
     };
     
     const mood = answers.mood || 'relaxed';
@@ -101,15 +100,15 @@ const StyleDiscoveryQuiz = ({ onClose }: StyleDiscoveryQuizProps) => {
     const occasion = answers.occasion || 'casual';
     
     return {
-      title: `${moodOutfits[mood]} ${occasionOutfits[occasion]} look`,
-      description: `A ${moodOutfits[mood]} outfit that's perfect for ${weather} weather and a ${occasion} occasion. Mix textures and add subtle accessories for dimension.`,
+      title: `Your ${moodOutfits[mood]} mood outfit`,
+      description: `Based on your ${mood} mood and the ${weather} weather, here's a ${moodOutfits[mood]} outfit that's perfect for your ${occasion} plans! Add some fun accessories to really make it pop!`,
       image: `/lovable-uploads/c26c0c8c-7ff3-432a-b79b-1d22494daba6.png`,
       items: [
-        'Fitted blazer in neutral tone',
-        'High-waisted trousers or jeans',
-        'Statement top in a complementary color',
-        'Versatile ankle boots or loafers',
-        'Minimalist jewelry for a polished finish'
+        'A confidence-boosting top in a color that makes you smile',
+        'Bottoms that match your activity level for today',
+        'Shoes that keep you comfortable while looking great',
+        'One statement accessory to express your current mood',
+        'Optional layer for weather changes throughout the day'
       ]
     };
   };
@@ -140,18 +139,18 @@ const StyleDiscoveryQuiz = ({ onClose }: StyleDiscoveryQuizProps) => {
             
             <div className="flex-1 text-center md:text-left">
               <h3 className="text-xl md:text-2xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-purple-400">
-                Feeling like something fresh today?
+                What's Your Mood Today?
               </h3>
               <p className="text-sm md:text-base text-blue-100 mb-5">
-                Take a quick quiz and I'll suggest the perfect outfit that matches your mood and plans!
+                Let Olivia guide you to your perfect mood-based outfit! Ready for some fun? 🎉
               </p>
               
               <Button 
                 onClick={toggleQuiz}
-                className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white px-6 py-3 rounded-lg shadow-md hover:shadow-pink-500/20 min-h-[44px] transform hover:scale-[1.02] transition-all duration-200 active:scale-95"
+                className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white px-8 py-3 rounded-lg shadow-md hover:shadow-pink-500/20 min-h-[44px] transform hover:scale-[1.02] transition-all duration-200 active:scale-95 text-lg font-medium"
               >
-                <Sparkles className="mr-2 h-4 w-4" />
-                Take the Quiz
+                <Sparkles className="mr-2 h-5 w-5" />
+                Let's Get Stylin'!
               </Button>
             </div>
           </div>
@@ -170,7 +169,7 @@ const StyleDiscoveryQuiz = ({ onClose }: StyleDiscoveryQuizProps) => {
                 <AvatarFallback className="bg-purple-800">OB</AvatarFallback>
               </Avatar>
               <div>
-                <h3 className="text-sm font-medium text-white">Style Discovery with Olivia</h3>
+                <h3 className="text-sm font-medium text-white">What's Your Mood Today?</h3>
                 <div className="flex items-center gap-1">
                   {questions.map((_, index) => (
                     <div 

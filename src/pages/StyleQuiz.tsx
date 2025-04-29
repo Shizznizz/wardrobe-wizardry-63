@@ -2,7 +2,7 @@
 import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
-import StyleQuiz from '@/components/StyleQuiz';
+import FindYourStyleQuiz from '@/components/FindYourStyleQuiz';
 import { UserPreferences } from '@/lib/types';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -35,7 +35,7 @@ const StyleQuizPage = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <StyleQuiz 
+          <FindYourStyleQuiz 
             onComplete={handleQuizComplete} 
             standalone={true}
           />

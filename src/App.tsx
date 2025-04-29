@@ -2,7 +2,7 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { AuthProvider } from '@/hooks/useAuth';
-import { ThemeProvider } from "@/components/theme-provider"
+import { ThemeProvider } from "@/components/theme-provider";
 import PageLayout from '@/components/shared/PageLayout';
 import ScrollToTop from '@/components/ScrollToTop';
 import Index from '@/pages/Index';
