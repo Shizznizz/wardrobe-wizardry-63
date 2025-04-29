@@ -10,6 +10,8 @@ import BackgroundShapes from '@/components/BackgroundShapes';
 import OptimizedImage from '@/components/ui/optimized-image';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import TestimonialsCarousel from '@/components/TestimonialsCarousel';
+import SectionDivider from '@/components/SectionDivider';
 import { 
   Carousel, 
   CarouselContent, 
@@ -404,6 +406,9 @@ const Index: React.FC = () => {
             </motion.div>
           </div>
         </section>
+        
+        {/* Testimonials Section - Added back */}
+        <TestimonialsCarousel />
 
         {/* Early Access Section */}
         <section className="py-20 bg-slate-900/50 backdrop-blur-sm">
