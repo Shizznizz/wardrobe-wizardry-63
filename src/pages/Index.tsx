@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { motion, useAnimation } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -638,7 +639,47 @@ const Index: React.FC = () => {
                 </div>
               </motion.div>
               
+              {/* Chat with Olivia third */}
               <motion.div 
                 className="card-futuristic group" 
                 variants={fadeInUp}
-                whileHover={{ y: -5, transition: { duration: 0
+                whileHover={{ y: -5, transition: { duration: 0.2 } }}
+              >
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center mb-5 mx-auto group-hover:scale-110 transition-transform">
+                  <MessageCircle className="h-6 w-6" />
+                </div>
+                <h3 className="text-xl font-bold mb-2 text-center">Chat with Olivia</h3>
+                <p className="text-blue-100/70 text-center">Get personalized style advice.</p>
+                
+                {/* Interactive popup on hover */}
+                <div className="mt-4 bg-slate-800/70 p-3 rounded-lg scale-0 group-hover:scale-100 transition-transform origin-top">
+                  <p className="text-xs text-white/80">Have real conversations with Olivia about your style concerns and get expert advice</p>
+                </div>
+              </motion.div>
+              
+              {/* Exclusive Early Access fourth */}
+              <motion.div 
+                className="card-futuristic group" 
+                variants={fadeInUp}
+                whileHover={{ y: -5, transition: { duration: 0.2 } }}
+              >
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-amber-500 to-yellow-500 flex items-center justify-center mb-5 mx-auto group-hover:scale-110 transition-transform">
+                  <Clock className="h-6 w-6" />
+                </div>
+                <h3 className="text-xl font-bold mb-2 text-center">Exclusive Early Access</h3>
+                <p className="text-blue-100/70 text-center">Be first to try new features.</p>
+                
+                {/* Interactive popup on hover */}
+                <div className="mt-4 bg-slate-800/70 p-3 rounded-lg scale-0 group-hover:scale-100 transition-transform origin-top">
+                  <p className="text-xs text-white/80">Get early access to new collections, features, and exclusive stylist collaborations before anyone else</p>
+                </div>
+              </motion.div>
+            </motion.div>
+          </div>
+        </section>
+      </main>
+    </div>
+  );
+};
+
+export default Index;
