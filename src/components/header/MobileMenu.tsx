@@ -43,12 +43,24 @@ export const MobileMenu = ({
     <AnimatePresence>
       {isOpen && (
         <>
-          <div
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
             className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[1000]"
             onClick={onClose}
           />
           
-          <div
+          <motion.div
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            transition={{ 
+              type: "spring", 
+              stiffness: 300, 
+              damping: 30 
+            }}
             className="fixed top-0 right-0 bottom-0 w-[75%] max-w-sm bg-gradient-to-b from-purple-950 to-slate-950 z-[1001] border-l border-white/10 flex flex-col"
           >
             <div className="sticky top-0 px-4 py-3 bg-gradient-to-b from-purple-950 to-purple-950/95 z-10 border-b border-white/10">
@@ -93,7 +105,7 @@ export const MobileMenu = ({
                 </Button>
               </div>
             </ScrollArea>
-          </div>
+          </motion.div>
         </>
       )}
     </AnimatePresence>

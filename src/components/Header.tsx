@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useAuth } from '@/hooks/useAuth';
-import { toast } from 'sonner';
 import { UserMenu } from './header/UserMenu';
 import { MobileMenu } from './header/MobileMenu';
 import { DesktopNavigation } from './header/DesktopNavigation';
@@ -80,6 +79,11 @@ const Header = () => {
           : "bg-[rgba(50,0,80,0.5)] backdrop-blur-md border-transparent text-white",
         "z-[100]"
       )}
+      style={{
+        // Fix for mobile background flickering
+        WebkitBackdropFilter: 'blur(10px)',
+        backfaceVisibility: 'hidden'
+      }}
     >
       <div className="container mx-auto px-3 md:px-6 flex items-center justify-between">
         {isMobile && (
@@ -107,6 +111,12 @@ const Header = () => {
               )}
               onClick={toggleMenu}
               aria-label="Toggle mobile menu"
+              // Improved tap target size for mobile
+              style={{
+                minHeight: "44px",
+                minWidth: "44px",
+                touchAction: "manipulation"
+              }}
             >
               <Menu className="h-5 w-5" />
             </Button>

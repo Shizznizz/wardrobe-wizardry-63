@@ -1,0 +1,17 @@
+
+{
+  "name": "Olivia - AI Wardrobe Assistant",
+  "short_name": "Olivia",
+  "description": "Your personal AI stylist, curating outfits that match your vibe, wardrobe, and the weather.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1d0034",
+  "theme_color": "#ff66cc",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ]
+}
