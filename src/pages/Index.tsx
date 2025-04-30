@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { motion, useAnimation } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -13,6 +14,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
 import TestimonialsCarousel from '@/components/TestimonialsCarousel';
 import SectionDivider from '@/components/SectionDivider';
+import HomepagePremiumTeaser from '@/components/HomepagePremiumTeaser';
 import { 
   Carousel, 
   CarouselContent, 
@@ -208,7 +210,7 @@ const Index: React.FC = () => {
           </div>
         </section>
 
-        {/* 4. Style Preview Section - Updated with 3 cards and horizontal scroll */}
+        {/* 4. Style Preview Section */}
         <section className="py-20">
           <div className="container mx-auto px-4">
             <motion.div 
@@ -301,7 +303,7 @@ const Index: React.FC = () => {
                     </div>
                   </CarouselItem>
                   
-                  {/* Date Night Look - NEW */}
+                  {/* Date Night Look */}
                   <CarouselItem className="md:basis-1/2 lg:basis-1/3 pl-4">
                     <div className="bg-slate-800/80 border border-white/10 rounded-xl overflow-hidden shadow-xl hover:shadow-purple-500/10 hover:-translate-y-1 transition-all duration-300 h-full">
                       <div className="h-64 bg-gradient-to-b from-purple-500/50 to-indigo-600/50 relative overflow-hidden">
@@ -340,7 +342,7 @@ const Index: React.FC = () => {
           </div>
         </section>
 
-        {/* 5. Community Looks Section - With usernames and clickable images */}
+        {/* 5. Community Looks Section */}
         <section className="py-20 bg-slate-900/50 backdrop-blur-sm">
           <div className="container mx-auto px-4">
             <motion.div
@@ -440,10 +442,10 @@ const Index: React.FC = () => {
           </div>
         </section>
         
-        {/* 6. Testimonials Section - TestimonialsCarousel component will be updated separately if needed */}
+        {/* 6. Testimonials Section */}
         <TestimonialsCarousel />
 
-        {/* 7. Join the Style Movement - with animated counters */}
+        {/* 7. Join the Style Movement */}
         <section className="py-24">
           <div className="container mx-auto px-4">
             <motion.div
@@ -509,7 +511,7 @@ const Index: React.FC = () => {
           </div>
         </section>
 
-        {/* 8. Upcoming Collections Section - Updated text */}
+        {/* 8. Upcoming Collections Section */}
         <section className="py-20 bg-slate-900/50 backdrop-blur-sm">
           <div className="container mx-auto px-4">
             <motion.div
@@ -577,105 +579,9 @@ const Index: React.FC = () => {
           </div>
         </section>
 
-        {/* 9. Premium Features Section - Updated with new headline */}
-        <section className="py-20">
-          <div className="container mx-auto px-4">
-            <motion.div
-              className="text-center mb-14"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-            >
-              <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-                Go Premium & Let Olivia Work Her Magic ✨
-              </h2>
-              <p className="text-lg text-blue-100/80 max-w-3xl mx-auto">
-                Unlock the full power of Olivia with our premium features.
-              </p>
-            </motion.div>
-            
-            <motion.div 
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto"
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={staggerContainer}
-            >
-              {/* Outfit Try-On first */}
-              <motion.div 
-                className="card-futuristic group" 
-                variants={fadeInUp}
-                whileHover={{ y: -5, transition: { duration: 0.2 } }}
-              >
-                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center mb-5 mx-auto group-hover:scale-110 transition-transform">
-                  <Shirt className="h-6 w-6" />
-                </div>
-                <h3 className="text-xl font-bold mb-2 text-center">Outfit Try-On</h3>
-                <p className="text-blue-100/70 text-center">Visualize how outfits look on you.</p>
-                
-                {/* Interactive popup on hover */}
-                <div className="mt-4 bg-slate-800/70 p-3 rounded-lg scale-0 group-hover:scale-100 transition-transform origin-top">
-                  <p className="text-xs text-white/80">Upload your photo and see exactly how new styles will look on your body type</p>
-                </div>
-              </motion.div>
-              
-              {/* AI Outfit Generator second */}
-              <motion.div 
-                className="card-futuristic group" 
-                variants={fadeInUp}
-                whileHover={{ y: -5, transition: { duration: 0.2 } }}
-              >
-                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-pink-500 to-coral-500 flex items-center justify-center mb-5 mx-auto group-hover:scale-110 transition-transform">
-                  <Wand className="h-6 w-6" />
-                </div>
-                <h3 className="text-xl font-bold mb-2 text-center">AI Outfit Generator</h3>
-                <p className="text-blue-100/70 text-center">Create unique looks with AI magic.</p>
-                
-                {/* Interactive popup on hover */}
-                <div className="mt-4 bg-slate-800/70 p-3 rounded-lg scale-0 group-hover:scale-100 transition-transform origin-top">
-                  <p className="text-xs text-white/80">Tell Olivia your mood, occasion, or preferences and get AI-generated outfit ideas instantly</p>
-                </div>
-              </motion.div>
-              
-              {/* Chat with Olivia third */}
-              <motion.div 
-                className="card-futuristic group" 
-                variants={fadeInUp}
-                whileHover={{ y: -5, transition: { duration: 0.2 } }}
-              >
-                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center mb-5 mx-auto group-hover:scale-110 transition-transform">
-                  <MessageCircle className="h-6 w-6" />
-                </div>
-                <h3 className="text-xl font-bold mb-2 text-center">Chat with Olivia</h3>
-                <p className="text-blue-100/70 text-center">Get personalized style advice.</p>
-                
-                {/* Interactive popup on hover */}
-                <div className="mt-4 bg-slate-800/70 p-3 rounded-lg scale-0 group-hover:scale-100 transition-transform origin-top">
-                  <p className="text-xs text-white/80">Have real conversations with Olivia about your style concerns and get expert advice</p>
-                </div>
-              </motion.div>
-              
-              {/* Exclusive Early Access fourth */}
-              <motion.div 
-                className="card-futuristic group" 
-                variants={fadeInUp}
-                whileHover={{ y: -5, transition: { duration: 0.2 } }}
-              >
-                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-amber-500 to-yellow-500 flex items-center justify-center mb-5 mx-auto group-hover:scale-110 transition-transform">
-                  <Clock className="h-6 w-6" />
-                </div>
-                <h3 className="text-xl font-bold mb-2 text-center">Exclusive Early Access</h3>
-                <p className="text-blue-100/70 text-center">Be first to try new features.</p>
-                
-                {/* Interactive popup on hover */}
-                <div className="mt-4 bg-slate-800/70 p-3 rounded-lg scale-0 group-hover:scale-100 transition-transform origin-top">
-                  <p className="text-xs text-white/80">Get early access to new collections, features, and exclusive stylist collaborations before anyone else</p>
-                </div>
-              </motion.div>
-            </motion.div>
-          </div>
-        </section>
+        {/* Premium Section - Now using the HomepagePremiumTeaser component */}
+        <HomepagePremiumTeaser />
+        
       </main>
     </div>
   );

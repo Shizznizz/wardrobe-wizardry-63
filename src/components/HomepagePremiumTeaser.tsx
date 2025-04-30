@@ -2,7 +2,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Sparkles, Zap, Star, MessageCircle } from 'lucide-react';
+import { Sparkles, Zap, Star, MessageCircle, Shirt, Crown } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -31,7 +31,7 @@ const HomepagePremiumTeaser = () => {
         <div className="relative z-10">
           <div className="flex justify-center mb-8">
             <div className="bg-gradient-to-r from-purple-600/30 to-pink-600/30 rounded-full p-3 backdrop-blur-sm">
-              <Sparkles className="h-8 w-8 text-purple-300" />
+              <Crown className="h-8 w-8 text-yellow-300" />
             </div>
           </div>
           
@@ -47,31 +47,31 @@ const HomepagePremiumTeaser = () => {
             <div className="bg-white/5 rounded-xl p-6 backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all duration-300 hover:bg-white/10 hover:shadow-lg hover:-translate-y-1">
               <div className="flex items-center gap-3 mb-3">
                 <div className="p-2 rounded-full bg-gradient-to-r from-purple-600/30 to-pink-600/30">
-                  <Zap className="h-5 w-5 text-pink-300" />
+                  <Shirt className="h-5 w-5 text-pink-300" />
                 </div>
-                <h3 className="font-medium text-white">Pro Styling AI</h3>
+                <h3 className="font-medium text-white">Outfit Try-On</h3>
               </div>
-              <p className="text-white/70 text-sm">Enhanced AI styling with deeper understanding of your preferences and body type.</p>
+              <p className="text-white/70 text-sm">See how outfits look on your photos before buying with our advanced virtual fitting room.</p>
             </div>
             
             <div className="bg-white/5 rounded-xl p-6 backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all duration-300 hover:bg-white/10 hover:shadow-lg hover:-translate-y-1">
               <div className="flex items-center gap-3 mb-3">
                 <div className="p-2 rounded-full bg-gradient-to-r from-blue-600/30 to-cyan-600/30">
-                  <Star className="h-5 w-5 text-blue-300" />
+                  <MessageCircle className="h-5 w-5 text-blue-300" />
                 </div>
-                <h3 className="font-medium text-white">Unlimited Try-Ons</h3>
+                <h3 className="font-medium text-white">Chat with Olivia</h3>
               </div>
-              <p className="text-white/70 text-sm">Try on unlimited outfits with our advanced virtual fitting room technology.</p>
+              <p className="text-white/70 text-sm">Get unlimited style advice and personalized recommendations from your AI fashion assistant.</p>
             </div>
             
             <div className="bg-white/5 rounded-xl p-6 backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all duration-300 hover:bg-white/10 hover:shadow-lg hover:-translate-y-1">
               <div className="flex items-center gap-3 mb-3">
-                <div className="p-2 rounded-full bg-gradient-to-r from-green-600/30 to-emerald-600/30">
-                  <MessageCircle className="h-5 w-5 text-green-300" />
+                <div className="p-2 rounded-full bg-gradient-to-r from-yellow-600/30 to-amber-600/30">
+                  <Star className="h-5 w-5 text-yellow-300" />
                 </div>
-                <h3 className="font-medium text-white">24/7 Style Advice</h3>
+                <h3 className="font-medium text-white">Exclusive Access</h3>
               </div>
-              <p className="text-white/70 text-sm">Unlimited conversations with Olivia for advice on any style situation.</p>
+              <p className="text-white/70 text-sm">Be first to access new collections and premium outfit recommendations for all occasions.</p>
             </div>
           </div>
           
@@ -82,7 +82,7 @@ const HomepagePremiumTeaser = () => {
             >
               <Link to="/premium">
                 <Sparkles className="mr-2 h-5 w-5" />
-                Explore Premium
+                Upgrade to Premium
               </Link>
             </Button>
           </div>
