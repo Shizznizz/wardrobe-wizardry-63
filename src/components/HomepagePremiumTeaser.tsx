@@ -2,7 +2,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Sparkles, Zap, Star, MessageCircle, Shirt, Crown } from 'lucide-react';
+import { Sparkles, MessageCircle, Shirt, Crown, Clock, Wand } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -36,42 +36,66 @@ const HomepagePremiumTeaser = () => {
           </div>
           
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
-            Elevate Your Style Journey with Premium
+            Go Premium & Let Olivia Work Her Magic ✨
           </h2>
           
           <p className="text-center text-white/80 max-w-3xl mx-auto mb-8 text-lg">
-            Unlock advanced styling features, unlimited virtual try-ons, exclusive collections, and personalized recommendations from Olivia.
+            Unlock the full power of Olivia with our premium features. Get advanced styling, AI-generated outfits, and personalized fashion advice.
           </p>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+            {/* Outfit Try-On Feature */}
             <div className="bg-white/5 rounded-xl p-6 backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all duration-300 hover:bg-white/10 hover:shadow-lg hover:-translate-y-1">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="p-2 rounded-full bg-gradient-to-r from-purple-600/30 to-pink-600/30">
-                  <Shirt className="h-5 w-5 text-pink-300" />
+              <div className="flex items-center justify-center mb-4">
+                <div className="p-3 rounded-full bg-blue-500/30">
+                  <Shirt className="h-6 w-6 text-blue-300" />
                 </div>
-                <h3 className="font-medium text-white">Outfit Try-On</h3>
               </div>
-              <p className="text-white/70 text-sm">See how outfits look on your photos before buying with our advanced virtual fitting room.</p>
+              <h3 className="font-medium text-white text-center text-xl mb-2">Outfit Try-On</h3>
+              <p className="text-white/70 text-sm text-center">
+                Upload your photo and see exactly how new styles will look on your body type before buying.
+              </p>
             </div>
             
+            {/* AI Outfit Generator */}
             <div className="bg-white/5 rounded-xl p-6 backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all duration-300 hover:bg-white/10 hover:shadow-lg hover:-translate-y-1">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="p-2 rounded-full bg-gradient-to-r from-blue-600/30 to-cyan-600/30">
-                  <MessageCircle className="h-5 w-5 text-blue-300" />
+              <div className="flex items-center justify-center mb-4">
+                <div className="p-3 rounded-full bg-pink-500/30">
+                  <Wand className="h-6 w-6 text-pink-300" />
                 </div>
-                <h3 className="font-medium text-white">Chat with Olivia</h3>
               </div>
-              <p className="text-white/70 text-sm">Get unlimited style advice and personalized recommendations from your AI fashion assistant.</p>
+              <h3 className="font-medium text-white text-center text-xl mb-2">AI Outfit Generator</h3>
+              <p className="text-white/70 text-sm text-center">
+                Tell Olivia your mood, occasion, or preferences and get AI-generated outfit ideas instantly.
+              </p>
             </div>
             
+            {/* Chat with Olivia */}
             <div className="bg-white/5 rounded-xl p-6 backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all duration-300 hover:bg-white/10 hover:shadow-lg hover:-translate-y-1">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="p-2 rounded-full bg-gradient-to-r from-yellow-600/30 to-amber-600/30">
-                  <Star className="h-5 w-5 text-yellow-300" />
+              <div className="flex items-center justify-center mb-4">
+                <div className="p-3 rounded-full bg-cyan-500/30">
+                  <MessageCircle className="h-6 w-6 text-cyan-300" />
                 </div>
-                <h3 className="font-medium text-white">Exclusive Access</h3>
               </div>
-              <p className="text-white/70 text-sm">Be first to access new collections and premium outfit recommendations for all occasions.</p>
+              <h3 className="font-medium text-white text-center text-xl mb-2">Chat with Olivia</h3>
+              <p className="text-white/70 text-sm text-center">
+                Get personalized style advice and fashion recommendations tailored to your preferences.
+              </p>
+            </div>
+          </div>
+          
+          {/* Additional Row with Early Access Feature */}
+          <div className="grid grid-cols-1 md:grid-cols-1 gap-6 mb-10 max-w-md mx-auto">
+            <div className="bg-white/5 rounded-xl p-6 backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all duration-300 hover:bg-white/10 hover:shadow-lg hover:-translate-y-1">
+              <div className="flex items-center justify-center mb-4">
+                <div className="p-3 rounded-full bg-amber-500/30">
+                  <Clock className="h-6 w-6 text-amber-300" />
+                </div>
+              </div>
+              <h3 className="font-medium text-white text-center text-xl mb-2">Exclusive Early Access</h3>
+              <p className="text-white/70 text-sm text-center">
+                Be first to try new features and get access to exclusive collections before anyone else.
+              </p>
             </div>
           </div>
           
@@ -82,10 +106,11 @@ const HomepagePremiumTeaser = () => {
             >
               <Link to="/premium">
                 <Sparkles className="mr-2 h-5 w-5" />
-                Upgrade to Premium
+                Upgrade to Premium – Only €2.99/week
               </Link>
             </Button>
           </div>
+          <p className="text-sm text-center text-white/60 mt-4">Cancel anytime. No commitment.</p>
         </div>
       </div>
     </motion.div>
