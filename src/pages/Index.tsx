@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -7,6 +6,7 @@ import { ArrowRight, Upload, Calendar, Sparkles, MessageCircle, Shirt, Wand, Clo
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import BackgroundShapes from '@/components/BackgroundShapes';
+import HeroSection from '@/components/home/HeroSection';
 import OptimizedImage from '@/components/ui/optimized-image';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -55,66 +55,8 @@ const Index: React.FC = () => {
       <Header />
       
       <main className="relative z-10">
-        {/* 1. Hero Section - Restructured */}
-        <section className="container mx-auto px-4 pt-28 pb-16 lg:pt-36 lg:pb-24 bg-gradient-to-br from-slate-900 to-purple-900/80">
-          <motion.div 
-            className="max-w-4xl mx-auto text-center space-y-8"
-            initial="hidden"
-            animate="visible"
-            variants={staggerContainer}
-          >
-            {/* Central Olivia Portrait */}
-            <motion.div
-              className="flex flex-col items-center justify-center mb-8"
-              variants={fadeInUp}
-            >
-              <div className="relative">
-                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 blur-xl opacity-30"></div>
-                <Avatar className="h-32 w-32 border-4 border-pink-500/30 shadow-lg shadow-pink-500/20">
-                  <AvatarImage src="/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png" alt="Olivia" />
-                  <AvatarFallback className="bg-purple-800">OB</AvatarFallback>
-                </Avatar>
-              </div>
-            </motion.div>
-            
-            <motion.h1 
-              className="text-4xl md:text-6xl font-bold leading-tight"
-              variants={fadeInUp}
-            >
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
-                Discover Your Perfect Look — Powered by AI
-              </span>
-            </motion.h1>
-            
-            <motion.p 
-              className="text-lg md:text-xl text-blue-100/90 max-w-3xl mx-auto"
-              variants={fadeInUp}
-            >
-              Olivia helps you style smarter, based on your wardrobe, the weather and your vibe.
-            </motion.p>
-            
-            <motion.div 
-              className="flex flex-col sm:flex-row gap-6 justify-center pt-4"
-              variants={fadeInUp}
-            >
-              <Button 
-                onClick={() => navigate('/my-wardrobe')}
-                className="btn-futuristic text-lg group"
-              >
-                Start Your Style Journey
-                <ArrowRight className="ml-2 h-5 w-5 duration-300 group-hover:translate-x-1" />
-              </Button>
-              
-              <Button 
-                onClick={() => navigate('/quizzes')}
-                variant="outline" 
-                className="border-white/20 text-white hover:bg-white/10 px-8 py-3 text-lg"
-              >
-                Take a Style Quiz
-              </Button>
-            </motion.div>
-          </motion.div>
-        </section>
+        {/* 1. Hero Section - Using our new component */}
+        <HeroSection />
 
         {/* 2. Meet Olivia Section */}
         <section className="py-20">
