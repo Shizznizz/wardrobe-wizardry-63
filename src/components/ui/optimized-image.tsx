@@ -16,6 +16,7 @@ interface OptimizedImageProps extends React.ImgHTMLAttributes<HTMLImageElement> 
   skeletonClassName?: string;
   threshold?: number; // Intersection observer threshold
   debounceLoad?: number; // Debounce time for loading in ms
+  fetchPriority?: 'high' | 'low' | 'auto';
 }
 
 const OptimizedImage = ({
@@ -30,6 +31,7 @@ const OptimizedImage = ({
   skeletonClassName,
   threshold = 0.1,
   debounceLoad = 100,
+  fetchPriority = 'auto',
   ...props
 }: OptimizedImageProps) => {
   const [imgSrc, setImgSrc] = useState(src);
@@ -63,7 +65,7 @@ const OptimizedImage = ({
           return () => clearTimeout(timer);
         }
       },
-      { threshold }
+      { threshold, rootMargin: '200px 0px' } // Extended rootMargin for earlier loading
     );
     
     // Get current element reference
@@ -86,10 +88,14 @@ const OptimizedImage = ({
   // Convert loading to the correct type
   const { loading, ...safeImgProps } = imgProps;
   
+  // Determine actual fetchPriority based on priority prop
+  const actualFetchPriority = priority ? 'high' : fetchPriority;
+  
   return (
     <div 
       id={`img-${alt.replace(/\s+/g, '-').toLowerCase()}`}
       className={cn("relative overflow-hidden", aspectRatio, containerClassName)}
+      data-priority={priority ? 'true' : 'false'}
     >
       {(!isLoaded && showSkeleton) && (
         <Skeleton 
@@ -103,7 +109,9 @@ const OptimizedImage = ({
           {...props}
           alt={alt}
           src={imgProps.src || fallbackSrc}
-          loading={loading as "lazy" | "eager" | undefined}
+          loading={priority ? 'eager' : (loading as "lazy" | "eager" | undefined)}
+          fetchPriority={actualFetchPriority}
+          decoding={priority ? "sync" : "async"}
           className={cn(
             "object-cover w-full h-full transition-opacity duration-300",
             !isLoaded && "opacity-0",
