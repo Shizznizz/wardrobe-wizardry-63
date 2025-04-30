@@ -505,7 +505,7 @@ const Index: React.FC = () => {
                 <CardHeader className="text-center">
                   <h3 className="text-2xl font-bold">Weekly</h3>
                   <div className="mt-4">
-                    <span className="text-4xl font-bold">$4.99</span>
+                    <span className="text-4xl font-bold">$2.99</span>
                     <span className="text-sm text-blue-100/70 ml-1">/ week</span>
                   </div>
                 </CardHeader>
@@ -543,7 +543,7 @@ const Index: React.FC = () => {
                 <CardHeader className="text-center">
                   <h3 className="text-2xl font-bold">Monthly</h3>
                   <div className="mt-4">
-                    <span className="text-4xl font-bold">$14.99</span>
+                    <span className="text-4xl font-bold">$8.99</span>
                     <span className="text-sm text-blue-100/70 ml-1">/ month</span>
                   </div>
                 </CardHeader>
