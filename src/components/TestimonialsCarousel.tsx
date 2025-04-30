@@ -1,155 +1,122 @@
 
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Quote, Star, ChevronLeft, ChevronRight } from 'lucide-react';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
+import React from "react";
+import { motion } from "framer-motion";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Star } from "lucide-react";
 
-interface Testimonial {
-  id: string;
-  name: string;
-  role: string;
-  quote: string;
-  avatar: string;
-  rating: number;
-}
-
-const testimonials: Testimonial[] = [
+const testimonials = [
   {
-    id: '1',
-    name: 'Sophie Chen',
-    role: 'Fashion Blogger',
-    quote: 'This app revolutionized my morning routine – I love it! No more staring at my closet wondering what to wear. Olivia seems to understand my style even better than I do sometimes!',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=256&q=80',
-    rating: 5
+    name: "Jessica M.",
+    location: "Paris",
+    occupation: "Fashion Buyer",
+    age: 32,
+    avatar: "/lovable-uploads/075a98ab-d879-4919-8898-87590f8f919a.png",
+    quote: "Olivia transformed my wardrobe. I've never received so many compliments on my outfits before!"
   },
   {
-    id: '2',
-    name: 'Jessica Miller',
-    role: 'Working Professional',
-    quote: "The AI styling advice is surprisingly on point! I've discovered so many new outfit combinations from clothes I already owned. The virtual try-on feature has saved me from so many shopping mistakes.",
-    avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=256&q=80',
-    rating: 5
+    name: "Emma L.",
+    location: "New York",
+    occupation: "Marketing Director",
+    age: 28,
+    avatar: "/lovable-uploads/510dbdf2-837f-4649-8da3-bd06977fa677.png",
+    quote: "I've saved so much time getting dressed in the mornings. Olivia's outfit recommendations are always perfect for my day."
   },
   {
-    id: '3',
-    name: 'Alex Rodriguez',
-    role: 'College Student',
-    quote: 'Being able to virtually try on outfits before buying has saved me so much money. This app is a game-changer! My confidence has skyrocketed since I started using the styling recommendations.',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=256&q=80',
-    rating: 4
-  },
-  {
-    id: '4',
-    name: 'Emma Johnson',
-    role: 'Creative Director',
-    quote: 'The personalized style recommendations are spot on! Olivia understands my aesthetic better than my friends do. I especially love how it adapts to my changing style preferences over time.',
-    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=256&q=80',
-    rating: 5
-  },
+    name: "Sophie T.",
+    location: "London",
+    occupation: "Creative Designer",
+    age: 34,
+    avatar: "/lovable-uploads/2551cee7-6f38-4c04-b656-16c188b19ace.png",
+    quote: "The try-on feature is amazing! I can see how clothes look on me before ordering them online."
+  }
 ];
 
 const TestimonialsCarousel = () => {
-  const [expandedId, setExpandedId] = useState<string | null>(null);
-  
-  const toggleExpand = (id: string) => {
-    setExpandedId(expandedId === id ? null : id);
-  };
-  
   return (
-    <div className="w-full py-24">
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        viewport={{ once: true, margin: "-100px" }}
-        className="text-center mb-16"
-      >
-        <h2 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400 inline-block mb-6">
-          Loved by Style Enthusiasts
-        </h2>
-        <p className="text-xl text-purple-100/80 max-w-2xl mx-auto">
-          Join thousands of fashion lovers who are transforming their style experience with Olivia Bloom.
-        </p>
-      </motion.div>
-      
-      <Carousel
-        opts={{
-          align: "start",
-          loop: true,
-        }}
-        className="w-full max-w-5xl mx-auto"
-      >
-        <CarouselContent>
-          {testimonials.map((testimonial) => (
-            <CarouselItem key={testimonial.id} className="md:basis-1/2 lg:basis-1/2 pl-4">
-              <motion.div 
-                whileHover={{ y: -5 }}
-                className={`h-full glass-dark bg-gradient-to-br from-purple-900/30 to-pink-900/20 p-6 rounded-xl border border-white/10 backdrop-blur-md shadow-lg overflow-hidden transition-all duration-300 ${expandedId === testimonial.id ? 'ring-2 ring-pink-500/50' : ''}`}
-                onClick={() => toggleExpand(testimonial.id)}
-              >
-                <div className="relative">
-                  <div className="absolute -top-2 -left-2 text-pink-400/20">
-                    <Quote className="h-10 w-10" />
-                  </div>
-                  <div className="pt-4">
-                    <div className="flex mb-4">
-                      {[...Array(5)].map((_, i) => (
-                        <Star 
-                          key={i} 
-                          className={`h-4 w-4 ${i < testimonial.rating ? 'text-yellow-300' : 'text-gray-400'}`} 
-                          fill={i < testimonial.rating ? 'currentColor' : 'none'} 
-                        />
-                      ))}
+    <section className="py-20 relative">
+      {/* Background gradient */}
+      <div className="absolute inset-0 bg-gradient-to-r from-indigo-700/5 to-purple-700/5 z-0"></div>
+
+      <div className="container mx-auto px-4 relative z-10">
+        <motion.div
+          className="text-center mb-12"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+        >
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+            Loved by Style Enthusiasts
+          </h2>
+          <div className="flex items-center justify-center gap-1 mb-2">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <Star key={star} className="h-5 w-5 text-yellow-300 fill-yellow-300" />
+            ))}
+          </div>
+          <p className="text-lg text-white/80 max-w-3xl mx-auto">
+            See what our users have to say about their experience with Olivia.
+          </p>
+        </motion.div>
+
+        <Carousel
+          className="w-full max-w-5xl mx-auto"
+          opts={{
+            align: "center",
+            loop: true,
+          }}
+        >
+          <CarouselContent>
+            {testimonials.map((testimonial, index) => (
+              <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/2 pl-4">
+                <motion.div 
+                  className="backdrop-blur-sm bg-slate-800/50 border border-white/10 rounded-xl p-6 md:p-8 h-full shadow-lg relative overflow-hidden"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                >
+                  {/* Decorative elements */}
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-purple-500/10 to-transparent rounded-bl-full"></div>
+                  
+                  <div className="mb-6 flex items-center">
+                    <Avatar className="h-14 w-14 border-2 border-white/10 mr-4">
+                      <AvatarImage src={testimonial.avatar} alt={testimonial.name} />
+                      <AvatarFallback className="bg-gradient-to-br from-purple-600 to-pink-600">
+                        {testimonial.name.substring(0, 2)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <h3 className="font-semibold text-white">{testimonial.name}</h3>
+                      <p className="text-sm text-white/70">{testimonial.age}, {testimonial.location} – {testimonial.occupation}</p>
                     </div>
-                    
-                    <p className={`text-white/90 relative z-10 ${expandedId === testimonial.id ? '' : 'line-clamp-4'}`}>
-                      "{testimonial.quote}"
+                  </div>
+
+                  <div className="relative">
+                    <div className="absolute -left-2 -top-3 text-3xl text-purple-400 opacity-50">"</div>
+                    <p className="text-white/90 relative z-10 italic pl-4">
+                      {testimonial.quote}
                     </p>
-                    
-                    {testimonial.quote.length > 120 && (
-                      <button 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleExpand(testimonial.id);
-                        }} 
-                        className="text-pink-400 hover:text-pink-300 text-sm mt-2 transition-colors"
-                      >
-                        {expandedId === testimonial.id ? 'Read less' : 'Read more'}
-                      </button>
-                    )}
-                    
-                    <div className="flex items-center mt-6">
-                      <Avatar className="h-12 w-12 border-2 border-pink-400/30">
-                        <AvatarImage src={testimonial.avatar} />
-                        <AvatarFallback className="bg-pink-500 text-white">
-                          {testimonial.name.charAt(0)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="ml-3">
-                        <h4 className="font-medium text-white">{testimonial.name}</h4>
-                        <p className="text-sm text-pink-300">{testimonial.role}</p>
-                      </div>
-                    </div>
+                    <div className="absolute -right-2 bottom-0 text-3xl text-purple-400 opacity-50">"</div>
                   </div>
-                </div>
-              </motion.div>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-        
-        <div className="flex justify-center mt-10 gap-4">
-          <CarouselPrevious className="relative static left-0 right-auto translate-y-0 bg-white/5 border-white/20 text-white hover:bg-white/10 hover:border-white/30 h-12 w-12" />
-          <CarouselNext className="relative static right-0 left-auto translate-y-0 bg-white/5 border-white/20 text-white hover:bg-white/10 hover:border-white/30 h-12 w-12" />
-        </div>
-      </Carousel>
-    </div>
+
+                  <div className="flex mt-6">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <Star key={star} className="h-4 w-4 text-yellow-300 fill-yellow-300" />
+                    ))}
+                  </div>
+                </motion.div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+
+          <div className="hidden md:flex justify-center mt-8 gap-4">
+            <CarouselPrevious className="static translate-y-0" />
+            <CarouselNext className="static translate-y-0" />
+          </div>
+        </Carousel>
+      </div>
+    </section>
   );
 };
 

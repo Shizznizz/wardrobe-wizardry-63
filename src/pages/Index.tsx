@@ -1,7 +1,8 @@
 
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { motion, useAnimation } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { useInView } from 'framer-motion';
 import { ArrowRight, Upload, Calendar, Sparkles, MessageCircle, Shirt, Wand, Clock } from 'lucide-react';
 
 import Header from '@/components/Header';
@@ -20,9 +21,11 @@ import {
   CarouselNext,
   CarouselPrevious
 } from '@/components/ui/carousel';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 
 const Index: React.FC = () => {
   const navigate = useNavigate();
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   // Animations
   const fadeIn = {
@@ -48,6 +51,62 @@ const Index: React.FC = () => {
       transition: { duration: 0.5 } 
     }
   };
+  
+  // Counter animation refs
+  const counterRef = React.useRef(null);
+  const isCounterInView = useInView(counterRef, { once: true });
+  const [hasAnimated, setHasAnimated] = useState(false);
+  
+  // Counter animation state
+  const [countWardrobe, setCountWardrobe] = useState(0);
+  const [countOutfits, setCountOutfits] = useState(0);
+  const [countHappy, setCountHappy] = useState(0);
+  
+  // Run counter animation when in view
+  useEffect(() => {
+    if (isCounterInView && !hasAnimated) {
+      const wardrobeInterval = setInterval(() => {
+        setCountWardrobe(prev => {
+          const nextValue = prev + 100;
+          if (nextValue >= 10000) {
+            clearInterval(wardrobeInterval);
+            return 10000;
+          }
+          return nextValue;
+        });
+      }, 20);
+      
+      const outfitsInterval = setInterval(() => {
+        setCountOutfits(prev => {
+          const nextValue = prev + 2500;
+          if (nextValue >= 250000) {
+            clearInterval(outfitsInterval);
+            return 250000;
+          }
+          return nextValue;
+        });
+      }, 20);
+      
+      const happyInterval = setInterval(() => {
+        setCountHappy(prev => {
+          const nextValue = prev + 1;
+          if (nextValue >= 98) {
+            clearInterval(happyInterval);
+            return 98;
+          }
+          return nextValue;
+        });
+      }, 20);
+      
+      setHasAnimated(true);
+      
+      return () => {
+        clearInterval(wardrobeInterval);
+        clearInterval(outfitsInterval);
+        clearInterval(happyInterval);
+      };
+    }
+  }, [isCounterInView, hasAnimated]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white overflow-hidden">
@@ -55,10 +114,10 @@ const Index: React.FC = () => {
       <Header />
       
       <main className="relative z-10">
-        {/* 1. Hero Section - Using our new component */}
+        {/* 1. Hero Section - Using our updated component */}
         <HeroSection />
 
-        {/* 2. Meet Olivia Section */}
+        {/* 2. Meet Olivia Section - Updated copy */}
         <section className="py-20">
           <div className="container mx-auto px-4">
             <motion.div 
@@ -83,11 +142,11 @@ const Index: React.FC = () => {
               
               <div className="w-full md:w-3/5 text-center md:text-left">
                 <h2 className="text-3xl md:text-4xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
-                  Meet Olivia
+                  Hi, I'm Olivia 👋
                 </h2>
                 <p className="text-xl text-blue-100/90 mb-8 leading-relaxed">
-                  Olivia personalizes fashion advice for your unique style journey, helping you discover 
-                  outfit combinations that express your personality and fit perfectly for every occasion.
+                  I'm your AI fashion assistant here to make your style journey effortless and fun.
+                  Get personalized outfits that reflect who you are — every single day.
                 </p>
                 <Button 
                   onClick={() => navigate('/fitting-room')}
@@ -150,7 +209,7 @@ const Index: React.FC = () => {
           </div>
         </section>
 
-        {/* 4. Style Preview Section */}
+        {/* 4. Style Preview Section - Updated with 3 cards and horizontal scroll */}
         <section className="py-20">
           <div className="container mx-auto px-4">
             <motion.div 
@@ -175,68 +234,114 @@ const Index: React.FC = () => {
               transition={{ duration: 0.7 }}
               className="max-w-6xl mx-auto"
             >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Weather Based Look */}
-                <div className="bg-slate-800/80 border border-white/10 rounded-xl overflow-hidden shadow-xl hover:shadow-purple-500/10 hover:-translate-y-1 transition-all duration-300">
-                  <div className="h-64 bg-gradient-to-b from-blue-500/50 to-indigo-600/50 relative overflow-hidden">
-                    <OptimizedImage
-                      src="/lovable-uploads/c26c0c8c-7ff3-432a-b79b-1d22494daba6.png"
-                      alt="Rainy Day Chic"
-                      className="object-cover w-full h-full mix-blend-overlay"
-                      width={400}
-                      height={300}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent"></div>
-                    <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-                      <h3 className="text-xl font-bold mb-1">Rainy Day Chic</h3>
-                      <p className="text-sm text-blue-100/70">Weather-inspired outfit</p>
+              <Carousel
+                className="w-full"
+                opts={{
+                  align: "start",
+                  loop: true,
+                }}
+              >
+                <CarouselContent>
+                  {/* Weather Based Look */}
+                  <CarouselItem className="md:basis-1/2 lg:basis-1/3 pl-4">
+                    <div className="bg-slate-800/80 border border-white/10 rounded-xl overflow-hidden shadow-xl hover:shadow-purple-500/10 hover:-translate-y-1 transition-all duration-300 h-full">
+                      <div className="h-64 bg-gradient-to-b from-blue-500/50 to-indigo-600/50 relative overflow-hidden">
+                        <OptimizedImage
+                          src="/lovable-uploads/c26c0c8c-7ff3-432a-b79b-1d22494daba6.png"
+                          alt="Rainy Day Chic"
+                          className="object-cover w-full h-full mix-blend-overlay"
+                          width={400}
+                          height={300}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent"></div>
+                        <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                          <h3 className="text-xl font-bold mb-1">Rainy Day Chic</h3>
+                          <p className="text-sm text-blue-100/70">Weather-inspired outfit</p>
+                        </div>
+                      </div>
+                      <div className="p-5">
+                        <p className="text-blue-100/80 mb-4">Stay stylish while staying dry with this perfect rainy day ensemble.</p>
+                        <Button 
+                          variant="outline" 
+                          className="w-full border-white/10 hover:bg-white/10"
+                          onClick={() => navigate('/fitting-room')}
+                        >
+                          Style Me Now
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                  <div className="p-5">
-                    <p className="text-blue-100/80 mb-4">Stay stylish while staying dry with this perfect rainy day ensemble.</p>
-                    <Button 
-                      variant="outline" 
-                      className="w-full border-white/10 hover:bg-white/10"
-                      onClick={() => navigate('/fitting-room')}
-                    >
-                      Try This Look
-                    </Button>
-                  </div>
-                </div>
+                  </CarouselItem>
 
-                {/* Mood Based Look */}
-                <div className="bg-slate-800/80 border border-white/10 rounded-xl overflow-hidden shadow-xl hover:shadow-purple-500/10 hover:-translate-y-1 transition-all duration-300">
-                  <div className="h-64 bg-gradient-to-b from-pink-500/50 to-purple-600/50 relative overflow-hidden">
-                    <OptimizedImage
-                      src="/lovable-uploads/45448793-cb34-4e4c-9dd8-de95f86f25ca.png"
-                      alt="Brunch Mood"
-                      className="object-cover w-full h-full mix-blend-overlay"
-                      width={400}
-                      height={300}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent"></div>
-                    <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-                      <h3 className="text-xl font-bold mb-1">Brunch Mood</h3>
-                      <p className="text-sm text-blue-100/70">Mood-matching outfit</p>
+                  {/* Mood Based Look */}
+                  <CarouselItem className="md:basis-1/2 lg:basis-1/3 pl-4">
+                    <div className="bg-slate-800/80 border border-white/10 rounded-xl overflow-hidden shadow-xl hover:shadow-purple-500/10 hover:-translate-y-1 transition-all duration-300 h-full">
+                      <div className="h-64 bg-gradient-to-b from-pink-500/50 to-purple-600/50 relative overflow-hidden">
+                        <OptimizedImage
+                          src="/lovable-uploads/45448793-cb34-4e4c-9dd8-de95f86f25ca.png"
+                          alt="Brunch Mood"
+                          className="object-cover w-full h-full mix-blend-overlay"
+                          width={400}
+                          height={300}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent"></div>
+                        <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                          <h3 className="text-xl font-bold mb-1">Brunch Mood</h3>
+                          <p className="text-sm text-blue-100/70">Mood-matching outfit</p>
+                        </div>
+                      </div>
+                      <div className="p-5">
+                        <p className="text-blue-100/80 mb-4">Feeling social and relaxed? This brunch-perfect outfit matches your mood.</p>
+                        <Button 
+                          variant="outline" 
+                          className="w-full border-white/10 hover:bg-white/10"
+                          onClick={() => navigate('/quizzes')}
+                        >
+                          Match My Vibe
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                  <div className="p-5">
-                    <p className="text-blue-100/80 mb-4">Feeling social and relaxed? This brunch-perfect outfit matches your mood.</p>
-                    <Button 
-                      variant="outline" 
-                      className="w-full border-white/10 hover:bg-white/10"
-                      onClick={() => navigate('/quizzes')}
-                    >
-                      Match My Mood
-                    </Button>
-                  </div>
+                  </CarouselItem>
+                  
+                  {/* Date Night Look - NEW */}
+                  <CarouselItem className="md:basis-1/2 lg:basis-1/3 pl-4">
+                    <div className="bg-slate-800/80 border border-white/10 rounded-xl overflow-hidden shadow-xl hover:shadow-purple-500/10 hover:-translate-y-1 transition-all duration-300 h-full">
+                      <div className="h-64 bg-gradient-to-b from-purple-500/50 to-indigo-600/50 relative overflow-hidden">
+                        <OptimizedImage
+                          src="/lovable-uploads/4e16d86c-652b-4717-958f-b48ce5663c9b.png"
+                          alt="Date Night Glam"
+                          className="object-cover w-full h-full mix-blend-overlay"
+                          width={400}
+                          height={300}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent"></div>
+                        <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                          <h3 className="text-xl font-bold mb-1">Date Night Glam</h3>
+                          <p className="text-sm text-blue-100/70">Evening elegance</p>
+                        </div>
+                      </div>
+                      <div className="p-5">
+                        <p className="text-blue-100/80 mb-4">Make an impression with this perfect date night ensemble that exudes confidence.</p>
+                        <Button 
+                          variant="outline" 
+                          className="w-full border-white/10 hover:bg-white/10"
+                          onClick={() => navigate('/fitting-room')}
+                        >
+                          Style Me Now
+                        </Button>
+                      </div>
+                    </div>
+                  </CarouselItem>
+                </CarouselContent>
+                <div className="flex justify-center mt-6">
+                  <CarouselPrevious className="static translate-y-0 mr-2" />
+                  <CarouselNext className="static translate-y-0 ml-2" />
                 </div>
-              </div>
+              </Carousel>
             </motion.div>
           </div>
         </section>
 
-        {/* 5. Community Looks Section */}
+        {/* 5. Community Looks Section - With usernames and clickable images */}
         <section className="py-20 bg-slate-900/50 backdrop-blur-sm">
           <div className="container mx-auto px-4">
             <motion.div
@@ -261,40 +366,85 @@ const Index: React.FC = () => {
               transition={{ duration: 0.6 }}
               className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-6xl mx-auto"
             >
-              {[1, 2, 3, 4].map((item) => (
-                <div 
-                  key={item} 
-                  className="aspect-square bg-slate-800/60 rounded-xl overflow-hidden relative shadow-lg hover:shadow-purple-500/20 hover:-translate-y-1 transition-all duration-300"
-                >
-                  <OptimizedImage
-                    src={`/lovable-uploads/${item === 1 ? '4e16d86c-652b-4717-958f-b48ce5663c9b.png' : 
-                           item === 2 ? 'f1154816-6766-4478-ba89-6342580bc85b.png' : 
-                           item === 3 ? 'e4bf2134-0936-46f8-8d70-adcc220e50be.png' : 
-                           '28e5664c-3c8a-4b7e-9c99-065ad489583f.png'}`}
-                    alt={`Community Style ${item}`}
-                    className="w-full h-full object-cover opacity-80"
-                    width={300}
-                    height={300}
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 bg-slate-900/75 transition-opacity duration-300">
-                    <Button 
-                      variant="outline"
-                      className="border-white/20 bg-slate-900/50 backdrop-blur-sm"
-                      onClick={() => navigate('/shop-and-try')}
+              {[
+                { id: 1, user: '@sophie.style', img: '4e16d86c-652b-4717-958f-b48ce5663c9b.png' },
+                { id: 2, user: '@annaloveslayers', img: 'f1154816-6766-4478-ba89-6342580bc85b.png' },
+                { id: 3, user: '@mia.fashion', img: 'e4bf2134-0936-46f8-8d70-adcc220e50be.png' },
+                { id: 4, user: '@style.by.julia', img: '28e5664c-3c8a-4b7e-9c99-065ad489583f.png' }
+              ].map((item) => (
+                <Dialog key={item.id}>
+                  <DialogTrigger asChild>
+                    <div 
+                      className="aspect-square bg-slate-800/60 rounded-xl overflow-hidden relative shadow-lg hover:shadow-purple-500/20 hover:-translate-y-1 transition-all duration-300 cursor-pointer group"
                     >
-                      Try This On Me
-                    </Button>
-                  </div>
-                </div>
+                      <OptimizedImage
+                        src={`/lovable-uploads/${item.img}`}
+                        alt={`Community Style by ${item.user}`}
+                        className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                        width={300}
+                        height={300}
+                      />
+                      <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-slate-900/90 to-transparent">
+                        <p className="text-sm font-medium text-white/90">{item.user}</p>
+                      </div>
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-slate-900/75 transition-opacity duration-300">
+                        <Button 
+                          variant="outline"
+                          className="border-white/20 bg-slate-900/50 backdrop-blur-sm"
+                        >
+                          View Outfit Details
+                        </Button>
+                      </div>
+                    </div>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-lg bg-slate-900 border-slate-700">
+                    <div className="grid gap-6 py-4">
+                      <div className="flex items-center gap-4">
+                        <Avatar>
+                          <AvatarImage src={`/lovable-uploads/${item.img}`} />
+                          <AvatarFallback>{item.user.substring(1, 3).toUpperCase()}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <h3 className="font-medium">{item.user}</h3>
+                          <p className="text-sm text-white/70">Styled by Olivia</p>
+                        </div>
+                      </div>
+                      <div className="aspect-square relative rounded-md overflow-hidden">
+                        <OptimizedImage
+                          src={`/lovable-uploads/${item.img}`}
+                          alt={`Community Style by ${item.user}`}
+                          className="w-full h-full object-cover"
+                          width={500}
+                          height={500}
+                        />
+                      </div>
+                      <div className="flex justify-between">
+                        <Button 
+                          variant="outline" 
+                          onClick={() => navigate('/shop-and-try')}
+                          className="border-white/20"
+                        >
+                          Try This On Me
+                        </Button>
+                        <Button 
+                          onClick={() => navigate('/fitting-room')}
+                          className="bg-gradient-to-r from-pink-500 to-purple-500 hover:opacity-90"
+                        >
+                          Style Me Like This
+                        </Button>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
               ))}
             </motion.div>
           </div>
         </section>
         
-        {/* 6. Testimonials Section */}
+        {/* 6. Testimonials Section - TestimonialsCarousel component will be updated separately if needed */}
         <TestimonialsCarousel />
 
-        {/* 7. Join the Style Movement */}
+        {/* 7. Join the Style Movement - with animated counters */}
         <section className="py-24">
           <div className="container mx-auto px-4">
             <motion.div
@@ -304,17 +454,23 @@ const Index: React.FC = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
             >
-              <div className="flex flex-wrap justify-center gap-6 md:gap-16 mb-12">
+              <div ref={counterRef} className="flex flex-wrap justify-center gap-6 md:gap-16 mb-12">
                 <div className="text-center">
-                  <p className="text-3xl md:text-4xl font-bold text-blue-400">10,000+</p>
+                  <p className="text-3xl md:text-4xl font-bold text-blue-400">
+                    {countWardrobe.toLocaleString()}+
+                  </p>
                   <p className="text-sm text-blue-100/70 mt-1">Wardrobes Styled</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-3xl md:text-4xl font-bold text-purple-400">250,000+</p>
+                  <p className="text-3xl md:text-4xl font-bold text-purple-400">
+                    {countOutfits.toLocaleString()}+
+                  </p>
                   <p className="text-sm text-blue-100/70 mt-1">Outfits Created</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-3xl md:text-4xl font-bold text-pink-400">98%</p>
+                  <p className="text-3xl md:text-4xl font-bold text-pink-400">
+                    {countHappy}%
+                  </p>
                   <p className="text-sm text-blue-100/70 mt-1">Happy Users</p>
                 </div>
               </div>
@@ -336,19 +492,25 @@ const Index: React.FC = () => {
                   <ArrowRight className="ml-2 h-5 w-5 duration-300 group-hover:translate-x-1" />
                 </Button>
                 
-                <div className="flex items-center gap-3 text-blue-100/90">
-                  <Avatar className="h-12 w-12 border-2 border-pink-400/30">
+                <div className="flex items-center gap-3 text-blue-100/90 bg-slate-800/40 p-3 rounded-lg border border-white/10">
+                  <Avatar className="h-12 w-12 border-2 border-pink-400/30 relative">
                     <AvatarImage src="/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png" alt="Olivia" />
                     <AvatarFallback className="bg-purple-800">OB</AvatarFallback>
+                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-slate-800"></span>
                   </Avatar>
-                  <span className="text-sm">Olivia can't wait to style you!</span>
+                  <div className="relative">
+                    <div className="absolute -left-2 top-0 w-2 h-2 bg-slate-800/40 transform rotate-45"></div>
+                    <div className="bg-slate-800/70 px-4 py-2 rounded-lg">
+                      <span className="text-sm">I'm ready when you are! 💫</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </motion.div>
           </div>
         </section>
 
-        {/* 8. Upcoming Collections Section */}
+        {/* 8. Upcoming Collections Section - Updated text */}
         <section className="py-20 bg-slate-900/50 backdrop-blur-sm">
           <div className="container mx-auto px-4">
             <motion.div
@@ -395,10 +557,11 @@ const Index: React.FC = () => {
               
               <div className="w-full md:w-1/2 text-center md:text-left">
                 <h2 className="text-3xl md:text-4xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
-                  Upcoming Collections
+                  Be the First to Style the New Drop 💥
                 </h2>
                 <p className="text-xl text-blue-100/80 mb-6">
-                  Be the first to get exclusive access to our upcoming style collections and features before they're released.
+                  Get early access to Olivia's Summer Collection.
+                  Click below to unlock your front-row seat.
                 </p>
                 <p className="text-blue-100/70 mb-8">
                   Premium members get early access to all new collections and advanced AI styling features.
@@ -415,7 +578,7 @@ const Index: React.FC = () => {
           </div>
         </section>
 
-        {/* 9. Premium Features Section */}
+        {/* 9. Premium Features Section - Reordered and interactive */}
         <section className="py-20">
           <div className="container mx-auto px-4">
             <motion.div
@@ -440,42 +603,80 @@ const Index: React.FC = () => {
               viewport={{ once: true }}
               variants={staggerContainer}
             >
-              <motion.div className="card-futuristic" variants={fadeInUp}>
-                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mb-5 mx-auto">
-                  <MessageCircle className="h-6 w-6" />
-                </div>
-                <h3 className="text-xl font-bold mb-2 text-center">Chat with Olivia</h3>
-                <p className="text-blue-100/70 text-center">Get personalized style advice anytime.</p>
-              </motion.div>
-              
-              <motion.div className="card-futuristic" variants={fadeInUp}>
-                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center mb-5 mx-auto">
+              {/* Reordered: Outfit Try-On first */}
+              <motion.div 
+                className="card-futuristic group" 
+                variants={fadeInUp}
+                whileHover={{ y: -5, transition: { duration: 0.2 } }}
+              >
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center mb-5 mx-auto group-hover:scale-110 transition-transform">
                   <Shirt className="h-6 w-6" />
                 </div>
                 <h3 className="text-xl font-bold mb-2 text-center">Outfit Try-On</h3>
                 <p className="text-blue-100/70 text-center">Visualize how outfits look on you.</p>
+                
+                {/* Interactive popup on hover */}
+                <div className="mt-4 bg-slate-800/70 p-3 rounded-lg scale-0 group-hover:scale-100 transition-transform origin-top">
+                  <p className="text-xs text-white/80">Upload your photo and see exactly how new styles will look on your body type</p>
+                </div>
               </motion.div>
               
-              <motion.div className="card-futuristic" variants={fadeInUp}>
-                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-pink-500 to-coral-500 flex items-center justify-center mb-5 mx-auto">
+              {/* AI Outfit Generator second */}
+              <motion.div 
+                className="card-futuristic group" 
+                variants={fadeInUp}
+                whileHover={{ y: -5, transition: { duration: 0.2 } }}
+              >
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-pink-500 to-coral-500 flex items-center justify-center mb-5 mx-auto group-hover:scale-110 transition-transform">
                   <Wand className="h-6 w-6" />
                 </div>
                 <h3 className="text-xl font-bold mb-2 text-center">AI Outfit Generator</h3>
                 <p className="text-blue-100/70 text-center">Create unique looks with AI magic.</p>
+                
+                {/* Interactive popup on hover */}
+                <div className="mt-4 bg-slate-800/70 p-3 rounded-lg scale-0 group-hover:scale-100 transition-transform origin-top">
+                  <p className="text-xs text-white/80">Tell Olivia your mood, occasion, or preferences and get AI-generated outfit ideas instantly</p>
+                </div>
               </motion.div>
               
-              <motion.div className="card-futuristic" variants={fadeInUp}>
-                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-coral-500 to-coral-400 flex items-center justify-center mb-5 mx-auto">
+              <motion.div 
+                className="card-futuristic group" 
+                variants={fadeInUp}
+                whileHover={{ y: -5, transition: { duration: 0.2 } }}
+              >
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mb-5 mx-auto group-hover:scale-110 transition-transform">
+                  <MessageCircle className="h-6 w-6" />
+                </div>
+                <h3 className="text-xl font-bold mb-2 text-center">Chat with Olivia</h3>
+                <p className="text-blue-100/70 text-center">Get personalized style advice anytime.</p>
+                
+                {/* Interactive popup on hover */}
+                <div className="mt-4 bg-slate-800/70 p-3 rounded-lg scale-0 group-hover:scale-100 transition-transform origin-top">
+                  <p className="text-xs text-white/80">Ask style questions, get outfit suggestions, and fashion tips in real-time</p>
+                </div>
+              </motion.div>
+              
+              <motion.div 
+                className="card-futuristic group" 
+                variants={fadeInUp}
+                whileHover={{ y: -5, transition: { duration: 0.2 } }}
+              >
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-coral-500 to-coral-400 flex items-center justify-center mb-5 mx-auto group-hover:scale-110 transition-transform">
                   <Clock className="h-6 w-6" />
                 </div>
                 <h3 className="text-xl font-bold mb-2 text-center">Exclusive Early Access</h3>
                 <p className="text-blue-100/70 text-center">Be the first to try new features.</p>
+                
+                {/* Interactive popup on hover */}
+                <div className="mt-4 bg-slate-800/70 p-3 rounded-lg scale-0 group-hover:scale-100 transition-transform origin-top">
+                  <p className="text-xs text-white/80">Get priority access to the latest AI styling tools before anyone else</p>
+                </div>
               </motion.div>
             </motion.div>
           </div>
         </section>
 
-        {/* 10. Pricing Section */}
+        {/* 10. Pricing Section - Added cancellation note */}
         <section className="py-20 bg-slate-900/50 backdrop-blur-sm">
           <div className="container mx-auto px-4">
             <motion.div
@@ -524,6 +725,7 @@ const Index: React.FC = () => {
                       <span>Try-on technology</span>
                     </li>
                   </ul>
+                  <p className="text-sm text-center text-white/60 mt-4">Cancel anytime. No commitment.</p>
                 </CardContent>
                 <CardFooter>
                   <Button
@@ -566,6 +768,7 @@ const Index: React.FC = () => {
                       <span>Premium community access</span>
                     </li>
                   </ul>
+                  <p className="text-sm text-center text-white/60 mt-4">Cancel anytime. No commitment.</p>
                 </CardContent>
                 <CardFooter>
                   <Button
@@ -580,8 +783,6 @@ const Index: React.FC = () => {
           </div>
         </section>
       </main>
-      
-      {/* Removed the Footer component that was here */}
     </div>
   );
 };

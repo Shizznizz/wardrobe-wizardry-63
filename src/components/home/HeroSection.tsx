@@ -29,14 +29,26 @@ const HeroSection: React.FC = () => {
           <span className="bg-gradient-to-r from-pink-400 to-purple-400 text-transparent bg-clip-text">of Fashion</span>
         </motion.h1>
         
+        {/* Social proof line */}
+        <motion.p
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="text-white/80 mb-8 text-base md:text-lg"
+        >
+          Trusted by 10,000+ style-conscious women.
+        </motion.p>
+        
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="mb-8 relative"
+          className="mb-8 relative group"
+          whileHover={{ scale: 1.03 }}
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-pink-500/30 to-purple-500/30 rounded-full blur-xl"></div>
-          <Avatar className="w-28 h-28 md:w-32 md:h-32 border-2 border-[#ff66cc] shadow-lg shadow-pink-500/20">
+          {/* Animated glow effect */}
+          <div className="absolute inset-0 bg-gradient-to-r from-pink-500/30 to-purple-500/30 rounded-full blur-xl group-hover:blur-2xl group-hover:opacity-80 transition-all duration-700"></div>
+          <Avatar className="w-28 h-28 md:w-32 md:h-32 border-2 border-[#ff66cc] shadow-lg shadow-pink-500/20 transition-all duration-300 group-hover:shadow-xl group-hover:shadow-pink-500/40">
             <AvatarImage src="/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png" alt="Olivia" />
             <AvatarFallback className="bg-purple-800">OB</AvatarFallback>
           </Avatar>
@@ -84,6 +96,16 @@ const HeroSection: React.FC = () => {
             Take a Style Quiz
           </Button>
         </motion.div>
+        
+        {/* Secondary line with emoji */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.8 }}
+          className="text-white/70 text-sm mt-6"
+        >
+          ✨ Olivia styles your day in seconds. Let's go!
+        </motion.p>
       </motion.div>
     </section>
   );
