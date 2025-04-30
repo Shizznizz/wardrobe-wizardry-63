@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, Calendar, Shirt, Palette, Smartphone, Image, FileText, Home, Instagram, tiktok, Pin } from 'lucide-react';
+import { Mail, Calendar, Shirt, Palette, Smartphone, Image, FileText, Home, Instagram, Pin } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { useIsMobile } from '@/hooks/use-mobile';
 import BackToTop from './BackToTop';
@@ -83,7 +83,12 @@ const Footer = () => {
                 <Instagram className="h-5 w-5" />
               </a>
               <a href="https://tiktok.com" className="text-white/60 hover:text-blue-400 transition-colors">
-                <tiktok className="h-5 w-5" />
+                {/* Using a div with a TikTok SVG icon since Lucide doesn't have a TikTok icon */}
+                <div className="h-5 w-5">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path>
+                  </svg>
+                </div>
               </a>
               <a href="https://pinterest.com" className="text-white/60 hover:text-red-400 transition-colors">
                 <Pin className="h-5 w-5" />
@@ -224,7 +229,12 @@ const Footer = () => {
                 <Instagram className="h-4 w-4" />
               </a>
               <a href="https://tiktok.com" className="text-white/60 hover:text-blue-400 transition-colors">
-                <tiktok className="h-4 w-4" />
+                {/* Using a div with a TikTok SVG icon since Lucide doesn't have a TikTok icon */}
+                <div className="h-4 w-4">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path>
+                  </svg>
+                </div>
               </a>
               <a href="https://pinterest.com" className="text-white/60 hover:text-red-400 transition-colors">
                 <Pin className="h-4 w-4" />

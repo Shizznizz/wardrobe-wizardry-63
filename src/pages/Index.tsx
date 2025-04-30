@@ -1,9 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion, useAnimation } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useInView } from 'framer-motion';
-import { ArrowRight, Upload, Calendar, Sparkles, MessageCircle, Shirt, Wand, Clock, Instagram, tiktok, Pin } from 'lucide-react';
+import { ArrowRight, Upload, Calendar, Sparkles, MessageCircle, Shirt, Wand, Clock, Instagram, Pin } from 'lucide-react';
 
 import Header from '@/components/Header';
 import BackgroundShapes from '@/components/BackgroundShapes';
