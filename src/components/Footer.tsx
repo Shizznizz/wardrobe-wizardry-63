@@ -1,7 +1,6 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, Calendar, Shirt, Palette, Smartphone, Image, FileText, Home, Instagram, TikTok } from 'lucide-react';
+import { Mail, Calendar, Shirt, Palette, Smartphone, Image, FileText, Home, Instagram, tiktok, Pin } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { useIsMobile } from '@/hooks/use-mobile';
 import BackToTop from './BackToTop';
@@ -84,7 +83,8 @@ const Footer = () => {
                 <Instagram className="h-5 w-5" />
               </a>
               <a href="https://tiktok.com" className="text-white/60 hover:text-blue-400 transition-colors">
-                <TikTok className="h-5 w-5" />
+                {/* Corrected: using lowercase tiktok */}
+                <tiktok className="h-5 w-5" />
               </a>
               <a href="https://pinterest.com" className="text-white/60 hover:text-red-400 transition-colors">
                 <Pin className="h-5 w-5" />
@@ -225,7 +225,8 @@ const Footer = () => {
                 <Instagram className="h-4 w-4" />
               </a>
               <a href="https://tiktok.com" className="text-white/60 hover:text-blue-400 transition-colors">
-                <TikTok className="h-4 w-4" />
+                {/* Corrected: using lowercase tiktok */}
+                <tiktok className="h-4 w-4" />
               </a>
               <a href="https://pinterest.com" className="text-white/60 hover:text-red-400 transition-colors">
                 <Pin className="h-4 w-4" />
