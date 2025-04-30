@@ -41,7 +41,7 @@ const PremiumFeatureSection = ({
       <div className="flex items-center mb-6">
         <div className="h-px flex-grow bg-gradient-to-r from-transparent via-purple-500/30 to-transparent"></div>
         <h2 className="px-4 text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-          Unlock Olivia's VIP Closet <span className="text-yellow-300">💎</span>
+          Go Premium & Let Olivia Work Her Magic ✨
         </h2>
         <div className="h-px flex-grow bg-gradient-to-r from-purple-500/30 via-transparent to-transparent"></div>
       </div>
@@ -103,12 +103,12 @@ const PremiumFeatureSection = ({
               >
                 <span className="absolute inset-0 bg-gradient-to-r from-pink-400/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                 <Sparkles className="mr-2 h-5 w-5 text-yellow-200" />
-                <span>Upgrade to Premium – Only $2.99/week</span>
+                <span>Upgrade to Premium – Only €2.99/week</span>
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               
               <p className="mt-3 text-white/60 text-sm">
-                Join thousands of fashion enthusiasts who've unlocked the full experience
+                Cancel anytime. No commitment.
               </p>
             </motion.div>
           ) : (

@@ -1,9 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion, useAnimation } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useInView } from 'framer-motion';
-import { ArrowRight, Upload, Calendar, Sparkles, MessageCircle, Shirt, Wand, Clock } from 'lucide-react';
+import { ArrowRight, Upload, Calendar, Sparkles, MessageCircle, Shirt, Wand, Clock, Instagram, TikTok, Pin } from 'lucide-react';
 
 import Header from '@/components/Header';
 import BackgroundShapes from '@/components/BackgroundShapes';
@@ -578,7 +577,7 @@ const Index: React.FC = () => {
           </div>
         </section>
 
-        {/* 9. Premium Features Section - Reordered and interactive */}
+        {/* 9. Premium Features Section - Updated with new headline */}
         <section className="py-20">
           <div className="container mx-auto px-4">
             <motion.div
@@ -589,7 +588,7 @@ const Index: React.FC = () => {
               transition={{ duration: 0.5 }}
             >
               <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-                Premium Features
+                Go Premium & Let Olivia Work Her Magic ✨
               </h2>
               <p className="text-lg text-blue-100/80 max-w-3xl mx-auto">
                 Unlock the full power of Olivia with our premium features.
@@ -603,7 +602,7 @@ const Index: React.FC = () => {
               viewport={{ once: true }}
               variants={staggerContainer}
             >
-              {/* Reordered: Outfit Try-On first */}
+              {/* Outfit Try-On first */}
               <motion.div 
                 className="card-futuristic group" 
                 variants={fadeInUp}
@@ -676,7 +675,7 @@ const Index: React.FC = () => {
           </div>
         </section>
 
-        {/* 10. Pricing Section - Added cancellation note */}
+        {/* 10. Pricing Section - Updated to keep only the better version with golden button */}
         <section className="py-20 bg-slate-900/50 backdrop-blur-sm">
           <div className="container mx-auto px-4">
             <motion.div
@@ -706,7 +705,7 @@ const Index: React.FC = () => {
                 <CardHeader className="text-center">
                   <h3 className="text-2xl font-bold">Weekly</h3>
                   <div className="mt-4">
-                    <span className="text-4xl font-bold">$2.99</span>
+                    <span className="text-4xl font-bold">€2.99</span>
                     <span className="text-sm text-blue-100/70 ml-1">/ week</span>
                   </div>
                 </CardHeader>
@@ -745,7 +744,7 @@ const Index: React.FC = () => {
                 <CardHeader className="text-center">
                   <h3 className="text-2xl font-bold">Monthly</h3>
                   <div className="mt-4">
-                    <span className="text-4xl font-bold">$8.99</span>
+                    <span className="text-4xl font-bold">€8.99</span>
                     <span className="text-sm text-blue-100/70 ml-1">/ month</span>
                   </div>
                 </CardHeader>

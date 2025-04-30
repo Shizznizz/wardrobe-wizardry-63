@@ -1,10 +1,12 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, Calendar, Shirt, Palette, Smartphone, Image, FileText, Home } from 'lucide-react';
+import { Mail, Calendar, Shirt, Palette, Smartphone, Image, FileText, Home, Instagram, TikTok } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { useIsMobile } from '@/hooks/use-mobile';
 import BackToTop from './BackToTop';
 import LegalModal from './LegalModal';
+import { Pin } from 'lucide-react';
 
 const Footer = () => {
   const isMobile = useIsMobile();
@@ -76,6 +78,19 @@ const Footer = () => {
               </a>
             </div>
             
+            {/* Social Media Icons */}
+            <div className="flex justify-center space-x-4 my-3">
+              <a href="https://instagram.com" className="text-white/60 hover:text-pink-400 transition-colors">
+                <Instagram className="h-5 w-5" />
+              </a>
+              <a href="https://tiktok.com" className="text-white/60 hover:text-blue-400 transition-colors">
+                <TikTok className="h-5 w-5" />
+              </a>
+              <a href="https://pinterest.com" className="text-white/60 hover:text-red-400 transition-colors">
+                <Pin className="h-5 w-5" />
+              </a>
+            </div>
+            
             <div className="w-20 h-px mx-auto bg-gradient-to-r from-transparent via-purple-500/30 to-transparent"></div>
             
             <div className="text-center">
@@ -84,11 +99,25 @@ const Footer = () => {
               </p>
             </div>
             
+            {/* Privacy Microcopy */}
+            <div className="text-center">
+              <p className="text-[10px] text-white/40">
+                We respect your data. Your wardrobe, your control.
+              </p>
+            </div>
+            
             <div className="flex justify-center space-x-1.5 text-[9px]">
               <span className="text-white/40">Powered by</span>
               <span className="bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">Lovable</span>
               <span className="bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">Supabase</span>
               <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">OpenAI</span>
+            </div>
+            
+            {/* Mobile App Teaser */}
+            <div className="text-center mt-2">
+              <p className="text-[10px] text-white/50 italic">
+                Mobile app coming soon to iOS & Android.
+              </p>
             </div>
             
             <div className="text-center">
@@ -139,6 +168,10 @@ const Footer = () => {
                 danieldeurloo@hotmail.com
               </a>
             </div>
+            {/* Privacy Microcopy */}
+            <div className="text-xs text-white/40 mt-1">
+              We respect your data. Your wardrobe, your control.
+            </div>
           </div>
           
           <nav>
@@ -186,13 +219,24 @@ const Footer = () => {
           </nav>
           
           <div className="space-y-2 text-right">
+            {/* Social Media Icons */}
+            <div className="flex justify-end space-x-3 mb-2">
+              <a href="https://instagram.com" className="text-white/60 hover:text-pink-400 transition-colors">
+                <Instagram className="h-4 w-4" />
+              </a>
+              <a href="https://tiktok.com" className="text-white/60 hover:text-blue-400 transition-colors">
+                <TikTok className="h-4 w-4" />
+              </a>
+              <a href="https://pinterest.com" className="text-white/60 hover:text-red-400 transition-colors">
+                <Pin className="h-4 w-4" />
+              </a>
+            </div>
             <div className="text-xs text-slate-400">
               Powered by <span className="text-pink-400">Lovable</span>, <span className="text-emerald-400">Supabase</span>, <span className="text-blue-400">OpenAI</span>
             </div>
-            <div>
-              <p className="text-[10px] italic text-slate-400">
-                "Style is a way to say who you are without speaking."
-              </p>
+            {/* Mobile App Teaser */}
+            <div className="text-xs text-slate-400 italic">
+              Mobile app coming soon to iOS & Android.
             </div>
           </div>
         </div>
