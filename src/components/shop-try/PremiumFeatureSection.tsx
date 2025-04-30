@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { LayoutGrid, Upload, Sparkles, BrainCircuit, Shirt, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useAuth } from '@/hooks/useAuth';
 
 interface PremiumFeatureSectionProps {
   isPremiumUser: boolean;
@@ -13,6 +14,11 @@ const PremiumFeatureSection = ({
   isPremiumUser,
   onUpgradeToPremium
 }: PremiumFeatureSectionProps) => {
+  // For Daniel's account, override isPremiumUser to always be false
+  const { user } = useAuth();
+  const isDanielDeurlooEmail = user?.email === 'danieldeurloo@hotmail.com';
+  const effectivePremiumUser = isDanielDeurlooEmail ? false : isPremiumUser;
+  
   const features = [
     {
       icon: <Upload className="h-10 w-10 text-purple-400" />,
@@ -80,7 +86,7 @@ const PremiumFeatureSection = ({
                 {feature.description}
               </p>
               
-              {!isPremiumUser && (
+              {!effectivePremiumUser && (
                 <Badge className="absolute top-3 right-3 bg-gradient-to-r from-purple-600 to-pink-500 border-none">
                   Premium
                 </Badge>
@@ -90,7 +96,7 @@ const PremiumFeatureSection = ({
         </motion.div>
         
         <div className="text-center">
-          {!isPremiumUser ? (
+          {!effectivePremiumUser ? (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}

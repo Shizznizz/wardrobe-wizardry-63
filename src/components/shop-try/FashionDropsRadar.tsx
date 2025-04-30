@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Calendar, Bell, BellOff } from 'lucide-react';
 import { toast } from 'sonner';
+import { useAuth } from '@/hooks/useAuth';
 
 interface FashionDropsRadarProps {
   isPremiumUser: boolean;
@@ -24,6 +25,11 @@ const FashionDropsRadar = ({
   isPremiumUser,
   onUpgradeToPremium
 }: FashionDropsRadarProps) => {
+  // Add this to override premium status for Daniel
+  const { user } = useAuth();
+  const isDanielDeurlooEmail = user?.email === 'danieldeurloo@hotmail.com';
+  const effectivePremiumUser = isDanielDeurlooEmail ? false : isPremiumUser;
+  
   const [fashionDrops] = useState<FashionDrop[]>([
     {
       id: 'drop-1',
@@ -62,7 +68,7 @@ const FashionDropsRadar = ({
   const [reminders, setReminders] = useState<Record<string, boolean>>({});
   
   const handleRemindMe = (dropId: string) => {
-    if (!isPremiumUser) {
+    if (!effectivePremiumUser) {
       onUpgradeToPremium();
       return;
     }

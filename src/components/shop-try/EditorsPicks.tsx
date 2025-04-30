@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
@@ -7,6 +6,7 @@ import { ChevronLeft, ChevronRight, ExternalLink, Shirt } from 'lucide-react';
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useAuth } from '@/hooks/useAuth';
 
 interface AffiliateProduct {
   id: string;
@@ -29,6 +29,11 @@ interface EditorsPicksProps {
 const EditorsPicks = ({ isPremiumUser, onTryItem, onUpgradeToPremium }: EditorsPicksProps) => {
   const [products, setProducts] = useState<AffiliateProduct[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // Add this to override premium status for Daniel
+  const { user } = useAuth();
+  const isDanielDeurlooEmail = user?.email === 'danieldeurloo@hotmail.com';
+  const effectivePremiumUser = isDanielDeurlooEmail ? false : isPremiumUser;
 
   useEffect(() => {
     // For now, use sample data
@@ -117,7 +122,7 @@ const EditorsPicks = ({ isPremiumUser, onTryItem, onUpgradeToPremium }: EditorsP
   };
 
   const handleTryOn = (product: AffiliateProduct) => {
-    if (!isPremiumUser) {
+    if (!effectivePremiumUser) {
       onUpgradeToPremium();
       return;
     }
@@ -172,7 +177,7 @@ const EditorsPicks = ({ isPremiumUser, onTryItem, onUpgradeToPremium }: EditorsP
                         className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                       />
                       
-                      {!isPremiumUser && product.tryOnEnabled && (
+                      {!effectivePremiumUser && product.tryOnEnabled && (
                         <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center z-10 opacity-0 hover:opacity-100 transition-opacity">
                           <Button 
                             size="sm"

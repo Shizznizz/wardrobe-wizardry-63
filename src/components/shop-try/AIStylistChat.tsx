@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -6,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Send, X, Lock, Sparkles } from 'lucide-react';
 import OliviaMoodAvatar from './OliviaMoodAvatar';
+import { useAuth } from '@/hooks/useAuth';
 
 interface AIStylistChatProps {
   isPremiumUser: boolean;
@@ -37,6 +37,11 @@ const AIStylistChat = ({
   ]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
+  // Add auth check to override premium status for Daniel
+  const { user } = useAuth();
+  const isDanielDeurlooEmail = user?.email === 'danieldeurloo@hotmail.com';
+  const effectivePremiumUser = isDanielDeurlooEmail ? false : isPremiumUser;
+  
   useEffect(() => {
     // Auto-expand when first mounted if it's in the floating mode
     if (onClose) {
@@ -52,7 +57,7 @@ const AIStylistChat = ({
   const handleSend = () => {
     if (!input.trim()) return;
     
-    if (!isPremiumUser) {
+    if (!effectivePremiumUser) {
       onUpgradeToPremium();
       return;
     }
@@ -107,7 +112,7 @@ const AIStylistChat = ({
     }
   };
   
-  if (!isPremiumUser && !isOpen) {
+  if (!effectivePremiumUser && !isOpen) {
     return (
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -202,7 +207,7 @@ const AIStylistChat = ({
           </div>
           
           <div className="p-3 border-t border-white/10 bg-slate-800/50">
-            {isPremiumUser ? (
+            {effectivePremiumUser ? (
               <div className="flex gap-2">
                 <Input
                   value={input}

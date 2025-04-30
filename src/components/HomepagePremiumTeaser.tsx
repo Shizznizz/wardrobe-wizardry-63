@@ -4,8 +4,16 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Sparkles, Zap, Star, MessageCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
 
 const HomepagePremiumTeaser = () => {
+  // Add this to check if the user is Daniel and ensure we always show premium teaser
+  const { user } = useAuth();
+  const isDanielDeurlooEmail = user?.email === 'danieldeurloo@hotmail.com';
+  
+  // Modified to explicitly show for Daniel's account
+  if (user && !isDanielDeurlooEmail) return null;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}

@@ -5,7 +5,7 @@ import { Outfit } from '@/lib/types';
 import { useAuth } from '@/hooks/useAuth';
 
 export const useShowroomState = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const [isPremiumUser, setIsPremiumUser] = useState(false);
   const [userPhoto, setUserPhoto] = useState<string | null>(null);
   const [finalImage, setFinalImage] = useState<string | null>(null);
@@ -16,8 +16,11 @@ export const useShowroomState = () => {
   const [isProcessingTryOn, setIsProcessingTryOn] = useState(false);
 
   useEffect(() => {
-    setIsPremiumUser(isAuthenticated);
-  }, [isAuthenticated]);
+    // Modified to explicitly check user email for non-premium view
+    const isDanielDeurlooEmail = user?.email === 'danieldeurloo@hotmail.com';
+    // If you're Daniel, don't get premium features
+    setIsPremiumUser(isAuthenticated && !isDanielDeurlooEmail);
+  }, [isAuthenticated, user]);
 
   const handleUserPhotoUpload = (photo: string) => {
     setIsUploadLoading(true);

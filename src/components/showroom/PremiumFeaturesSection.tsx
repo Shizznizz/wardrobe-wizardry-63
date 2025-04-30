@@ -12,10 +12,12 @@ interface PremiumFeaturesSectionProps {
 const PremiumFeaturesSection = ({
   onUpgradeToPremium
 }: PremiumFeaturesSectionProps) => {
-  const { isAuthenticated } = useAuth();
+  // Modified to explicitly check user email for non-premium view
+  const { isAuthenticated, user } = useAuth();
   
-  // If user is authenticated, don't show this section at all
-  if (isAuthenticated) return null;
+  // If user is authenticated but not the test user (danieldeurloo@hotmail.com), don't show this section
+  const isDanielDeurlooEmail = user?.email === 'danieldeurloo@hotmail.com';
+  if (isAuthenticated && !isDanielDeurlooEmail) return null;
   
   return (
     <motion.div

@@ -22,11 +22,14 @@ const OutfitSelectionSection = ({
   isPremiumUser,
   onSelectOutfit
 }: OutfitSelectionSectionProps) => {
-  const { isAuthenticated } = useAuth();
-  const effectivePremiumUser = isPremiumUser || isAuthenticated;
+  const { isAuthenticated, user } = useAuth();
+  // Modified to explicitly check user email for non-premium view
+  const isDanielDeurlooEmail = user?.email === 'danieldeurloo@hotmail.com';
+  // If you're Daniel, don't get premium features
+  const effectivePremiumUser = isPremiumUser || (isAuthenticated && !isDanielDeurlooEmail);
   const [activeCollection, setActiveCollection] = useState(fashionCollections[0]?.id || 'recommended');
   
-  // Filter collections - show premium ones only to premium or authenticated users
+  // Filter collections - show premium ones only to premium or authenticated users (except Daniel)
   const visibleCollections = fashionCollections.filter(collection => 
     !collection.premium || effectivePremiumUser
   );

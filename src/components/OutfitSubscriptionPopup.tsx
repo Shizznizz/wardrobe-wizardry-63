@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -27,13 +28,17 @@ interface OutfitSubscriptionPopupProps {
 }
 
 const OutfitSubscriptionPopup = ({ isOpen, onClose, onUpgrade }: OutfitSubscriptionPopupProps) => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const [showLocalDialog, setShowLocalDialog] = useState(false);
   
-  // Sync the local state with the prop, but don't show if authenticated
+  // Modified: Allow Daniel to see popup even when authenticated
+  const isDanielDeurlooEmail = user?.email === 'danieldeurloo@hotmail.com';
+  const shouldShowDialog = isOpen && (!isAuthenticated || isDanielDeurlooEmail);
+  
+  // Sync the local state with the prop
   useEffect(() => {
-    setShowLocalDialog(isOpen && !isAuthenticated);
-  }, [isOpen, isAuthenticated]);
+    setShowLocalDialog(shouldShowDialog);
+  }, [shouldShowDialog]);
   
   const handleClose = () => {
     setShowLocalDialog(false);

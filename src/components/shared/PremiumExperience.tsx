@@ -1,4 +1,3 @@
-
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -18,10 +17,14 @@ interface PremiumExperienceProps {
 }
 
 const PremiumExperience = ({ onUpgrade }: PremiumExperienceProps) => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   
-  // If user is authenticated, show a different premium message
-  if (isAuthenticated) {
+  // If user is authenticated but it's the test user (danieldeurloo@hotmail.com), show the non-premium experience
+  const isDanielDeurlooEmail = user?.email === 'danieldeurloo@hotmail.com';
+  const effectivePremiumUser = isAuthenticated && !isDanielDeurlooEmail;
+  
+  // If user is authenticated (and is not Daniel), show a different premium message
+  if (effectivePremiumUser) {
     return (
       <motion.div
         initial={{ opacity: 0, y: 20 }}
