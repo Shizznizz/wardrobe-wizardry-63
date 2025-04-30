@@ -2,7 +2,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, Upload, Calendar, Sparkles } from 'lucide-react';
+import { ArrowRight, Upload, Calendar, Sparkles, MessageCircle, Shirt, Wand, Clock } from 'lucide-react';
 
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -10,6 +10,7 @@ import BackgroundShapes from '@/components/BackgroundShapes';
 import OptimizedImage from '@/components/ui/optimized-image';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
 import TestimonialsCarousel from '@/components/TestimonialsCarousel';
 import SectionDivider from '@/components/SectionDivider';
 import { 
@@ -54,14 +55,28 @@ const Index: React.FC = () => {
       <Header />
       
       <main className="relative z-10">
-        {/* Hero Section */}
-        <section className="container mx-auto px-4 pt-28 pb-16 lg:pt-36 lg:pb-24">
+        {/* 1. Hero Section - Restructured */}
+        <section className="container mx-auto px-4 pt-28 pb-16 lg:pt-36 lg:pb-24 bg-gradient-to-br from-slate-900 to-purple-900/80">
           <motion.div 
             className="max-w-4xl mx-auto text-center space-y-8"
             initial="hidden"
             animate="visible"
             variants={staggerContainer}
           >
+            {/* Central Olivia Portrait */}
+            <motion.div
+              className="flex flex-col items-center justify-center mb-8"
+              variants={fadeInUp}
+            >
+              <div className="relative">
+                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 blur-xl opacity-30"></div>
+                <Avatar className="h-32 w-32 border-4 border-pink-500/30 shadow-lg shadow-pink-500/20">
+                  <AvatarImage src="/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png" alt="Olivia" />
+                  <AvatarFallback className="bg-purple-800">OB</AvatarFallback>
+                </Avatar>
+              </div>
+            </motion.div>
+            
             <motion.h1 
               className="text-4xl md:text-6xl font-bold leading-tight"
               variants={fadeInUp}
@@ -98,87 +113,10 @@ const Index: React.FC = () => {
                 Take a Style Quiz
               </Button>
             </motion.div>
-
-            {/* Olivia Avatar */}
-            <motion.div
-              className="flex flex-col items-center justify-center mt-8"
-              variants={fadeInUp}
-            >
-              <Avatar className="h-24 w-24 border-4 border-pink-500/30 shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform duration-300">
-                <AvatarImage src="/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png" alt="Olivia" />
-                <AvatarFallback className="bg-purple-800">OB</AvatarFallback>
-              </Avatar>
-              <p className="mt-3 text-sm font-medium text-blue-100/80">Meet Olivia, your AI stylist.</p>
-            </motion.div>
           </motion.div>
         </section>
 
-        {/* How It Works Section */}
-        <section className="py-20 bg-slate-900/50 backdrop-blur-sm">
-          <div className="container mx-auto px-4">
-            <motion.div
-              className="text-center mb-12"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-            >
-              <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-                How It Works
-              </h2>
-              <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mx-auto"></div>
-            </motion.div>
-
-            <motion.div 
-              className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-10 relative"
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={staggerContainer}
-            >
-              {/* Connection Line */}
-              <div className="absolute top-24 left-1/2 transform -translate-x-1/2 w-3/4 h-0.5 bg-gradient-to-r from-transparent via-purple-500/30 to-transparent hidden md:block"></div>
-              
-              {/* Step 1 */}
-              <motion.div 
-                className="card-futuristic flex flex-col items-center text-center relative z-10"
-                variants={fadeInUp}
-              >
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center mb-5 shadow-lg">
-                  <Upload className="h-7 w-7" />
-                </div>
-                <h3 className="text-xl font-bold mb-3">Upload Your Wardrobe</h3>
-                <p className="text-blue-100/80">Snap photos of your clothes or add from suggestions</p>
-              </motion.div>
-              
-              {/* Step 2 */}
-              <motion.div 
-                className="card-futuristic flex flex-col items-center text-center relative z-10"
-                variants={fadeInUp}
-              >
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mb-5 shadow-lg">
-                  <Calendar className="h-7 w-7" />
-                </div>
-                <h3 className="text-xl font-bold mb-3">Get Daily Outfit Ideas</h3>
-                <p className="text-blue-100/80">Based on your preferences, weather & calendar</p>
-              </motion.div>
-              
-              {/* Step 3 */}
-              <motion.div 
-                className="card-futuristic flex flex-col items-center text-center relative z-10"
-                variants={fadeInUp}
-              >
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-pink-500 to-coral-500 flex items-center justify-center mb-5 shadow-lg">
-                  <Sparkles className="h-7 w-7" />
-                </div>
-                <h3 className="text-xl font-bold mb-3">Try Looks On Instantly</h3>
-                <p className="text-blue-100/80">Visualize outfits on yourself or on Olivia</p>
-              </motion.div>
-            </motion.div>
-          </div>
-        </section>
-
-        {/* Meet Olivia Section */}
+        {/* 2. Meet Olivia Section */}
         <section className="py-20">
           <div className="container mx-auto px-4">
             <motion.div 
@@ -220,8 +158,58 @@ const Index: React.FC = () => {
           </div>
         </section>
 
-        {/* Style Preview Section */}
+        {/* 3. How It Works Section */}
         <section className="py-20 bg-slate-900/50 backdrop-blur-sm">
+          <div className="container mx-auto px-4">
+            <motion.div
+              className="text-center mb-12"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+            >
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+                How It Works
+              </h2>
+              <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mx-auto"></div>
+            </motion.div>
+
+            <motion.div 
+              className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={staggerContainer}
+            >
+              {/* Step 1 */}
+              <motion.div 
+                className="card-futuristic flex flex-col items-center text-center relative z-10"
+                variants={fadeInUp}
+              >
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center mb-5 shadow-lg">
+                  <Upload className="h-7 w-7" />
+                </div>
+                <h3 className="text-xl font-bold mb-3">Upload Your Wardrobe</h3>
+                <p className="text-blue-100/80">Snap photos of your clothes or add from suggestions</p>
+              </motion.div>
+              
+              {/* Step 2 */}
+              <motion.div 
+                className="card-futuristic flex flex-col items-center text-center relative z-10"
+                variants={fadeInUp}
+              >
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mb-5 shadow-lg">
+                  <Calendar className="h-7 w-7" />
+                </div>
+                <h3 className="text-xl font-bold mb-3">Get Daily Outfit Ideas</h3>
+                <p className="text-blue-100/80">Based on your preferences, weather & calendar</p>
+              </motion.div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* 4. Style Preview Section */}
+        <section className="py-20">
           <div className="container mx-auto px-4">
             <motion.div 
               className="text-center mb-14"
@@ -245,115 +233,69 @@ const Index: React.FC = () => {
               transition={{ duration: 0.7 }}
               className="max-w-6xl mx-auto"
             >
-              <Carousel
-                opts={{
-                  align: "start",
-                  loop: true
-                }}
-                className="w-full"
-              >
-                <CarouselContent>
-                  {/* Weather Based Look */}
-                  <CarouselItem className="basis-full md:basis-1/2 lg:basis-1/3 pl-6">
-                    <div className="bg-slate-800/80 border border-white/10 rounded-xl overflow-hidden shadow-xl h-full hover:shadow-purple-500/10 hover:-translate-y-1 transition-all duration-300">
-                      <div className="h-64 bg-gradient-to-b from-blue-500/50 to-indigo-600/50 relative overflow-hidden">
-                        <OptimizedImage
-                          src="/lovable-uploads/c26c0c8c-7ff3-432a-b79b-1d22494daba6.png"
-                          alt="Rainy Day Chic"
-                          className="object-cover w-full h-full mix-blend-overlay"
-                          width={400}
-                          height={300}
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent"></div>
-                        <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-                          <h3 className="text-xl font-bold mb-1">Rainy Day Chic</h3>
-                          <p className="text-sm text-blue-100/70">Weather-inspired outfit</p>
-                        </div>
-                      </div>
-                      <div className="p-5">
-                        <p className="text-blue-100/80 mb-4">Stay stylish while staying dry with this perfect rainy day ensemble.</p>
-                        <Button 
-                          variant="outline" 
-                          className="w-full border-white/10 hover:bg-white/10"
-                          onClick={() => navigate('/fitting-room')}
-                        >
-                          Try This Look
-                        </Button>
-                      </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Weather Based Look */}
+                <div className="bg-slate-800/80 border border-white/10 rounded-xl overflow-hidden shadow-xl hover:shadow-purple-500/10 hover:-translate-y-1 transition-all duration-300">
+                  <div className="h-64 bg-gradient-to-b from-blue-500/50 to-indigo-600/50 relative overflow-hidden">
+                    <OptimizedImage
+                      src="/lovable-uploads/c26c0c8c-7ff3-432a-b79b-1d22494daba6.png"
+                      alt="Rainy Day Chic"
+                      className="object-cover w-full h-full mix-blend-overlay"
+                      width={400}
+                      height={300}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent"></div>
+                    <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                      <h3 className="text-xl font-bold mb-1">Rainy Day Chic</h3>
+                      <p className="text-sm text-blue-100/70">Weather-inspired outfit</p>
                     </div>
-                  </CarouselItem>
-
-                  {/* Mood Based Look */}
-                  <CarouselItem className="basis-full md:basis-1/2 lg:basis-1/3 pl-6">
-                    <div className="bg-slate-800/80 border border-white/10 rounded-xl overflow-hidden shadow-xl h-full hover:shadow-purple-500/10 hover:-translate-y-1 transition-all duration-300">
-                      <div className="h-64 bg-gradient-to-b from-pink-500/50 to-purple-600/50 relative overflow-hidden">
-                        <OptimizedImage
-                          src="/lovable-uploads/45448793-cb34-4e4c-9dd8-de95f86f25ca.png"
-                          alt="Brunch Mood"
-                          className="object-cover w-full h-full mix-blend-overlay"
-                          width={400}
-                          height={300}
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent"></div>
-                        <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-                          <h3 className="text-xl font-bold mb-1">Brunch Mood</h3>
-                          <p className="text-sm text-blue-100/70">Mood-matching outfit</p>
-                        </div>
-                      </div>
-                      <div className="p-5">
-                        <p className="text-blue-100/80 mb-4">Feeling social and relaxed? This brunch-perfect outfit matches your mood.</p>
-                        <Button 
-                          variant="outline" 
-                          className="w-full border-white/10 hover:bg-white/10"
-                          onClick={() => navigate('/quizzes')}
-                        >
-                          Match My Mood
-                        </Button>
-                      </div>
-                    </div>
-                  </CarouselItem>
-
-                  {/* Occasion Based Look */}
-                  <CarouselItem className="basis-full md:basis-1/2 lg:basis-1/3 pl-6">
-                    <div className="bg-slate-800/80 border border-white/10 rounded-xl overflow-hidden shadow-xl h-full hover:shadow-purple-500/10 hover:-translate-y-1 transition-all duration-300">
-                      <div className="h-64 bg-gradient-to-b from-indigo-500/50 to-blue-600/50 relative overflow-hidden">
-                        <OptimizedImage
-                          src="/lovable-uploads/44448809-be5b-44da-a910-3f9b0e36264b.png"
-                          alt="Meeting Ready"
-                          className="object-cover w-full h-full mix-blend-overlay"
-                          width={400}
-                          height={300}
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent"></div>
-                        <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-                          <h3 className="text-xl font-bold mb-1">Meeting Ready</h3>
-                          <p className="text-sm text-blue-100/70">Occasion-based outfit</p>
-                        </div>
-                      </div>
-                      <div className="p-5">
-                        <p className="text-blue-100/80 mb-4">Make an impression with this perfect ensemble for your important meetings.</p>
-                        <Button 
-                          variant="outline" 
-                          className="w-full border-white/10 hover:bg-white/10"
-                          onClick={() => navigate('/style-planner')}
-                        >
-                          Plan My Outfit
-                        </Button>
-                      </div>
-                    </div>
-                  </CarouselItem>
-                </CarouselContent>
-                <div className="hidden md:block">
-                  <CarouselPrevious className="left-2" />
-                  <CarouselNext className="right-2" />
+                  </div>
+                  <div className="p-5">
+                    <p className="text-blue-100/80 mb-4">Stay stylish while staying dry with this perfect rainy day ensemble.</p>
+                    <Button 
+                      variant="outline" 
+                      className="w-full border-white/10 hover:bg-white/10"
+                      onClick={() => navigate('/fitting-room')}
+                    >
+                      Try This Look
+                    </Button>
+                  </div>
                 </div>
-              </Carousel>
+
+                {/* Mood Based Look */}
+                <div className="bg-slate-800/80 border border-white/10 rounded-xl overflow-hidden shadow-xl hover:shadow-purple-500/10 hover:-translate-y-1 transition-all duration-300">
+                  <div className="h-64 bg-gradient-to-b from-pink-500/50 to-purple-600/50 relative overflow-hidden">
+                    <OptimizedImage
+                      src="/lovable-uploads/45448793-cb34-4e4c-9dd8-de95f86f25ca.png"
+                      alt="Brunch Mood"
+                      className="object-cover w-full h-full mix-blend-overlay"
+                      width={400}
+                      height={300}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent"></div>
+                    <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                      <h3 className="text-xl font-bold mb-1">Brunch Mood</h3>
+                      <p className="text-sm text-blue-100/70">Mood-matching outfit</p>
+                    </div>
+                  </div>
+                  <div className="p-5">
+                    <p className="text-blue-100/80 mb-4">Feeling social and relaxed? This brunch-perfect outfit matches your mood.</p>
+                    <Button 
+                      variant="outline" 
+                      className="w-full border-white/10 hover:bg-white/10"
+                      onClick={() => navigate('/quizzes')}
+                    >
+                      Match My Mood
+                    </Button>
+                  </div>
+                </div>
+              </div>
             </motion.div>
           </div>
         </section>
 
-        {/* Community Looks Section */}
-        <section className="py-20">
+        {/* 5. Community Looks Section */}
+        <section className="py-20 bg-slate-900/50 backdrop-blur-sm">
           <div className="container mx-auto px-4">
             <motion.div
               className="text-center mb-14"
@@ -407,10 +349,64 @@ const Index: React.FC = () => {
           </div>
         </section>
         
-        {/* Testimonials Section - Added back */}
+        {/* 6. Testimonials Section */}
         <TestimonialsCarousel />
 
-        {/* Early Access Section */}
+        {/* 7. Join the Style Movement */}
+        <section className="py-24">
+          <div className="container mx-auto px-4">
+            <motion.div
+              className="max-w-4xl mx-auto text-center"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              <div className="flex flex-wrap justify-center gap-6 md:gap-16 mb-12">
+                <div className="text-center">
+                  <p className="text-3xl md:text-4xl font-bold text-blue-400">10,000+</p>
+                  <p className="text-sm text-blue-100/70 mt-1">Wardrobes Styled</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-3xl md:text-4xl font-bold text-purple-400">250,000+</p>
+                  <p className="text-sm text-blue-100/70 mt-1">Outfits Created</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-3xl md:text-4xl font-bold text-pink-400">98%</p>
+                  <p className="text-sm text-blue-100/70 mt-1">Happy Users</p>
+                </div>
+              </div>
+              
+              <h2 className="text-3xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
+                Join the Style Movement
+              </h2>
+              
+              <p className="text-xl text-blue-100/80 mb-10 max-w-3xl mx-auto">
+                Start your styling journey today and transform the way you dress with AI-powered fashion advice.
+              </p>
+              
+              <div className="flex flex-col md:flex-row justify-center gap-6 items-center">
+                <Button 
+                  onClick={() => navigate('/auth')}
+                  className="btn-futuristic text-lg px-12 py-7 group"
+                >
+                  Join for Free
+                  <ArrowRight className="ml-2 h-5 w-5 duration-300 group-hover:translate-x-1" />
+                </Button>
+                
+                <div className="flex items-center gap-3 text-blue-100/90">
+                  <Avatar className="h-12 w-12 border-2 border-pink-400/30">
+                    <AvatarImage src="/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png" alt="Olivia" />
+                    <AvatarFallback className="bg-purple-800">OB</AvatarFallback>
+                  </Avatar>
+                  <span className="text-sm">Olivia can't wait to style you!</span>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* 8. Upcoming Collections Section */}
         <section className="py-20 bg-slate-900/50 backdrop-blur-sm">
           <div className="container mx-auto px-4">
             <motion.div
@@ -477,56 +473,167 @@ const Index: React.FC = () => {
           </div>
         </section>
 
-        {/* Join the Style Movement */}
-        <section className="py-24">
+        {/* 9. Premium Features Section */}
+        <section className="py-20">
           <div className="container mx-auto px-4">
             <motion.div
-              className="max-w-4xl mx-auto text-center"
+              className="text-center mb-14"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+            >
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+                Premium Features
+              </h2>
+              <p className="text-lg text-blue-100/80 max-w-3xl mx-auto">
+                Unlock the full power of Olivia with our premium features.
+              </p>
+            </motion.div>
+            
+            <motion.div 
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={staggerContainer}
+            >
+              <motion.div className="card-futuristic" variants={fadeInUp}>
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mb-5 mx-auto">
+                  <MessageCircle className="h-6 w-6" />
+                </div>
+                <h3 className="text-xl font-bold mb-2 text-center">Chat with Olivia</h3>
+                <p className="text-blue-100/70 text-center">Get personalized style advice anytime.</p>
+              </motion.div>
+              
+              <motion.div className="card-futuristic" variants={fadeInUp}>
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center mb-5 mx-auto">
+                  <Shirt className="h-6 w-6" />
+                </div>
+                <h3 className="text-xl font-bold mb-2 text-center">Outfit Try-On</h3>
+                <p className="text-blue-100/70 text-center">Visualize how outfits look on you.</p>
+              </motion.div>
+              
+              <motion.div className="card-futuristic" variants={fadeInUp}>
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-pink-500 to-coral-500 flex items-center justify-center mb-5 mx-auto">
+                  <Wand className="h-6 w-6" />
+                </div>
+                <h3 className="text-xl font-bold mb-2 text-center">AI Outfit Generator</h3>
+                <p className="text-blue-100/70 text-center">Create unique looks with AI magic.</p>
+              </motion.div>
+              
+              <motion.div className="card-futuristic" variants={fadeInUp}>
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-coral-500 to-coral-400 flex items-center justify-center mb-5 mx-auto">
+                  <Clock className="h-6 w-6" />
+                </div>
+                <h3 className="text-xl font-bold mb-2 text-center">Exclusive Early Access</h3>
+                <p className="text-blue-100/70 text-center">Be the first to try new features.</p>
+              </motion.div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* 10. Pricing Section */}
+        <section className="py-20 bg-slate-900/50 backdrop-blur-sm">
+          <div className="container mx-auto px-4">
+            <motion.div
+              className="text-center mb-14"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+            >
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+                Choose Your Plan
+              </h2>
+              <p className="text-lg text-blue-100/80 max-w-3xl mx-auto">
+                Unlock premium features with a subscription that fits your needs.
+              </p>
+            </motion.div>
+            
+            <motion.div
+              className="flex flex-col md:flex-row gap-8 max-w-4xl mx-auto"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
             >
-              <div className="flex flex-wrap justify-center gap-6 md:gap-16 mb-12">
-                <div className="text-center">
-                  <p className="text-3xl md:text-4xl font-bold text-blue-400">10,000+</p>
-                  <p className="text-sm text-blue-100/70 mt-1">Wardrobes Styled</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-3xl md:text-4xl font-bold text-purple-400">250,000+</p>
-                  <p className="text-sm text-blue-100/70 mt-1">Outfits Created</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-3xl md:text-4xl font-bold text-pink-400">98%</p>
-                  <p className="text-sm text-blue-100/70 mt-1">Happy Users</p>
-                </div>
-              </div>
+              {/* Weekly Plan */}
+              <Card className="w-full bg-slate-800/70 border-white/10 text-white">
+                <CardHeader className="text-center">
+                  <h3 className="text-2xl font-bold">Weekly</h3>
+                  <div className="mt-4">
+                    <span className="text-4xl font-bold">$4.99</span>
+                    <span className="text-sm text-blue-100/70 ml-1">/ week</span>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-3">
+                    <li className="flex items-center">
+                      <div className="w-5 h-5 rounded-full bg-coral-500 mr-3 flex items-center justify-center text-xs">✓</div>
+                      <span>Unlimited outfit suggestions</span>
+                    </li>
+                    <li className="flex items-center">
+                      <div className="w-5 h-5 rounded-full bg-coral-500 mr-3 flex items-center justify-center text-xs">✓</div>
+                      <span>Chat with Olivia</span>
+                    </li>
+                    <li className="flex items-center">
+                      <div className="w-5 h-5 rounded-full bg-coral-500 mr-3 flex items-center justify-center text-xs">✓</div>
+                      <span>Try-on technology</span>
+                    </li>
+                  </ul>
+                </CardContent>
+                <CardFooter>
+                  <Button
+                    className="w-full bg-gradient-to-r from-coral-400 to-coral-500 hover:from-coral-500 hover:to-coral-600"
+                    onClick={() => navigate('/premium')}
+                  >
+                    Upgrade to Premium Now
+                  </Button>
+                </CardFooter>
+              </Card>
               
-              <h2 className="text-3xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
-                Join the Style Movement
-              </h2>
-              
-              <p className="text-xl text-blue-100/80 mb-10 max-w-3xl mx-auto">
-                Start your styling journey today and transform the way you dress with AI-powered fashion advice.
-              </p>
-              
-              <div className="flex flex-col md:flex-row justify-center gap-6 items-center">
-                <Button 
-                  onClick={() => navigate('/auth')}
-                  className="btn-futuristic text-lg px-12 py-7 group"
-                >
-                  Join for Free
-                  <ArrowRight className="ml-2 h-5 w-5 duration-300 group-hover:translate-x-1" />
-                </Button>
-                
-                <div className="flex items-center gap-3 text-blue-100/90">
-                  <Avatar className="h-12 w-12 border-2 border-pink-400/30">
-                    <AvatarImage src="/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png" alt="Olivia" />
-                    <AvatarFallback className="bg-purple-800">OB</AvatarFallback>
-                  </Avatar>
-                  <span className="text-sm">Olivia can't wait to style you!</span>
+              {/* Monthly Plan */}
+              <Card className="w-full bg-slate-800/70 border-white/10 text-white relative">
+                <div className="absolute -top-2.5 right-6 bg-gradient-to-r from-coral-400 to-coral-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                  BEST VALUE
                 </div>
-              </div>
+                <CardHeader className="text-center">
+                  <h3 className="text-2xl font-bold">Monthly</h3>
+                  <div className="mt-4">
+                    <span className="text-4xl font-bold">$14.99</span>
+                    <span className="text-sm text-blue-100/70 ml-1">/ month</span>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-3">
+                    <li className="flex items-center">
+                      <div className="w-5 h-5 rounded-full bg-coral-500 mr-3 flex items-center justify-center text-xs">✓</div>
+                      <span>Everything in Weekly plan</span>
+                    </li>
+                    <li className="flex items-center">
+                      <div className="w-5 h-5 rounded-full bg-coral-500 mr-3 flex items-center justify-center text-xs">✓</div>
+                      <span>Advanced outfit generator</span>
+                    </li>
+                    <li className="flex items-center">
+                      <div className="w-5 h-5 rounded-full bg-coral-500 mr-3 flex items-center justify-center text-xs">✓</div>
+                      <span>Early access to new features</span>
+                    </li>
+                    <li className="flex items-center">
+                      <div className="w-5 h-5 rounded-full bg-coral-500 mr-3 flex items-center justify-center text-xs">✓</div>
+                      <span>Premium community access</span>
+                    </li>
+                  </ul>
+                </CardContent>
+                <CardFooter>
+                  <Button
+                    className="w-full btn-futuristic"
+                    onClick={() => navigate('/premium')}
+                  >
+                    Upgrade to Premium Now
+                  </Button>
+                </CardFooter>
+              </Card>
             </motion.div>
           </div>
         </section>
