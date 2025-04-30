@@ -11,7 +11,7 @@ const HeroSection: React.FC = () => {
   const navigate = useNavigate();
   
   return (
-    <section className="py-10 md:py-16 lg:py-20 bg-gradient-to-b from-[#1d0034] to-[#2c0055] text-center">
+    <section className="py-16 md:py-24 lg:py-28 bg-gradient-to-b from-[#1d0034] to-[#2c0055] text-center">
       <motion.div 
         className="container mx-auto px-4 flex flex-col items-center"
         initial={{ opacity: 0, y: 20 }}
@@ -19,12 +19,13 @@ const HeroSection: React.FC = () => {
         transition={{ duration: 0.7 }}
       >
         <motion.h1 
-          className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-white mb-4 tracking-wide"
+          className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-4 tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-white via-purple-100 to-pink-100"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
         >
-          The Future of Fashion
+          <span className="block">Transform Your Style</span>
+          <span className="bg-gradient-to-r from-pink-400 to-purple-400 text-transparent bg-clip-text">With AI Magic</span>
         </motion.h1>
         
         <motion.div
