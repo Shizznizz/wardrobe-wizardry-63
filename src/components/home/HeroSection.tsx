@@ -24,8 +24,8 @@ const HeroSection: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
         >
-          <span className="block">Transform Your Style</span>
-          <span className="bg-gradient-to-r from-pink-400 to-purple-400 text-transparent bg-clip-text">With AI Magic</span>
+          <span className="block">The Future</span>
+          <span className="bg-gradient-to-r from-pink-400 to-purple-400 text-transparent bg-clip-text">of Fashion</span>
         </motion.h1>
         
         <motion.div
@@ -47,7 +47,7 @@ const HeroSection: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
-          Discover Your Perfect Look — Powered by AI
+          Say goodbye to style stress. Olivia curates outfits that match your vibe, wardrobe, and the weather.
         </motion.h3>
         
         <motion.p 
@@ -56,7 +56,7 @@ const HeroSection: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4 }}
         >
-          Olivia helps you style smarter, based on your wardrobe, the weather and your vibe.
+          With Olivia, your AI stylist, you'll get personalized outfit ideas that feel just right — every single day.
         </motion.p>
         
         <motion.div 
