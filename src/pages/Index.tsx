@@ -1,10 +1,10 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Upload, Calendar, Sparkles, MessageCircle, Shirt, Wand, Clock } from 'lucide-react';
 
 import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 import BackgroundShapes from '@/components/BackgroundShapes';
 import HeroSection from '@/components/home/HeroSection';
 import OptimizedImage from '@/components/ui/optimized-image';
@@ -581,7 +581,7 @@ const Index: React.FC = () => {
         </section>
       </main>
       
-      <Footer />
+      {/* Removed the Footer component that was here */}
     </div>
   );
 };
