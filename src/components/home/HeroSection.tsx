@@ -11,7 +11,7 @@ const HeroSection: React.FC = () => {
   const navigate = useNavigate();
   
   return (
-    <section className="py-16 md:py-24 lg:py-28 bg-gradient-to-b from-[#1d0034] to-[#2c0055] text-center">
+    <section className="py-20 md:py-24 lg:py-28 bg-gradient-to-b from-[#1d0034] to-[#2c0055] text-center">
       <motion.div 
         className="container mx-auto px-4 flex flex-col items-center"
         initial={{ opacity: 0, y: 20 }}
@@ -19,10 +19,11 @@ const HeroSection: React.FC = () => {
         transition={{ duration: 0.7 }}
       >
         <motion.h1 
-          className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-4 tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-white via-purple-100 to-pink-100"
+          className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-6 tracking-wider leading-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-purple-100 to-pink-100"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
+          style={{ letterSpacing: '1.5px', lineHeight: '1.2' }}
         >
           <span className="block">The Future</span>
           <span className="bg-gradient-to-r from-pink-400 to-purple-400 text-transparent bg-clip-text">of Fashion</span>
@@ -32,7 +33,7 @@ const HeroSection: React.FC = () => {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="mb-5 relative"
+          className="mb-8 relative"
         >
           <div className="absolute inset-0 bg-gradient-to-r from-pink-500/30 to-purple-500/30 rounded-full blur-xl"></div>
           <Avatar className="w-28 h-28 md:w-32 md:h-32 border-2 border-[#ff66cc] shadow-lg shadow-pink-500/20">
@@ -42,25 +43,27 @@ const HeroSection: React.FC = () => {
         </motion.div>
         
         <motion.h3 
-          className="text-lg md:text-xl lg:text-2xl font-semibold text-[#ffb3ec] mb-4"
+          className="text-lg md:text-xl lg:text-2xl font-semibold text-[#ffb3ec] mb-5"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
+          style={{ lineHeight: '1.5' }}
         >
           Say goodbye to style stress. Olivia curates outfits that match your vibe, wardrobe, and the weather.
         </motion.h3>
         
         <motion.p 
-          className="text-[#d3d3d3] max-w-xs md:max-w-sm mb-6 text-base"
+          className="text-[#e0d8f9] max-w-md md:max-w-lg mb-8 text-base"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4 }}
+          style={{ lineHeight: '1.5' }}
         >
           With Olivia, your AI stylist, you'll get personalized outfit ideas that feel just right — every single day.
         </motion.p>
         
         <motion.div 
-          className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center"
+          className="flex flex-col sm:flex-row gap-4 justify-center"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.5 }}
