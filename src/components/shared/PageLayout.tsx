@@ -2,6 +2,7 @@
 import { toast } from 'sonner';
 import PremiumExperience from './PremiumExperience';
 import Footer from '@/components/Footer';
+import Header from '@/components/Header';
 import { useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 
@@ -29,7 +30,9 @@ const PageLayout = ({ children }: PageLayoutProps) => {
 
   return (
     <div className="min-h-screen flex flex-col bg-fix-ios">
-      <main className="flex-grow">
+      <Header />
+      
+      <main className="flex-grow pt-16 sm:pt-20">
         {children}
       </main>
       

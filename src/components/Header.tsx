@@ -27,10 +27,6 @@ const Header = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => {
-    setIsMenuOpen(false);
-  }, [location.pathname]);
-
   const handleSignOut = async () => {
     try {
       await signOut();
@@ -80,7 +76,6 @@ const Header = () => {
         "z-[100]"
       )}
       style={{
-        // Fix for mobile background flickering
         WebkitBackdropFilter: 'blur(10px)',
         backfaceVisibility: 'hidden'
       }}
@@ -111,7 +106,6 @@ const Header = () => {
               )}
               onClick={toggleMenu}
               aria-label="Toggle mobile menu"
-              // Improved tap target size for mobile
               style={{
                 minHeight: "44px",
                 minWidth: "44px",
