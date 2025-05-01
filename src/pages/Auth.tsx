@@ -1,17 +1,18 @@
 
 import { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ChevronLeft, Check, X, AlertCircle, Eye, EyeOff } from "lucide-react";
+import { ChevronLeft, Eye, EyeOff } from "lucide-react";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { motion } from "framer-motion";
 import { Progress } from "@/components/ui/progress";
+import { useAuth } from "@/hooks/useAuth";
 
 const authFormSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -31,6 +32,16 @@ const Auth = () => {
   const [passwordStrength, setPasswordStrength] = useState(0);
   const [passwordFeedback, setPasswordFeedback] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
+  const { isAuthenticated } = useAuth();
+  
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      console.log("Already authenticated, redirecting to home");
+      navigate("/");
+    }
+  }, [isAuthenticated, navigate]);
 
   const form = useForm<AuthFormValues>({
     resolver: zodResolver(authFormSchema),
@@ -79,28 +90,44 @@ const Auth = () => {
       let response;
       
       if (authMode === "signin") {
+        console.log("Attempting sign in with:", values.email);
         response = await supabase.auth.signInWithPassword({
           email: values.email,
           password: values.password,
         });
       } else {
+        console.log("Attempting sign up with:", values.email);
         response = await supabase.auth.signUp({
           email: values.email,
           password: values.password,
+          options: {
+            emailRedirectTo: window.location.origin
+          }
         });
       }
 
       if (response.error) {
+        console.error("Auth error:", response.error.message);
         toast.error(response.error.message);
       } else {
-        if (authMode === "signin" || response.data?.user?.identities?.length === 0) {
-          toast.success(authMode === "signin" ? "Signed in successfully!" : "Account created successfully!");
-          navigate("/");
-        } else {
-          toast.success("Verification email sent! Please check your inbox.");
+        if (authMode === "signin") {
+          console.log("Sign in successful, redirecting to home");
+          toast.success("Signed in successfully!");
+          // Redirect to the page they were trying to access or home
+          const from = location.state?.from || "/";
+          navigate(from);
+        } else if (response.data?.user) {
+          if (response.data.user.identities && response.data.user.identities.length === 0) {
+            toast.success("Verification email sent! Please check your inbox.");
+          } else {
+            console.log("Sign up successful");
+            toast.success("Account created successfully!");
+            navigate("/");
+          }
         }
       }
     } catch (error: any) {
+      console.error("Unexpected auth error:", error);
       toast.error(error.message || "An error occurred");
     } finally {
       setIsLoading(false);
@@ -110,17 +137,20 @@ const Auth = () => {
   const handleGoogleLogin = async () => {
     try {
       setIsLoading(true);
+      console.log("Initiating Google sign in");
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: window.location.origin
+          redirectTo: `${window.location.origin}/`
         }
       });
       
       if (error) {
+        console.error("Google auth error:", error);
         toast.error(error.message);
       }
     } catch (error: any) {
+      console.error("Unexpected Google auth error:", error);
       toast.error(error.message || "Failed to sign in with Google");
     } finally {
       setIsLoading(false);
@@ -156,6 +186,11 @@ const Auth = () => {
       }
     }
   };
+
+  // If loading, don't render the form yet
+  if (isAuthenticated) {
+    return <div className="h-screen flex items-center justify-center">Redirecting...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white flex flex-col">

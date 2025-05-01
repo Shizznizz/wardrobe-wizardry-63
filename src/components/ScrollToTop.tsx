@@ -11,6 +11,11 @@ export default function ScrollToTop() {
   const { pathname, state } = location;
 
   useEffect(() => {
+    // Don't scroll on auth redirects
+    if (pathname === '/' && state?.fromAuth) {
+      return;
+    }
+    
     // Only scroll to top when the path changes and there's no state parameter
     // This prevents scrolling when navigating with outfit selection
     if (!state || !state.selectedOutfit) {
