@@ -1,9 +1,9 @@
-
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Star, UploadIcon, ShoppingBag, Heart, Unlock, Sparkles } from 'lucide-react';
+import { Star, UploadIcon, ShoppingBag, Heart, Sparkles } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 
 interface PremiumFeaturesSectionProps {
   onUpgradeToPremium: () => void;
@@ -12,12 +12,22 @@ interface PremiumFeaturesSectionProps {
 const PremiumFeaturesSection = ({
   onUpgradeToPremium
 }: PremiumFeaturesSectionProps) => {
-  // Modified to explicitly check user email for non-premium view
-  const { isAuthenticated, user } = useAuth();
+  const { isPremiumUser } = useAuth();
+  const navigate = useNavigate();
   
-  // If user is authenticated but not the test user (danieldeurloo@hotmail.com), don't show this section
-  const isDanielDeurlooEmail = user?.email === 'danieldeurloo@hotmail.com';
-  if (isAuthenticated && !isDanielDeurlooEmail) return null;
+  // If user is premium, don't show this section
+  if (isPremiumUser) return null;
+  
+  const handleUpgrade = () => {
+    // If user is not authenticated, redirect to auth page
+    if (!isPremiumUser) {
+      navigate('/auth', { state: { from: window.location.pathname } });
+      return;
+    }
+    
+    // Otherwise call the regular upgrade function
+    onUpgradeToPremium();
+  };
   
   return (
     <motion.div
@@ -61,11 +71,11 @@ const PremiumFeaturesSection = ({
           <div className="flex justify-center">
             <Button 
               size="lg"
-              onClick={onUpgradeToPremium}
+              onClick={handleUpgrade}
               className="bg-gradient-to-r from-yellow-500 to-amber-600 hover:opacity-90 shadow-lg group relative"
             >
               <span className="absolute inset-0 bg-gradient-to-r from-yellow-400/20 to-amber-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-md"></span>
-              <Sparkles className="mr-2 h-5 w-5" /> Upgrade to Premium – Only €2.99/week
+              <Sparkles className="mr-2 h-5 w-5" /> Sign Up for Premium – Only €2.99/week
             </Button>
           </div>
           <p className="text-sm text-center text-white/60 mt-4">Cancel anytime. No commitment.</p>

@@ -16,7 +16,7 @@ import { useAuth } from "@/hooks/useAuth";
 
 const authFormSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
@@ -39,9 +39,10 @@ const Auth = () => {
   useEffect(() => {
     if (isAuthenticated) {
       console.log("Already authenticated, redirecting to home");
-      navigate("/");
+      const from = location.state?.from || "/";
+      navigate(from, { replace: true, state: { fromAuth: true } });
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, location.state]);
 
   const form = useForm<AuthFormValues>({
     resolver: zodResolver(authFormSchema),
@@ -74,7 +75,7 @@ const Auth = () => {
       
       setPasswordStrength(strength);
       
-      // Set feedback
+      // Set feedback based on strength
       if (strength <= 25) setPasswordFeedback("Weak");
       else if (strength <= 75) setPasswordFeedback("Medium");
       else setPasswordFeedback("Strong");
@@ -111,18 +112,16 @@ const Auth = () => {
         toast.error(response.error.message);
       } else {
         if (authMode === "signin") {
-          console.log("Sign in successful, redirecting to home");
-          toast.success("Signed in successfully!");
-          // Redirect to the page they were trying to access or home
+          console.log("Sign in successful");
           const from = location.state?.from || "/";
-          navigate(from);
+          navigate(from, { replace: true, state: { fromAuth: true } });
         } else if (response.data?.user) {
           if (response.data.user.identities && response.data.user.identities.length === 0) {
-            toast.success("Verification email sent! Please check your inbox.");
+            toast.error("This email is already registered. Please sign in instead.");
           } else {
             console.log("Sign up successful");
-            toast.success("Account created successfully!");
-            navigate("/");
+            toast.success("Account created successfully! You can now sign in.");
+            setAuthMode("signin");
           }
         }
       }
@@ -187,7 +186,7 @@ const Auth = () => {
     }
   };
 
-  // If loading, don't render the form yet
+  // If loading, show a minimal loading indicator
   if (isAuthenticated) {
     return <div className="h-screen flex items-center justify-center">Redirecting...</div>;
   }
@@ -210,7 +209,7 @@ const Auth = () => {
       </div>
       
       <motion.div 
-        className="container max-w-md mx-auto px-4 pt-10 pb-10 flex-grow flex flex-col justify-center"
+        className="container max-w-md mx-auto px-4 pt-10 pb-20 flex-grow flex flex-col justify-center"
         initial="hidden"
         animate="visible"
         variants={containerVariants}
@@ -267,6 +266,7 @@ const Auth = () => {
                             placeholder="Your email" 
                             {...field} 
                             className="bg-white/5 border-white/10 text-white placeholder:text-white/50"
+                            autoComplete="email"
                           />
                         </FormControl>
                         <FormMessage className="text-pink-400" />
@@ -289,11 +289,13 @@ const Auth = () => {
                               placeholder="Your password" 
                               {...field} 
                               className="bg-white/5 border-white/10 text-white placeholder:text-white/50 pr-10"
+                              autoComplete={authMode === "signin" ? "current-password" : "new-password"}
                             />
                             <button 
                               type="button" 
                               className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/50 hover:text-white"
                               onClick={togglePasswordVisibility}
+                              tabIndex={-1}
                             >
                               {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                             </button>
@@ -334,6 +336,7 @@ const Auth = () => {
                               placeholder="Confirm your password" 
                               {...field} 
                               className="bg-white/5 border-white/10 text-white placeholder:text-white/50"
+                              autoComplete="new-password"
                             />
                           </FormControl>
                           <FormMessage className="text-pink-400" />

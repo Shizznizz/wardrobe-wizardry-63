@@ -5,8 +5,7 @@ import { Outfit } from '@/lib/types';
 import { useAuth } from '@/hooks/useAuth';
 
 export const useShowroomState = () => {
-  const { isAuthenticated, user } = useAuth();
-  const [isPremiumUser, setIsPremiumUser] = useState(false);
+  const { isAuthenticated, user, isPremiumUser: authIsPremiumUser } = useAuth();
   const [userPhoto, setUserPhoto] = useState<string | null>(null);
   const [finalImage, setFinalImage] = useState<string | null>(null);
   const [isUsingOliviaImage, setIsUsingOliviaImage] = useState(false);
@@ -15,12 +14,10 @@ export const useShowroomState = () => {
   const [selectedOutfit, setSelectedOutfit] = useState<Outfit | null>(null);
   const [isProcessingTryOn, setIsProcessingTryOn] = useState(false);
 
-  useEffect(() => {
-    // Modified to explicitly check user email for non-premium view
-    const isDanielDeurlooEmail = user?.email === 'danieldeurloo@hotmail.com';
-    // If you're Daniel, don't get premium features
-    setIsPremiumUser(isAuthenticated && !isDanielDeurlooEmail);
-  }, [isAuthenticated, user]);
+  // Simply use the isPremiumUser from auth context directly
+  // This means Daniel will see all content but not be treated as premium
+  // Everyone else who is logged in will get premium features
+  const isPremiumUser = authIsPremiumUser;
 
   const handleUserPhotoUpload = (photo: string) => {
     setIsUploadLoading(true);

@@ -9,7 +9,8 @@ type AuthContextType = {
   user: User | null;
   loading: boolean;
   signOut: () => Promise<void>;
-  isAuthenticated: boolean; 
+  isAuthenticated: boolean;
+  isPremiumUser: boolean; // Added to track premium status
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -18,7 +19,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false); 
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isPremiumUser, setIsPremiumUser] = useState(false); // Default to false
 
   useEffect(() => {
     // Set up auth state listener FIRST
@@ -28,6 +30,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setSession(session);
         setUser(session?.user ?? null);
         setIsAuthenticated(!!session?.user);
+        
+        // Handle premium status - Daniel should be treated as normal user
+        // All other authenticated users get premium features
+        if (session?.user) {
+          const isDanielDeurloo = session.user.email === 'danieldeurloo@hotmail.com';
+          setIsPremiumUser(!isDanielDeurloo);
+        } else {
+          setIsPremiumUser(false);
+        }
+        
         setLoading(false);
         
         // Show toast notification for sign in/out events
@@ -47,6 +59,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setSession(session);
       setUser(session?.user ?? null);
       setIsAuthenticated(!!session?.user);
+      
+      // Set premium status based on email for existing session
+      if (session?.user) {
+        const isDanielDeurloo = session.user.email === 'danieldeurloo@hotmail.com';
+        setIsPremiumUser(!isDanielDeurloo);
+      }
+      
       setLoading(false);
     }).catch(error => {
       console.error("Error getting session:", error);
@@ -66,7 +85,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ session, user, loading, signOut, isAuthenticated }}>
+    <AuthContext.Provider value={{ 
+      session, 
+      user, 
+      loading, 
+      signOut, 
+      isAuthenticated,
+      isPremiumUser 
+    }}>
       {children}
     </AuthContext.Provider>
   );
