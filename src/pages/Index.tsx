@@ -243,12 +243,12 @@ const Index: React.FC = () => {
                 }}
               >
                 <CarouselContent>
-                  {/* Weather Based Look */}
+                  {/* Weather Based Look - UPDATED IMAGE HERE */}
                   <CarouselItem className="md:basis-1/2 lg:basis-1/3 pl-4">
                     <div className="bg-slate-800/80 border border-white/10 rounded-xl overflow-hidden shadow-xl hover:shadow-purple-500/10 hover:-translate-y-1 transition-all duration-300 h-full">
                       <div className="h-64 bg-gradient-to-b from-blue-500/50 to-indigo-600/50 relative overflow-hidden">
                         <OptimizedImage
-                          src="/lovable-uploads/c26c0c8c-7ff3-432a-b79b-1d22494daba6.png"
+                          src="/lovable-uploads/5e9a3938-d858-47e4-942e-e6f047b9e309.png"
                           alt="Rainy Day Chic"
                           className="object-cover w-full h-full mix-blend-overlay"
                           width={400}
