@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion, useAnimation } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -108,6 +107,20 @@ const Index: React.FC = () => {
       };
     }
   }, [isCounterInView, hasAnimated]);
+
+  // Function to navigate to shop and try with a pre-selected outfit
+  const navigateToShopWithOutfit = () => {
+    // Navigate to shop-and-try page and pass the outfit selection information
+    navigate('/shop-and-try', { 
+      state: { 
+        selectedOutfit: {
+          id: "rainy-day-chic",
+          name: "Rainy Day Chic",
+          image: "/lovable-uploads/5e9a3938-d858-47e4-942e-e6f047b9e309.png"
+        } 
+      }
+    });
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white overflow-hidden">
@@ -246,13 +259,13 @@ const Index: React.FC = () => {
                   {/* Weather Based Look - UPDATED IMAGE HERE */}
                   <CarouselItem className="md:basis-1/2 lg:basis-1/3 pl-4">
                     <div className="bg-slate-800/80 border border-white/10 rounded-xl overflow-hidden shadow-xl hover:shadow-purple-500/10 hover:-translate-y-1 transition-all duration-300 h-full">
-                      <div className="h-64 bg-gradient-to-b from-blue-500/50 to-indigo-600/50 relative overflow-hidden">
+                      <div className="h-96 bg-gradient-to-b from-blue-500/50 to-indigo-600/50 relative overflow-hidden">
                         <OptimizedImage
                           src="/lovable-uploads/5e9a3938-d858-47e4-942e-e6f047b9e309.png"
                           alt="Rainy Day Chic"
                           className="object-cover w-full h-full mix-blend-overlay"
                           width={400}
-                          height={300}
+                          height={500}
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent"></div>
                         <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
@@ -265,7 +278,7 @@ const Index: React.FC = () => {
                         <Button 
                           variant="outline" 
                           className="w-full border-white/10 hover:bg-white/10"
-                          onClick={() => navigate('/fitting-room')}
+                          onClick={navigateToShopWithOutfit}
                         >
                           Style Me Now
                         </Button>
