@@ -26,7 +26,8 @@ function App() {
         <OutfitProvider>
           <Router>
             <Routes>
-              <Route path="/" element={<Home />} />
+              {/* Apply PageLayout to Home page as well */}
+              <Route path="/" element={<PageLayout><Home /></PageLayout>} />
               {/* Use PageLayout for authenticated pages to ensure Footer appears on all pages */}
               <Route path="/my-wardrobe" element={<PageLayout><MyWardrobe /></PageLayout>} />
               <Route path="/mix-and-match" element={<PageLayout><MixAndMatch /></PageLayout>} />
@@ -34,7 +35,8 @@ function App() {
               <Route path="/fitting-room" element={<PageLayout><FittingRoom /></PageLayout>} />
               <Route path="/shop-and-try" element={<PageLayout><ShopAndTry /></PageLayout>} />
               <Route path="/settings" element={<PageLayout><Settings /></PageLayout>} />
-              <Route path="/auth" element={<Auth />} />
+              {/* Add PageLayout to Auth page as well to ensure footer appears there too */}
+              <Route path="/auth" element={<PageLayout><Auth /></PageLayout>} />
             </Routes>
           </Router>
           <Toaster position="top-center" richColors closeButton />
