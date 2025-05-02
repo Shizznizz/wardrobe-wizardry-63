@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import HeroSection from '@/components/shared/HeroSection';
 import { Button } from '@/components/ui/button';
+import HomepagePremiumTeaser from '@/components/HomepagePremiumTeaser';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -15,8 +16,7 @@ const Home = () => {
   };
   
   const handleTakeStyleQuiz = () => {
-    // This would link to a style quiz page if implemented
-    navigate('/style-quiz');
+    navigate('/quizzes');
   };
   
   return (
@@ -99,6 +99,103 @@ const Home = () => {
             </div>
           </div>
         </motion.section>
+
+        {/* Display Premium Teaser */}
+        <HomepagePremiumTeaser />
+
+        {/* How It Works Section */}
+        <motion.section
+          className="py-20 px-4 bg-slate-900/50 backdrop-blur-sm"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.2, duration: 0.7 }}
+        >
+          <div className="container mx-auto max-w-6xl">
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 bg-clip-text text-transparent bg-gradient-to-r from-coral-400 to-purple-400">
+              How It Works
+            </h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <HowItWorksStep 
+                number="1"
+                title="Upload Your Wardrobe"
+                description="Take photos of your clothes or add items from our catalog to build your virtual wardrobe."
+              />
+              <HowItWorksStep 
+                number="2"
+                title="Share Your Style Preferences"
+                description="Tell Olivia about your style preferences, favorite colors, and outfits you love."
+              />
+              <HowItWorksStep 
+                number="3"
+                title="Get Daily Outfit Inspirations"
+                description="Receive personalized outfit suggestions based on your style, weather, and upcoming events."
+              />
+            </div>
+          </div>
+        </motion.section>
+
+        {/* Testimonials Section */}
+        <motion.section
+          className="py-24 px-4"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.2, duration: 0.7 }}
+        >
+          <div className="container mx-auto max-w-6xl">
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-6 bg-clip-text text-transparent bg-gradient-to-r from-coral-400 to-purple-400">
+              What Fashion Lovers Say
+            </h2>
+            <p className="text-center text-white/70 mb-12 max-w-2xl mx-auto">
+              Join thousands of women who have transformed their style experience with Olivia's AI fashion assistance.
+            </p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <Testimonial 
+                text="Olivia has completely transformed how I dress. I save so much time and always look put together!"
+                name="Jessica T."
+                role="Marketing Executive"
+              />
+              <Testimonial 
+                text="The weather-based recommendations are spot on. I'm never caught unprepared anymore!"
+                name="Michelle K."
+                role="Teacher"
+              />
+              <Testimonial 
+                text="As someone who struggles with fashion choices, Olivia has been a lifesaver. I feel confident in my outfits now."
+                name="Sarah L."
+                role="Software Developer"
+              />
+            </div>
+          </div>
+        </motion.section>
+
+        {/* Call to Action Section */}
+        <motion.section
+          className="py-20 px-4 bg-gradient-to-r from-coral-500/20 to-purple-500/20 backdrop-blur-sm"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.2, duration: 0.7 }}
+        >
+          <div className="container mx-auto max-w-4xl text-center">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white to-purple-100">
+              Ready to Transform Your Style Experience?
+            </h2>
+            <p className="text-xl text-white/80 mb-10 max-w-2xl mx-auto">
+              Join Olivia today and discover the perfect outfits that match your style, body type, and lifestyle.
+            </p>
+            <Button 
+              className="bg-gradient-to-r from-[#ff4ecb] to-[#a97eff] text-white hover:scale-[1.03] transition-transform font-bold py-6 px-10 rounded-xl shadow-md h-auto text-lg"
+              onClick={() => navigate('/auth')}
+            >
+              Get Started For Free
+            </Button>
+            <p className="text-white/60 mt-4">No credit card required. Start styling in minutes.</p>
+          </div>
+        </motion.section>
       </main>
     </div>
   );
@@ -123,6 +220,43 @@ const FashionFeature = ({ title, description, icon }: {
         {description}
       </p>
     </motion.div>
+  );
+};
+
+// How It Works Step component
+const HowItWorksStep = ({ number, title, description }: {
+  number: string;
+  title: string;
+  description: string;
+}) => {
+  return (
+    <div className="flex flex-col items-center text-center">
+      <div className="w-14 h-14 rounded-full bg-gradient-to-r from-coral-500 to-purple-500 flex items-center justify-center text-white font-bold text-2xl mb-4">
+        {number}
+      </div>
+      <h3 className="text-xl font-bold mb-3">{title}</h3>
+      <p className="text-white/70">{description}</p>
+    </div>
+  );
+};
+
+// Testimonial component
+const Testimonial = ({ text, name, role }: {
+  text: string;
+  name: string;
+  role: string;
+}) => {
+  return (
+    <div className="glass-dark p-6 rounded-xl border border-white/10">
+      <div className="mb-4 text-coral-400">
+        ★★★★★
+      </div>
+      <p className="mb-6 text-white/80 italic">"{text}"</p>
+      <div>
+        <p className="font-bold">{name}</p>
+        <p className="text-white/60 text-sm">{role}</p>
+      </div>
+    </div>
   );
 };
 
