@@ -24,6 +24,9 @@ const Header = () => {
       setIsScrolled(window.scrollY > 10);
     };
 
+    // Initial check
+    handleScroll();
+
     // Add throttling to improve performance
     let timeout: ReturnType<typeof setTimeout>;
     const throttledScroll = () => {
@@ -52,7 +55,6 @@ const Header = () => {
   };
 
   const toggleMenu = () => {
-    console.log('Toggle menu clicked, current state:', isMenuOpen);
     setIsMenuOpen(!isMenuOpen);
   };
 
@@ -121,7 +123,7 @@ const Header = () => {
               variant="ghost"
               size="icon"
               className={cn(
-                "ml-2 transition-all duration-300 touch-target",
+                "ml-2 transition-colors touch-target",
                 isScrolled ? "text-white hover:text-white/80" : "text-white hover:bg-white/10"
               )}
               onClick={toggleMenu}

@@ -47,7 +47,7 @@ export const MobileMenu = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.1 }}
             className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[1000]"
             onClick={onClose}
             aria-hidden="true"
@@ -59,8 +59,9 @@ export const MobileMenu = ({
             exit={{ x: "100%" }}
             transition={{ 
               type: "spring", 
-              stiffness: 300, 
-              damping: 30 
+              damping: 30,
+              stiffness: 400,
+              duration: 0.2
             }}
             className="fixed top-0 right-0 bottom-0 w-[75%] max-w-sm bg-gradient-to-b from-purple-950 to-slate-950 z-[1001] border-l border-white/10 flex flex-col shadow-lg"
             role="dialog"
