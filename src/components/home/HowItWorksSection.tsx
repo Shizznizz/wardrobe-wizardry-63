@@ -60,17 +60,18 @@ const HowItWorksSection = () => {
             <div 
               ref={scrollContainerRef} 
               className={`
-                ${isMobile ? 'flex overflow-x-auto pb-6 snap-x snap-mandatory scroll-pl-4 space-x-6' : 'grid grid-cols-3 gap-8'}
+                ${isMobile ? 'flex overflow-x-auto pb-6 snap-x snap-mandatory scroll-pl-4 space-x-6 hide-scrollbar' : 'grid grid-cols-3 gap-8'}
               `}
               style={isMobile ? { scrollbarWidth: 'none', msOverflowStyle: 'none' } : {}}
             >
-              <style jsx>{`
+              {/* Adding global style for the scrollbar */}
+              <style dangerouslySetInnerHTML={{ __html: `
                 @media (max-width: 768px) {
                   .hide-scrollbar::-webkit-scrollbar {
                     display: none;
                   }
                 }
-              `}</style>
+              `}} />
               
               <HowItWorksStep 
                 number="1"
