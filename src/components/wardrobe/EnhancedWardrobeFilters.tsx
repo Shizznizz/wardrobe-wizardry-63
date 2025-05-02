@@ -31,10 +31,10 @@ import {
 } from 'lucide-react';
 
 const clothingTypes: { value: ClothingType; label: string; icon: any }[] = [
-  { value: 'tops', label: 'Tops', icon: Shirt },
-  { value: 'bottoms', label: 'Bottoms', icon: Shirt },
-  { value: 'dresses', label: 'Dresses', icon: Shirt },
-  { value: 'outerwear', label: 'Outerwear', icon: Shirt },
+  { value: 'top', label: 'Tops', icon: Shirt },
+  { value: 'bottom', label: 'Bottoms', icon: Shirt },
+  { value: 'dress', label: 'Dresses', icon: Shirt },
+  { value: 'coat', label: 'Outerwear', icon: Shirt },
   { value: 'shoes', label: 'Shoes', icon: Shirt },
   { value: 'accessories', label: 'Accessories', icon: Shirt },
 ];
@@ -57,7 +57,7 @@ const occasions: { value: ClothingOccasion; label: string; icon: any }[] = [
   { value: 'casual', label: 'Casual', icon: Coffee },
   { value: 'formal', label: 'Formal', icon: BriefcaseBusiness },
   { value: 'business', label: 'Business', icon: BriefcaseBusiness },
-  { value: 'sporty', label: 'Sporty', icon: Shirt },
+  { value: 'sport', label: 'Sporty', icon: Shirt },
   { value: 'party', label: 'Party', icon: Sparkles },
 ];
 
