@@ -6,10 +6,11 @@ import { cn } from '@/lib/utils';
 import { Heart, Clock, Grid } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Card, CardHeader } from '@/components/ui/card';
+import { Outfit, ClothingItem } from '@/lib/types';
 
 interface OutfitTabSectionProps {
-  outfits: any[];
-  clothingItems: any[];
+  outfits: Outfit[];
+  clothingItems: ClothingItem[];
 }
 
 const OutfitTabSection = ({ outfits, clothingItems }: OutfitTabSectionProps) => {
@@ -24,6 +25,10 @@ const OutfitTabSection = ({ outfits, clothingItems }: OutfitTabSectionProps) => 
   
   const handleTabChange = (value: string) => {
     setActiveTab(value);
+  };
+
+  const getClothingItemById = (id: string): ClothingItem | undefined => {
+    return clothingItems.find(item => item && item.id === id);
   };
 
   const tabVariants = {
@@ -79,7 +84,12 @@ const OutfitTabSection = ({ outfits, clothingItems }: OutfitTabSectionProps) => 
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
           >
             {outfits.map((outfit) => (
-              <OutfitCard key={outfit.id} outfit={outfit} clothingItems={clothingItems} />
+              <OutfitCard 
+                key={outfit.id} 
+                outfit={outfit} 
+                clothingItems={clothingItems}
+                getClothingItemById={getClothingItemById}
+              />
             ))}
           </motion.div>
         </TabsContent>
@@ -93,7 +103,12 @@ const OutfitTabSection = ({ outfits, clothingItems }: OutfitTabSectionProps) => 
           >
             {favoriteOutfits.length > 0 ? (
               favoriteOutfits.map((outfit) => (
-                <OutfitCard key={outfit.id} outfit={outfit} clothingItems={clothingItems} />
+                <OutfitCard 
+                  key={outfit.id} 
+                  outfit={outfit} 
+                  clothingItems={clothingItems}
+                  getClothingItemById={getClothingItemById}
+                />
               ))
             ) : (
               <p className="text-white/70 text-center col-span-full py-8">
@@ -111,7 +126,12 @@ const OutfitTabSection = ({ outfits, clothingItems }: OutfitTabSectionProps) => 
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
           >
             {recentOutfits.map((outfit) => (
-              <OutfitCard key={outfit.id} outfit={outfit} clothingItems={clothingItems} />
+              <OutfitCard 
+                key={outfit.id} 
+                outfit={outfit} 
+                clothingItems={clothingItems}
+                getClothingItemById={getClothingItemById}
+              />
             ))}
           </motion.div>
         </TabsContent>

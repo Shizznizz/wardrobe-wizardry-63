@@ -8,27 +8,57 @@ import { toast } from "sonner";
 import { Heart, Calendar, Share, ExternalLink, ChevronDown, ChevronUp, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { ClothingItem, Outfit, OutfitLog } from "@/lib/types";
 
-interface OutfitCardProps {
+export interface OutfitCardProps {
   outfit: any;
   clothingItems?: any[];
   className?: string;
   compact?: boolean;
+  onEdit?: (outfit: Outfit) => void;
+  onDelete?: (id: string) => void;
+  onToggleFavorite?: (id: string) => void;
+  getClothingItemById?: (id: string) => ClothingItem | undefined;
+  onOutfitAddedToCalendar?: (log: OutfitLog) => void;
+  onPreviewInFittingRoom?: (outfit: Outfit) => void;
 }
 
-export function OutfitCard({ outfit, clothingItems, className, compact = false }: OutfitCardProps) {
+export function OutfitCard({ 
+  outfit, 
+  clothingItems, 
+  className, 
+  compact = false,
+  onEdit,
+  onDelete,
+  onToggleFavorite,
+  getClothingItemById,
+  onOutfitAddedToCalendar,
+  onPreviewInFittingRoom
+}: OutfitCardProps) {
   const [isFavorite, setIsFavorite] = useState(outfit.favorite || false);
   const [actionsOpen, setActionsOpen] = useState(false);
   
   // Helper functions
   const toggleFavorite = () => {
     setIsFavorite(!isFavorite);
+    if (onToggleFavorite) {
+      onToggleFavorite(outfit.id);
+    }
     toast.success(
       !isFavorite ? "Added to favorites!" : "Removed from favorites!"
     );
   };
 
   const addToCalendar = () => {
+    if (onOutfitAddedToCalendar) {
+      const log: OutfitLog = {
+        id: `log-${Date.now()}`,
+        outfitId: outfit.id,
+        date: new Date(),
+        timeOfDay: 'morning'
+      };
+      onOutfitAddedToCalendar(log);
+    }
     toast.success("Outfit added to calendar!");
   };
 
@@ -37,7 +67,23 @@ export function OutfitCard({ outfit, clothingItems, className, compact = false }
   };
 
   const handleTryOn = () => {
-    toast.success("Opening fitting room with this outfit!");
+    if (onPreviewInFittingRoom) {
+      onPreviewInFittingRoom(outfit);
+    } else {
+      toast.success("Opening fitting room with this outfit!");
+    }
+  };
+
+  const handleEdit = () => {
+    if (onEdit) {
+      onEdit(outfit);
+    }
+  };
+  
+  const handleDelete = () => {
+    if (onDelete) {
+      onDelete(outfit.id);
+    }
   };
 
   // Returns a suitable image URL from the outfit or a default
@@ -46,8 +92,8 @@ export function OutfitCard({ outfit, clothingItems, className, compact = false }
       return outfit.imageUrl;
     }
     
-    if (outfit.items && outfit.items.length > 0 && clothingItems) {
-      const mainItem = clothingItems.find(item => item.id === outfit.items[0]);
+    if (outfit.items && outfit.items.length > 0 && getClothingItemById) {
+      const mainItem = getClothingItemById(outfit.items[0]);
       return mainItem?.imageUrl || "/placeholder.svg";
     }
     
