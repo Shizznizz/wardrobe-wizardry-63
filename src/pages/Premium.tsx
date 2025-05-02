@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Wand, MessageCircle, Shirt, Clock, Star, Crown } from 'lucide-react';
@@ -7,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Header from '@/components/Header';
 import OptimizedImage from '@/components/ui/optimized-image';
+import PageHeader from '@/components/shared/PageHeader';
 
 // Animation variants
 const fadeInUp = {
@@ -119,7 +119,19 @@ const Premium = () => {
       <Header />
       
       <main className="container mx-auto px-4 py-6 pt-20">
-        {/* Header Section */}
+        {/* Header Section with Unified PageHeader */}
+        <PageHeader
+          title="Unlock the Full Power of Olivia"
+          subtitle="Upgrade your style journey with exclusive AI-powered tools and early fashion drops curated just for you."
+          showAvatar={true}
+        >
+          <div className="inline-flex items-center justify-center">
+            <Crown className="h-6 w-6 text-yellow-400 mr-2" />
+            <span className="text-yellow-300 font-medium">Premium Experience</span>
+          </div>
+        </PageHeader>
+
+        {/* Features Section */}
         <motion.section 
           className="text-center max-w-4xl mx-auto mb-16"
           initial="hidden"

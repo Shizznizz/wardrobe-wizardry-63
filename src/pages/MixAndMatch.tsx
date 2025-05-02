@@ -10,9 +10,9 @@ import MixMatchActions from '@/components/outfits/mix-match/MixMatchActions';
 import { Skeleton } from '@/components/ui/skeleton';
 import CollapsibleSection from '@/components/outfits/mix-match/CollapsibleSection';
 import OutfitTabSection from '@/components/outfits/mix-match/OutfitTabSection';
-import EnhancedPageHeader from '@/components/outfits/mix-match/EnhancedPageHeader';
 import ContextAdjustmentSection from '@/components/outfits/mix-match/ContextAdjustmentSection';
 import EnhancedWeatherSection from '@/components/outfits/mix-match/EnhancedWeatherSection';
+import PageHeader from '@/components/shared/PageHeader';
 
 // Lazily loaded components
 const OliviaRecommendationSection = lazy(() => import('@/components/outfits/mix-match/OliviaRecommendationSection'));
@@ -135,11 +135,28 @@ const MixAndMatch = () => {
       <div className="min-h-screen bg-gradient-to-b from-slate-950 to-indigo-950 text-white">
         <Header />
         <main className="container mx-auto px-2 sm:px-4 py-6 pt-20 max-w-6xl">
-          {/* Enhanced header section */}
-          <EnhancedPageHeader 
-            userName={profile?.first_name}
-            onScrollToWeather={scrollToWeatherSection}
-          />
+          {/* Replace EnhancedPageHeader with PageHeader but keep the functionality */}
+          <PageHeader
+            title="Your Daily Style, Curated by Olivia"
+            subtitle="Get AI-powered outfits based on your style, mood, and local weather."
+            showAvatar={true}
+          >
+            {profile?.first_name && (
+              <p className="text-white/80">
+                Hi {profile.first_name}, let me style you today!
+              </p>
+            )}
+            <div className="mt-4">
+              <Button 
+                variant="hero-primary"
+                size="lg"
+                onClick={scrollToWeatherSection}
+                className="text-base md:text-lg px-6 py-6 h-auto"
+              >
+                Let Olivia Style Me Today
+              </Button>
+            </div>
+          </PageHeader>
 
           <div className="mt-8 flex justify-center">
             <MixMatchActions />

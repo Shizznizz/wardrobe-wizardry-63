@@ -10,6 +10,7 @@ interface PageHeaderProps {
   showAvatar?: boolean;
   className?: string;
   children?: React.ReactNode;
+  avatarSrc?: string;
 }
 
 const PageHeader = ({
@@ -17,7 +18,8 @@ const PageHeader = ({
   subtitle,
   showAvatar = true,
   className,
-  children
+  children,
+  avatarSrc = "/lovable-uploads/352f9956-7bac-4f42-a91b-d20e04157b0d.png"
 }: PageHeaderProps) => {
   // Animation variants
   const containerVariants = {
@@ -90,7 +92,7 @@ const PageHeader = ({
           className="flex justify-center mb-6"
         >
           <Avatar className="h-16 w-16 border-2 border-purple-400/50 bg-gradient-to-br from-purple-600/80 to-pink-600/80">
-            <AvatarImage src="/lovable-uploads/352f9956-7bac-4f42-a91b-d20e04157b0d.png" alt="Olivia" />
+            <AvatarImage src={avatarSrc} alt="Olivia" />
             <AvatarFallback className="bg-gradient-to-br from-purple-600 to-pink-600 text-white text-lg">OB</AvatarFallback>
           </Avatar>
         </motion.div>

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -8,6 +9,7 @@ import OutfitSubscriptionPopup from '@/components/OutfitSubscriptionPopup';
 import OliviaImageGallery from '@/components/outfits/OliviaImageGallery';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import PageHeader from '@/components/shared/PageHeader';
 
 import PremiumTryOnHero from '@/components/shop-try/PremiumTryOnHero';
 import WeatherBasedTips from '@/components/shop-try/WeatherBasedTips';
@@ -283,6 +285,12 @@ const ShopAndTry = () => {
       <Header />
       
       <main className="container mx-auto px-4 pt-20 pb-20 max-w-6xl">
+        <PageHeader
+          title="Shop & Try Fashion"
+          subtitle="Try trending fashion pieces with me — you'll love the fit!"
+          showAvatar={true}
+        />
+        
         <motion.div 
           className="space-y-12 md:space-y-16"
           initial="hidden"

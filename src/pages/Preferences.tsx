@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -11,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Link, Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { saveUserPreferences, getUserPreferences } from '@/integrations/supabase/client';
+import PageHeader from '@/components/shared/PageHeader';
 
 const Preferences = () => {
   const isMobile = useIsMobile();
@@ -166,6 +166,12 @@ const Preferences = () => {
       <Header />
       
       <main className="container mx-auto px-4 pt-24 pb-16">
+        <PageHeader
+          title="Your Fashion Preferences"
+          subtitle="Let me learn your style so I can give you the best outfit recommendations."
+          showAvatar={true}
+        />
+        
         <motion.div 
           className="space-y-10 max-w-4xl mx-auto"
           initial="hidden"
@@ -173,22 +179,6 @@ const Preferences = () => {
           variants={containerVariants}
         >
           <motion.div variants={itemVariants} className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <Button variant="ghost" asChild>
-                  <Link to="/" className="text-white/80 hover:text-white">
-                    <ArrowLeftIcon className="w-5 h-5" />
-                  </Link>
-                </Button>
-                <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
-                  <span className="flex items-center gap-2">
-                    <SlidersHorizontal className="h-7 w-7" />
-                    Your Fashion Preferences
-                  </span>
-                </h1>
-              </div>
-            </div>
-
             <div className="glass-dark rounded-xl border border-white/10 p-6 space-y-6 bg-black/40 backdrop-blur-lg">
               {loading ? (
                 <div className="flex flex-col items-center justify-center py-12 space-y-4">
@@ -198,7 +188,7 @@ const Preferences = () => {
               ) : (
                 <>
                   <p className="text-lg text-blue-100/90">
-                    Set your preferences to help us provide better outfit recommendations. Your selections will be used to tailor fashion suggestions to your personal style.
+                    Set your preferences to help me provide better outfit recommendations. Your selections will be used to tailor fashion suggestions to your personal style.
                   </p>
                   
                   <UserPreferencesForm

@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -12,6 +13,7 @@ import { format } from 'date-fns';
 import ScrollToTop from '@/components/ScrollToTop';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
+import PageHeader from '@/components/shared/PageHeader';
 
 const StylePlanner = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -117,18 +119,17 @@ const StylePlanner = () => {
           animate="visible"
           variants={containerVariants}
         >
-          <motion.div variants={itemVariants} className="text-center max-w-3xl mx-auto mb-6 md:mb-10">
-            <h1 className="text-3xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 mb-4">
-              {profile?.first_name ? `Hi ${profile.first_name}, here's your outfit planner!` : 'Your Style Planner & Insights'}
-            </h1>
-            <Card className="bg-slate-800/40 border-purple-500/20 backdrop-blur-sm shadow-lg">
-              <CardContent className="p-4 md:p-6">
-                <p className="text-sm md:text-lg text-white/80">
-                  See how your outfits evolve over time and let Olivia optimize your vibe.
-                </p>
-              </CardContent>
-            </Card>
-          </motion.div>
+          <PageHeader
+            title="Your Style Planner & Insights"
+            subtitle="Let's look at your fashion evolution and unlock your ideal style."
+            showAvatar={true}
+          >
+            {profile?.first_name && (
+              <p className="text-white/80">
+                Hi {profile.first_name}, here's your outfit planner!
+              </p>
+            )}
+          </PageHeader>
           
           <motion.div variants={itemVariants} className="w-full max-w-md mx-auto">
             <EnhancedLocationSelector 

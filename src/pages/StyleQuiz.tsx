@@ -6,6 +6,7 @@ import FindYourStyleQuiz from '@/components/FindYourStyleQuiz';
 import { UserPreferences } from '@/lib/types';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import PageHeader from '@/components/shared/PageHeader';
 
 const StyleQuizPage = () => {
   const navigate = useNavigate();
@@ -29,6 +30,12 @@ const StyleQuizPage = () => {
       <Header />
       
       <main className="container mx-auto px-4 pt-24 pb-16">
+        <PageHeader
+          title="Find Your Style"
+          subtitle="Let's discover your unique aesthetic together — I'll guide your style journey."
+          showAvatar={true}
+        />
+        
         <motion.div 
           className="max-w-4xl mx-auto"
           initial={{ opacity: 0, y: 20 }}

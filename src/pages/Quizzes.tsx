@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -8,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ClipboardList, Sparkles } from 'lucide-react';
 import PersonalizedStyleQuiz from '@/components/quizzes/PersonalizedStyleQuiz';
 import OliviaMoodMatcher from '@/components/quizzes/OliviaMoodMatcher';
+import PageHeader from '@/components/shared/PageHeader';
 
 const Quizzes = () => {
   const [activeTab, setActiveTab] = useState('personalized');
@@ -33,15 +33,11 @@ const Quizzes = () => {
             transition={{ duration: 0.5 }}
             className="max-w-4xl mx-auto"
           >
-            <div className="text-center mb-10">
-              <h1 className="text-3xl md:text-4xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-                Discover Your Unique Style
-              </h1>
-              <p className="text-lg text-blue-100/90 max-w-2xl mx-auto">
-                Take one of our quizzes to get personalized styling recommendations
-                from Olivia, your AI fashion assistant.
-              </p>
-            </div>
+            <PageHeader
+              title="Discover Your Unique Style"
+              subtitle="Take one of my quizzes to get personalized styling recommendations just for you."
+              showAvatar={true}
+            />
             
             <Tabs 
               defaultValue="personalized" 
