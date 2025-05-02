@@ -21,6 +21,7 @@ function App() {
   return (
     <ThemeProvider>
       <ScrollToTop />
+      <CriticalAssetsPreloader />
       <PageLayout>
         <Routes>
           <Route path="/" element={<Index />} />
