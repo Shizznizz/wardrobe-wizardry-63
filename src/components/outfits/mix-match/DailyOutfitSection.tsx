@@ -84,9 +84,24 @@ const DailyOutfitSection = ({ weather, currentOutfit, clothingItems, situation }
     <div className="bg-slate-900/70 border border-white/10 rounded-xl overflow-hidden">
       <div className="p-6">
         <div className="flex justify-between items-start mb-4">
-          <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-coral-400 to-pink-400">
-            {getSituationText()}
-          </h2>
+          <div>
+            <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-coral-400 to-pink-400">
+              {getSituationText()}
+            </h2>
+            
+            {/* Tags moved below the title */}
+            <div className="flex flex-wrap gap-1.5 mt-2">
+              {currentOutfit.tags?.map((tag, idx) => (
+                <Badge 
+                  key={idx}
+                  variant="outline" 
+                  className="bg-purple-500/20 border-purple-400/30 text-purple-200 text-xs"
+                >
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+          </div>
 
           {weather && (
             <div className="bg-slate-800/80 backdrop-blur-sm px-3 py-2 rounded-lg border border-slate-700/50 flex items-center text-sm">
@@ -110,18 +125,6 @@ const DailyOutfitSection = ({ weather, currentOutfit, clothingItems, situation }
                 <h3 className="text-xl font-semibold text-white mb-1">
                   {currentOutfit.name}
                 </h3>
-                
-                <div className="flex flex-wrap gap-1.5">
-                  {currentOutfit.tags?.map((tag, idx) => (
-                    <Badge 
-                      key={idx}
-                      variant="outline" 
-                      className="bg-purple-500/20 border-purple-400/30 text-purple-200 text-xs"
-                    >
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
               </div>
             </div>
           </div>
@@ -171,32 +174,36 @@ const DailyOutfitSection = ({ weather, currentOutfit, clothingItems, situation }
               </div>
             </div>
             
-            <div className="flex flex-wrap gap-3">
+            {/* Compact action buttons */}
+            <div className="flex flex-wrap gap-2">
               <Button
                 onClick={handleTryOnOlivia}
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 flex-1"
+                size="sm"
               >
-                <User className="mr-2 h-4 w-4" />
+                <User className="mr-1.5 h-4 w-4" />
                 Try on Olivia
               </Button>
               
               <Button
                 onClick={handleSaveToWardrobe}
                 variant="outline"
-                className={`border-purple-400/30 text-white hover:bg-white/10 ${isSaved ? 'bg-purple-500/20 border-purple-400/50' : ''}`}
+                size="sm"
+                className={`border-purple-400/30 text-white hover:bg-white/10 flex-1 ${isSaved ? 'bg-purple-500/20 border-purple-400/50' : ''}`}
                 disabled={isSaved}
               >
-                <BookmarkPlus className="mr-2 h-4 w-4" />
-                {isSaved ? 'Saved to Wardrobe' : 'Save to My Wardrobe'}
+                <BookmarkPlus className="mr-1.5 h-4 w-4" />
+                {isSaved ? 'Saved' : 'Save'}
               </Button>
               
               <Button
                 onClick={handleShopSimilar}
                 variant="outline"
-                className="border-white/20 text-white hover:bg-white/10"
+                size="sm"
+                className="border-white/20 text-white hover:bg-white/10 flex-1"
               >
-                <ShoppingCart className="mr-2 h-4 w-4" />
-                Shop Similar Look
+                <ShoppingCart className="mr-1.5 h-4 w-4" />
+                Shop Similar
               </Button>
             </div>
           </div>

@@ -14,6 +14,7 @@ import StyleQuiz from './StyleQuiz';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
 import { Card } from '@/components/ui/card';
+import { getWeatherGradient } from '@/components/weather/WeatherUtils';
 
 interface EnhancedWeatherSectionProps {
   onWeatherUpdate: (weather: WeatherInfo) => void;
@@ -101,11 +102,17 @@ const EnhancedWeatherSection = ({
     formal: <Sun className="h-4 w-4 mr-1" />,
     party: <Sun className="h-4 w-4 mr-1" />
   };
+
+  // Dynamic weather background based on current weather
+  const weatherGradient = weatherData ? getWeatherGradient(weatherData) : "bg-gradient-to-br from-slate-800/60 to-slate-900/60";
   
   return (
     <div className="space-y-6">
       {/* Weather Section */}
-      <Card className="neo-blur border border-white/20 rounded-xl overflow-hidden bg-slate-800/70 backdrop-blur-md shadow-lg">
+      <Card className={cn(
+        "neo-blur border border-white/20 rounded-xl overflow-hidden backdrop-blur-md shadow-lg",
+        weatherData ? weatherGradient : "bg-slate-800/70"
+      )}>
         <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-white/10">
           {/* Weather Widget Column */}
           <div className="p-4 md:p-5 md:col-span-1">
@@ -209,7 +216,7 @@ const EnhancedWeatherSection = ({
               </CollapsibleContent>
             </Collapsible>
             
-            <div className="bg-slate-700/30 rounded-lg p-2 shadow-inner">
+            <div className="bg-black/20 rounded-lg p-2 shadow-inner">
               <WeatherWidget 
                 key={weatherKey}
                 className="mb-0"
@@ -218,12 +225,13 @@ const EnhancedWeatherSection = ({
                 country={country}
                 showToasts={false}
                 savePreferences={false}
+                compact={false}
               />
             </div>
           </div>
           
           {/* Style Quiz / Mood Section */}
-          <div className="p-4 md:p-5 md:col-span-1 bg-gradient-to-b from-slate-800/30 to-slate-800/10">
+          <div className="p-4 md:p-5 md:col-span-1 bg-gradient-to-b from-black/30 to-black/10">
             <Collapsible 
               open={moodSectionOpen}
               onOpenChange={setMoodSectionOpen}

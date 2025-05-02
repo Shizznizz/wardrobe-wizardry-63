@@ -19,7 +19,7 @@ interface WeatherWidgetProps {
   savePreferences?: boolean;
   showError?: boolean;
   showToasts?: boolean;
-  compact?: boolean; // Added compact prop
+  compact?: boolean; 
 }
 
 const WeatherWidget = ({ 
@@ -30,7 +30,7 @@ const WeatherWidget = ({
   savePreferences = false,
   showError = true,
   showToasts = false,
-  compact = false // Added with default value
+  compact = false 
 }: WeatherWidgetProps) => {
   const [weather, setWeather] = useState<WeatherInfo | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -128,12 +128,11 @@ const WeatherWidget = ({
     };
     fetchWeather();
     prevLocationRef.current = { city, country };
-  }, [city, country, onWeatherChange, showToasts]);
+  }, [city, country, onWeatherChange, showToasts, weather]);
 
-  // Update: Responsive wrapper
   return (
     <div className={cn(
-      "overflow-hidden rounded-lg shadow-sm backdrop-blur-sm transition-all duration-300 bg-white/5 dark:bg-gray-900/20 border border-white/10",
+      "overflow-hidden rounded-lg shadow-sm backdrop-blur-sm transition-all duration-300 border border-white/10",
       isMobile ? "w-full p-2 max-w-full" : compact ? "p-3 max-w-xs" : "p-4 max-w-md",
       className
     )}>

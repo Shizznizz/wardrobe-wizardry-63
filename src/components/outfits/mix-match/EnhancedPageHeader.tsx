@@ -18,7 +18,7 @@ const EnhancedPageHeader = ({ userName, onScrollToWeather }: EnhancedPageHeaderP
     <motion.div 
       initial="hidden"
       animate="visible"
-      className="relative py-8 md:py-10 lg:py-12 px-4 text-center"
+      className="relative py-6 md:py-8 lg:py-10 px-4 text-center"
     >
       {/* Background elements */}
       <div className="absolute inset-0 overflow-hidden -z-10">

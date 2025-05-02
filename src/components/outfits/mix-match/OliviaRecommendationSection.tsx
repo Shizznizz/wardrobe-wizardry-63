@@ -118,7 +118,7 @@ const OliviaRecommendationSection = ({ weather, situation }: OliviaRecommendatio
         </Collapsible>
         
         {/* Action buttons grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 p-3 bg-slate-800/70 border-t border-white/10">
+        <div className="grid grid-cols-3 gap-2 p-3 bg-slate-800/70 border-t border-white/10">
           <Button 
             variant="outline" 
             size="sm"
@@ -142,26 +142,6 @@ const OliviaRecommendationSection = ({ weather, situation }: OliviaRecommendatio
           <Button 
             variant="outline" 
             size="sm"
-            onClick={handleMakeWarmer}
-            className="border-amber-500/30 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20"
-          >
-            <Thermometer className="h-4 w-4 mr-2" />
-            Warmer
-          </Button>
-          
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={handleChangeTop}
-            className="border-blue-500/30 bg-blue-500/10 text-blue-300 hover:bg-blue-500/20"
-          >
-            <Edit className="h-4 w-4 mr-2" />
-            Top
-          </Button>
-          
-          <Button 
-            variant="outline" 
-            size="sm"
             onClick={handleSaveToWardrobe}
             className="border-purple-500/30 bg-purple-500/10 text-purple-300 hover:bg-purple-500/20"
           >
@@ -172,8 +152,28 @@ const OliviaRecommendationSection = ({ weather, situation }: OliviaRecommendatio
           <Button 
             variant="outline" 
             size="sm"
+            onClick={handleMakeWarmer}
+            className="border-amber-500/30 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 col-span-1"
+          >
+            <Thermometer className="h-4 w-4 mr-2" />
+            Warmer
+          </Button>
+          
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={handleChangeTop}
+            className="border-blue-500/30 bg-blue-500/10 text-blue-300 hover:bg-blue-500/20 col-span-1"
+          >
+            <Edit className="h-4 w-4 mr-2" />
+            Top
+          </Button>
+          
+          <Button 
+            variant="outline" 
+            size="sm"
             onClick={handleAddToCalendar}
-            className="border-pink-500/30 bg-pink-500/10 text-pink-300 hover:bg-pink-500/20"
+            className="border-pink-500/30 bg-pink-500/10 text-pink-300 hover:bg-pink-500/20 col-span-1"
           >
             <Calendar className="h-4 w-4 mr-2" />
             Calendar
