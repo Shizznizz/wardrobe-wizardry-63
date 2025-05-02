@@ -1,14 +1,11 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRightCircle, ShoppingBag, Save } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
-import { useNavigate } from 'react-router-dom';
-import { Outfit, WeatherInfo } from '@/lib/types';
+import { Lightbulb } from 'lucide-react';
+import { WeatherInfo } from '@/lib/types';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Badge } from '@/components/ui/badge';
-import { sampleOutfits } from '@/lib/wardrobeData';
+import { cn } from '@/lib/utils';
 
 // Import our existing recommendation component
 import OliviaRecommendation from '@/components/outfits/OliviaRecommendation';
@@ -19,36 +16,11 @@ interface OliviaRecommendationSectionProps {
 }
 
 const OliviaRecommendationSection = ({ weather, situation }: OliviaRecommendationSectionProps) => {
-  const navigate = useNavigate();
-  
-  const handleTryOnOutfit = () => {
-    toast.success("Opening fitting room with this outfit!");
-    navigate('/fitting-room');
-  };
-  
-  const handleSaveOutfit = () => {
-    toast.success("Outfit saved to your collection!");
-  };
-  
-  const handleShopSimilarLook = () => {
-    toast.success("Taking you to shop similar items!");
-    navigate('/shop-and-try');
-  };
-  
-  // Create a safe weather object for when weather is null
-  const safeWeather: WeatherInfo = weather || {
-    temperature: 18,
-    condition: 'clear',
-    icon: 'sun',
-    city: 'Unknown',
-    country: 'Unknown'
-  };
-  
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
         <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
-          Your Daily Outfit from Olivia
+          Daily Outfit from Olivia
         </h2>
         
         <TooltipProvider>
@@ -62,45 +34,46 @@ const OliviaRecommendationSection = ({ weather, situation }: OliviaRecommendatio
               </Badge>
             </TooltipTrigger>
             <TooltipContent className="bg-slate-900/95 border-purple-500/20 text-white">
-              <p>Picked for you based on today's weather in {safeWeather.city || 'your area'} and your preferences.</p>
+              <p>Picked for you based on today's weather {weather?.city ? `in ${weather.city}` : 'in your area'} and your preferences.</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
       </div>
       
-      <div className="grid grid-cols-1 gap-8">
+      <div className={cn(
+        "grid grid-cols-1 gap-8 p-4 rounded-lg",
+        "bg-gradient-to-r from-slate-900/70 to-slate-800/60 backdrop-blur-md border border-white/10"
+      )}>
+        {weather && (
+          <div className="flex items-start gap-3">
+            <div className="mt-1">
+              <div className="h-8 w-8 rounded-full bg-amber-500/20 flex items-center justify-center">
+                <Lightbulb className="h-4 w-4 text-amber-300" />
+              </div>
+            </div>
+            <div className="flex-1">
+              <h3 className="text-lg font-medium text-white mb-2">Olivia's Thoughts</h3>
+              <p className="text-white/80 text-sm leading-relaxed">
+                Today's {weather.temperature ? `${weather.temperature}°C` : ''} 
+                {weather.condition ? ` ${weather.condition}` : ''} weather 
+                {situation ? ` and your ${situation} activities` : ''} call for an outfit that balances 
+                {weather.temperature && weather.temperature > 25 ? ' comfort and breathability' : 
+                 weather.temperature && weather.temperature < 10 ? ' warmth and protection' : 
+                 ' style and functionality'}. 
+                I've selected pieces that will keep you 
+                {weather.temperature && weather.temperature > 25 ? ' cool and fresh' : 
+                 weather.temperature && weather.temperature < 10 ? ' warm and cozy' : 
+                 ' comfortable and stylish'} 
+                throughout the day.
+              </p>
+            </div>
+          </div>
+        )}
+        
         <OliviaRecommendation 
-          weather={safeWeather} 
+          weather={weather || undefined} 
           situation={situation || undefined}
         />
-      </div>
-      
-      <div className="flex flex-wrap gap-3 sm:gap-4 justify-center">
-        <Button 
-          size="lg"
-          className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-md shadow-purple-900/20"
-          onClick={handleTryOnOutfit}
-        >
-          <ArrowRightCircle className="mr-2 h-5 w-5" /> Try on Olivia
-        </Button>
-        
-        <Button 
-          variant="outline" 
-          size="lg"
-          className="border-purple-400/30 text-white hover:bg-white/10"
-          onClick={handleSaveOutfit}
-        >
-          <Save className="mr-2 h-5 w-5" /> Save to My Collection
-        </Button>
-        
-        <Button 
-          variant="outline" 
-          size="lg"
-          className="border-blue-400/30 text-white hover:bg-white/10"
-          onClick={handleShopSimilarLook}
-        >
-          <ShoppingBag className="mr-2 h-5 w-5" /> Shop Similar Look
-        </Button>
       </div>
     </div>
   );

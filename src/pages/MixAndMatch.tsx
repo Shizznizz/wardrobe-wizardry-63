@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Suspense, lazy } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import { sampleOutfits, sampleClothingItems } from '@/lib/wardrobeData';
@@ -8,15 +8,17 @@ import { OutfitProvider } from '@/hooks/useOutfitContext';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import WardrobeControls from '@/components/wardrobe/WardrobeControls';
-import WeatherSection from '@/components/outfits/mix-match/WeatherSection';
-import OliviaRecommendationSection from '@/components/outfits/mix-match/OliviaRecommendationSection';
-import CreateOutfitSection from '@/components/outfits/mix-match/CreateOutfitSection';
 import ContextAdjustmentSection from '@/components/outfits/mix-match/ContextAdjustmentSection';
-import OutfitCollectionSection from '@/components/outfits/mix-match/OutfitCollectionSection';
-import SuggestedOutfitsSection from '@/components/outfits/mix-match/SuggestedOutfitsSection';
 import MixMatchActions from '@/components/outfits/mix-match/MixMatchActions';
-import { Suspense, lazy } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+import CollapsibleSection from '@/components/outfits/mix-match/CollapsibleSection';
+import OutfitTabSection from '@/components/outfits/mix-match/OutfitTabSection';
+
+// Lazily loaded components
+const EnhancedWeatherSection = lazy(() => import('@/components/outfits/mix-match/EnhancedWeatherSection'));
+const OliviaRecommendationSection = lazy(() => import('@/components/outfits/mix-match/OliviaRecommendationSection'));
+const CreateOutfitSection = lazy(() => import('@/components/outfits/mix-match/CreateOutfitSection'));
+const SuggestedOutfitsSection = lazy(() => import('@/components/outfits/mix-match/SuggestedOutfitsSection'));
 
 const MixAndMatch = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -33,6 +35,7 @@ const MixAndMatch = () => {
   const { user } = useAuth();
   const [profile, setProfile] = useState<{ first_name: string | null } | null>(null);
 
+  // Fetch user profile
   useEffect(() => {
     if (user?.id) {
       supabase
@@ -48,6 +51,7 @@ const MixAndMatch = () => {
     }
   }, [user?.id]);
 
+  // Simulate loading time
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
@@ -55,6 +59,7 @@ const MixAndMatch = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  // Initialize selected outfit
   useEffect(() => {
     if (!selectedOutfitId && sampleOutfits.length > 0) {
       setSelectedOutfitId(sampleOutfits[0].id);
@@ -66,12 +71,6 @@ const MixAndMatch = () => {
 
   const handleWeatherUpdate = useCallback((weatherData: WeatherInfo) => {
     setWeather(weatherData);
-    if (weatherData.temperature) {
-      setTemperature(weatherData.temperature);
-    }
-    if (weatherData.condition) {
-      setWeatherCondition(weatherData.condition.toLowerCase());
-    }
   }, []);
 
   const handleSituationChange = useCallback((newSituation: string) => {
@@ -91,12 +90,6 @@ const MixAndMatch = () => {
       case 'timeOfDay':
         setTimeOfDay(value as string);
         break;
-      case 'temperature':
-        setTemperature(value as number);
-        break;
-      case 'weatherCondition':
-        setWeatherCondition(value as string);
-        break;
       default:
         break;
     }
@@ -108,9 +101,14 @@ const MixAndMatch = () => {
     setSelectedOutfitId(availableOutfits[randomIndex].id);
   }, [selectedOutfitId]);
 
-  const LazyCreateOutfitSection = lazy(() => import('@/components/outfits/mix-match/CreateOutfitSection'));
-  const LazyOutfitCollectionSection = lazy(() => import('@/components/outfits/mix-match/OutfitCollectionSection'));
-  const LazySuggestedOutfitsSection = lazy(() => import('@/components/outfits/mix-match/SuggestedOutfitsSection'));
+  // Use memoized handlers for temperature and weather condition
+  const handleTemperatureChange = useCallback((temp: number) => {
+    setTemperature(temp);
+  }, []);
+
+  const handleWeatherConditionChange = useCallback((condition: string) => {
+    setWeatherCondition(condition);
+  }, []);
 
   return (
     <OutfitProvider>
@@ -121,18 +119,18 @@ const MixAndMatch = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className="text-center mb-8 px-2"
+            className="text-center mb-6 px-2"
           >
             <h1 className="text-2xl xs:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-coral-400 text-balance">
               {profile?.first_name
                 ? `Hi ${profile.first_name}, Olivia's got a perfect outfit for you today!`
                 : 'Mix and Match Your Perfect Outfit'}
             </h1>
-            <p className="text-base xs:text-lg md:text-xl text-white/70 max-w-3xl mx-auto text-balance mb-6">
+            <p className="text-base xs:text-lg md:text-xl text-white/70 max-w-3xl mx-auto text-balance mb-4">
               Let Olivia create a fresh outfit for you based on today's weather and your style.
             </p>
             
-            <div className="flex flex-col items-center space-y-6">
+            <div className="flex flex-col items-center space-y-4">
               <div className="flex justify-center w-full">
                 <WardrobeControls
                   viewMode={viewMode}
@@ -146,110 +144,113 @@ const MixAndMatch = () => {
             </div>
           </motion.div>
 
-          {/* Responsive grid for Weather and Olivia Recommendation */}
+          {/* Unified Weather & Context Section */}
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, duration: 0.5 }}
-            className="mb-8"
+            className="mb-6"
           >
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-full">
-              <div className="w-full lg:max-w-full flex justify-center">
-                <div className="w-full max-w-md sm:max-w-lg lg:max-w-xl">
-                  <WeatherSection 
-                    onWeatherUpdate={handleWeatherUpdate}
-                    onSituationChange={handleSituationChange}
-                  />
-                </div>
-              </div>
-              <div className="w-full lg:max-w-full flex justify-center">
-                <div className="w-full max-w-md sm:max-w-lg lg:max-w-xl">
-                  <OliviaRecommendationSection
-                    weather={weather}
-                    situation={situation}
-                  />
-                </div>
-              </div>
-            </div>
+            <Suspense fallback={<Skeleton className="w-full h-64 rounded-xl bg-slate-800" />}>
+              <EnhancedWeatherSection 
+                onWeatherUpdate={handleWeatherUpdate}
+                onSituationChange={handleSituationChange}
+                onTemperatureChange={handleTemperatureChange}
+                onWeatherConditionChange={handleWeatherConditionChange}
+                temperature={temperature}
+                weatherCondition={weatherCondition}
+              />
+            </Suspense>
           </motion.section>
-          {/* Create Outfit Section - lazy loaded */}
+
+          {/* Olivia's Recommendation Section */}
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.5 }}
-            className="mb-12"
+            className="mb-6"
           >
-            <div className="w-full flex justify-center">
-              <div className="w-full max-w-4xl">
-                <Suspense fallback={<Skeleton className="w-full h-32 rounded-xl bg-slate-800" />}>
-                  <LazyCreateOutfitSection 
-                    clothingItems={sampleClothingItems}
-                    isPremium={false}
-                  />
-                </Suspense>
-              </div>
-            </div>
+            <Suspense fallback={<Skeleton className="w-full h-64 rounded-xl bg-slate-800" />}>
+              <OliviaRecommendationSection 
+                weather={weather}
+                situation={situation}
+              />
+            </Suspense>
           </motion.section>
-          {/* Context Adjustment Section */}
+          
+          {/* Create Outfit Section */}
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.5 }}
-            className="mb-8"
+            className="mb-6"
           >
-            <div className="w-full flex justify-center">
-              <div className="w-full max-w-4xl">
-                <ContextAdjustmentSection
-                  season={season}
-                  occasion={occasion}
-                  timeOfDay={timeOfDay}
-                  temperature={temperature}
-                  weatherCondition={weatherCondition}
-                  onContextChange={handleContextChange}
-                  onRefreshOutfit={handleRefreshOutfit}
+            <CollapsibleSection
+              title={<h3 className="text-xl font-semibold text-white">Create Your Own Outfit</h3>}
+              defaultOpen={false}
+            >
+              <Suspense fallback={<Skeleton className="w-full h-32 rounded-xl bg-slate-800" />}>
+                <CreateOutfitSection 
+                  clothingItems={sampleClothingItems}
+                  isPremium={false}
                 />
-              </div>
-            </div>
+              </Suspense>
+            </CollapsibleSection>
           </motion.section>
-          {/* Outfit Collection Section - lazy loaded */}
+          
+          {/* Context Adjustment Section */}
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.5 }}
-            className="mb-16"
+            className="mb-6"
           >
-            <div className="w-full flex justify-center">
-              <div className="w-full max-w-4xl">
-                <Suspense fallback={<Skeleton className="w-full h-40 rounded-xl bg-slate-800" />}>
-                  <LazyOutfitCollectionSection
-                    outfits={sampleOutfits}
-                    clothingItems={sampleClothingItems}
-                  />
-                </Suspense>
-              </div>
-            </div>
+            <CollapsibleSection
+              title={<h3 className="text-xl font-semibold text-white">Fine-Tune Style Context</h3>}
+              defaultOpen={false}
+            >
+              <ContextAdjustmentSection
+                season={season}
+                occasion={occasion}
+                timeOfDay={timeOfDay}
+                temperature={temperature}
+                weatherCondition={weatherCondition}
+                onContextChange={handleContextChange}
+                onRefreshOutfit={handleRefreshOutfit}
+              />
+            </CollapsibleSection>
           </motion.section>
-          {/* Suggested Outfits Section - lazy loaded */}
+          
+          {/* My Collection Section */}
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.5 }}
+            className="mb-6"
+          >
+            <OutfitTabSection
+              outfits={sampleOutfits}
+              clothingItems={sampleClothingItems}
+            />
+          </motion.section>
+          
+          {/* Suggested Outfits Section */}
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6, duration: 0.5 }}
             className="mb-8"
           >
-            <div className="w-full flex justify-center">
-              <div className="w-full max-w-4xl">
-                <Suspense fallback={<Skeleton className="w-full h-32 rounded-xl bg-slate-800" />}>
-                  <LazySuggestedOutfitsSection
-                    outfits={popularOutfits.slice(0, 6)}
-                    clothingItems={sampleClothingItems}
-                    weather={{
-                      temperature: temperature,
-                      condition: weatherCondition,
-                    }}
-                  />
-                </Suspense>
-              </div>
-            </div>
+            <Suspense fallback={<Skeleton className="w-full h-32 rounded-xl bg-slate-800" />}>
+              <SuggestedOutfitsSection
+                outfits={popularOutfits.slice(0, 6)}
+                clothingItems={sampleClothingItems}
+                weather={{
+                  temperature: temperature,
+                  condition: weatherCondition,
+                }}
+              />
+            </Suspense>
           </motion.section>
         </main>
       </div>
