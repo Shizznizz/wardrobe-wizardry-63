@@ -124,8 +124,9 @@ const StylePlanner = () => {
             title="Your Style Planner & Insights"
             subtitle="Let's look at your fashion evolution and unlock your ideal style — with Olivia's guidance."
             showAvatar={false}
-            halfBodyImage="/lovable-uploads/34e8d801-61ee-4254-a7ce-39b52a3a7e65.png"
+            imageVariant="pink-suit"
             imagePosition="right"
+            showSparkles={true}
           >
             {profile?.first_name && (
               <p className="text-white/80 mb-4">
@@ -133,7 +134,7 @@ const StylePlanner = () => {
               </p>
             )}
             <Button 
-              className="bg-gradient-to-r from-purple-500 to-indigo-500 hover:opacity-90 shadow-md mb-2"
+              className="bg-gradient-to-r from-purple-500 to-indigo-500 hover:opacity-90 shadow-md shadow-purple-500/20 hover:shadow-purple-500/30 transition-all duration-300 mb-2"
               size="lg"
             >
               Show Me My Style Timeline

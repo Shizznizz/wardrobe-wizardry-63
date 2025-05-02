@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -373,11 +374,12 @@ const MyWardrobe = () => {
           animate="visible"
           variants={containerVariants}
         >
-          {/* Updated header section with PageHeader */}
+          {/* Updated PageHeader with new image */}
           <PageHeader
             title="Your Digital Wardrobe"
             subtitle="Olivia helps you organize, analyze, and fall in love with your closet again."
-            halfBodyImage="/lovable-uploads/34e8d801-61ee-4254-a7ce-39b52a3a7e65.png"
+            showAvatar={false}
+            imageVariant="pink-suit"
             imagePosition="left"
             className="mb-8"
           >
@@ -385,7 +387,7 @@ const MyWardrobe = () => {
               <UploadModal onUpload={handleUpload}>
                 <Button 
                   size="lg" 
-                  className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-90 shadow-lg"
+                  className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-90 shadow-lg shadow-purple-600/20 hover:shadow-purple-600/30 transition-all duration-300"
                 >
                   <Upload className="mr-2 h-4 w-4" /> Add Clothing Item
                 </Button>

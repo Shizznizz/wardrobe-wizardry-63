@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -288,9 +289,10 @@ const ShopAndTry = () => {
         <PageHeader
           title="Shop & Try Fashion"
           subtitle="Try trending fashion pieces with Olivia — you'll love the fit!"
-          halfBodyImage="/lovable-uploads/34e8d801-61ee-4254-a7ce-39b52a3a7e65.png"
+          imageVariant="portrait"
           imagePosition="left"
           className="mb-6"
+          showSparkles={true}
         >
           <Button 
             className="bg-gradient-to-r from-pink-500 to-purple-500 hover:opacity-90 shadow-lg shadow-pink-500/20 hover:shadow-pink-500/30 transition-all duration-300 mt-4"

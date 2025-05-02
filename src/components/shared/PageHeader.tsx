@@ -3,6 +3,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Sparkles } from 'lucide-react';
 
 interface PageHeaderProps {
   title: string;
@@ -13,6 +14,8 @@ interface PageHeaderProps {
   avatarSrc?: string;
   halfBodyImage?: string;
   imagePosition?: 'left' | 'right';
+  showSparkles?: boolean;
+  imageVariant?: 'pink-suit' | 'portrait';
 }
 
 const PageHeader = ({
@@ -23,7 +26,9 @@ const PageHeader = ({
   children,
   avatarSrc = "/lovable-uploads/34e8d801-61ee-4254-a7ce-39b52a3a7e65.png",
   halfBodyImage,
-  imagePosition = 'right'
+  imagePosition = 'right',
+  showSparkles = false,
+  imageVariant = 'pink-suit'
 }: PageHeaderProps) => {
   // Animation variants
   const containerVariants = {
@@ -62,6 +67,17 @@ const PageHeader = ({
     }
   };
 
+  // Get the appropriate image based on the variant
+  const getImageSrc = () => {
+    if (halfBodyImage) return halfBodyImage;
+    
+    if (imageVariant === 'pink-suit') {
+      return "/lovable-uploads/f29b0fb8-330c-409a-8488-2e7ae2b351ed.png";
+    } else {
+      return "/lovable-uploads/7fc023d8-bd78-47c7-8725-d8cb48855e20.png";
+    }
+  };
+
   return (
     <motion.div
       initial="hidden"
@@ -69,27 +85,43 @@ const PageHeader = ({
       variants={containerVariants}
       className={cn(
         "relative overflow-hidden py-4 md:py-6 px-4 md:px-6",
-        halfBodyImage ? "min-h-[280px] md:min-h-[320px]" : "",
-        !halfBodyImage && "text-center",
+        (halfBodyImage || imageVariant) ? "min-h-[280px] md:min-h-[320px]" : "",
+        !(halfBodyImage || imageVariant) && "text-center",
         className
       )}
     >
-      {/* Background elements */}
+      {/* Enhanced background elements */}
       <div className="absolute inset-0 overflow-hidden -z-10">
         <div className="absolute top-1/3 left-1/4 w-64 h-64 rounded-full bg-purple-500/10 blur-3xl"></div>
         <div className="absolute top-1/2 right-1/4 w-72 h-72 rounded-full bg-indigo-500/10 blur-3xl"></div>
+        {/* Additional futuristic elements */}
+        <div className="absolute bottom-0 left-0 w-full h-1/3 bg-gradient-to-t from-purple-900/10 to-transparent"></div>
+        <div className="absolute -left-20 top-1/4 w-40 h-40 rounded-full border border-pink-300/20"></div>
+        <div className="absolute right-10 bottom-1/4 w-20 h-20 rounded-full border border-indigo-300/20"></div>
       </div>
       
-      <div className={`flex ${halfBodyImage ? 'flex-row items-center' : 'flex-col items-center'} ${halfBodyImage && imagePosition === 'left' ? 'flex-row-reverse' : ''}`}>
+      <div className={`flex ${(halfBodyImage || imageVariant) ? 'flex-row items-center' : 'flex-col items-center'} ${(halfBodyImage || imageVariant) && imagePosition === 'left' ? 'flex-row-reverse' : ''}`}>
         {/* Text content */}
-        <div className={`z-10 ${halfBodyImage ? (imagePosition === 'left' ? 'pr-4' : 'pl-4') : 'w-full'} ${halfBodyImage ? 'max-w-[60%]' : ''}`}>
+        <div className={`z-10 ${(halfBodyImage || imageVariant) ? (imagePosition === 'left' ? 'pr-4' : 'pl-4') : 'w-full'} ${(halfBodyImage || imageVariant) ? 'max-w-[60%]' : ''}`}>
           {/* Main headline */}
-          <motion.h1 
-            variants={itemVariants}
-            className="text-3xl xs:text-4xl sm:text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 leading-tight"
-          >
-            {title}
-          </motion.h1>
+          <motion.div className="relative">
+            {showSparkles && (
+              <motion.div 
+                className="absolute -top-6 -left-6"
+                variants={sparkleVariants}
+                initial="initial"
+                animate="animate"
+              >
+                <Sparkles className="w-5 h-5 text-pink-400" />
+              </motion.div>
+            )}
+            <motion.h1 
+              variants={itemVariants}
+              className="text-3xl xs:text-4xl sm:text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 leading-tight"
+            >
+              {title}
+            </motion.h1>
+          </motion.div>
           
           {/* Subheadline */}
           <motion.p 
@@ -118,25 +150,35 @@ const PageHeader = ({
           )}
         </div>
         
-        {/* Half-body image (if provided) */}
-        {halfBodyImage && (
+        {/* Olivia image */}
+        {(halfBodyImage || imageVariant) && (
           <motion.div 
             className={`relative z-10 flex-shrink-0 ${imagePosition === 'left' ? 'mr-4' : 'ml-4'}`}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
           >
-            <div className="absolute inset-0 -z-10 rounded-full bg-gradient-to-r from-purple-500/20 to-pink-500/20 blur-2xl"></div>
+            {/* Glowing backlight effect for the image */}
+            <div className="absolute inset-0 -z-10 rounded-full bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-indigo-500/20 blur-2xl"></div>
+            
+            {/* Subtle animated rings */}
+            <div className="absolute inset-0 -z-5 rounded-full border border-pink-400/10 animate-pulse"></div>
+            <div className="absolute inset-2 -z-5 rounded-full border border-indigo-400/5"></div>
+            
+            {/* The image */}
             <img 
-              src={halfBodyImage} 
+              src={getImageSrc()} 
               alt="Olivia" 
               className="max-h-[280px] md:max-h-[320px] drop-shadow-lg"
             />
+            
+            {/* Subtle light effect */}
+            <div className="absolute top-0 right-1/4 w-10 h-10 bg-white/10 rounded-full blur-xl"></div>
           </motion.div>
         )}
         
         {/* Avatar (optional) */}
-        {showAvatar && !halfBodyImage && (
+        {showAvatar && !halfBodyImage && !imageVariant && (
           <motion.div 
             variants={itemVariants}
             className="mb-6"
