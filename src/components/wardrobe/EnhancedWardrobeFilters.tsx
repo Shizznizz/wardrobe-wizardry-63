@@ -32,7 +32,7 @@ import {
 
 const clothingTypes: { value: ClothingType; label: string; icon: any }[] = [
   { value: 'top', label: 'Tops', icon: Shirt },
-  { value: 'bottom', label: 'Bottoms', icon: Shirt },
+  { value: 'pants', label: 'Bottoms', icon: Shirt }, // Changed from 'bottom' to 'pants' which exists in ClothingType
   { value: 'dress', label: 'Dresses', icon: Shirt },
   { value: 'coat', label: 'Outerwear', icon: Shirt },
   { value: 'shoes', label: 'Shoes', icon: Shirt },
