@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+
+import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 
 interface LocationData {
@@ -6,7 +7,17 @@ interface LocationData {
   city: string;
 }
 
-export const useLocationStorage = () => {
+interface LocationContextType {
+  savedLocation: LocationData | null;
+  isLoading: boolean;
+  saveLocation: (country: string, city: string) => Promise<boolean>;
+}
+
+// Create a context for location data
+const LocationContext = createContext<LocationContextType | undefined>(undefined);
+
+// Provider component
+export const LocationProvider = ({ children }: { children: ReactNode }) => {
   const [savedLocation, setSavedLocation] = useState<LocationData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { user } = useAuth();
@@ -68,5 +79,27 @@ export const useLocationStorage = () => {
     }
   };
 
-  return { savedLocation, isLoading, saveLocation };
+  // Create value object to be provided by context
+  const contextValue: LocationContextType = {
+    savedLocation,
+    isLoading,
+    saveLocation,
+  };
+
+  return (
+    <LocationContext.Provider value={contextValue}>
+      {children}
+    </LocationContext.Provider>
+  );
+};
+
+// Custom hook to use the location context
+export const useLocationStorage = () => {
+  const context = useContext(LocationContext);
+  
+  if (context === undefined) {
+    throw new Error('useLocationStorage must be used within a LocationProvider');
+  }
+  
+  return context;
 };
