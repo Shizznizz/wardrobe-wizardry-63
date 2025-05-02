@@ -5,7 +5,17 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
-import { Briefcase, Dumbbell, Sun, Wind, CloudRain } from 'lucide-react';
+import { 
+  Briefcase, 
+  Coffee, 
+  Wine, 
+  Dumbbell, 
+  PartyPopper, 
+  Plane, 
+  Heart, 
+  Home, 
+  Palette 
+} from 'lucide-react';
 
 interface StyleQuizProps {
   onComplete: (answers: Record<string, string>) => void;
@@ -29,13 +39,17 @@ const StyleQuiz = ({ onComplete, activityIcons, gradientButtonStyle = false }: S
     onComplete(answers);
   };
 
-  // Default icons if not provided
+  // Define default activity icons
   const defaultActivityIcons = {
+    casual: <Coffee className="h-4 w-4 mr-1" />,
     work: <Briefcase className="h-4 w-4 mr-1" />,
+    formal: <Wine className="h-4 w-4 mr-1" />,
     sport: <Dumbbell className="h-4 w-4 mr-1" />,
-    casual: <Sun className="h-4 w-4 mr-1" />,
-    formal: <Wind className="h-4 w-4 mr-1" />,
-    party: <CloudRain className="h-4 w-4 mr-1" />
+    party: <PartyPopper className="h-4 w-4 mr-1" />,
+    travel: <Plane className="h-4 w-4 mr-1" />,
+    date: <Heart className="h-4 w-4 mr-1" />,
+    lounge: <Home className="h-4 w-4 mr-1" />,
+    creative: <Palette className="h-4 w-4 mr-1" />
   };
 
   const icons = activityIcons || defaultActivityIcons;
@@ -96,6 +110,38 @@ const StyleQuiz = ({ onComplete, activityIcons, gradientButtonStyle = false }: S
               Party
             </Label>
           </div>
+          
+          <div className="flex items-center space-x-2 p-2 hover:bg-white/5 rounded-md transition-colors">
+            <RadioGroupItem value="travel" id="travel" className="text-purple-400" />
+            <Label htmlFor="travel" className="flex items-center text-white/80 text-sm cursor-pointer">
+              {icons.travel}
+              Travel
+            </Label>
+          </div>
+          
+          <div className="flex items-center space-x-2 p-2 hover:bg-white/5 rounded-md transition-colors">
+            <RadioGroupItem value="date" id="date" className="text-purple-400" />
+            <Label htmlFor="date" className="flex items-center text-white/80 text-sm cursor-pointer">
+              {icons.date}
+              Date
+            </Label>
+          </div>
+          
+          <div className="flex items-center space-x-2 p-2 hover:bg-white/5 rounded-md transition-colors">
+            <RadioGroupItem value="lounge" id="lounge" className="text-purple-400" />
+            <Label htmlFor="lounge" className="flex items-center text-white/80 text-sm cursor-pointer">
+              {icons.lounge}
+              Lounge
+            </Label>
+          </div>
+          
+          <div className="flex items-center space-x-2 p-2 hover:bg-white/5 rounded-md transition-colors">
+            <RadioGroupItem value="creative" id="creative" className="text-purple-400" />
+            <Label htmlFor="creative" className="flex items-center text-white/80 text-sm cursor-pointer">
+              {icons.creative}
+              Creative
+            </Label>
+          </div>
         </RadioGroup>
       </motion.div>
       
@@ -105,10 +151,10 @@ const StyleQuiz = ({ onComplete, activityIcons, gradientButtonStyle = false }: S
           "w-full",
           gradientButtonStyle 
             ? "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-md text-white border-none"
-            : "bg-orange-500 hover:bg-orange-600 text-white"
+            : "bg-purple-500 hover:bg-purple-600 text-white"
         )}
       >
-        Update My Mood
+        Update My Activity
       </Button>
     </div>
   );

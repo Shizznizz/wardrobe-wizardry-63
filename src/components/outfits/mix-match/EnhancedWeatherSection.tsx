@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, memo } from 'react';
 import { motion } from 'framer-motion';
-import { MapPin, RefreshCw, Briefcase, Dumbbell, Sun, ChevronUp, ChevronDown } from 'lucide-react';
+import { MapPin, RefreshCw, Briefcase, Dumbbell, Sun, ChevronUp, ChevronDown, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { WeatherInfo } from '@/lib/types';
@@ -45,10 +45,10 @@ const EnhancedWeatherSection = ({
   } = useLocation();
   const [availableCities, setAvailableCities] = useState<string[]>([]);
   const [quizComplete, setQuizComplete] = useState(false);
-  const [weatherKey, setWeatherKey] = useState(0);
+  const [weatherKey, setWeatherKey] = useState(1); // Start with 1 to auto-load
   const [weatherData, setWeatherData] = useState<WeatherInfo | null>(null);
   const [locationOpen, setLocationOpen] = useState(false);
-  const [moodSectionOpen, setMoodSectionOpen] = useState(true);
+  const [activitySectionOpen, setActivitySectionOpen] = useState(true);
   
   useEffect(() => {
     if (country) {
@@ -60,8 +60,8 @@ const EnhancedWeatherSection = ({
   const handleQuizComplete = (answers: Record<string, string>) => {
     setQuizComplete(true);
     onSituationChange(answers.activity.toLowerCase());
-    // Auto-collapse mood section after selection
-    setMoodSectionOpen(false);
+    // Auto-collapse section after selection
+    setActivitySectionOpen(false);
   };
 
   const handleRefreshWeather = () => {
@@ -95,12 +95,12 @@ const EnhancedWeatherSection = ({
     }
   };
   
-  // Activity icons for the mood section
+  // Activity icons for the activity section
   const activityIcons = {
     work: <Briefcase className="h-4 w-4 mr-1" />,
     sport: <Dumbbell className="h-4 w-4 mr-1" />,
     casual: <Sun className="h-4 w-4 mr-1" />,
-    formal: <Sun className="h-4 w-4 mr-1" />,
+    formal: <Calendar className="h-4 w-4 mr-1" />,
     party: <Sun className="h-4 w-4 mr-1" />
   };
   
@@ -213,41 +213,33 @@ const EnhancedWeatherSection = ({
             
             {/* Enhanced Weather Display */}
             <div className="flex-grow px-4 pb-4">
-              {weatherKey > 0 ? (
-                <WeatherWidget
-                  key={weatherKey}
-                  onWeatherChange={handleLocalWeatherUpdate}
-                  city={city}
-                  country={country}
-                  showToasts={true}
-                  showError={false}
-                />
-              ) : (
-                <div className="h-full flex items-center justify-center bg-black/20 rounded-lg p-2 shadow-inner">
-                  <div className="text-white/70 text-center">
-                    {country && city ? 'Loading weather data...' : 'Set your location to see weather details'}
-                  </div>
-                </div>
-              )}
+              <WeatherWidget
+                key={weatherKey}
+                onWeatherChange={handleLocalWeatherUpdate}
+                city={city}
+                country={country}
+                showToasts={true}
+                showError={false}
+              />
             </div>
           </div>
           
-          {/* Style Quiz / Mood Section */}
+          {/* Activity Selection Section */}
           <div className="p-4 md:p-5 md:col-span-1 bg-gradient-to-b from-black/30 to-black/10">
             <Collapsible 
-              open={moodSectionOpen}
-              onOpenChange={setMoodSectionOpen}
+              open={activitySectionOpen}
+              onOpenChange={setActivitySectionOpen}
               className="w-full"
             >
               <CollapsibleTrigger asChild>
                 <div className="flex items-center justify-between cursor-pointer mb-3">
-                  <h3 className="text-lg font-medium text-white flex items-center">What's your plan for today?</h3>
+                  <h3 className="text-lg font-medium text-white flex items-center">Select Your Activity for Today</h3>
                   <Button 
                     variant="ghost" 
                     size="sm" 
                     className="h-8 w-8 p-0 hover:bg-white/10"
                   >
-                    {moodSectionOpen ? (
+                    {activitySectionOpen ? (
                       <ChevronUp className="h-4 w-4 text-white/70" />
                     ) : (
                       <ChevronDown className="h-4 w-4 text-white/70" />

@@ -40,6 +40,38 @@ const WeatherWidget = ({
   const prevLocationRef = useRef<{ city?: string; country?: string }>({ city: undefined, country: undefined });
   const { user } = useAuth();
   const isMobile = useIsMobile();
+  const [initialLoadDone, setInitialLoadDone] = useState(false);
+
+  // Fetch saved location preference on initial load
+  useEffect(() => {
+    const fetchSavedLocation = async () => {
+      if (user && !city && !country && !initialLoadDone) {
+        try {
+          const { data, error } = await supabase
+            .from('user_preferences')
+            .select('preferred_city, preferred_country')
+            .eq('user_id', user.id)
+            .single();
+            
+          if (error) {
+            console.error('Error fetching preferences:', error);
+          } else if (data && data.preferred_city && data.preferred_country) {
+            console.log('Found saved location:', data.preferred_city, data.preferred_country);
+            locationRef.current = { 
+              city: data.preferred_city, 
+              country: data.preferred_country 
+            };
+            fetchedRef.current = false; // Force a new fetch
+            setInitialLoadDone(true);
+          }
+        } catch (err) {
+          console.error('Failed to fetch user preferences:', err);
+        }
+      }
+    };
+
+    fetchSavedLocation();
+  }, [user, city, country, initialLoadDone]);
 
   useEffect(() => {
     const saveUserPreferences = async () => {
@@ -75,22 +107,35 @@ const WeatherWidget = ({
     console.log("WeatherWidget useEffect - Checking for location changes");
     console.log("Previous location:", prevLocationRef.current);
     console.log("Current location:", { city, country });
+    console.log("Location ref:", locationRef.current);
     
-    const hasLocationChanged = city !== prevLocationRef.current.city || country !== prevLocationRef.current.country;
+    const currentCity = city || locationRef.current.city;
+    const currentCountry = country || locationRef.current.country;
+    
+    const hasLocationChanged = 
+      currentCity !== prevLocationRef.current.city || 
+      currentCountry !== prevLocationRef.current.country;
+      
     if (city !== locationRef.current.city || country !== locationRef.current.country) {
       locationRef.current = { city, country };
       fetchedRef.current = false;
     }
 
     const fetchWeather = async () => {
-      if (fetchedRef.current && !hasLocationChanged) {
+      // If we already have weather data and location hasn't changed, don't fetch again
+      if (fetchedRef.current && !hasLocationChanged && weather) {
         console.log("Weather already fetched and location hasn't changed, skipping");
+        setIsLoading(false);
         return;
       }
       
-      console.log("Fetching weather data for", city, country);
+      // Use either the prop values or the stored ref values for city/country
+      const cityToUse = currentCity;
+      const countryToUse = currentCountry;
       
-      if (!city || !country) {
+      console.log("Fetching weather data for", cityToUse, countryToUse);
+      
+      if (!cityToUse || !countryToUse) {
         console.log("No city/country provided, generating random weather");
         if (!weather) {
           const randomWeather = generateRandomWeather();
@@ -106,8 +151,8 @@ const WeatherWidget = ({
       setIsLoading(true);
       setError(null);
       try {
-        console.log("Calling fetchWeatherData for", city, country);
-        const weatherData = await fetchWeatherData(city, country);
+        console.log("Calling fetchWeatherData for", cityToUse, countryToUse);
+        const weatherData = await fetchWeatherData(cityToUse, countryToUse);
         console.log("Weather data received:", weatherData);
         setWeather(weatherData);
         if (onWeatherChange) {
@@ -124,7 +169,7 @@ const WeatherWidget = ({
         const errorMsg = err instanceof Error ? err.message : 'Unable to fetch weather data. Please try again.';
         setError(errorMsg);
         if (!weather) {
-          const randomWeather = generateRandomWeather(city, country);
+          const randomWeather = generateRandomWeather(cityToUse, countryToUse);
           setWeather(randomWeather);
           if (onWeatherChange) {
             onWeatherChange(randomWeather);
@@ -140,7 +185,10 @@ const WeatherWidget = ({
     
     console.log("Calling fetchWeather function");
     fetchWeather();
-    prevLocationRef.current = { city, country };
+    prevLocationRef.current = { 
+      city: currentCity, 
+      country: currentCountry 
+    };
   }, [city, country, onWeatherChange, showToasts, weather]);
 
   return (
