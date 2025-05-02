@@ -18,13 +18,28 @@ const Header = () => {
   const navigate = useNavigate();
   const { user, signOut, isAuthenticated } = useAuth();
 
+  // Enhanced scroll detection with throttling
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    // Add throttling to improve performance
+    let timeout: ReturnType<typeof setTimeout>;
+    const throttledScroll = () => {
+      if (!timeout) {
+        timeout = setTimeout(() => {
+          handleScroll();
+          timeout = undefined as unknown as ReturnType<typeof setTimeout>;
+        }, 100);
+      }
+    };
+
+    window.addEventListener('scroll', throttledScroll);
+    return () => {
+      window.removeEventListener('scroll', throttledScroll);
+      clearTimeout(timeout);
+    };
   }, []);
 
   const handleSignOut = async () => {
@@ -40,6 +55,11 @@ const Header = () => {
     console.log('Toggle menu clicked, current state:', isMenuOpen);
     setIsMenuOpen(!isMenuOpen);
   };
+
+  // Close mobile menu when location changes
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [location]);
 
   let navItems = [
     { name: 'Home', path: '/' },
@@ -101,7 +121,7 @@ const Header = () => {
               variant="ghost"
               size="icon"
               className={cn(
-                "ml-2 transition-all duration-300",
+                "ml-2 transition-all duration-300 touch-target",
                 isScrolled ? "text-white hover:text-white/80" : "text-white hover:bg-white/10"
               )}
               onClick={toggleMenu}

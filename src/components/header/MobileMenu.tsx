@@ -50,6 +50,7 @@ export const MobileMenu = ({
             transition={{ duration: 0.2 }}
             className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[1000]"
             onClick={onClose}
+            aria-hidden="true"
           />
           
           <motion.div
@@ -61,7 +62,10 @@ export const MobileMenu = ({
               stiffness: 300, 
               damping: 30 
             }}
-            className="fixed top-0 right-0 bottom-0 w-[75%] max-w-sm bg-gradient-to-b from-purple-950 to-slate-950 z-[1001] border-l border-white/10 flex flex-col"
+            className="fixed top-0 right-0 bottom-0 w-[75%] max-w-sm bg-gradient-to-b from-purple-950 to-slate-950 z-[1001] border-l border-white/10 flex flex-col shadow-lg"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Mobile navigation menu"
           >
             <div className="sticky top-0 px-4 py-3 bg-gradient-to-b from-purple-950 to-purple-950/95 z-10 border-b border-white/10">
               <Button
@@ -83,7 +87,7 @@ export const MobileMenu = ({
                     to={item.path}
                     onClick={onClose}
                     className={cn(
-                      "block py-3.5 px-4 rounded-lg text-lg transition-colors",
+                      "block py-3.5 px-4 rounded-lg text-lg transition-colors touch-target mobile-tap-transparent",
                       currentPath === item.path
                         ? "bg-white/10 text-white font-medium"
                         : "text-white/70 hover:bg-white/5 hover:text-white"
@@ -99,7 +103,7 @@ export const MobileMenu = ({
                 <div className="pt-4 border-t border-white/10">
                   <Button
                     variant="ghost"
-                    className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-900/20 py-3"
+                    className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-900/20 py-3 touch-target"
                     onClick={onSignOut}
                   >
                     <LogOut className="mr-2 h-5 w-5" />

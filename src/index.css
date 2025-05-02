@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -66,7 +65,7 @@
   }
 }
 
-/* Fix for background flickering/knipperende on iOS */
+/* Enhanced utility classes for mobile interaction */
 @layer utilities {
   .bg-fix-ios {
     -webkit-transform: translateZ(0);
@@ -92,6 +91,12 @@
   .touch-target {
     min-height: 44px;
     min-width: 44px;
+  }
+  
+  /* Navbar shadow class */
+  .navbar-shadow {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(12px);
   }
 }
 
@@ -166,4 +171,342 @@ button {
 
 .z-menu {
   z-index: 1001;
+}
+
+/* Enhanced mobile menu styles */
+.mobile-menu {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: 75%;
+  max-width: 320px;
+  background: linear-gradient(to bottom, rgba(88, 28, 135, 0.95), rgba(15, 23, 42, 0.95));
+  transform: translateX(100%);
+  transition: transform 0.3s ease, opacity 0.2s ease;
+  opacity: 0;
+  z-index: 1001;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  backdrop-filter: blur(8px);
+  box-shadow: -5px 0 25px rgba(0, 0, 0, 0.15);
+}
+
+.mobile-menu.open {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+/* Existing animations and responsive styles */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.2s ease-in-out;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0% {
+    box-shadow: 0 0 5px 0 rgba(168, 85, 247, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 20px 5px rgba(168, 85, 247, 0.6);
+  }
+  100% {
+    box-shadow: 0 0 5px 0 rgba(168, 85, 247, 0.4);
+  }
+}
+
+.pulse-glow {
+  animation: pulse-glow 3s infinite;
+}
+
+.gradient-text {
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  background-image: linear-gradient(90deg, #3b82f6, #a855f7, #ec4899);
+}
+
+.hover-scale {
+  transition: transform 0.3s ease;
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+/* Smooth gradient transition for headings */
+.smooth-gradient-text {
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  background-image: linear-gradient(135deg, #4f46e5, #9333ea, #e879f9);
+  background-size: 200% 100%;
+  animation: gradient-shift 8s ease infinite;
+}
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Subtle background animation */
+.bg-animate {
+  background-size: 400% 400%;
+  animation: gradient-bg 15s ease infinite;
+}
+
+@keyframes gradient-bg {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Button hover effects */
+.btn-hover-glow {
+  transition: all 0.3s ease;
+}
+
+.btn-hover-glow:hover {
+  box-shadow: 0 5px 15px rgba(124, 58, 237, 0.4);
+  transform: translateY(-2px);
+}
+
+.btn-hover-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-hover-shine::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: rotate(30deg);
+  transition: transform 0.5s ease;
+  opacity: 0;
+}
+
+.btn-hover-shine:hover::after {
+  opacity: 1;
+  transform: rotate(30deg) translate(100%, -100%);
+}
+
+/* Visual hierarchy styles */
+.section-heading {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 1.5rem;
+}
+
+.section-heading::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.5), transparent);
+  border-radius: 3px;
+}
+
+.section-divider {
+  margin: 3rem 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.3), transparent);
+}
+
+.gradient-divider {
+  height: 1px;
+  width: 100%;
+  margin: 2rem 0;
+  background: linear-gradient(to right, transparent, rgba(168, 85, 247, 0.5), transparent);
+}
+
+/* Mobile specific spacing improvements */
+@media (max-width: 768px) {
+  .mobile-title-spacing {
+    margin-bottom: 0.5rem !important;
+  }
+  
+  .mobile-content-spacing {
+    margin-top: 3rem !important;
+  }
+  
+  .mobile-button-compact {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+    font-size: 0.875rem !important;
+  }
+  
+  .avatar-content-gap {
+    margin-top: 2.5rem !important;
+  }
+  
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  .mobile-padding {
+    padding: 0.75rem !important;
+  }
+  
+  .mobile-text {
+    font-size: 1rem !important;
+    line-height: 1.5 !important;
+  }
+  
+  .mobile-spacing > * {
+    margin-bottom: 1.25rem;
+  }
+  
+  button, 
+  [role="button"],
+  a {
+    touch-action: manipulation;
+  }
+  
+  .btn-mobile {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+    font-size: 0.875rem !important;
+  }
+  
+  .mobile-section-spacing {
+    margin-top: 2.5rem !important;
+    margin-bottom: 2.5rem !important;
+  }
+  
+  /* Improved button paddings for mobile */
+  .preference-button-mobile {
+    width: 100% !important;
+    padding: 0.5rem 0.75rem !important;
+  }
+  
+  /* Improved touch targets for mobile buttons */
+  .mobile-button {
+    min-height: 44px !important;
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+    font-size: 0.875rem !important;
+  }
+}
+
+/* Added new classes for improved responsiveness */
+@media (max-width: 480px) {
+  .xs-text-center {
+    text-align: center !important;
+  }
+  
+  .xs-button-full {
+    width: 100% !important;
+    margin-bottom: 0.75rem !important;
+  }
+  
+  .xs-small-text {
+    font-size: 0.875rem !important;
+  }
+  
+  .xs-p-4 {
+    padding: 1rem !important;
+  }
+  
+  .xs-flex-col {
+    flex-direction: column !important;
+  }
+  
+  /* Better button padding for extra small screens */
+  .xs-button-padding {
+    padding-top: 0.375rem !important;
+    padding-bottom: 0.375rem !important;
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+  }
+  
+  /* More compact icons for mobile buttons */
+  .xs-icon-compact {
+    width: 1rem !important;
+    height: 1rem !important;
+    margin-right: 0.25rem !important;
+  }
+}
+
+/* Improved tablet responsiveness */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .md-flex-row {
+    flex-direction: row !important;
+  }
+  
+  .md-gap-4 {
+    gap: 1rem !important;
+  }
+  
+  .md-w-auto {
+    width: auto !important;
+  }
+  
+  /* Better button padding for tablet screens */
+  .md-button-padding {
+    padding: 0.5rem 0.75rem !important;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    text-shadow: 0 0 40px rgba(167, 139, 250, 0.1);
+  }
+  50% {
+    text-shadow: 0 0 40px rgba(167, 139, 250, 0.4);
+  }
+  100% {
+    text-shadow: 0 0 40px rgba(167, 139, 250, 0.1);
+  }
 }
