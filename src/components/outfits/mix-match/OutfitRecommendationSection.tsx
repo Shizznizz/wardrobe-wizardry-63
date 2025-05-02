@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRightCircle, ShoppingBag, Save } from 'lucide-react';
+import { ArrowRightCircle, ShoppingBag, Save, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
@@ -33,6 +33,11 @@ const OutfitRecommendationSection = ({ weather, situation }: OutfitRecommendatio
   const handleShopSimilarLook = () => {
     toast.success("Taking you to shop similar items!");
     navigate('/shop-and-try');
+  };
+
+  const handleAddToCalendar = () => {
+    toast.success("Opening calendar to schedule this outfit!");
+    navigate('/style-planner');
   };
   
   return (
@@ -91,6 +96,15 @@ const OutfitRecommendationSection = ({ weather, situation }: OutfitRecommendatio
           onClick={handleShopSimilarLook}
         >
           <ShoppingBag className="mr-2 h-5 w-5" /> Shop Similar Look
+        </Button>
+
+        <Button 
+          variant="outline" 
+          size="lg"
+          className="border-green-400/30 text-white hover:bg-white/10"
+          onClick={handleAddToCalendar}
+        >
+          <Calendar className="mr-2 h-5 w-5" /> Add to Calendar
         </Button>
       </div>
     </div>

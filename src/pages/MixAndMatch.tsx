@@ -15,6 +15,7 @@ import OutfitTabSection from '@/components/outfits/mix-match/OutfitTabSection';
 import ContextAdjustmentSection from '@/components/outfits/mix-match/ContextAdjustmentSection';
 import EnhancedWeatherSection from '@/components/outfits/mix-match/EnhancedWeatherSection';
 import PageHeader from '@/components/shared/PageHeader';
+import { OutfitBuilder } from '@/components/OutfitBuilder';
 
 // Lazily loaded components
 const OliviaRecommendationSection = lazy(() => import('@/components/outfits/mix-match/OliviaRecommendationSection'));
@@ -28,8 +29,10 @@ const MemoizedCreateOutfitSection = memo(CreateOutfitSection);
 const MemoizedSuggestedOutfitsSection = memo(SuggestedOutfitsSection);
 
 const MixAndMatch = () => {
-  // Weather section ref for scrolling
+  // References for scroll behavior
   const weatherSectionRef = useRef<HTMLDivElement>(null);
+  const outfitTabSectionRef = useRef<HTMLDivElement>(null);
+  const oliviaRecommendationRef = useRef<HTMLDivElement>(null);
   
   const [weather, setWeather] = useState<WeatherInfo | null>(null);
   const [situation, setSituation] = useState<string | null>('casual');
@@ -42,12 +45,32 @@ const MixAndMatch = () => {
   const [selectedOutfitId, setSelectedOutfitId] = useState<string | null>(null);
   const { user } = useAuth();
   const [profile, setProfile] = useState<{ first_name: string | null } | null>(null);
+  const [isBuilderOpen, setIsBuilderOpen] = useState(false);
 
   // Scroll to weather section
   const scrollToWeatherSection = useCallback(() => {
     if (weatherSectionRef.current) {
       weatherSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+  }, []);
+
+  // Scroll to outfits tab section
+  const scrollToOutfitsSection = useCallback(() => {
+    if (outfitTabSectionRef.current) {
+      outfitTabSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, []);
+
+  // Scroll to Olivia's recommendations
+  const scrollToRecommendations = useCallback(() => {
+    if (oliviaRecommendationRef.current) {
+      oliviaRecommendationRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, []);
+
+  // Handle create outfit
+  const handleCreateOutfit = useCallback(() => {
+    setIsBuilderOpen(true);
   }, []);
 
   // Fetch user profile
@@ -91,7 +114,9 @@ const MixAndMatch = () => {
   const handleSituationChange = useCallback((newSituation: string) => {
     setSituation(newSituation);
     setOccasion(newSituation);
-  }, []);
+    // Auto-scroll to recommendations after a short delay to allow UI to update
+    setTimeout(scrollToRecommendations, 300);
+  }, [scrollToRecommendations]);
 
   const handleContextChange = useCallback((contextKey: string, value: string | number) => {
     switch(contextKey) {
@@ -164,7 +189,10 @@ const MixAndMatch = () => {
           </PageHeader>
 
           <div className="mt-8 flex justify-center">
-            <MixMatchActions />
+            <MixMatchActions 
+              onScrollToOutfits={scrollToOutfitsSection}
+              onCreateOutfit={handleCreateOutfit}
+            />
           </div>
 
           {/* Weather & Context Section - added ref for scrolling */}
@@ -186,9 +214,10 @@ const MixAndMatch = () => {
 
           {/* Olivia's Recommendation Section */}
           <motion.section
+            ref={oliviaRecommendationRef}
             {...fadeUp}
             transition={{ delay: 0.2, duration: 0.5 }}
-            className="mb-8"
+            className="mb-8 scroll-mt-24"
           >
             <Suspense fallback={<Skeleton className="w-full h-64 rounded-xl bg-slate-800" />}>
               <MemoizedOliviaRecommendationSection 
@@ -241,9 +270,10 @@ const MixAndMatch = () => {
           
           {/* My Collection Section */}
           <motion.section
+            ref={outfitTabSectionRef}
             {...fadeUp}
             transition={{ delay: 0.5, duration: 0.5 }}
-            className="mb-8"
+            className="mb-8 scroll-mt-24"
           >
             <OutfitTabSection
               outfits={sampleOutfits}
@@ -269,6 +299,18 @@ const MixAndMatch = () => {
             </Suspense>
           </motion.section>
         </main>
+
+        {/* OutfitBuilder Modal */}
+        {isBuilderOpen && (
+          <OutfitBuilder
+            isOpen={isBuilderOpen}
+            onClose={() => setIsBuilderOpen(false)}
+            onSave={() => {
+              setIsBuilderOpen(false);
+            }}
+            clothingItems={sampleClothingItems}
+          />
+        )}
       </div>
     </OutfitProvider>
   );

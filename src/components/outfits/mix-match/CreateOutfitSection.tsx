@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { useOutfitContext } from '@/hooks/useOutfitContext';
 
 interface CreateOutfitSectionProps {
   clothingItems: ClothingItem[];
@@ -15,10 +16,11 @@ interface CreateOutfitSectionProps {
 
 const CreateOutfitSection = ({ clothingItems, isPremium }: CreateOutfitSectionProps) => {
   const navigate = useNavigate();
+  const { setIsBuilderOpen } = useOutfitContext();
   
   const handleCreateOutfit = () => {
+    setIsBuilderOpen(true);
     toast.info("Opening outfit builder...");
-    // In a real app, this would navigate to a outfit builder page or open a modal
   };
   
   const handleOliviaCreate = () => {

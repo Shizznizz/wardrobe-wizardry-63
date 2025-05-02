@@ -52,6 +52,17 @@ const ActivityFeedbackPanel = ({ activity, onScroll }: ActivityFeedbackPanelProp
     return (
       <Card className="p-4 bg-gradient-to-br from-purple-900/40 to-indigo-900/40 border border-white/10">
         <p className="text-white">I've selected some outfits for you based on your activity.</p>
+        <div className="pt-2 text-center">
+          <Button 
+            onClick={onScroll}
+            variant="ghost" 
+            size="sm"
+            className="text-purple-300 hover:text-white group flex items-center gap-1 mx-auto"
+          >
+            <span>See my recommendations</span>
+            <ChevronDown className="h-4 w-4 group-hover:translate-y-1 transition-transform" />
+          </Button>
+        </div>
       </Card>
     );
   }
