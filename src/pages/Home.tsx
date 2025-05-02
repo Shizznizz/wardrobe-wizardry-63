@@ -19,7 +19,7 @@ const Home = () => {
   const [showOliviaDialog, setShowOliviaDialog] = useState(false);
   
   const handleStartJourney = () => {
-    navigate('/mix-and-match');
+    navigate('/my-wardrobe');
   };
   
   const handleTakeStyleQuiz = () => {
@@ -112,6 +112,7 @@ const Home = () => {
               <DialogClose asChild>
                 <Button 
                   className="bg-gradient-to-r from-[#ff4ecb] to-[#a97eff] text-white hover:opacity-90 py-2 px-6 rounded-lg h-auto"
+                  onClick={() => navigate('/my-wardrobe')}
                 >
                   Let's Get Started
                 </Button>

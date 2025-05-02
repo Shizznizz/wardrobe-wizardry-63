@@ -3,13 +3,14 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Sparkles, MessageCircle, Shirt, Crown, Clock, Wand } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 
 const HomepagePremiumTeaser = () => {
   // Add this to check if the user is Daniel and ensure we always show premium teaser
   const { user } = useAuth();
   const isDanielDeurlooEmail = user?.email === 'danieldeurloo@hotmail.com';
+  const navigate = useNavigate();
   
   // Modified to explicitly show for Daniel's account
   if (user && !isDanielDeurlooEmail) return null;
@@ -109,13 +110,11 @@ const HomepagePremiumTeaser = () => {
             
             <div className="flex justify-center">
               <Button 
-                asChild
+                onClick={() => navigate('/premium')}
                 className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white px-12 py-6 rounded-xl h-auto text-lg font-medium shadow-lg hover:shadow-purple-500/30 transition-all duration-300 flex items-center gap-2"
               >
-                <Link to="/premium">
-                  <Sparkles className="mr-2 h-5 w-5" />
-                  Upgrade to Premium – Only €2.99/week
-                </Link>
+                <Sparkles className="mr-2 h-5 w-5" />
+                Upgrade to Premium – Only €2.99/week
               </Button>
             </div>
             <p className="text-sm text-center text-white/60 mt-4">Cancel anytime. No commitment.</p>

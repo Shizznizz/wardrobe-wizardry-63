@@ -2,6 +2,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface TestimonialProps {
   text: string;
@@ -12,6 +14,8 @@ interface TestimonialProps {
 }
 
 const TestimonialsSection = () => {
+  const isMobile = useIsMobile();
+  
   const testimonials = [
     {
       text: "Olivia has completely transformed how I dress. I save so much time and always look put together!",
@@ -29,6 +33,18 @@ const TestimonialsSection = () => {
       text: "As someone who struggles with fashion choices, Olivia has been a lifesaver. I feel confident in my outfits now.",
       name: "Sarah L.",
       role: "Software Developer",
+      rating: 5
+    },
+    {
+      text: "The virtual try-on feature is incredible! I can see how new pieces look with my existing wardrobe before buying.",
+      name: "Emma R.",
+      role: "Graphic Designer",
+      rating: 5
+    },
+    {
+      text: "Olivia's style quizzes helped me discover my own fashion personality. I get compliments on my outfits every day now!",
+      name: "Tina M.",
+      role: "Healthcare Professional",
       rating: 5
     }
   ];
@@ -54,18 +70,29 @@ const TestimonialsSection = () => {
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {testimonials.map((testimonial, index) => (
-            <Testimonial 
-              key={index}
-              text={testimonial.text}
-              name={testimonial.name}
-              role={testimonial.role}
-              rating={testimonial.rating}
-              index={index}
-            />
-          ))}
-        </div>
+        <Carousel
+          opts={{
+            align: "start",
+            loop: true,
+          }}
+          className="w-full mx-auto"
+        >
+          <CarouselContent>
+            {testimonials.map((testimonial, index) => (
+              <CarouselItem 
+                key={index} 
+                className={`${isMobile ? 'basis-full' : 'basis-1/3'} pl-4`}
+              >
+                <TestimonialCard testimonial={testimonial} index={index} />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          
+          <div className="flex justify-center mt-8 gap-4">
+            <CarouselPrevious className="relative inset-0 translate-y-0" />
+            <CarouselNext className="relative inset-0 translate-y-0" />
+          </div>
+        </Carousel>
         
         {/* Olivia comment */}
         <motion.div 
@@ -93,11 +120,11 @@ const TestimonialsSection = () => {
   );
 };
 
-// Testimonial component with avatar and star rating
-const Testimonial = ({ text, name, role, rating = 5, index }: TestimonialProps) => {
+// Testimonial Card component with avatar and star rating
+const TestimonialCard = ({ testimonial, index }: { testimonial: any, index: number }) => {
   return (
     <motion.div 
-      className="group glass-dark p-6 rounded-xl border border-white/10 hover:border-coral-500/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+      className="group glass-dark p-6 rounded-xl border border-white/10 hover:border-coral-500/30 transition-all duration-300 h-full hover:-translate-y-1 hover:shadow-lg"
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
@@ -105,7 +132,7 @@ const Testimonial = ({ text, name, role, rating = 5, index }: TestimonialProps) 
     >
       {/* Star Rating */}
       <div className="mb-4 flex">
-        {Array.from({ length: rating }).map((_, i) => (
+        {Array.from({ length: testimonial.rating }).map((_, i) => (
           <div key={i} className="text-coral-400 mr-1 group-hover:text-coral-300 transition-colors">
             ★
           </div>
@@ -113,16 +140,16 @@ const Testimonial = ({ text, name, role, rating = 5, index }: TestimonialProps) 
       </div>
       
       {/* Testimonial Text */}
-      <p className="mb-6 text-white/80 italic">"{text}"</p>
+      <p className="mb-6 text-white/80 italic">"{testimonial.text}"</p>
       
       {/* Profile */}
       <div className="flex items-center">
         <div className="w-12 h-12 rounded-full bg-gradient-to-r from-coral-500/20 to-purple-500/20 flex items-center justify-center text-white font-bold text-lg mr-3">
-          {name.charAt(0)}
+          {testimonial.name.charAt(0)}
         </div>
         <div>
-          <p className="font-bold">{name}</p>
-          <p className="text-white/60 text-sm">{role}</p>
+          <p className="font-bold">{testimonial.name}</p>
+          <p className="text-white/60 text-sm">{testimonial.role}</p>
         </div>
       </div>
       

@@ -1,9 +1,13 @@
 
-import React from 'react';
+import React, { useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const HowItWorksSection = () => {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
+
   return (
     <motion.section
       className="py-20 px-4 bg-slate-900/50 backdrop-blur-sm relative overflow-hidden"
@@ -52,25 +56,44 @@ const HowItWorksSection = () => {
               </h2>
             </motion.div>
             
-            {/* Steps */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-4 overflow-x-auto pb-4 snap-x snap-mandatory md:snap-none">
+            {/* Steps - Horizontal scrolling on mobile */}
+            <div 
+              ref={scrollContainerRef} 
+              className={`
+                ${isMobile ? 'flex overflow-x-auto pb-6 snap-x snap-mandatory scroll-pl-4 space-x-6' : 'grid grid-cols-3 gap-8'}
+              `}
+              style={isMobile ? { scrollbarWidth: 'none', msOverflowStyle: 'none' } : {}}
+            >
+              <style jsx>{`
+                @media (max-width: 768px) {
+                  .hide-scrollbar::-webkit-scrollbar {
+                    display: none;
+                  }
+                }
+              `}</style>
+              
               <HowItWorksStep 
                 number="1"
                 title="Upload Your Wardrobe"
                 description="Take photos of your clothes or add items from our catalog to build your virtual wardrobe."
                 delay={0.1}
+                isMobile={isMobile}
               />
+              
               <HowItWorksStep 
                 number="2"
                 title="Share Your Style Preferences"
                 description="Tell Olivia about your style preferences, favorite colors, and outfits you love."
                 delay={0.2}
+                isMobile={isMobile}
               />
+              
               <HowItWorksStep 
                 number="3"
                 title="Get Daily Outfit Inspirations"
                 description="Receive personalized outfit suggestions based on your style, weather, and upcoming events."
                 delay={0.3}
+                isMobile={isMobile}
               />
             </div>
           </div>
@@ -81,15 +104,16 @@ const HowItWorksSection = () => {
 };
 
 // How It Works Step component with animations
-const HowItWorksStep = ({ number, title, description, delay }: {
+const HowItWorksStep = ({ number, title, description, delay, isMobile }: {
   number: string;
   title: string;
   description: string;
   delay: number;
+  isMobile: boolean;
 }) => {
   return (
     <motion.div 
-      className="flex flex-col items-center text-center snap-center min-w-[280px]"
+      className={`flex flex-col items-center text-center ${isMobile ? 'min-w-[280px] snap-center flex-shrink-0' : ''}`}
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}

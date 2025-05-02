@@ -3,12 +3,15 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Sparkles } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface FinalCtaProps {
   onGetStarted: () => void;
 }
 
 const FinalCta: React.FC<FinalCtaProps> = ({ onGetStarted }) => {
+  const navigate = useNavigate();
+
   return (
     <motion.section
       className="py-20 px-4 bg-gradient-to-r from-coral-500/20 to-purple-500/20 backdrop-blur-sm"
@@ -28,7 +31,7 @@ const FinalCta: React.FC<FinalCtaProps> = ({ onGetStarted }) => {
             </p>
             <Button 
               className="bg-gradient-to-r from-[#ff4ecb] to-[#a97eff] text-white hover:scale-[1.03] transition-transform font-bold py-6 px-10 rounded-xl shadow-lg shadow-purple-900/20 h-auto text-lg flex items-center gap-2 mx-auto md:mx-0"
-              onClick={onGetStarted}
+              onClick={() => navigate('/my-wardrobe')}
             >
               <Sparkles className="h-5 w-5" />
               Get Started For Free
