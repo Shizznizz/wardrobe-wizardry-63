@@ -8,6 +8,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import MixMatchActions from '@/components/outfits/mix-match/MixMatchActions';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
 import CollapsibleSection from '@/components/outfits/mix-match/CollapsibleSection';
 import OutfitTabSection from '@/components/outfits/mix-match/OutfitTabSection';
 import ContextAdjustmentSection from '@/components/outfits/mix-match/ContextAdjustmentSection';
