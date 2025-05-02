@@ -1,4 +1,3 @@
-
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -85,3 +84,8 @@ export function deepClone<T>(obj: T): T {
   
   return result;
 }
+
+// Get day of week
+export const getDayOfWeek = (date: Date): string => {
+  return date.toLocaleDateString('en-US', { weekday: 'short' });
+};

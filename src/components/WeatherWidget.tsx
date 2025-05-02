@@ -133,12 +133,12 @@ const WeatherWidget = ({
   return (
     <div className={cn(
       "overflow-hidden rounded-lg shadow-sm backdrop-blur-sm transition-all duration-300 border border-white/10",
-      isMobile ? "w-full p-2 max-w-full" : compact ? "p-3 max-w-xs" : "p-4 max-w-md",
+      isMobile ? "w-full p-2 max-w-full" : compact ? "p-3 max-w-xs" : "p-0 max-w-full h-full",
       className
     )}>
       {isLoading ? (
         <WeatherLoading />
-      ) : error ? (
+      ) : error && showError ? (
         <WeatherError error={error} weather={weather} />
       ) : weather ? (
         <WeatherDisplay weather={weather} compact={compact} />

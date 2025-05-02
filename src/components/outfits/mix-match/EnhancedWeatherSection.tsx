@@ -14,7 +14,7 @@ import StyleQuiz from './StyleQuiz';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
 import { Card } from '@/components/ui/card';
-import { getWeatherGradient } from '@/components/weather/WeatherUtils';
+import WeatherDisplay from '@/components/weather/WeatherDisplay';
 
 interface EnhancedWeatherSectionProps {
   onWeatherUpdate: (weather: WeatherInfo) => void;
@@ -102,21 +102,15 @@ const EnhancedWeatherSection = ({
     formal: <Sun className="h-4 w-4 mr-1" />,
     party: <Sun className="h-4 w-4 mr-1" />
   };
-
-  // Dynamic weather background based on current weather
-  const weatherGradient = weatherData ? getWeatherGradient(weatherData) : "bg-gradient-to-br from-slate-800/60 to-slate-900/60";
   
   return (
     <div className="space-y-6">
       {/* Weather Section */}
-      <Card className={cn(
-        "neo-blur border border-white/20 rounded-xl overflow-hidden backdrop-blur-md shadow-lg",
-        weatherData ? weatherGradient : "bg-slate-800/70"
-      )}>
+      <Card className="neo-blur border border-white/20 rounded-xl overflow-hidden backdrop-blur-md shadow-lg">
         <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-white/10">
           {/* Weather Widget Column */}
-          <div className="p-4 md:p-5 md:col-span-1">
-            <div className="flex items-center justify-between mb-3">
+          <div className="p-4 md:p-0 md:col-span-1 h-full flex flex-col">
+            <div className="flex items-center justify-between p-4 md:pb-0">
               <h3 className="text-lg font-medium text-white flex items-center">
                 <Sun className="h-5 w-5 mr-2 text-yellow-400" />
                 Today's Weather
@@ -134,13 +128,13 @@ const EnhancedWeatherSection = ({
             <Collapsible
               open={locationOpen}
               onOpenChange={setLocationOpen}
-              className="mb-4"
+              className="px-4 pb-2"
             >
               <CollapsibleTrigger asChild>
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  className="w-full text-xs border-white/20 text-white/80 flex items-center justify-between bg-slate-700/50"
+                  className="w-full text-xs border-white/20 text-white/80 flex items-center justify-between bg-slate-700/50 mb-3"
                 >
                   <div className="flex items-center">
                     <MapPin className="h-3 w-3 mr-1" />
@@ -150,7 +144,7 @@ const EnhancedWeatherSection = ({
                 </Button>
               </CollapsibleTrigger>
               
-              <CollapsibleContent className="space-y-3 pt-3">
+              <CollapsibleContent className="space-y-3 pb-3">
                 <div className="grid grid-cols-2 gap-2">
                   <div className="space-y-1.5">
                     <Select value={country} onValueChange={handleCountryChange}>
@@ -216,17 +210,17 @@ const EnhancedWeatherSection = ({
               </CollapsibleContent>
             </Collapsible>
             
-            <div className="bg-black/20 rounded-lg p-2 shadow-inner">
-              <WeatherWidget 
-                key={weatherKey}
-                className="mb-0"
-                onWeatherChange={handleLocalWeatherUpdate}
-                city={city}
-                country={country}
-                showToasts={false}
-                savePreferences={false}
-                compact={false}
-              />
+            {/* Enhanced Weather Display */}
+            <div className="flex-grow px-4 pb-4">
+              {weatherData ? (
+                <WeatherDisplay weather={weatherData} />
+              ) : (
+                <div className="h-full flex items-center justify-center bg-black/20 rounded-lg p-2 shadow-inner">
+                  <div className="text-white/70 text-center">
+                    {country && city ? 'Loading weather data...' : 'Set your location to see weather details'}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
           
