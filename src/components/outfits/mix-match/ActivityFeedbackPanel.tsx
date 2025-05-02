@@ -16,31 +16,31 @@ const activityContent = {
     title: "Professional Perfection",
     message: "I've put together some business-ready outfits that will keep you looking sharp and feeling confident all day.",
     tip: "Layer with a blazer for meetings, then remove for a more relaxed office look.",
-    quote: ""Dress for the job you want, not the job you have.""
+    quote: "\"Dress for the job you want, not the job you have.\""
   },
   casual: {
     title: "Effortlessly Stylish",
     message: "Here are some laid-back but put-together looks that are perfect for your casual day.",
     tip: "Pair a simple tee with your favorite accessories to elevate the look instantly.",
-    quote: ""Style is a way to say who you are without having to speak.""
+    quote: "\"Style is a way to say who you are without having to speak.\""
   },
   sport: {
     title: "Active & Attractive",
     message: "I've selected performance-focused outfits that look good and support your active lifestyle.",
     tip: "Choose moisture-wicking fabrics in darker colors for a slimming, practical workout look.",
-    quote: ""Look good, feel good, perform better.""
+    quote: "\"Look good, feel good, perform better.\""
   },
   formal: {
     title: "Elegantly Styled",
     message: "These sophisticated outfits will ensure you make the right impression at your formal event.",
     tip: "Focus on fit first - even simple formal wear looks amazing when it fits perfectly.",
-    quote: ""Elegance is the only beauty that never fades.""
+    quote: "\"Elegance is the only beauty that never fades.\""
   },
   party: {
     title: "Ready to Shine",
     message: "These fun, expressive outfits will help you stand out and feel confident all night long.",
     tip: "Add one statement piece that captures attention, then keep the rest of your outfit more subdued.",
-    quote: ""Life is a party, dress like it.""
+    quote: "\"Life is a party, dress like it.\""
   }
 };
 

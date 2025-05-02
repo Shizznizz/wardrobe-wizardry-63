@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback, Suspense, lazy, memo, useRef } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -13,9 +12,9 @@ import CollapsibleSection from '@/components/outfits/mix-match/CollapsibleSectio
 import OutfitTabSection from '@/components/outfits/mix-match/OutfitTabSection';
 import EnhancedPageHeader from '@/components/outfits/mix-match/EnhancedPageHeader';
 import ContextAdjustmentSection from '@/components/outfits/mix-match/ContextAdjustmentSection';
+import EnhancedWeatherSection from '@/components/outfits/mix-match/EnhancedWeatherSection';
 
 // Lazily loaded components
-const EnhancedWeatherSection = lazy(() => import('@/components/outfits/mix-match/EnhancedWeatherSection'));
 const OliviaRecommendationSection = lazy(() => import('@/components/outfits/mix-match/OliviaRecommendationSection'));
 const CreateOutfitSection = lazy(() => import('@/components/outfits/mix-match/CreateOutfitSection'));
 const SuggestedOutfitsSection = lazy(() => import('@/components/outfits/mix-match/SuggestedOutfitsSection'));
@@ -153,16 +152,14 @@ const MixAndMatch = () => {
             transition={{ delay: 0.1, duration: 0.5 }}
             className="mb-8 pt-6 scroll-mt-24"
           >
-            <Suspense fallback={<Skeleton className="w-full h-64 rounded-xl bg-slate-800" />}>
-              <MemoizedEnhancedWeatherSection 
-                onWeatherUpdate={handleWeatherUpdate}
-                onSituationChange={handleSituationChange}
-                onTemperatureChange={handleTemperatureChange}
-                onWeatherConditionChange={handleWeatherConditionChange}
-                temperature={temperature}
-                weatherCondition={weatherCondition}
-              />
-            </Suspense>
+            <MemoizedEnhancedWeatherSection 
+              onWeatherUpdate={handleWeatherUpdate}
+              onSituationChange={handleSituationChange}
+              onTemperatureChange={handleTemperatureChange}
+              onWeatherConditionChange={handleWeatherConditionChange}
+              temperature={temperature}
+              weatherCondition={weatherCondition}
+            />
           </motion.section>
 
           {/* Olivia's Recommendation Section */}
