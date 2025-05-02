@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
@@ -15,7 +15,9 @@ import {
   Heart, 
   Home, 
   Palette,
-  Sparkles
+  Sparkles,
+  ArrowDown,
+  Star
 } from 'lucide-react';
 
 interface StyleQuizProps {
@@ -31,6 +33,9 @@ const StyleQuiz = ({ onComplete, activityIcons, gradientButtonStyle = false }: S
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [typingText, setTypingText] = useState('');
   const [typingComplete, setTypingComplete] = useState(false);
+  const [funFact, setFunFact] = useState('');
+  const [stylingTip, setStylingTip] = useState('');
+  const [quote, setQuote] = useState('');
 
   const handleChange = (value: string) => {
     setAnswers({
@@ -44,7 +49,7 @@ const StyleQuiz = ({ onComplete, activityIcons, gradientButtonStyle = false }: S
     
     // Start typing effect
     const activityName = getActivityDisplayName(answers.activity);
-    const fullText = `Got it! You're planning for a ${activityName} day — Olivia is crafting your perfect outfit...`;
+    const fullText = `Great choice! Olivia has curated a stunning outfit for your ${activityName} day.`;
     
     let charIndex = 0;
     const typingInterval = setInterval(() => {
@@ -57,10 +62,67 @@ const StyleQuiz = ({ onComplete, activityIcons, gradientButtonStyle = false }: S
       }
     }, 30);
     
+    // Set activity-specific content
+    setActivitySpecificContent(answers.activity);
+    
     // Complete the quiz after a brief delay
     setTimeout(() => {
       onComplete(answers);
     }, 1000);
+  };
+  
+  const setActivitySpecificContent = (activity: string) => {
+    switch(activity) {
+      case 'casual':
+        setFunFact("Did you know? The average person makes fashion decisions in less than 3 seconds!");
+        setStylingTip("Try pairing neutral basics with one colorful statement piece for effortless style.");
+        setQuote("\"Style is a way to say who you are without having to speak.\" — Rachel Zoe");
+        break;
+      case 'work':
+        setFunFact("Fun fact: Power dressing became popular in the 1970s as women entered the corporate workforce.");
+        setStylingTip("A well-fitted blazer can transform any basic outfit into a professional look.");
+        setQuote("\"Dress for the job you want, not the job you have.\" — Austin Kleon");
+        break;
+      case 'formal':
+        setFunFact("Did you know? The tuxedo was named after Tuxedo Park, NY, where it was first introduced to American society.");
+        setStylingTip("When dressing formally, pay extra attention to the details - proper fit, pressed garments, and polished accessories.");
+        setQuote("\"Being perfectly well-dressed gives one a tranquility that no religion can bestow.\" — Ralph Waldo Emerson");
+        break;
+      case 'sport':
+        setFunFact("Fun fact: The first athletic shoes were created in the 1800s and were called 'plimsolls'.");
+        setStylingTip("Layer performance fabrics for both style and temperature regulation during activities.");
+        setQuote("\"Look good, feel good, play good.\" — Deion Sanders");
+        break;
+      case 'party':
+        setFunFact("Did you know? Sequins were originally made from thin metal coins in ancient times.");
+        setStylingTip("Statement accessories can transform a simple outfit into a party-ready look.");
+        setQuote("\"People will stare. Make it worth their while.\" — Harry Winston");
+        break;
+      case 'travel':
+        setFunFact("Fun fact: The concept of 'capsule wardrobes' was created in the 1970s to simplify packing and travel.");
+        setStylingTip("Choose wrinkle-resistant fabrics and versatile pieces that can be mixed and matched.");
+        setQuote("\"Travel light, travel far.\" — Anonymous");
+        break;
+      case 'date':
+        setFunFact("Did you know? Red is scientifically proven to increase attractiveness perception in dating contexts.");
+        setStylingTip("Wear something that makes you feel confident - it will naturally enhance your presence.");
+        setQuote("\"Confidence is the best outfit. Rock it and own it.\" — Anonymous");
+        break;
+      case 'lounge':
+        setFunFact("Fun fact: The term 'loungewear' first appeared in fashion vocabulary in the 1950s.");
+        setStylingTip("Elevate your lounge look with coordinated sets rather than mismatched pieces.");
+        setQuote("\"Comfort is key, but style should never be compromised.\" — Rachel Zoe");
+        break;
+      case 'creative':
+        setFunFact("Did you know? Many creative professionals use dress as a form of self-expression and creative identity.");
+        setStylingTip("Don't be afraid to mix patterns and textures to express your creative personality.");
+        setQuote("\"Style is knowing who you are, what you want to say, and not giving a damn.\" — Gore Vidal");
+        break;
+      default:
+        setFunFact("Did you know? The fashion industry is valued at over $1.7 trillion globally.");
+        setStylingTip("Find your personal style by experimenting with different looks and noticing what makes you feel most confident.");
+        setQuote("\"Fashion is what you buy, style is what you do with it.\" — Anonymous");
+    }
   };
   
   const getActivityDisplayName = (activity: string): string => {
@@ -156,26 +218,63 @@ const StyleQuiz = ({ onComplete, activityIcons, gradientButtonStyle = false }: S
           
           {typingComplete && (
             <motion.div 
-              className="mt-4 pt-4 border-t border-white/10 text-center text-white/70"
+              className="mt-6 pt-4 border-t border-white/10 text-center text-white/70 space-y-6"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.3 }}
             >
-              <span className="text-purple-300">✨</span> Analyzing your style preferences and today's weather
-              <span className="inline-flex ml-1">
-                <motion.span 
-                  animate={{ opacity: [0, 1, 0] }}
-                  transition={{ duration: 1, repeat: Infinity, repeatDelay: 0.2 }}
-                >.</motion.span>
-                <motion.span 
-                  animate={{ opacity: [0, 1, 0] }}
-                  transition={{ duration: 1, repeat: Infinity, repeatDelay: 0.4 }}
-                >.</motion.span>
-                <motion.span 
-                  animate={{ opacity: [0, 1, 0] }}
-                  transition={{ duration: 1, repeat: Infinity, repeatDelay: 0.6 }}
-                >.</motion.span>
-              </span>
+              {/* Fun Fact */}
+              <motion.div 
+                className="p-3 bg-purple-500/10 rounded-lg"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.7 }}
+              >
+                <p className="text-sm">
+                  <Star className="inline-block h-4 w-4 text-yellow-400 mr-2" />
+                  <span className="text-purple-200 font-medium">{funFact}</span>
+                </p>
+              </motion.div>
+              
+              {/* Styling Tip */}
+              <motion.div 
+                className="p-3 bg-blue-500/10 rounded-lg"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.9 }}
+              >
+                <p className="text-sm">
+                  <span className="font-semibold text-blue-300">Olivia's Tip: </span>
+                  <span className="text-white/80">{stylingTip}</span>
+                </p>
+              </motion.div>
+              
+              {/* Quote */}
+              <motion.div 
+                className="py-3"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1.1 }}
+              >
+                <p className="text-sm italic text-white/70">{quote}</p>
+              </motion.div>
+              
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.3 }}
+                className="flex justify-center pt-2"
+              >
+                <div className="flex flex-col items-center">
+                  <p className="text-white/90 mb-2">Scroll down to see your complete look!</p>
+                  <motion.div
+                    animate={{ y: [0, 5, 0] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                  >
+                    <ArrowDown className="h-5 w-5 text-purple-400" />
+                  </motion.div>
+                </div>
+              </motion.div>
             </motion.div>
           )}
         </div>

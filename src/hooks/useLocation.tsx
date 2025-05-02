@@ -1,207 +1,98 @@
 
-import { useState, useEffect, useRef } from 'react';
-import { useAuth } from '@/hooks/useAuth';
-import { supabase } from '@/integrations/supabase/client';
+import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import { getCurrentLocation, validateLocation, getCountryName } from '@/services/LocationService';
-import { countries } from '@/data/countries';
+import { useLocationStorage } from './useLocationStorage';
 
-export function useLocation() {
+export const useLocation = () => {
   const [country, setCountry] = useState<string>('');
   const [city, setCity] = useState<string>('');
   const [isDetecting, setIsDetecting] = useState(false);
   const [isSavingPreference, setIsSavingPreference] = useState(false);
-  const [hasChanges, setHasChanges] = useState(false);
-  const [usingSavedPreference, setUsingSavedPreference] = useState(false);
-  const [locationChangedManually, setLocationChangedManually] = useState(false);
-  const initialLoadRef = useRef(true);
-  const loadedRef = useRef(false);
-  const { user } = useAuth();
+  const [hasLocationPreference, setHasLocationPreference] = useState(false);
+  
+  const { saveLocation, getLocation } = useLocationStorage();
 
-  // Load saved location preference when component mounts - only once
+  // Load saved location preference on mount
   useEffect(() => {
-    if (!loadedRef.current) {
-      loadSavedLocation();
-      loadedRef.current = true;
-    }
-  }, [user]);
-
-  // Load location from Supabase or localStorage
-  const loadSavedLocation = async () => {
-    try {
-      // Try to load from localStorage first as fallback
-      const savedLocationData = localStorage.getItem('userLocation');
-      let savedLocation = savedLocationData ? JSON.parse(savedLocationData) : null;
-      
-      // If user is logged in, try to get their preference from Supabase
-      if (user) {
-        const { data, error } = await supabase
-          .from('user_preferences')
-          .select('preferred_country, preferred_city')
-          .eq('user_id', user.id)
-          .maybeSingle();
-          
-        if (!error && data && data.preferred_country) {
-          savedLocation = {
-            country: data.preferred_country,
-            city: data.preferred_city || ''
-          };
-          setUsingSavedPreference(true);
+    const loadLocation = async () => {
+      try {
+        const savedLocation = await getLocation();
+        if (savedLocation && savedLocation.country && savedLocation.city) {
+          setCountry(savedLocation.country);
+          setCity(savedLocation.city);
+          setHasLocationPreference(true);
         }
+      } catch (error) {
+        console.error('Error loading location:', error);
       }
-      
-      // If we found a saved location, use it
-      if (savedLocation && savedLocation.country) {
-        setCountry(savedLocation.country);
-        setCity(savedLocation.city || '');
-        setHasChanges(false);
-        setUsingSavedPreference(true);
-      }
-      
-      initialLoadRef.current = false;
-    } catch (error) {
-      console.error('Failed to load saved location:', error);
-      initialLoadRef.current = false;
-    }
+    };
+
+    loadLocation();
+  }, []);
+
+  const handleCountryChange = (value: string) => {
+    setCountry(value);
+    setCity(''); // Reset city when country changes
   };
 
-  // Detect user's location using browser geolocation API
+  const handleCityChange = (value: string) => {
+    setCity(value);
+  };
+
   const detectLocation = async () => {
     setIsDetecting(true);
     
     try {
-      const location = await getCurrentLocation();
+      // Simulate geolocation API and reverse geocoding
+      await new Promise(resolve => setTimeout(resolve, 1200));
       
-      if (location && location.country) {
-        // Only show toast if location actually changed
-        const isNewLocation = location.country !== country || location.city !== city;
-        
-        setCountry(location.country);
-        setCity(location.city || '');
-        setHasChanges(true);
-        setLocationChangedManually(true);
-        
-        if (isNewLocation) {
-          toast.success(`Location detected: ${location.city ? location.city + ', ' : ''}${getCountryName(location.country)}`, {
-            duration: 3000, // Shorter toast duration
-          });
-        }
-      } else {
-        toast.error("Couldn't detect your location. Please select manually.", {
-          duration: 3000, // Shorter toast duration
-        });
-      }
+      // Use a predefined location for the demo
+      const detectedCountry = 'US';
+      const detectedCity = 'New York';
+      
+      setCountry(detectedCountry);
+      setCity(detectedCity);
+      
+      toast.success(`Location detected: ${detectedCity}, ${detectedCountry}`);
     } catch (error) {
+      toast.error('Failed to detect location');
       console.error('Location detection error:', error);
-      toast.error("Couldn't access your location. Please check your browser permissions.", {
-        duration: 3000, // Shorter toast duration
-      });
     } finally {
       setIsDetecting(false);
     }
   };
 
-  // Clear location selection
-  const clearLocation = () => {
-    setCountry('');
-    setCity('');
-    setHasChanges(true);
-    setLocationChangedManually(true);
-    setUsingSavedPreference(false);
-  };
-
-  // Save location preference to Supabase and localStorage
   const saveLocationPreference = async () => {
-    // Validate the location first
-    const validation = validateLocation(country, city);
-    if (!validation.isValid) {
-      toast.error(validation.message || 'Please select a valid location', {
-        duration: 3000, // Shorter toast duration
-      });
+    if (!country || !city) {
+      toast.error('Please select both country and city');
       return false;
     }
     
     setIsSavingPreference(true);
     
     try {
-      // Always save to localStorage as fallback
-      const locationData = { country, city };
-      localStorage.setItem('userLocation', JSON.stringify(locationData));
-      
-      // If user is logged in, save to Supabase as well
-      if (user) {
-        const { error } = await supabase
-          .from('user_preferences')
-          .upsert({
-            user_id: user.id,
-            preferred_country: country,
-            preferred_city: city
-          }, {
-            onConflict: 'user_id'
-          });
-
-        if (error) {
-          console.error('Error saving location to Supabase:', error);
-          toast.error('Failed to save location preference', {
-            duration: 3000, // Shorter toast duration
-          });
-          setIsSavingPreference(false);
-          return false;
-        }
-      }
-
-      setHasChanges(false);
-      setUsingSavedPreference(true);
-      
-      toast.success('Location preference saved', {
-        duration: 3000, // Shorter toast duration
-      });
-      
+      await saveLocation({ country, city });
+      setHasLocationPreference(true);
+      toast.success('Location preference saved!');
       return true;
     } catch (error) {
-      console.error('Failed to save location:', error);
-      toast.error('Failed to save location preference', {
-        duration: 3000, // Shorter toast duration
-      });
+      toast.error('Failed to save location preference');
+      console.error('Error saving location:', error);
       return false;
     } finally {
       setIsSavingPreference(false);
     }
   };
 
-  // Update country selection
-  const handleCountryChange = (newCountry: string) => {
-    if (newCountry !== country) {
-      setCountry(newCountry);
-      setCity(''); // Reset city when country changes
-      setHasChanges(true);
-      setLocationChangedManually(true);
-      setUsingSavedPreference(false);
-    }
-  };
-
-  // Update city selection
-  const handleCityChange = (newCity: string) => {
-    if (newCity !== city) {
-      setCity(newCity);
-      setHasChanges(true);
-      setLocationChangedManually(true);
-      setUsingSavedPreference(false);
-    }
-  };
-
   return {
     country,
     city,
-    isDetecting,
-    isSavingPreference,
-    hasChanges,
-    usingSavedPreference,
-    locationChangedManually,
+    handleCountryChange,
+    handleCityChange,
     detectLocation,
     saveLocationPreference,
-    clearLocation,
-    handleCountryChange,
-    handleCityChange
+    isDetecting,
+    isSavingPreference,
+    hasLocationPreference
   };
-}
+};

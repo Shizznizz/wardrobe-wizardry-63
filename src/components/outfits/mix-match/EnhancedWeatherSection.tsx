@@ -41,7 +41,8 @@ const EnhancedWeatherSection = ({
     detectLocation, 
     saveLocationPreference, 
     isDetecting, 
-    isSavingPreference 
+    isSavingPreference,
+    hasLocationPreference
   } = useLocation();
   const [availableCities, setAvailableCities] = useState<string[]>([]);
   const [quizComplete, setQuizComplete] = useState(false);
@@ -49,6 +50,7 @@ const EnhancedWeatherSection = ({
   const [weatherData, setWeatherData] = useState<WeatherInfo | null>(null);
   const [locationOpen, setLocationOpen] = useState(false);
   const [activitySectionOpen, setActivitySectionOpen] = useState(true);
+  const [shouldAutoLoad, setShouldAutoLoad] = useState(false);
   
   useEffect(() => {
     if (country) {
@@ -56,6 +58,13 @@ const EnhancedWeatherSection = ({
       setAvailableCities(cities);
     }
   }, [country]);
+  
+  // Check if we should auto-load weather based on saved preferences
+  useEffect(() => {
+    if (hasLocationPreference && country && city) {
+      setShouldAutoLoad(true);
+    }
+  }, [hasLocationPreference, country, city]);
   
   const handleQuizComplete = (answers: Record<string, string>) => {
     setQuizComplete(true);
@@ -222,6 +231,7 @@ const EnhancedWeatherSection = ({
                 country={country}
                 showToasts={true}
                 showError={false}
+                autoLoad={shouldAutoLoad}
               />
             </div>
           </div>
