@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -352,8 +351,35 @@ const MyWardrobe = () => {
     setSearchQuery(query);
   };
 
-  const handleFilterChange = (newFilters: any) => {
+  const handleFilterChange = (newFilters: WardrobeFilters) => {
     setFilters(newFilters);
+  };
+
+  const handleToggleFilter = (filterType: keyof WardrobeFilters, value: any) => {
+    setFilters(prev => {
+      // If the current filter value matches the clicked filter, clear it
+      if (prev[filterType] === value) {
+        return {
+          ...prev,
+          [filterType]: null
+        };
+      }
+      // Otherwise, set the filter to the clicked value
+      return {
+        ...prev,
+        [filterType]: value
+      };
+    });
+  };
+
+  const handleViewModeChange = (mode: 'grid' | 'list') => {
+    console.log("Changing view mode to:", mode);
+    setViewMode(mode);
+  };
+
+  const handleCompactViewChange = (show: boolean) => {
+    console.log("Setting compact view to:", show);
+    setShowCompactView(show);
   };
 
   return (
@@ -374,14 +400,14 @@ const MyWardrobe = () => {
           animate="visible"
           variants={containerVariants}
         >
-          {/* Updated PageHeader with new image */}
+          {/* Updated PageHeader with left alignment */}
           <PageHeader
             title="Your Digital Wardrobe"
             subtitle="Olivia helps you organize, analyze, and fall in love with your closet again."
             showAvatar={false}
             imageVariant="pink-suit"
             imagePosition="left"
-            className="mb-8"
+            className="mb-8 text-left pl-4"
           >
             <div className="flex flex-wrap gap-3 mt-4">
               <UploadModal onUpload={handleUpload}>
@@ -437,7 +463,7 @@ const MyWardrobe = () => {
             variants={itemVariants} 
             className="flex flex-col w-full"
           >
-            <div className="relative mb-6">
+            <div className="relative mb-6 text-left pl-4">
               <h2 className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 mb-3">
                 {user?.email ? `${profile?.first_name || user.email.split('@')[0]}'s Collection` : "My Collection"}
               </h2>
@@ -446,16 +472,16 @@ const MyWardrobe = () => {
           
             <WardrobeInsights items={items} />
             
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-6 pl-4">
               <div className="md:col-span-2">
                 <WardrobeSearch onSearch={handleSearch} />
               </div>
-              <div className="md:col-span-3 flex justify-end">
+              <div className="md:col-span-3 flex justify-start">
                 <WardrobeControls
                   viewMode={viewMode}
                   showCompactView={showCompactView}
-                  onViewModeChange={setViewMode}
-                  onCompactViewChange={setShowCompactView}
+                  onViewModeChange={handleViewModeChange}
+                  onCompactViewChange={handleCompactViewChange}
                 />
               </div>
             </div>
@@ -466,9 +492,11 @@ const MyWardrobe = () => {
               filteredCount={filteredItems.length}
               temperature={temperature}
               weatherCondition={weatherCondition}
+              onToggleFilter={handleToggleFilter}
+              currentFilters={filters}
             />
 
-            <div className="mt-6">
+            <div className="mt-6 pl-4">
               {isLoading ? (
                 <div className="text-center py-10">
                   <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-purple-500 mb-4"></div>
@@ -497,6 +525,7 @@ const MyWardrobe = () => {
                     selectable={isSelectionMode}
                     selectedItems={selectedItems}
                     onToggleSelect={handleToggleSelect}
+                    viewMode={viewMode}
                   />
                   
                   {filteredItems.length === 0 && (

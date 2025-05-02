@@ -25,14 +25,18 @@ const WardrobeControls = ({
   onCompactViewChange,
 }: WardrobeControlsProps) => {
   return (
-    <div className="flex flex-col sm:flex-row items-center gap-3 w-full max-w-md mx-auto">
+    <div className="flex flex-col sm:flex-row items-center gap-3 w-full max-w-md ml-0">
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
             <ToggleGroup 
               type="single" 
               value={viewMode} 
-              onValueChange={(value) => value && onViewModeChange(value as 'grid' | 'list')}
+              onValueChange={(value) => {
+                if (value === 'grid' || value === 'list') {
+                  onViewModeChange(value);
+                }
+              }}
               className="bg-slate-900/60 p-1.5 rounded-full backdrop-blur-sm border border-white/10 shadow-md flex-1 sm:flex-none"
             >
               <ToggleGroupItem 

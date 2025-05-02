@@ -1,19 +1,73 @@
-import { useState } from 'react';
-import { Filter, CloudSun, Calendar, Layers, Tag, Clock, Circle, Sparkles } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+
+import React, { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { ClothingItem, ClothingType, ClothingColor, ClothingOccasion } from '@/lib/types';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
+import { Slider } from '@/components/ui/slider';
 import { WardrobeFilters } from '@/lib/wardrobe/enhancedFilterUtils';
+import { ClothingType, ClothingColor, ClothingOccasion } from '@/lib/types';
+import { cn } from '@/lib/utils';
+
+import { 
+  Calendar,
+  Filter, 
+  Sparkles,
+  Heart,
+  X,
+  Sun,
+  CloudRain,
+  Snowflake,
+  Flower,
+  Coffee,
+  BriefcaseBusiness,
+  Shirt,
+  Tag,
+  CircleSlash,
+  Calendar as CalendarIcon,
+  Trash2 
+} from 'lucide-react';
+
+const clothingTypes: { value: ClothingType; label: string; icon: any }[] = [
+  { value: 'tops', label: 'Tops', icon: Shirt },
+  { value: 'bottoms', label: 'Bottoms', icon: Shirt },
+  { value: 'dresses', label: 'Dresses', icon: Shirt },
+  { value: 'outerwear', label: 'Outerwear', icon: Shirt },
+  { value: 'shoes', label: 'Shoes', icon: Shirt },
+  { value: 'accessories', label: 'Accessories', icon: Shirt },
+];
+
+const colors: { value: ClothingColor; label: string; bgClass: string; textClass: string }[] = [
+  { value: 'black', label: 'Black', bgClass: 'bg-black', textClass: 'text-white' },
+  { value: 'white', label: 'White', bgClass: 'bg-white', textClass: 'text-black' },
+  { value: 'gray', label: 'Gray', bgClass: 'bg-gray-500', textClass: 'text-white' },
+  { value: 'red', label: 'Red', bgClass: 'bg-red-500', textClass: 'text-white' },
+  { value: 'blue', label: 'Blue', bgClass: 'bg-blue-500', textClass: 'text-white' },
+  { value: 'green', label: 'Green', bgClass: 'bg-green-500', textClass: 'text-white' },
+  { value: 'yellow', label: 'Yellow', bgClass: 'bg-yellow-400', textClass: 'text-black' },
+  { value: 'purple', label: 'Purple', bgClass: 'bg-purple-500', textClass: 'text-white' },
+  { value: 'pink', label: 'Pink', bgClass: 'bg-pink-500', textClass: 'text-white' },
+  { value: 'orange', label: 'Orange', bgClass: 'bg-orange-500', textClass: 'text-white' },
+  { value: 'brown', label: 'Brown', bgClass: 'bg-amber-800', textClass: 'text-white' },
+];
+
+const occasions: { value: ClothingOccasion; label: string; icon: any }[] = [
+  { value: 'casual', label: 'Casual', icon: Coffee },
+  { value: 'formal', label: 'Formal', icon: BriefcaseBusiness },
+  { value: 'business', label: 'Business', icon: BriefcaseBusiness },
+  { value: 'sporty', label: 'Sporty', icon: Shirt },
+  { value: 'party', label: 'Party', icon: Sparkles },
+];
+
+const seasons = [
+  { value: 'winter', label: 'Winter', icon: Snowflake },
+  { value: 'spring', label: 'Spring', icon: Flower },
+  { value: 'summer', label: 'Summer', icon: Sun },
+  { value: 'autumn', label: 'Fall', icon: CloudRain },
+  { value: 'all', label: 'All Seasons', icon: Calendar },
+];
 
 interface EnhancedWardrobeFiltersProps {
   onFilterChange: (filters: WardrobeFilters) => void;
@@ -21,53 +75,21 @@ interface EnhancedWardrobeFiltersProps {
   filteredCount: number;
   temperature?: number;
   weatherCondition?: string;
+  onToggleFilter?: (filterType: keyof WardrobeFilters, value: any) => void;
+  currentFilters?: WardrobeFilters;
 }
 
-const categoryOptions: { value: ClothingType, label: string }[] = [
-  { value: 'shirt', label: 'Shirts' },
-  { value: 'pants', label: 'Pants' },
-  { value: 'shoes', label: 'Shoes' },
-  { value: 'dress', label: 'Dresses' },
-  { value: 'skirt', label: 'Skirts' },
-  { value: 'jacket', label: 'Jackets' },
-  { value: 'sweater', label: 'Sweaters' },
-  { value: 'accessories', label: 'Accessories' },
-  { value: 'other', label: 'Other' }
-];
-
-const colorOptions: { value: ClothingColor, label: string }[] = [
-  { value: 'black', label: 'Black' },
-  { value: 'white', label: 'White' },
-  { value: 'gray', label: 'Gray' },
-  { value: 'red', label: 'Red' },
-  { value: 'blue', label: 'Blue' },
-  { value: 'green', label: 'Green' },
-  { value: 'yellow', label: 'Yellow' },
-  { value: 'purple', label: 'Purple' },
-  { value: 'pink', label: 'Pink' },
-  { value: 'orange', label: 'Orange' },
-  { value: 'brown', label: 'Brown' },
-  { value: 'multicolor', label: 'Multicolor' }
-];
-
-const occasionOptions: { value: ClothingOccasion, label: string }[] = [
-  { value: 'casual', label: 'Casual' },
-  { value: 'formal', label: 'Formal' },
-  { value: 'work', label: 'Work' },
-  { value: 'sport', label: 'Sport' },
-  { value: 'special', label: 'Special Occasion' },
-  { value: 'party', label: 'Party' },
-  { value: 'date', label: 'Date' }
-];
-
-const EnhancedWardrobeFilters = ({ 
-  onFilterChange, 
-  totalItems, 
+const EnhancedWardrobeFilters: React.FC<EnhancedWardrobeFiltersProps> = ({ 
+  onFilterChange,
+  totalItems,
   filteredCount,
   temperature,
-  weatherCondition 
-}: EnhancedWardrobeFiltersProps) => {
-  const [filters, setFilters] = useState<WardrobeFilters>({
+  weatherCondition,
+  onToggleFilter,
+  currentFilters
+}) => {
+  const [activeTab, setActiveTab] = useState("all");
+  const [activeFilters, setActiveFilters] = useState<WardrobeFilters>({
     category: null,
     color: null,
     occasion: null,
@@ -76,35 +98,31 @@ const EnhancedWardrobeFilters = ({
     weatherAppropriate: null,
     searchQuery: ''
   });
-  
-  const [activeFilters, setActiveFilters] = useState<string[]>([]);
-  
-  const updateFilters = (newFilters: Partial<WardrobeFilters>) => {
-    const updated = { ...filters, ...newFilters };
-    setFilters(updated);
-    onFilterChange(updated);
-    
-    // Update active filters list for visual feedback
-    const active: string[] = [];
-    if (updated.category) active.push(`Category: ${updated.category}`);
-    if (updated.color) active.push(`Color: ${updated.color}`);
-    if (updated.occasion) active.push(`Occasion: ${updated.occasion}`);
-    if (updated.timeFrame !== 'all') {
-      const timeFrameLabels = {
-        'recent': 'Recently worn',
-        '3months': 'Worn in last 3 months',
-        '6months': 'Worn in last 6 months'
-      };
-      active.push(timeFrameLabels[updated.timeFrame]);
-    }
-    if (updated.favorite === true) active.push('Favorites');
-    if (updated.weatherAppropriate === true) active.push('Weather appropriate');
-    
-    setActiveFilters(active);
+
+  // Use currentFilters if provided, otherwise use local state
+  const filters = currentFilters || activeFilters;
+
+  // Apply filter change
+  const handleFilterChange = (newFilters: Partial<WardrobeFilters>) => {
+    const updatedFilters = { ...filters, ...newFilters };
+    setActiveFilters(updatedFilters);
+    onFilterChange(updatedFilters);
   };
-  
-  const clearFilters = () => {
-    const resetFilters: WardrobeFilters = {
+
+  // Handle filter toggle
+  const handleToggleFilter = (filterType: keyof WardrobeFilters, value: any) => {
+    if (onToggleFilter) {
+      onToggleFilter(filterType, value);
+    } else {
+      handleFilterChange({
+        [filterType]: filters[filterType] === value ? null : value
+      });
+    }
+  };
+
+  // Clear all filters
+  const clearAllFilters = () => {
+    const emptyFilters: WardrobeFilters = {
       category: null,
       color: null,
       occasion: null,
@@ -113,276 +131,305 @@ const EnhancedWardrobeFilters = ({
       weatherAppropriate: null,
       searchQuery: ''
     };
-    setFilters(resetFilters);
-    setActiveFilters([]);
-    onFilterChange(resetFilters);
+    
+    setActiveFilters(emptyFilters);
+    onFilterChange(emptyFilters);
   };
-  
-  const removeFilter = (filterName: string) => {
-    // Extract the filter type from the full filter name (e.g., "Category: shirt" -> "category")
-    const filterParts = filterName.split(':');
-    const filterType = filterParts[0].trim().toLowerCase();
-    
-    let updatedFilters = { ...filters };
-    
-    switch (filterType) {
-      case 'category':
-        updatedFilters.category = null;
-        break;
-      case 'color':
-        updatedFilters.color = null;
-        break;
-      case 'occasion':
-        updatedFilters.occasion = null;
-        break;
-      case 'favorites':
-        updatedFilters.favorite = null;
-        break;
-      case 'weather':
-      case 'weather appropriate':
-        updatedFilters.weatherAppropriate = null;
-        break;
-      default:
-        // Handle time frame filters
-        if (filterName.includes('worn')) {
-          updatedFilters.timeFrame = 'all';
-        }
-    }
-    
-    setFilters(updatedFilters);
-    onFilterChange(updatedFilters);
-    
-    // Update active filters
-    setActiveFilters(activeFilters.filter(f => f !== filterName));
-  };
-  
+
   return (
-    <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-        <div className="flex items-center">
-          <span className="text-sm text-white/70">
-            Showing <span className="font-medium text-white">{filteredCount}</span> of <span className="font-medium text-white">{totalItems}</span> items
-          </span>
+    <div className="mb-6 pl-4">
+      <div className="bg-slate-900/50 p-4 rounded-xl backdrop-blur-sm border border-white/5 shadow-md">
+        {/* Header with counts */}
+        <div className="flex flex-wrap justify-between items-center mb-4">
+          <div className="flex items-center gap-2">
+            <Filter className="h-4 w-4 text-purple-400" />
+            <h3 className="text-sm font-medium text-white">Filter Your Wardrobe</h3>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-white/70">
+              Showing <span className="font-semibold text-white">{filteredCount}</span> of <span className="text-white">{totalItems}</span> items
+            </span>
+            
+            {filteredCount < totalItems && (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-7 px-2 text-xs text-red-400 hover:text-red-300 hover:bg-red-950/30"
+                onClick={clearAllFilters}
+              >
+                <X className="h-3.5 w-3.5 mr-1" />
+                Clear
+              </Button>
+            )}
+          </div>
         </div>
         
-        <div className="flex flex-wrap gap-2">
-          {/* Category filter */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button 
-                variant="outline" 
-                size="sm"
-                className={cn(
-                  "border-white/10 text-white hover:bg-white/10",
-                  filters.category && "bg-purple-500/20 border-purple-500/40"
-                )}
-              >
-                <Tag className="mr-2 h-4 w-4" />
-                Category
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="bg-slate-900 border-slate-700 text-white">
-              <DropdownMenuLabel>Filter by Category</DropdownMenuLabel>
-              <DropdownMenuSeparator className="bg-slate-700" />
-              <DropdownMenuGroup>
-                {categoryOptions.map(option => (
-                  <DropdownMenuItem 
-                    key={option.value}
+        {/* Main Filter Tabs */}
+        <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="w-full mb-4 grid grid-cols-4 h-9 bg-slate-800/70">
+            <TabsTrigger value="all">All Filters</TabsTrigger>
+            <TabsTrigger value="category">Categories</TabsTrigger>
+            <TabsTrigger value="color">Colors</TabsTrigger>
+            <TabsTrigger value="occasion">Occasions</TabsTrigger>
+          </TabsList>
+          
+          {/* All Filters Tab */}
+          {activeTab === "all" && (
+            <div className="space-y-4">
+              {/* Categories Section */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm text-white/70">Categories</Label>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {clothingTypes.map((type) => {
+                    const isActive = filters.category === type.value;
+                    const Icon = type.icon;
+                    
+                    return (
+                      <Button
+                        key={type.value}
+                        variant="outline"
+                        size="sm"
+                        className={cn(
+                          "text-xs border-slate-700/50 hover:bg-slate-800/60 hover:border-purple-500/40",
+                          isActive && "bg-slate-800/80 border-purple-500/50 text-purple-300"
+                        )}
+                        onClick={() => handleToggleFilter('category', type.value)}
+                      >
+                        <Icon className="h-3.5 w-3.5 mr-1.5" />
+                        {type.label}
+                      </Button>
+                    );
+                  })}
+                </div>
+              </div>
+              
+              {/* Colors Section */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm text-white/70">Colors</Label>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {colors.map((color) => {
+                    const isActive = filters.color === color.value;
+                    
+                    return (
+                      <Button
+                        key={color.value}
+                        variant="outline"
+                        size="sm"
+                        className={cn(
+                          "text-xs border-slate-700/50 hover:bg-slate-800/60 hover:border-purple-500/40",
+                          isActive && "bg-slate-800/80 border-purple-500/50 text-purple-300"
+                        )}
+                        onClick={() => handleToggleFilter('color', color.value)}
+                      >
+                        <span 
+                          className={`h-3 w-3 rounded-full mr-1.5 ${color.bgClass} border border-white/20`}
+                        ></span>
+                        {color.label}
+                      </Button>
+                    );
+                  })}
+                </div>
+              </div>
+              
+              {/* Occasions Section */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm text-white/70">Occasions</Label>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {occasions.map((occasion) => {
+                    const isActive = filters.occasion === occasion.value;
+                    const Icon = occasion.icon;
+                    
+                    return (
+                      <Button
+                        key={occasion.value}
+                        variant="outline"
+                        size="sm"
+                        className={cn(
+                          "text-xs border-slate-700/50 hover:bg-slate-800/60 hover:border-purple-500/40",
+                          isActive && "bg-slate-800/80 border-purple-500/50 text-purple-300"
+                        )}
+                        onClick={() => handleToggleFilter('occasion', occasion.value)}
+                      >
+                        <Icon className="h-3.5 w-3.5 mr-1.5" />
+                        {occasion.label}
+                      </Button>
+                    );
+                  })}
+                </div>
+              </div>
+              
+              {/* Additional Filters Section */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm text-white/70">Additional Filters</Label>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {/* Favorites Filter */}
+                  <Button
+                    variant="outline"
+                    size="sm"
                     className={cn(
-                      "cursor-pointer hover:bg-slate-800 focus:bg-slate-800",
-                      filters.category === option.value && "bg-purple-500/20 text-purple-200"
+                      "text-xs border-slate-700/50 hover:bg-slate-800/60 hover:border-purple-500/40",
+                      filters.favorite === true && "bg-slate-800/80 border-purple-500/50 text-purple-300"
                     )}
-                    onClick={() => updateFilters({ category: option.value })}
+                    onClick={() => handleToggleFilter('favorite', filters.favorite === true ? null : true)}
                   >
-                    {option.label}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          
-          {/* Color filter */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button 
-                variant="outline" 
-                size="sm"
-                className={cn(
-                  "border-white/10 text-white hover:bg-white/10",
-                  filters.color && "bg-purple-500/20 border-purple-500/40"
-                )}
-              >
-                <Circle className="mr-2 h-4 w-4" />
-                Color
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="bg-slate-900 border-slate-700 text-white">
-              <DropdownMenuLabel>Filter by Color</DropdownMenuLabel>
-              <DropdownMenuSeparator className="bg-slate-700" />
-              <DropdownMenuGroup>
-                {colorOptions.map(option => (
-                  <DropdownMenuItem 
-                    key={option.value}
+                    <Heart className={cn(
+                      "h-3.5 w-3.5 mr-1.5",
+                      filters.favorite === true && "fill-red-500 text-red-500"
+                    )} />
+                    Favorites
+                  </Button>
+                  
+                  {/* Weather Appropriate Filter */}
+                  <Button
+                    variant="outline"
+                    size="sm"
                     className={cn(
-                      "cursor-pointer hover:bg-slate-800 focus:bg-slate-800",
-                      filters.color === option.value && "bg-purple-500/20 text-purple-200"
+                      "text-xs border-slate-700/50 hover:bg-slate-800/60 hover:border-purple-500/40",
+                      filters.weatherAppropriate === true && "bg-slate-800/80 border-purple-500/50 text-purple-300"
                     )}
-                    onClick={() => updateFilters({ color: option.value })}
+                    onClick={() => handleToggleFilter('weatherAppropriate', filters.weatherAppropriate === true ? null : true)}
+                    disabled={!temperature}
                   >
-                    {option.label}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          
-          {/* Occasion filter */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button 
-                variant="outline" 
-                size="sm"
-                className={cn(
-                  "border-white/10 text-white hover:bg-white/10",
-                  filters.occasion && "bg-purple-500/20 border-purple-500/40"
-                )}
-              >
-                <Calendar className="mr-2 h-4 w-4" />
-                Occasion
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="bg-slate-900 border-slate-700 text-white">
-              <DropdownMenuLabel>Filter by Occasion</DropdownMenuLabel>
-              <DropdownMenuSeparator className="bg-slate-700" />
-              <DropdownMenuGroup>
-                {occasionOptions.map(option => (
-                  <DropdownMenuItem 
-                    key={option.value}
+                    <Sun className="h-3.5 w-3.5 mr-1.5" />
+                    Weather Appropriate
+                    {temperature && (
+                      <Badge variant="outline" className="ml-1.5 py-0 h-4 text-[10px]">
+                        {temperature}°
+                      </Badge>
+                    )}
+                  </Button>
+                  
+                  {/* Recently Worn Filter */}
+                  <Button
+                    variant="outline"
+                    size="sm"
                     className={cn(
-                      "cursor-pointer hover:bg-slate-800 focus:bg-slate-800",
-                      filters.occasion === option.value && "bg-purple-500/20 text-purple-200"
+                      "text-xs border-slate-700/50 hover:bg-slate-800/60 hover:border-purple-500/40",
+                      filters.timeFrame !== 'all' && "bg-slate-800/80 border-purple-500/50 text-purple-300"
                     )}
-                    onClick={() => updateFilters({ occasion: option.value })}
+                    onClick={() => handleToggleFilter('timeFrame', filters.timeFrame !== 'recent' ? 'recent' : 'all')}
                   >
-                    {option.label}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          
-          {/* Last Worn filter */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button 
-                variant="outline" 
-                size="sm"
-                className={cn(
-                  "border-white/10 text-white hover:bg-white/10",
-                  filters.timeFrame !== 'all' && "bg-purple-500/20 border-purple-500/40"
-                )}
-              >
-                <Clock className="mr-2 h-4 w-4" />
-                Last Worn
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="bg-slate-900 border-slate-700 text-white">
-              <DropdownMenuLabel>Filter by Last Worn</DropdownMenuLabel>
-              <DropdownMenuSeparator className="bg-slate-700" />
-              <DropdownMenuGroup>
-                <DropdownMenuItem 
-                  className={cn(
-                    "cursor-pointer hover:bg-slate-800 focus:bg-slate-800",
-                    filters.timeFrame === 'recent' && "bg-purple-500/20 text-purple-200"
-                  )}
-                  onClick={() => updateFilters({ timeFrame: 'recent' })}
-                >
-                  Recently worn
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  className={cn(
-                    "cursor-pointer hover:bg-slate-800 focus:bg-slate-800",
-                    filters.timeFrame === '3months' && "bg-purple-500/20 text-purple-200"
-                  )}
-                  onClick={() => updateFilters({ timeFrame: '3months' })}
-                >
-                  Last 3 months
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  className={cn(
-                    "cursor-pointer hover:bg-slate-800 focus:bg-slate-800",
-                    filters.timeFrame === '6months' && "bg-purple-500/20 text-purple-200"
-                  )}
-                  onClick={() => updateFilters({ timeFrame: '6months' })}
-                >
-                  Last 6 months
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          
-          {/* Quick filters */}
-          <Button 
-            variant="outline" 
-            size="sm"
-            className={cn(
-              "border-white/10 text-white hover:bg-white/10",
-              filters.favorite && "bg-purple-500/20 border-purple-500/40"
-            )}
-            onClick={() => updateFilters({ favorite: filters.favorite ? null : true })}
-          >
-            <Sparkles className="mr-2 h-4 w-4" />
-            Favorites
-          </Button>
-          
-          {temperature && (
-            <Button 
-              variant="outline" 
-              size="sm"
-              className={cn(
-                "border-white/10 text-white hover:bg-white/10",
-                filters.weatherAppropriate && "bg-purple-500/20 border-purple-500/40"
-              )}
-              onClick={() => updateFilters({ weatherAppropriate: filters.weatherAppropriate ? null : true })}
-            >
-              <CloudSun className="mr-2 h-4 w-4" />
-              Weather Appropriate
-            </Button>
+                    <CalendarIcon className="h-3.5 w-3.5 mr-1.5" />
+                    Recently Worn
+                  </Button>
+                </div>
+              </div>
+            </div>
           )}
           
-          {activeFilters.length > 0 && (
-            <Button 
-              variant="ghost" 
-              size="sm"
-              className="text-white/70 hover:text-white hover:bg-white/10"
-              onClick={clearFilters}
-            >
-              Clear Filters
-            </Button>
+          {/* Category Tab */}
+          {activeTab === "category" && (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 pt-2">
+              {clothingTypes.map((type) => {
+                const isActive = filters.category === type.value;
+                const Icon = type.icon;
+                
+                return (
+                  <Button
+                    key={type.value}
+                    variant={isActive ? "default" : "outline"}
+                    className={cn(
+                      "h-full py-3 flex flex-col items-center justify-center border-slate-700/50",
+                      isActive 
+                        ? "bg-gradient-to-r from-indigo-600/80 to-purple-600/80 border-0" 
+                        : "hover:bg-slate-800/60 hover:border-purple-500/40"
+                    )}
+                    onClick={() => handleToggleFilter('category', type.value)}
+                  >
+                    <Icon className={cn("h-5 w-5 mb-1", isActive ? "text-white" : "text-purple-300")} />
+                    <span className="text-xs font-medium">{type.label}</span>
+                  </Button>
+                );
+              })}
+            </div>
           )}
-        </div>
+          
+          {/* Colors Tab */}
+          {activeTab === "color" && (
+            <div className="grid grid-cols-3 sm:grid-cols-5 gap-3 pt-2">
+              {colors.map((color) => {
+                const isActive = filters.color === color.value;
+                
+                return (
+                  <Button
+                    key={color.value}
+                    variant="outline"
+                    className={cn(
+                      "h-full py-2 flex flex-col items-center justify-center border-slate-700/50",
+                      isActive && "bg-slate-800/80 border-purple-500/50"
+                    )}
+                    onClick={() => handleToggleFilter('color', color.value)}
+                  >
+                    <span 
+                      className={`h-5 w-5 rounded-full mb-1.5 ${color.bgClass} border border-white/20`}
+                    ></span>
+                    <span className="text-xs font-medium">{color.label}</span>
+                  </Button>
+                );
+              })}
+            </div>
+          )}
+          
+          {/* Occasions Tab */}
+          {activeTab === "occasion" && (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 pt-2">
+              {occasions.map((occasion) => {
+                const isActive = filters.occasion === occasion.value;
+                const Icon = occasion.icon;
+                
+                return (
+                  <Button
+                    key={occasion.value}
+                    variant={isActive ? "default" : "outline"}
+                    className={cn(
+                      "h-full py-3 flex flex-col items-center justify-center border-slate-700/50",
+                      isActive 
+                        ? "bg-gradient-to-r from-indigo-600/80 to-purple-600/80 border-0" 
+                        : "hover:bg-slate-800/60 hover:border-purple-500/40"
+                    )}
+                    onClick={() => handleToggleFilter('occasion', occasion.value)}
+                  >
+                    <Icon className={cn("h-5 w-5 mb-1", isActive ? "text-white" : "text-purple-300")} />
+                    <span className="text-xs font-medium">{occasion.label}</span>
+                  </Button>
+                );
+              })}
+              
+              {/* Season filters in Occasion tab */}
+              <div className="col-span-full mt-4">
+                <Label className="text-sm text-white/70 mb-3 block">Seasons</Label>
+                <div className="flex flex-wrap gap-2">
+                  {seasons.map((season) => {
+                    const Icon = season.icon;
+                    // Note: season filtering would need to be added to your filter state
+                    
+                    return (
+                      <Button
+                        key={season.value}
+                        variant="outline"
+                        size="sm"
+                        className="text-xs border-slate-700/50 hover:bg-slate-800/60 hover:border-purple-500/40"
+                      >
+                        <Icon className="h-3.5 w-3.5 mr-1.5" />
+                        {season.label}
+                      </Button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
+        </Tabs>
       </div>
-      
-      {/* Active filters display */}
-      {activeFilters.length > 0 && (
-        <div className="flex flex-wrap gap-2 pt-2">
-          {activeFilters.map((filter) => (
-            <Badge 
-              key={filter}
-              variant="outline" 
-              className="bg-purple-500/20 text-purple-200 border-purple-500/40 px-2 py-1"
-            >
-              {filter}
-              <button 
-                className="ml-2 text-purple-200 hover:text-white"
-                onClick={() => removeFilter(filter)}
-              >
-                ×
-              </button>
-            </Badge>
-          ))}
-        </div>
-      )}
     </div>
   );
 };
