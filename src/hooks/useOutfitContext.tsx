@@ -6,6 +6,8 @@ interface OutfitContextType {
   weather: WeatherInfo | null;
   situation: string | null;
   selectedOutfit: Outfit | null;
+  isBuilderOpen: boolean;
+  setIsBuilderOpen: (isOpen: boolean) => void;
   updateWeather: (weather: WeatherInfo) => void;
   updateSituation: (situation: string) => void;
   selectOutfit: (outfit: Outfit) => void;
@@ -17,6 +19,7 @@ export const OutfitProvider = ({ children }: { children: ReactNode }) => {
   const [weather, setWeather] = useState<WeatherInfo | null>(null);
   const [situation, setSituation] = useState<string | null>(null);
   const [selectedOutfit, setSelectedOutfit] = useState<Outfit | null>(null);
+  const [isBuilderOpen, setIsBuilderOpen] = useState(false);
 
   const updateWeather = useCallback((newWeather: WeatherInfo) => {
     setWeather(newWeather);
@@ -35,10 +38,12 @@ export const OutfitProvider = ({ children }: { children: ReactNode }) => {
     weather,
     situation,
     selectedOutfit,
+    isBuilderOpen,
+    setIsBuilderOpen,
     updateWeather,
     updateSituation,
     selectOutfit
-  }), [weather, situation, selectedOutfit, updateWeather, updateSituation, selectOutfit]);
+  }), [weather, situation, selectedOutfit, isBuilderOpen, updateWeather, updateSituation, selectOutfit]);
 
   return (
     <OutfitContext.Provider value={value}>
