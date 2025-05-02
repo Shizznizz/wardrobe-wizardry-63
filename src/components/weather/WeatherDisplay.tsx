@@ -12,9 +12,10 @@ import { getWeatherGradient } from '@/components/weather/WeatherUtils';
 interface WeatherDisplayProps {
   weather: WeatherInfo;
   compact?: boolean;
+  className?: string; // Added className prop to the interface
 }
 
-const WeatherDisplay = ({ weather, compact = false }: WeatherDisplayProps) => {
+const WeatherDisplay = ({ weather, compact = false, className = '' }: WeatherDisplayProps) => {
   const isMobile = useIsMobile();
   const today = new Date();
   
@@ -84,7 +85,8 @@ const WeatherDisplay = ({ weather, compact = false }: WeatherDisplayProps) => {
   return (
     <div className={cn(
       "w-full overflow-hidden rounded-lg",
-      compact ? "max-w-xs" : "h-full"
+      compact ? "max-w-xs" : "h-full",
+      className // Added className to the component's outermost div
     )}>
       <motion.div 
         initial={{ opacity: 0 }}

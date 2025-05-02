@@ -11,8 +11,8 @@ type WeatherWidgetProps = {
   showToasts?: boolean;
   showError?: boolean;
   autoLoad?: boolean;
-  className?: string; // Added missing prop
-  savePreferences?: boolean; // Added missing prop
+  className?: string;
+  savePreferences?: boolean;
 };
 
 const WeatherWidget: React.FC<WeatherWidgetProps> = ({
@@ -22,8 +22,8 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({
   showToasts = false,
   showError = true,
   autoLoad = false,
-  className = '', // Default value
-  savePreferences = false // Default value
+  className = '',
+  savePreferences = false
 }) => {
   const [weatherData, setWeatherData] = useState<WeatherInfo | null>(null);
   const [isLoading, setIsLoading] = useState(false);
