@@ -42,6 +42,47 @@ export const getWeatherGradient = (weather: WeatherInfo): string => {
   return 'bg-gradient-to-br from-purple-600 to-indigo-700';
 };
 
+// Get weather mood based on condition and temperature
+export const getWeatherMood = (weather: WeatherInfo): string => {
+  const condition = weather.condition?.toLowerCase() || '';
+  const temperature = weather.temperature || 20;
+  
+  if (condition.includes('clear') || condition.includes('sun')) {
+    if (temperature > 25) {
+      return 'Warm & Sunny';
+    } else {
+      return 'Fresh & Bright';
+    }
+  }
+  
+  if (condition.includes('cloud') && !condition.includes('rain')) {
+    return 'Cool & Overcast';
+  }
+  
+  if (condition.includes('rain')) {
+    return 'Wet & Rainy';
+  }
+  
+  if (condition.includes('snow')) {
+    return 'Cold & Snowy';
+  }
+  
+  if (condition.includes('mist') || condition.includes('fog')) {
+    return 'Misty & Mysterious';
+  }
+  
+  if (temperature > 30) {
+    return 'Hot & Summery';
+  }
+  
+  if (temperature < 0) {
+    return 'Freezing Cold';
+  }
+  
+  // Default mood
+  return 'Pleasant';
+};
+
 // Get day of week
 export const getDayOfWeek = (date: Date): string => {
   return date.toLocaleDateString('en-US', { weekday: 'short' });
