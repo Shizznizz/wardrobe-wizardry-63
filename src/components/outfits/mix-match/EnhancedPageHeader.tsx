@@ -15,13 +15,15 @@ const EnhancedPageHeader = ({ userName, onScrollToWeather }: EnhancedPageHeaderP
     visible: { opacity: 1, y: 0, transition: { duration: 0.7 } }
   };
   
+  // Fixed the animation configuration to use proper types for repeatType
   const slowFloat = {
-    animate: {
-      y: [0, -10, 0],
+    initial: { y: 0 },
+    animate: { 
+      y: [-10, 0, -10],
       transition: {
         duration: 4,
         repeat: Infinity,
-        repeatType: "reverse",
+        repeatType: "reverse" as const, // Use 'as const' to correctly type the repeatType
         ease: "easeInOut"
       }
     }
@@ -71,8 +73,9 @@ const EnhancedPageHeader = ({ userName, onScrollToWeather }: EnhancedPageHeaderP
         </Button>
 
         <motion.div 
-          variants={slowFloat} 
+          initial="initial"
           animate="animate"
+          variants={slowFloat}
           className="mt-8 text-white/60"
         >
           <ArrowDown className="h-6 w-6 mx-auto" />

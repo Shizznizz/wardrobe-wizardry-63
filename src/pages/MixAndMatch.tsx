@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback, Suspense, lazy, memo, useRef } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -11,6 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import CollapsibleSection from '@/components/outfits/mix-match/CollapsibleSection';
 import OutfitTabSection from '@/components/outfits/mix-match/OutfitTabSection';
 import EnhancedPageHeader from '@/components/outfits/mix-match/EnhancedPageHeader';
+import ContextAdjustmentSection from '@/components/outfits/mix-match/ContextAdjustmentSection';
 
 // Lazily loaded components
 const EnhancedWeatherSection = lazy(() => import('@/components/outfits/mix-match/EnhancedWeatherSection'));
