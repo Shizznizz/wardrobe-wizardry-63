@@ -14,9 +14,21 @@ import { motion } from "framer-motion";
 import { Progress } from "@/components/ui/progress";
 import { useAuth } from "@/hooks/useAuth";
 
+// Updated password validation schema with minimum 8 characters, 1 letter, 1 number
+const passwordSchema = z.string()
+  .min(8, "Password must be at least 8 characters")
+  .refine(
+    (password) => /[a-zA-Z]/.test(password),
+    "Password must contain at least one letter"
+  )
+  .refine(
+    (password) => /[0-9]/.test(password),
+    "Password must contain at least one number"
+  );
+
 const authFormSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
+  password: passwordSchema,
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
@@ -57,21 +69,21 @@ const Auth = () => {
   const watchPassword = form.watch("password");
 
   useEffect(() => {
-    // Calculate password strength
+    // Calculate password strength with updated requirements
     if (watchPassword) {
       let strength = 0;
       
       // Length check
       if (watchPassword.length >= 8) strength += 25;
       
-      // Contains lowercase
-      if (/[a-z]/.test(watchPassword)) strength += 25;
+      // Contains letter
+      if (/[a-zA-Z]/.test(watchPassword)) strength += 25;
       
-      // Contains uppercase
-      if (/[A-Z]/.test(watchPassword)) strength += 25;
+      // Contains number
+      if (/[0-9]/.test(watchPassword)) strength += 25;
       
-      // Contains number or special char
-      if (/[0-9!@#$%^&*(),.?":{}|<>]/.test(watchPassword)) strength += 25;
+      // Contains special char
+      if (/[!@#$%^&*(),.?":{}|<>]/.test(watchPassword)) strength += 25;
       
       setPasswordStrength(strength);
       
@@ -113,8 +125,12 @@ const Auth = () => {
       } else {
         if (authMode === "signin") {
           console.log("Sign in successful");
-          const from = location.state?.from || "/";
-          navigate(from, { replace: true, state: { fromAuth: true } });
+          toast.success("Sign in successful! Redirecting...");
+          // Short timeout to ensure the toast is visible before redirect
+          setTimeout(() => {
+            const from = location.state?.from || "/";
+            navigate(from, { replace: true, state: { fromAuth: true } });
+          }, 500);
         } else if (response.data?.user) {
           if (response.data.user.identities && response.data.user.identities.length === 0) {
             toast.error("This email is already registered. Please sign in instead.");
@@ -122,6 +138,8 @@ const Auth = () => {
             console.log("Sign up successful");
             toast.success("Account created successfully! You can now sign in.");
             setAuthMode("signin");
+            form.setValue("password", "");
+            form.setValue("confirmPassword", "");
           }
         }
       }
