@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, Suspense, lazy, memo } from 'react';
+import { useState, useEffect, useCallback, Suspense, lazy, memo, useRef } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import { sampleOutfits, sampleClothingItems } from '@/lib/wardrobeData';
@@ -6,12 +6,11 @@ import { WeatherInfo } from '@/lib/types';
 import { OutfitProvider } from '@/hooks/useOutfitContext';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
-import WardrobeControls from '@/components/wardrobe/WardrobeControls';
-import ContextAdjustmentSection from '@/components/outfits/mix-match/ContextAdjustmentSection';
 import MixMatchActions from '@/components/outfits/mix-match/MixMatchActions';
 import { Skeleton } from '@/components/ui/skeleton';
 import CollapsibleSection from '@/components/outfits/mix-match/CollapsibleSection';
 import OutfitTabSection from '@/components/outfits/mix-match/OutfitTabSection';
+import EnhancedPageHeader from '@/components/outfits/mix-match/EnhancedPageHeader';
 
 // Lazily loaded components
 const EnhancedWeatherSection = lazy(() => import('@/components/outfits/mix-match/EnhancedWeatherSection'));
@@ -26,6 +25,9 @@ const MemoizedCreateOutfitSection = memo(CreateOutfitSection);
 const MemoizedSuggestedOutfitsSection = memo(SuggestedOutfitsSection);
 
 const MixAndMatch = () => {
+  // Weather section ref for scrolling
+  const weatherSectionRef = useRef<HTMLDivElement>(null);
+  
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showCompactView, setShowCompactView] = useState(false);
   const [weather, setWeather] = useState<WeatherInfo | null>(null);
@@ -39,6 +41,13 @@ const MixAndMatch = () => {
   const [selectedOutfitId, setSelectedOutfitId] = useState<string | null>(null);
   const { user } = useAuth();
   const [profile, setProfile] = useState<{ first_name: string | null } | null>(null);
+
+  // Scroll to weather section
+  const scrollToWeatherSection = useCallback(() => {
+    if (weatherSectionRef.current) {
+      weatherSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, []);
 
   // Fetch user profile
   useEffect(() => {
@@ -127,40 +136,22 @@ const MixAndMatch = () => {
       <div className="min-h-screen bg-gradient-to-b from-slate-950 to-indigo-950 text-white">
         <Header />
         <main className="container mx-auto px-2 sm:px-4 py-6 pt-20 max-w-6xl">
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-            className="text-center mb-10 pt-4 px-2"
-          >
-            <h1 className="text-2xl xs:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-coral-400 text-balance">
-              {profile?.first_name
-                ? `Hi ${profile.first_name}, Olivia's got a perfect outfit for you today!`
-                : 'Unlock Your Perfect Style Combinations'}
-            </h1>
-            <p className="text-base xs:text-lg md:text-xl text-white/70 max-w-3xl mx-auto text-balance mb-6">
-              Let Olivia design your perfect outfit, tailored to today's weather and your unique style.
-            </p>
-            
-            <div className="flex flex-col items-center space-y-5">
-              <div className="flex justify-center w-full">
-                <WardrobeControls
-                  viewMode={viewMode}
-                  showCompactView={showCompactView}
-                  onViewModeChange={setViewMode}
-                  onCompactViewChange={setShowCompactView}
-                />
-              </div>
-              
-              <MixMatchActions />
-            </div>
-          </motion.div>
+          {/* Enhanced header section - removed old header and replaced with new component */}
+          <EnhancedPageHeader 
+            userName={profile?.first_name}
+            onScrollToWeather={scrollToWeatherSection}
+          />
 
-          {/* Unified Weather & Context Section */}
+          <div className="mt-8 flex justify-center">
+            <MixMatchActions />
+          </div>
+
+          {/* Weather & Context Section - added ref for scrolling */}
           <motion.section
+            ref={weatherSectionRef}
             {...fadeUp}
             transition={{ delay: 0.1, duration: 0.5 }}
-            className="mb-8"
+            className="mb-8 pt-6 scroll-mt-24"
           >
             <Suspense fallback={<Skeleton className="w-full h-64 rounded-xl bg-slate-800" />}>
               <MemoizedEnhancedWeatherSection 

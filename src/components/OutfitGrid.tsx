@@ -55,6 +55,7 @@ const OutfitGrid = ({
           <OutfitCard
             key={outfit.id || `outfit-${Math.random()}`}
             outfit={outfit}
+            clothingItems={safeClothingItems}
             onEdit={onEdit}
             onDelete={onDelete}
             onToggleFavorite={onToggleFavorite}

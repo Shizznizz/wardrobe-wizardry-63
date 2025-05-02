@@ -3,10 +3,10 @@ import React, { useState } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { OutfitCard } from '@/components/outfits/OutfitCard';
 import { cn } from '@/lib/utils';
-import { Heart, Clock, Grid } from 'lucide-react';
+import { Heart, Clock, Grid3X3, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Card, CardHeader } from '@/components/ui/card';
-import { Outfit, ClothingItem } from '@/lib/types';
+import { Outfit, ClothingItem, OutfitLog } from '@/lib/types';
 
 interface OutfitTabSectionProps {
   outfits: Outfit[];
@@ -30,6 +30,26 @@ const OutfitTabSection = ({ outfits, clothingItems }: OutfitTabSectionProps) => 
   const getClothingItemById = (id: string): ClothingItem | undefined => {
     return clothingItems.find(item => item && item.id === id);
   };
+  
+  const handleEdit = (outfit: Outfit) => {
+    console.log('Edit outfit:', outfit);
+    // Implementation would go here
+  };
+  
+  const handleDelete = (id: string) => {
+    console.log('Delete outfit:', id);
+    // Implementation would go here
+  };
+  
+  const handleToggleFavorite = (id: string) => {
+    console.log('Toggle favorite:', id);
+    // Implementation would go here
+  };
+  
+  const handleOutfitAddedToCalendar = (log: OutfitLog) => {
+    console.log('Outfit added to calendar:', log);
+    // Implementation would go here
+  };
 
   const tabVariants = {
     hidden: { opacity: 0, y: 10 },
@@ -47,18 +67,18 @@ const OutfitTabSection = ({ outfits, clothingItems }: OutfitTabSectionProps) => 
           <TabsTrigger 
             value="all"
             className={cn(
-              "flex-1 data-[state=active]:bg-slate-700 data-[state=active]:text-white",
-              "flex items-center justify-center gap-1.5"
+              "flex-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-indigo-600 data-[state=active]:to-purple-600 data-[state=active]:text-white",
+              "flex items-center justify-center gap-2 transition-all duration-300"
             )}
           >
-            <Grid className="h-4 w-4" />
+            <Grid3X3 className="h-4 w-4" />
             All Outfits
           </TabsTrigger>
           <TabsTrigger 
             value="favorites"
             className={cn(
-              "flex-1 data-[state=active]:bg-slate-700 data-[state=active]:text-white",
-              "flex items-center justify-center gap-1.5"
+              "flex-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-indigo-600 data-[state=active]:to-purple-600 data-[state=active]:text-white",
+              "flex items-center justify-center gap-2 transition-all duration-300"
             )}
           >
             <Heart className="h-4 w-4" />
@@ -67,8 +87,8 @@ const OutfitTabSection = ({ outfits, clothingItems }: OutfitTabSectionProps) => 
           <TabsTrigger 
             value="recent"
             className={cn(
-              "flex-1 data-[state=active]:bg-slate-700 data-[state=active]:text-white",
-              "flex items-center justify-center gap-1.5"
+              "flex-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-indigo-600 data-[state=active]:to-purple-600 data-[state=active]:text-white",
+              "flex items-center justify-center gap-2 transition-all duration-300"
             )}
           >
             <Clock className="h-4 w-4" />
@@ -89,6 +109,10 @@ const OutfitTabSection = ({ outfits, clothingItems }: OutfitTabSectionProps) => 
                 outfit={outfit} 
                 clothingItems={clothingItems}
                 getClothingItemById={getClothingItemById}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                onToggleFavorite={handleToggleFavorite}
+                onOutfitAddedToCalendar={handleOutfitAddedToCalendar}
               />
             ))}
           </motion.div>
@@ -108,6 +132,10 @@ const OutfitTabSection = ({ outfits, clothingItems }: OutfitTabSectionProps) => 
                   outfit={outfit} 
                   clothingItems={clothingItems}
                   getClothingItemById={getClothingItemById}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                  onToggleFavorite={handleToggleFavorite}
+                  onOutfitAddedToCalendar={handleOutfitAddedToCalendar}
                 />
               ))
             ) : (
@@ -131,6 +159,10 @@ const OutfitTabSection = ({ outfits, clothingItems }: OutfitTabSectionProps) => 
                 outfit={outfit} 
                 clothingItems={clothingItems}
                 getClothingItemById={getClothingItemById}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                onToggleFavorite={handleToggleFavorite}
+                onOutfitAddedToCalendar={handleOutfitAddedToCalendar}
               />
             ))}
           </motion.div>
