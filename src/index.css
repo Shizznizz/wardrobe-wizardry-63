@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -148,4 +149,21 @@ button {
   transform: translateZ(0);
   backface-visibility: hidden;
   perspective: 1000px;
+}
+
+/* Make sure z-indices are properly stacked */
+.z-overlay {
+  z-index: 50;
+}
+
+.z-header {
+  z-index: 100;
+}
+
+.z-modal {
+  z-index: 1000;
+}
+
+.z-menu {
+  z-index: 1001;
 }

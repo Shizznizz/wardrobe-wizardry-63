@@ -94,16 +94,19 @@ export const MobileMenu = ({
                 ))}
               </div>
               
-              <div className="pt-4 border-t border-white/10">
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-900/20 py-3"
-                  onClick={onSignOut}
-                >
-                  <LogOut className="mr-2 h-5 w-5" />
-                  Sign Out
-                </Button>
-              </div>
+              {/* Only show sign out if user is authenticated */}
+              {navItems.some(item => item.name !== 'Login') && (
+                <div className="pt-4 border-t border-white/10">
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-900/20 py-3"
+                    onClick={onSignOut}
+                  >
+                    <LogOut className="mr-2 h-5 w-5" />
+                    Sign Out
+                  </Button>
+                </div>
+              )}
             </ScrollArea>
           </motion.div>
         </>
