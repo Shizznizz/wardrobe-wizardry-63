@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { MapPin, RefreshCw, Thermometer, Sun, Cloud, CloudRain, Snowflake, Wind } from 'lucide-react';
+import { MapPin, RefreshCw, Thermometer, Sun, Cloud, CloudRain, Snowflake, Wind, ChevronUp, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
@@ -217,7 +217,6 @@ const EnhancedWeatherSection = ({
               country={country}
               showToasts={false}
               savePreferences={false}
-              compact={true}
             />
           </div>
           

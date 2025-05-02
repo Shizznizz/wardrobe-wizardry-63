@@ -19,6 +19,7 @@ interface WeatherWidgetProps {
   savePreferences?: boolean;
   showError?: boolean;
   showToasts?: boolean;
+  compact?: boolean; // Added compact prop
 }
 
 const WeatherWidget = ({ 
@@ -28,7 +29,8 @@ const WeatherWidget = ({
   country, 
   savePreferences = false,
   showError = true,
-  showToasts = false
+  showToasts = false,
+  compact = false // Added with default value
 }: WeatherWidgetProps) => {
   const [weather, setWeather] = useState<WeatherInfo | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -132,7 +134,7 @@ const WeatherWidget = ({
   return (
     <div className={cn(
       "overflow-hidden rounded-lg shadow-sm backdrop-blur-sm transition-all duration-300 bg-white/5 dark:bg-gray-900/20 border border-white/10",
-      isMobile ? "w-full p-2 max-w-full" : "p-4 max-w-md",
+      isMobile ? "w-full p-2 max-w-full" : compact ? "p-3 max-w-xs" : "p-4 max-w-md",
       className
     )}>
       {isLoading ? (
@@ -140,7 +142,7 @@ const WeatherWidget = ({
       ) : error ? (
         <WeatherError error={error} weather={weather} />
       ) : weather ? (
-        <WeatherDisplay weather={weather} />
+        <WeatherDisplay weather={weather} compact={compact} />
       ) : null}
     </div>
   );
