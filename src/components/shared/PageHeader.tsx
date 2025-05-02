@@ -19,7 +19,7 @@ const PageHeader = ({
   showAvatar = true,
   className,
   children,
-  avatarSrc = "/lovable-uploads/352f9956-7bac-4f42-a91b-d20e04157b0d.png"
+  avatarSrc = "/lovable-uploads/34e8d801-61ee-4254-a7ce-39b52a3a7e65.png"
 }: PageHeaderProps) => {
   // Animation variants
   const containerVariants = {
@@ -51,7 +51,7 @@ const PageHeader = ({
       animate="visible"
       variants={containerVariants}
       className={cn(
-        "relative overflow-hidden py-6 md:py-10 px-4 md:px-6 text-center",
+        "relative overflow-hidden py-4 md:py-6 px-4 md:px-6 text-center",
         className
       )}
     >
@@ -60,14 +60,6 @@ const PageHeader = ({
         <div className="absolute top-1/3 left-1/4 w-64 h-64 rounded-full bg-purple-500/10 blur-3xl"></div>
         <div className="absolute top-1/2 right-1/4 w-72 h-72 rounded-full bg-indigo-500/10 blur-3xl"></div>
       </div>
-      
-      {/* Olivia greeting */}
-      <motion.p 
-        variants={itemVariants}
-        className="text-sm text-white/70 mb-2"
-      >
-        Hi, I'm Olivia 👋
-      </motion.p>
       
       {/* Main headline */}
       <motion.h1 

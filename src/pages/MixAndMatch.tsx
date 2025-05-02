@@ -136,7 +136,7 @@ const MixAndMatch = () => {
       <div className="min-h-screen bg-gradient-to-b from-slate-950 to-indigo-950 text-white">
         <Header />
         <main className="container mx-auto px-2 sm:px-4 py-6 pt-20 max-w-6xl">
-          {/* Replace EnhancedPageHeader with PageHeader but keep the functionality */}
+          {/* Use PageHeader component */}
           <PageHeader
             title="Your Daily Style, Curated by Olivia"
             subtitle="Get AI-powered outfits based on your style, mood, and local weather."
