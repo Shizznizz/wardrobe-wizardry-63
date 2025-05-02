@@ -1,171 +1,108 @@
 
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
+import { motion } from 'framer-motion';
+import { Switch } from "@/components/ui/switch"
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { toast } from 'sonner';
-import { BellRing, AlertCircle, CalendarClock, Sparkles, Cloud } from 'lucide-react';
+import { Label } from "@/components/ui/label"
+import { Bell, MessageSquare, Sparkles } from 'lucide-react';
 
-const NotificationSettings = () => {
+interface NotificationSettingsProps {
+  onSave?: () => void;
+}
+
+const NotificationSettings = ({ onSave }: NotificationSettingsProps) => {
   const [outfitReminders, setOutfitReminders] = useState(true);
-  const [reminderTime, setReminderTime] = useState("08:00");
-  const [newItems, setNewItems] = useState(true);
-  const [styleInsights, setStyleInsights] = useState(true);
   const [weatherAlerts, setWeatherAlerts] = useState(true);
-  const [reminderDays, setReminderDays] = useState<string[]>(["1", "2", "3", "4", "5"]);
+  const [feedbackRequests, setFeedbackRequests] = useState(false);
+  const [styleMessages, setStyleMessages] = useState(true);
   
-  const handleSaveSettings = () => {
-    // In a production app, this would save to a database
-    toast.success('Notification settings saved successfully');
-  };
-  
-  const toggleDay = (day: string) => {
-    setReminderDays(prev => 
-      prev.includes(day) 
-        ? prev.filter(d => d !== day) 
-        : [...prev, day]
-    );
+  const handleSave = () => {
+    // In a real app, we'd save these to the backend/database
+    localStorage.setItem('notifications', JSON.stringify({
+      outfitReminders,
+      weatherAlerts,
+      feedbackRequests,
+      styleMessages
+    }));
+    
+    if (onSave) onSave();
   };
   
   return (
-    <Card className="bg-slate-800/40 border-slate-700/50">
-      <CardHeader>
-        <CardTitle className="text-xl font-semibold text-white flex items-center gap-2">
-          <BellRing className="h-5 w-5 text-purple-400" />
-          Notifications
-        </CardTitle>
-        <CardDescription className="text-slate-400">
-          Customize your notification preferences
-        </CardDescription>
-      </CardHeader>
+    <motion.div 
+      className="glass-dark rounded-xl border border-white/10 p-4 sm:p-6 space-y-6"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.1, duration: 0.3 }}
+    >
+      <h2 className="text-xl font-medium bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-purple-400 flex items-center">
+        <Bell className="mr-2 h-5 w-5 text-pink-400" />
+        Notifications
+      </h2>
       
-      <CardContent className="space-y-6">
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label className="text-white flex items-center gap-2">
-                <CalendarClock className="h-4 w-4 text-blue-400" />
-                Daily Outfit Reminders
-              </Label>
-              <p className="text-xs text-slate-400">
-                Get a reminder to prepare your outfit for the next day
-              </p>
-            </div>
-            <Switch 
-              checked={outfitReminders} 
-              onCheckedChange={setOutfitReminders} 
-            />
+      <div className="space-y-4">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 pb-3 border-b border-white/5">
+          <div className="space-y-0.5">
+            <Label className="text-white">Daily Outfit Reminders</Label>
+            <p className="text-xs text-white/70">Get notifications for daily outfit suggestions</p>
           </div>
-          
-          {outfitReminders && (
-            <div className="pl-6 space-y-4 border-l border-slate-700">
-              <div className="space-y-1">
-                <Label htmlFor="reminder-time" className="text-sm text-slate-300">
-                  Reminder Time
-                </Label>
-                <Input 
-                  id="reminder-time"
-                  type="time"
-                  value={reminderTime}
-                  onChange={(e) => setReminderTime(e.target.value)}
-                  className="bg-slate-900/50 border-slate-700 text-white h-9"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label className="text-sm text-slate-300">Days of Week</Label>
-                <div className="flex flex-wrap gap-2">
-                  {[
-                    {id: "0", label: "S"},
-                    {id: "1", label: "M"},
-                    {id: "2", label: "T"},
-                    {id: "3", label: "W"},
-                    {id: "4", label: "T"},
-                    {id: "5", label: "F"},
-                    {id: "6", label: "S"}
-                  ].map((day) => (
-                    <Button
-                      key={day.id}
-                      type="button"
-                      size="sm"
-                      variant="outline"
-                      onClick={() => toggleDay(day.id)}
-                      className={`w-9 h-9 p-0 ${
-                        reminderDays.includes(day.id)
-                          ? "bg-purple-500/20 border-purple-500 text-white"
-                          : "bg-transparent border-slate-700 text-slate-400"
-                      }`}
-                    >
-                      {day.label}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div className="flex items-center justify-between pt-2">
-            <div className="space-y-0.5">
-              <Label className="text-white flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-pink-400" />
-                New Items & Features
-              </Label>
-              <p className="text-xs text-slate-400">
-                Be notified when new features are available to explore
-              </p>
-            </div>
-            <Switch 
-              checked={newItems} 
-              onCheckedChange={setNewItems} 
-            />
-          </div>
-
-          <div className="flex items-center justify-between pt-2">
-            <div className="space-y-0.5">
-              <Label className="text-white flex items-center gap-2">
-                <AlertCircle className="h-4 w-4 text-orange-400" />
-                Style Insights & Tips
-              </Label>
-              <p className="text-xs text-slate-400">
-                Receive personalized style recommendations from Olivia
-              </p>
-            </div>
-            <Switch 
-              checked={styleInsights} 
-              onCheckedChange={setStyleInsights} 
-            />
-          </div>
-
-          <div className="flex items-center justify-between pt-2">
-            <div className="space-y-0.5">
-              <Label className="text-white flex items-center gap-2">
-                <Cloud className="h-4 w-4 text-blue-400" />
-                Weather Alerts
-              </Label>
-              <p className="text-xs text-slate-400">
-                Get notified of significant weather changes affecting your outfit choices
-              </p>
-            </div>
-            <Switch 
-              checked={weatherAlerts} 
-              onCheckedChange={setWeatherAlerts} 
-            />
-          </div>
+          <Switch 
+            checked={outfitReminders} 
+            onCheckedChange={setOutfitReminders} 
+            className="data-[state=checked]:bg-gradient-to-r from-pink-500 to-purple-500" 
+          />
         </div>
         
-        <div className="pt-2">
-          <Button 
-            onClick={handleSaveSettings}
-            className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white"
-          >
-            Save Notification Settings
-          </Button>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 pb-3 border-b border-white/5">
+          <div className="space-y-0.5">
+            <Label className="text-white">Weather Change Alerts</Label>
+            <p className="text-xs text-white/70">Get notified when weather affects your outfit</p>
+          </div>
+          <Switch 
+            checked={weatherAlerts} 
+            onCheckedChange={setWeatherAlerts} 
+            className="data-[state=checked]:bg-gradient-to-r from-pink-500 to-purple-500"
+          />
         </div>
-      </CardContent>
-    </Card>
+        
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 pb-3 border-b border-white/5">
+          <div className="space-y-0.5">
+            <Label className="text-white">Style Feedback Requests</Label>
+            <p className="text-xs text-white/70">Occasional requests for feedback on outfits</p>
+          </div>
+          <Switch 
+            checked={feedbackRequests} 
+            onCheckedChange={setFeedbackRequests} 
+            className="data-[state=checked]:bg-gradient-to-r from-pink-500 to-purple-500" 
+          />
+        </div>
+        
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+          <div className="space-y-0.5">
+            <div className="flex items-center">
+              <Label className="text-white">Olivia's Style Messages</Label>
+              <MessageSquare className="ml-1 h-3 w-3 text-pink-400" />
+            </div>
+            <p className="text-xs text-white/70">Tips and updates from your personal stylist</p>
+          </div>
+          <Switch 
+            checked={styleMessages} 
+            onCheckedChange={setStyleMessages}
+            className="data-[state=checked]:bg-gradient-to-r from-pink-500 to-purple-500"
+          />
+        </div>
+      </div>
+      
+      <div className="pt-4 flex justify-end">
+        <Button 
+          onClick={handleSave}
+          className="bg-gradient-to-r from-[#ff4ecb] to-[#a97eff] text-white hover:scale-[1.03] transition-transform rounded-xl shadow-md shadow-purple-900/20 flex items-center gap-2"
+        >
+          <Sparkles className="h-4 w-4" />
+          Save Notification Preferences
+        </Button>
+      </div>
+    </motion.div>
   );
 };
 
