@@ -4,7 +4,7 @@ import { Outfit, ClothingItem } from '@/lib/types';
 import { useNavigate } from 'react-router-dom';
 import { OutfitLog } from '@/components/outfits/OutfitLogItem';
 import { toast } from 'sonner';
-import OutfitCard from './outfits/OutfitCard';
+import { OutfitCard } from './outfits/OutfitCard';
 
 interface OutfitGridProps {
   outfits: Outfit[];
