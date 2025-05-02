@@ -37,6 +37,7 @@ const Header = () => {
   };
 
   const toggleMenu = () => {
+    console.log('Toggle menu clicked, current state:', isMenuOpen);
     setIsMenuOpen(prevState => !prevState);
   };
 
