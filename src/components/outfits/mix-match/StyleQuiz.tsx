@@ -18,12 +18,26 @@ const StyleQuiz: React.FC<StyleQuizProps> = ({
   activityIcons = {},
   gradientButtonStyle = false,
 }) => {
-  const [selectedActivity, setSelectedActivity] = useState<string | null>(null);
+  const [selectedActivity, setSelectedActivity] = useState<string | null>(() => {
+    // Try to load previously selected activity from localStorage
+    const saved = localStorage.getItem('selectedActivity');
+    return saved ? saved : null;
+  });
   const [showFeedback, setShowFeedback] = useState(false);
+
+  // Initialize feedback visibility based on saved activity
+  useEffect(() => {
+    if (selectedActivity) {
+      setShowFeedback(true);
+    }
+  }, []);
 
   // Handle activity selection
   const handleActivitySelect = (activity: string) => {
     setSelectedActivity(activity);
+    
+    // Save selected activity to localStorage for persistence
+    localStorage.setItem('selectedActivity', activity);
     
     // Show feedback panel
     setShowFeedback(true);
@@ -101,7 +115,10 @@ const StyleQuiz: React.FC<StyleQuizProps> = ({
             <div className="mt-4 text-center">
               <Button 
                 variant="ghost" 
-                onClick={() => setShowFeedback(false)}
+                onClick={() => {
+                  setShowFeedback(false);
+                  // Don't clear the selected activity from localStorage, just hide the feedback
+                }}
                 className="text-white/70 hover:text-white border border-white/10"
               >
                 Choose a Different Activity

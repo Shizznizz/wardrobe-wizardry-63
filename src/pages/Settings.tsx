@@ -6,6 +6,7 @@ import NotificationSettings from '@/components/settings/NotificationSettings';
 import PreferenceSettings from '@/components/settings/PreferenceSettings';
 import LegalInformationSettings from '@/components/settings/LegalInformationSettings';
 import DataManagementSettings from '@/components/settings/DataManagementSettings';
+import PageHeader from '@/components/shared/PageHeader';
 
 const Settings = () => {
   const containerVariants = {
@@ -34,6 +35,12 @@ const Settings = () => {
       <Header />
       
       <main className="container mx-auto px-4 pt-24 pb-16">
+        <PageHeader
+          title="Settings & Preferences"
+          subtitle="Customize your vibe, reminders, and preferences here with me."
+          showAvatar={true}
+        />
+        
         <motion.div 
           className="space-y-10 max-w-2xl mx-auto"
           initial="hidden"
@@ -41,8 +48,6 @@ const Settings = () => {
           variants={containerVariants}
         >
           <motion.div variants={itemVariants}>
-            <h1 className="text-3xl font-bold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">Settings</h1>
-            
             <div className="space-y-6">
               <div className="grid gap-6">
                 <AppearanceSettings />
