@@ -16,7 +16,6 @@ const FeatureCards = () => {
         title="Weather-Smart Fashion"
         description="Never dress inappropriately for the weather again. Olivia checks your local forecast and suggests outfits accordingly."
         icon={<FeatureIcon><Cloud className="h-8 w-8 text-blue-400" /></FeatureIcon>}
-        withOliviaAvatar={true}
       />
       
       <FeatureCard 
@@ -41,7 +40,7 @@ interface FeatureCardProps {
   withOliviaAvatar?: boolean;
 }
 
-const FeatureCard = ({ title, description, icon, withOliviaAvatar = false }: FeatureCardProps) => {
+const FeatureCard = ({ title, description, icon }: FeatureCardProps) => {
   return (
     <motion.div 
       className="glass-dark p-8 rounded-2xl border border-white/10 hover:border-white/20 transition-all duration-300 relative overflow-hidden group"
@@ -62,16 +61,6 @@ const FeatureCard = ({ title, description, icon, withOliviaAvatar = false }: Fea
         <h3 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-coral-400 to-purple-400">
           {title}
         </h3>
-        
-        {withOliviaAvatar && (
-          <div className="w-8 h-8 rounded-full overflow-hidden border border-coral-500/30">
-            <img 
-              src="/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png" 
-              alt="Olivia AI" 
-              className="w-full h-full object-cover"
-            />
-          </div>
-        )}
       </div>
       
       <p className="text-white/70 relative z-10">
