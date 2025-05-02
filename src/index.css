@@ -48,4 +48,38 @@
     @apply bg-black text-white font-bold rounded-xl shadow-md 
     hover:scale-[1.03] transition-transform duration-300 ease-in-out;
   }
+
+  .speech-bubble-right {
+    @apply relative;
+  }
+
+  .speech-bubble-right::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    right: 10px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .speech-bubble-left {
+    @apply relative;
+  }
+
+  .speech-bubble-left::after {
+    content: '';
+    position: absolute;
+    bottom: 15px;
+    right: -10px;
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-left: 10px solid rgba(255, 255, 255, 0.1);
+  }
 }
+
+/* ... keep existing code */
