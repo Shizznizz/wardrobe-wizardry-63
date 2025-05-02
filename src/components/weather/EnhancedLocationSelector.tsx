@@ -37,11 +37,13 @@ const EnhancedLocationSelector = ({
   initialCountry,
   showToasts = false
 }: EnhancedLocationSelectorProps) => {
+  // Get location hook with all necessary properties
   const {
     country,
     city,
     isDetecting,
     isSavingPreference,
+    hasLocationPreference,
     hasChanges,
     usingSavedPreference,
     locationChangedManually,
@@ -68,11 +70,11 @@ const EnhancedLocationSelector = ({
       }
       setInitialSetupDone(true);
     }
-  }, [initialCountry, initialCity, initialSetupDone]);
+  }, [initialCountry, initialCity, initialSetupDone, country, city, handleCountryChange, handleCityChange]);
   
   // Notify parent component when location changes, but only after manual change
   useEffect(() => {
-    if (onLocationChange && country && locationChangedManually) {
+    if (onLocationChange && country && city && locationChangedManually) {
       onLocationChange(city, country);
     }
   }, [city, country, onLocationChange, locationChangedManually]);

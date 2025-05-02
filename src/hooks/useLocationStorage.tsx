@@ -14,6 +14,11 @@ export function useLocationStorage() {
   const [isLoading, setIsLoading] = useState(true);
   const { user } = useAuth();
 
+  // Load location from localStorage or Supabase
+  useEffect(() => {
+    loadUserLocation();
+  }, [user?.id]);
+
   // Load location from localStorage if no user is logged in
   const loadLocalLocation = () => {
     try {
@@ -64,8 +69,13 @@ export function useLocationStorage() {
     }
   };
 
+  // Get location - added for compatibility
+  const getLocation = async (): Promise<LocationData | null> => {
+    return savedLocation;
+  };
+
   // Save location to both Supabase (if logged in) and localStorage
-  const saveLocation = async (country: string, city: string) => {
+  const saveLocation = async (country: string, city: string): Promise<boolean> => {
     try {
       // Always save to localStorage as fallback
       const locationData = { country, city };
@@ -100,14 +110,10 @@ export function useLocationStorage() {
     }
   };
 
-  // Load location when component mounts or user changes
-  useEffect(() => {
-    loadUserLocation();
-  }, [user?.id]);
-
   return {
     savedLocation,
     isLoading,
-    saveLocation
+    saveLocation,
+    getLocation
   };
 }

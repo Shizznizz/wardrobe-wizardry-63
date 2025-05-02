@@ -3,24 +3,36 @@ import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { useLocationStorage } from './useLocationStorage';
 
+interface LocationData {
+  country: string;
+  city: string;
+}
+
 export const useLocation = () => {
   const [country, setCountry] = useState<string>('');
   const [city, setCity] = useState<string>('');
   const [isDetecting, setIsDetecting] = useState(false);
   const [isSavingPreference, setIsSavingPreference] = useState(false);
   const [hasLocationPreference, setHasLocationPreference] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
+  const [usingSavedPreference, setUsingSavedPreference] = useState(false);
+  const [locationChangedManually, setLocationChangedManually] = useState(false);
   
-  const { saveLocation, getLocation } = useLocationStorage();
+  const { saveLocation, isLoading } = useLocationStorage();
 
   // Load saved location preference on mount
   useEffect(() => {
     const loadLocation = async () => {
       try {
-        const savedLocation = await getLocation();
+        // Since getLocation doesn't exist in useLocationStorage, we'll use savedLocation directly
+        const { savedLocation } = useLocationStorage();
+        
         if (savedLocation && savedLocation.country && savedLocation.city) {
           setCountry(savedLocation.country);
           setCity(savedLocation.city);
           setHasLocationPreference(true);
+          setUsingSavedPreference(true);
+          setHasChanges(false);
         }
       } catch (error) {
         console.error('Error loading location:', error);
@@ -33,10 +45,25 @@ export const useLocation = () => {
   const handleCountryChange = (value: string) => {
     setCountry(value);
     setCity(''); // Reset city when country changes
+    setHasChanges(true);
+    setLocationChangedManually(true);
+    setUsingSavedPreference(false);
   };
 
   const handleCityChange = (value: string) => {
     setCity(value);
+    setHasChanges(true);
+    setLocationChangedManually(true);
+    setUsingSavedPreference(false);
+  };
+
+  const clearLocation = () => {
+    setCountry('');
+    setCity('');
+    setHasLocationPreference(false);
+    setUsingSavedPreference(false);
+    setLocationChangedManually(true);
+    setHasChanges(true);
   };
 
   const detectLocation = async () => {
@@ -52,6 +79,9 @@ export const useLocation = () => {
       
       setCountry(detectedCountry);
       setCity(detectedCity);
+      setHasChanges(true);
+      setLocationChangedManually(true);
+      setUsingSavedPreference(false);
       
       toast.success(`Location detected: ${detectedCity}, ${detectedCountry}`);
     } catch (error) {
@@ -71,8 +101,11 @@ export const useLocation = () => {
     setIsSavingPreference(true);
     
     try {
-      await saveLocation({ country, city });
+      // We need to pass both country and city here
+      await saveLocation(country, city);
       setHasLocationPreference(true);
+      setUsingSavedPreference(true);
+      setHasChanges(false);
       toast.success('Location preference saved!');
       return true;
     } catch (error) {
@@ -91,8 +124,12 @@ export const useLocation = () => {
     handleCityChange,
     detectLocation,
     saveLocationPreference,
+    clearLocation,
     isDetecting,
     isSavingPreference,
-    hasLocationPreference
+    hasLocationPreference,
+    hasChanges,
+    usingSavedPreference,
+    locationChangedManually
   };
 };

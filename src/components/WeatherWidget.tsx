@@ -11,6 +11,8 @@ type WeatherWidgetProps = {
   showToasts?: boolean;
   showError?: boolean;
   autoLoad?: boolean;
+  className?: string; // Added missing prop
+  savePreferences?: boolean; // Added missing prop
 };
 
 const WeatherWidget: React.FC<WeatherWidgetProps> = ({
@@ -19,7 +21,9 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({
   onWeatherChange,
   showToasts = false,
   showError = true,
-  autoLoad = false
+  autoLoad = false,
+  className = '', // Default value
+  savePreferences = false // Default value
 }) => {
   const [weatherData, setWeatherData] = useState<WeatherInfo | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -54,7 +58,6 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({
         humidity: Math.floor(Math.random() * 50) + 30,
         windSpeed: Math.floor(Math.random() * 30),
         condition,
-        date: new Date().toISOString(),
       };
       
       setWeatherData(data);
@@ -62,6 +65,12 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({
       
       if (showToasts) {
         toast.success(`Weather updated for ${city}, ${country}`);
+      }
+      
+      // Handle savePreferences if needed (not implemented in this component)
+      if (savePreferences) {
+        // This is just a placeholder as the actual implementation would depend on your app
+        console.log('Preferences would be saved here if implemented');
       }
     } catch (e) {
       const errorMessage = e instanceof Error ? e.message : 'Failed to fetch weather data';
@@ -84,7 +93,7 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({
 
   if (isLoading) {
     return (
-      <div className="p-2 bg-slate-800/40 rounded-lg">
+      <div className={`p-2 bg-slate-800/40 rounded-lg ${className}`}>
         <Skeleton className="h-24 bg-white/5" />
       </div>
     );
@@ -92,7 +101,7 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({
 
   if (error && showError) {
     return (
-      <div className="p-4 text-center bg-red-900/20 border border-red-900/30 rounded-lg">
+      <div className={`p-4 text-center bg-red-900/20 border border-red-900/30 rounded-lg ${className}`}>
         <p className="text-red-300 text-sm">{error}</p>
       </div>
     );
@@ -102,7 +111,7 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({
     // If we have city and country but no data yet, and we should autoload, show a loading state
     if (city && country && autoLoad) {
       return (
-        <div className="p-2 bg-slate-800/40 rounded-lg">
+        <div className={`p-2 bg-slate-800/40 rounded-lg ${className}`}>
           <Skeleton className="h-24 bg-white/5" />
         </div>
       );
@@ -110,7 +119,7 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({
     
     // Otherwise show the empty state / placeholder
     return (
-      <div className="text-center p-6 bg-slate-800/40 rounded-lg">
+      <div className={`text-center p-6 bg-slate-800/40 rounded-lg ${className}`}>
         <p className="text-white/60 text-sm">
           {city && country 
             ? "Click 'Save Preference' to view weather" 
@@ -120,7 +129,7 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({
     );
   }
 
-  return <WeatherDisplay weather={weatherData} />;
+  return <WeatherDisplay className={className} weather={weatherData} />;
 };
 
 export default WeatherWidget;
