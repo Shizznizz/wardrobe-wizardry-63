@@ -72,6 +72,10 @@ const WeatherWidget = ({
   }, [city, country, user, savePreferences]);
 
   useEffect(() => {
+    console.log("WeatherWidget useEffect - Checking for location changes");
+    console.log("Previous location:", prevLocationRef.current);
+    console.log("Current location:", { city, country });
+    
     const hasLocationChanged = city !== prevLocationRef.current.city || country !== prevLocationRef.current.country;
     if (city !== locationRef.current.city || country !== locationRef.current.country) {
       locationRef.current = { city, country };
@@ -80,9 +84,14 @@ const WeatherWidget = ({
 
     const fetchWeather = async () => {
       if (fetchedRef.current && !hasLocationChanged) {
+        console.log("Weather already fetched and location hasn't changed, skipping");
         return;
       }
+      
+      console.log("Fetching weather data for", city, country);
+      
       if (!city || !country) {
+        console.log("No city/country provided, generating random weather");
         if (!weather) {
           const randomWeather = generateRandomWeather();
           setWeather(randomWeather);
@@ -97,7 +106,9 @@ const WeatherWidget = ({
       setIsLoading(true);
       setError(null);
       try {
+        console.log("Calling fetchWeatherData for", city, country);
         const weatherData = await fetchWeatherData(city, country);
+        console.log("Weather data received:", weatherData);
         setWeather(weatherData);
         if (onWeatherChange) {
           onWeatherChange(weatherData);
@@ -126,6 +137,8 @@ const WeatherWidget = ({
         setIsLoading(false);
       }
     };
+    
+    console.log("Calling fetchWeather function");
     fetchWeather();
     prevLocationRef.current = { city, country };
   }, [city, country, onWeatherChange, showToasts, weather]);

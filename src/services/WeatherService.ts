@@ -19,34 +19,45 @@ export const fetchWeatherData = async (city: string, country: string): Promise<W
     throw new Error('City and country are required');
   }
 
+  console.log(`Fetching weather for ${city}, ${country}...`);
+  
   const apiKey = '72b9c69df76684e113804b44895d2599';
-  const url = `https://api.openweathermap.org/data/2.5/weather?q=${city},${country}&appid=${apiKey}&units=metric&lang=nl`;
+  const url = `https://api.openweathermap.org/data/2.5/weather?q=${city},${country}&appid=${apiKey}&units=metric`;
   
   console.log("Fetching weather data from:", url);
-  const response = await fetch(url);
-  const data = await response.json();
-  
-  if (response.status === 401) {
-    throw new Error('Invalid API key. Please update the API key and try again.');
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    
+    console.log("API Response status:", response.status);
+    console.log("API Response data:", data);
+    
+    if (response.status === 401) {
+      throw new Error('Invalid API key. Please update the API key and try again.');
+    }
+    
+    if (!response.ok) {
+      const errorMsg = data.message || `Weather data not available for ${city}, ${country}`;
+      console.error("Weather API error:", errorMsg);
+      throw new Error(errorMsg);
+    }
+    
+    console.log("Weather data received:", data);
+    
+    return {
+      temperature: Math.round(data.main.temp),
+      condition: data.weather[0].description,
+      icon: getIconName(data.weather[0].main),
+      city: data.name,
+      country: data.sys.country,
+      windSpeed: data.wind.speed,
+      humidity: data.main.humidity,
+      feelsLike: Math.round(data.main.feels_like)
+    };
+  } catch (error) {
+    console.error("Error in fetchWeatherData:", error);
+    throw error;
   }
-  
-  if (!response.ok) {
-    const errorMsg = data.message || `Weather data not available for ${city}, ${country}`;
-    throw new Error(errorMsg);
-  }
-  
-  console.log("Weather data received:", data);
-  
-  return {
-    temperature: Math.round(data.main.temp),
-    condition: data.weather[0].description,
-    icon: getIconName(data.weather[0].main),
-    city: data.name,
-    country: data.sys.country,
-    windSpeed: data.wind.speed,
-    humidity: data.main.humidity,
-    feelsLike: Math.round(data.main.feels_like)
-  };
 };
 
 export const generateRandomWeather = (city?: string, country?: string): WeatherInfo => {

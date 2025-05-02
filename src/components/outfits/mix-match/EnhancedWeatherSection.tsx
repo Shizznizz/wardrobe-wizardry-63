@@ -82,6 +82,7 @@ const EnhancedWeatherSection = ({
   };
 
   const handleLocalWeatherUpdate = (weather: WeatherInfo) => {
+    console.log("Weather update received:", weather);
     setWeatherData(weather);
     onWeatherUpdate(weather);
     
@@ -212,8 +213,15 @@ const EnhancedWeatherSection = ({
             
             {/* Enhanced Weather Display */}
             <div className="flex-grow px-4 pb-4">
-              {weatherData ? (
-                <WeatherDisplay weather={weatherData} />
+              {weatherKey > 0 ? (
+                <WeatherWidget
+                  key={weatherKey}
+                  onWeatherChange={handleLocalWeatherUpdate}
+                  city={city}
+                  country={country}
+                  showToasts={true}
+                  showError={false}
+                />
               ) : (
                 <div className="h-full flex items-center justify-center bg-black/20 rounded-lg p-2 shadow-inner">
                   <div className="text-white/70 text-center">
