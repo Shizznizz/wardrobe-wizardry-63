@@ -14,9 +14,10 @@ interface DailyOutfitSectionProps {
   weather?: WeatherInfo;
   currentOutfit?: Outfit;
   clothingItems: ClothingItem[];
+  situation?: string;
 }
 
-const DailyOutfitSection = ({ weather, currentOutfit, clothingItems }: DailyOutfitSectionProps) => {
+const DailyOutfitSection = ({ weather, currentOutfit, clothingItems, situation }: DailyOutfitSectionProps) => {
   const navigate = useNavigate();
   const [isSaved, setIsSaved] = useState(false);
   
@@ -35,6 +36,23 @@ const DailyOutfitSection = ({ weather, currentOutfit, clothingItems }: DailyOutf
       </div>
     );
   }
+
+  // Choose descriptive text based on situation
+  const getSituationText = () => {
+    switch(situation?.toLowerCase()) {
+      case 'work':
+        return 'Perfect for Work';
+      case 'sport':
+        return 'Ideal for Sports & Activity';
+      case 'formal':
+        return 'Elegant Formal Outfit';
+      case 'party':
+        return 'Party-Ready Look';
+      case 'casual':
+      default:
+        return 'Casual Everyday Style';
+    }
+  };
 
   // Find a clothing item to use as the main image
   const mainItem = clothingItems.find(item => 
@@ -67,7 +85,7 @@ const DailyOutfitSection = ({ weather, currentOutfit, clothingItems }: DailyOutf
       <div className="p-6">
         <div className="flex justify-between items-start mb-4">
           <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-coral-400 to-pink-400">
-            Your Daily Outfit from Olivia
+            {getSituationText()}
           </h2>
 
           {weather && (

@@ -30,8 +30,6 @@ const MixAndMatch = () => {
   // Weather section ref for scrolling
   const weatherSectionRef = useRef<HTMLDivElement>(null);
   
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [showCompactView, setShowCompactView] = useState(false);
   const [weather, setWeather] = useState<WeatherInfo | null>(null);
   const [situation, setSituation] = useState<string | null>('casual');
   const [season, setSeason] = useState<string>('spring');
@@ -138,7 +136,7 @@ const MixAndMatch = () => {
       <div className="min-h-screen bg-gradient-to-b from-slate-950 to-indigo-950 text-white">
         <Header />
         <main className="container mx-auto px-2 sm:px-4 py-6 pt-20 max-w-6xl">
-          {/* Enhanced header section - removed old header and replaced with new component */}
+          {/* Enhanced header section */}
           <EnhancedPageHeader 
             userName={profile?.first_name}
             onScrollToWeather={scrollToWeatherSection}

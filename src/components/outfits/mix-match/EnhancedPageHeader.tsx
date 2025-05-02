@@ -2,7 +2,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { ArrowDown } from 'lucide-react';
 
 interface EnhancedPageHeaderProps {
   userName?: string | null;
@@ -15,25 +14,11 @@ const EnhancedPageHeader = ({ userName, onScrollToWeather }: EnhancedPageHeaderP
     visible: { opacity: 1, y: 0, transition: { duration: 0.7 } }
   };
   
-  // Fixed the animation configuration to use proper types for repeatType
-  const slowFloat = {
-    initial: { y: 0 },
-    animate: { 
-      y: [-10, 0, -10],
-      transition: {
-        duration: 4,
-        repeat: Infinity,
-        repeatType: "reverse" as const, // Use 'as const' to correctly type the repeatType
-        ease: "easeInOut"
-      }
-    }
-  };
-
   return (
     <motion.div 
       initial="hidden"
       animate="visible"
-      className="relative py-12 md:py-16 lg:py-20 px-4 text-center"
+      className="relative py-8 md:py-10 lg:py-12 px-4 text-center"
     >
       {/* Background elements */}
       <div className="absolute inset-0 overflow-hidden -z-10">
@@ -46,7 +31,7 @@ const EnhancedPageHeader = ({ userName, onScrollToWeather }: EnhancedPageHeaderP
         variants={fadeUp}
         className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-coral-500 via-purple-400 to-indigo-400 leading-tight max-w-5xl mx-auto"
       >
-        Olivia Styles You: Fashion for Your Day
+        Your Daily Style, Curated by Olivia
       </motion.h1>
 
       <motion.p 
@@ -54,14 +39,14 @@ const EnhancedPageHeader = ({ userName, onScrollToWeather }: EnhancedPageHeaderP
         className="text-base xs:text-lg md:text-xl text-white/80 max-w-2xl mx-auto mb-8 leading-relaxed"
       >
         {userName 
-          ? `Hi ${userName}, let Olivia design your perfect outfit, tailored to today's weather and your unique style preferences.`
-          : `Let Olivia design your perfect outfit, tailored to today's weather and your unique style preferences.`
+          ? `Hi ${userName}, get AI-powered outfits based on your style, mood, and local weather.`
+          : `Get AI-powered outfits based on your style, mood, and local weather.`
         }
       </motion.p>
 
       <motion.div 
         variants={fadeUp}
-        className="flex flex-col items-center justify-center space-y-6"
+        className="flex flex-col items-center justify-center"
       >
         <Button 
           variant="hero-primary"
@@ -69,18 +54,8 @@ const EnhancedPageHeader = ({ userName, onScrollToWeather }: EnhancedPageHeaderP
           onClick={onScrollToWeather}
           className="text-base md:text-lg px-6 py-6 h-auto"
         >
-          Tell Olivia How Your Day Looks
+          Let Olivia Style Me Today
         </Button>
-
-        <motion.div 
-          initial="initial"
-          animate="animate"
-          variants={slowFloat}
-          className="mt-8 text-white/60"
-        >
-          <ArrowDown className="h-6 w-6 mx-auto" />
-          <span className="text-sm mt-2 block">Scroll to get started</span>
-        </motion.div>
       </motion.div>
     </motion.div>
   );
