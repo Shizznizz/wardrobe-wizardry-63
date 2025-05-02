@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback, Suspense, lazy, memo, useRef } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -136,11 +137,13 @@ const MixAndMatch = () => {
       <div className="min-h-screen bg-gradient-to-b from-slate-950 to-indigo-950 text-white">
         <Header />
         <main className="container mx-auto px-2 sm:px-4 py-6 pt-20 max-w-6xl">
-          {/* Use PageHeader component */}
+          {/* Updated PageHeader with half-body image */}
           <PageHeader
             title="Your Daily Style, Curated by Olivia"
-            subtitle="Get AI-powered outfits based on your style, mood, and local weather."
-            showAvatar={true}
+            subtitle="Get outfits tailored to your vibe, activity, and the weather."
+            showAvatar={false}
+            halfBodyImage="/lovable-uploads/34e8d801-61ee-4254-a7ce-39b52a3a7e65.png"
+            imagePosition="right"
           >
             {profile?.first_name && (
               <p className="text-white/80">
@@ -152,7 +155,7 @@ const MixAndMatch = () => {
                 variant="hero-primary"
                 size="lg"
                 onClick={scrollToWeatherSection}
-                className="text-base md:text-lg px-6 py-6 h-auto"
+                className="text-base md:text-lg px-8 py-6 h-auto bg-gradient-to-r from-pink-500 to-purple-500 hover:opacity-95 shadow-lg shadow-pink-500/20 hover:shadow-pink-500/30 transition-all duration-300"
               >
                 Let Olivia Style Me Today
               </Button>

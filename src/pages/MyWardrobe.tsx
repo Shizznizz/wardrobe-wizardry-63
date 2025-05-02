@@ -16,6 +16,7 @@ import WardrobeSearch from '@/components/wardrobe/WardrobeSearch';
 import EnhancedWardrobeFilters from '@/components/wardrobe/EnhancedWardrobeFilters';
 import UploadModal from '@/components/UploadModal';
 import OutfitMatchModal from '@/components/OutfitMatchModal';
+import PageHeader from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Confetti } from '@/components/ui/confetti';
 import { Shirt, Sparkles, X, Check, Trash2, Upload } from 'lucide-react';
@@ -365,75 +366,70 @@ const MyWardrobe = () => {
         />
       )}
       
-      <main className="w-full px-3 sm:px-4 pt-24 pb-16 max-w-full overflow-hidden">
+      <main className="w-full px-3 sm:px-4 pt-20 pb-16 max-w-full overflow-hidden">
         <motion.div 
           className="space-y-8 max-w-full"
           initial="hidden"
           animate="visible"
           variants={containerVariants}
         >
-          <div className="flex flex-col lg:flex-row items-center gap-6 mb-12 w-full">
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="w-full"
-            >
-              <h1 className="text-3xl md:text-5xl font-bold mb-6 md:mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
-                {profile?.first_name ? `${profile.first_name}'s Digital Wardrobe` : 'Your Digital Wardrobe'}
-              </h1>
-              <p className="text-base md:text-lg text-white/80 mb-6">
-                Browse, organize, and visualize your entire clothes collection with powerful AI-driven insights.
-              </p>
-              <div className="flex flex-wrap gap-3">
-                <UploadModal onUpload={handleUpload}>
+          {/* Updated header section with PageHeader */}
+          <PageHeader
+            title="Your Digital Wardrobe"
+            subtitle="Olivia helps you organize, analyze, and fall in love with your closet again."
+            halfBodyImage="/lovable-uploads/34e8d801-61ee-4254-a7ce-39b52a3a7e65.png"
+            imagePosition="left"
+            className="mb-8"
+          >
+            <div className="flex flex-wrap gap-3 mt-4">
+              <UploadModal onUpload={handleUpload}>
+                <Button 
+                  size="lg" 
+                  className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-90 shadow-lg"
+                >
+                  <Upload className="mr-2 h-4 w-4" /> Add Clothing Item
+                </Button>
+              </UploadModal>
+              
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
                   <Button 
                     size="lg" 
-                    className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-90 shadow-lg"
+                    variant="outline" 
+                    className="border-purple-400/30 text-white hover:bg-white/10"
                   >
-                    <Upload className="mr-2 h-4 w-4" /> Add Clothing Item
+                    <Shirt className="mr-2 h-4 w-4" /> Wardrobe Options
                   </Button>
-                </UploadModal>
-                
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button 
-                      size="lg" 
-                      variant="outline" 
-                      className="border-purple-400/30 text-white hover:bg-white/10"
-                    >
-                      <Shirt className="mr-2 h-4 w-4" /> Wardrobe Options
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="bg-slate-900/95 backdrop-blur-md border-slate-700/50 text-white w-56">
-                    <DropdownMenuItem 
-                      onClick={toggleSelectionMode}
-                      className="focus:bg-slate-800"
-                    >
-                      {isSelectionMode ? (
-                        <>
-                          <X className="mr-2 h-4 w-4 text-purple-400" />
-                          Exit Selection Mode
-                        </>
-                      ) : (
-                        <>
-                          <Check className="mr-2 h-4 w-4 text-purple-400" />
-                          Enter Selection Mode
-                        </>
-                      )}
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem 
-                      onClick={handleClearWardrobe}
-                      className="text-red-400 focus:text-red-300 focus:bg-red-950/30"
-                    >
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      Clear Wardrobe
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            </motion.div>
-          </div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="bg-slate-900/95 backdrop-blur-md border-slate-700/50 text-white w-56">
+                  <DropdownMenuItem 
+                    onClick={toggleSelectionMode}
+                    className="focus:bg-slate-800"
+                  >
+                    {isSelectionMode ? (
+                      <>
+                        <X className="mr-2 h-4 w-4 text-purple-400" />
+                        Exit Selection Mode
+                      </>
+                    ) : (
+                      <>
+                        <Check className="mr-2 h-4 w-4 text-purple-400" />
+                        Enter Selection Mode
+                      </>
+                    )}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    onClick={handleClearWardrobe}
+                    className="text-red-400 focus:text-red-300 focus:bg-red-950/30"
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Clear Wardrobe
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </PageHeader>
 
           <motion.div 
             variants={itemVariants} 

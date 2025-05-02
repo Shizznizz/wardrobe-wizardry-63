@@ -9,6 +9,7 @@ import OliviaImageGallery from '@/components/outfits/OliviaImageGallery';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import PageHeader from '@/components/shared/PageHeader';
+import { Button } from '@/components/ui/button';
 
 import PremiumTryOnHero from '@/components/shop-try/PremiumTryOnHero';
 import WeatherBasedTips from '@/components/shop-try/WeatherBasedTips';
@@ -286,9 +287,19 @@ const ShopAndTry = () => {
       <main className="container mx-auto px-4 pt-20 pb-20 max-w-6xl">
         <PageHeader
           title="Shop & Try Fashion"
-          subtitle="Try trending fashion pieces with me — you'll love the fit!"
-          showAvatar={true}
-        />
+          subtitle="Try trending fashion pieces with Olivia — you'll love the fit!"
+          halfBodyImage="/lovable-uploads/34e8d801-61ee-4254-a7ce-39b52a3a7e65.png"
+          imagePosition="left"
+          className="mb-6"
+        >
+          <Button 
+            className="bg-gradient-to-r from-pink-500 to-purple-500 hover:opacity-90 shadow-lg shadow-pink-500/20 hover:shadow-pink-500/30 transition-all duration-300 mt-4"
+            size="lg"
+            onClick={() => document.getElementById('upload-section')?.scrollIntoView({ behavior: 'smooth' })}
+          >
+            Start Styling with Olivia
+          </Button>
+        </PageHeader>
         
         <motion.div 
           className="space-y-12 md:space-y-16"

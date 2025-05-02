@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useShowroom } from '@/hooks/useShowroom';
 import { useOutfitState } from '@/hooks/useOutfitState';
@@ -5,10 +6,11 @@ import { sampleClothingItems, sampleOutfits } from '@/lib/wardrobeData';
 import Header from '@/components/Header';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Share2, Download, Heart, Info, ArrowUp } from 'lucide-react';
+import { Share2, Download, Heart, Info, ArrowUp, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { ClothingSeason, ClothingOccasion, WeatherInfo, Outfit } from '@/lib/types';
+import PageHeader from '@/components/shared/PageHeader';
 
 import WelcomeMessage from '@/components/fitting-room/WelcomeMessage';
 import UserPhotoSection from '@/components/showroom/UserPhotoSection';
@@ -23,7 +25,6 @@ import OutfitCarousel from '@/components/fitting-room/OutfitCarousel';
 import UserPhotoDisplay from '@/components/fitting-room/UserPhotoDisplay';
 import StyleOfTheDay from '@/components/fitting-room/StyleOfTheDay';
 import TrendingLooks from '@/components/fitting-room/TrendingLooks';
-import Sparkles from '@/components/fitting-room/Sparkles';
 import OliviaOutfitPick from '@/components/fitting-room/OliviaOutfitPick';
 
 const FittingRoom = () => {
@@ -297,7 +298,12 @@ const FittingRoom = () => {
       <Header />
       
       <main className="container mx-auto px-4 pt-20 pb-32 max-w-[1600px] relative">
-        <WelcomeMessage />
+        <PageHeader
+          title="Try On Your Wardrobe"
+          subtitle="Upload your photo or use Olivia to try pieces from your closet."
+          halfBodyImage="/lovable-uploads/34e8d801-61ee-4254-a7ce-39b52a3a7e65.png"
+          imagePosition="right"
+        />
         
         <div className="mt-4 flex justify-end">
           <Button 
@@ -317,7 +323,10 @@ const FittingRoom = () => {
           transition={{ duration: 0.3 }}
           className="mt-8 mb-12"
         >
-          <h2 className="text-xl font-semibold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-purple-200">Select Your Model</h2>
+          <h2 className="text-xl font-semibold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-purple-200 flex items-center">
+            <Sparkles className="h-5 w-5 mr-2 text-purple-400" />
+            Select Your Model
+          </h2>
           
           <UserPhotoSection 
             userPhoto={userPhoto} 

@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -13,6 +14,7 @@ import ScrollToTop from '@/components/ScrollToTop';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import PageHeader from '@/components/shared/PageHeader';
+import { Button } from '@/components/ui/button';
 
 const StylePlanner = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -111,7 +113,7 @@ const StylePlanner = () => {
       <ScrollToTop />
       <Header />
       
-      <main className="w-full px-4 sm:px-6 md:px-8 pt-24 pb-32 max-w-7xl mx-auto overflow-hidden">
+      <main className="w-full px-4 sm:px-6 md:px-8 pt-20 pb-32 max-w-7xl mx-auto overflow-hidden">
         <motion.div 
           className="space-y-8 md:space-y-10"
           initial="hidden"
@@ -120,22 +122,35 @@ const StylePlanner = () => {
         >
           <PageHeader
             title="Your Style Planner & Insights"
-            subtitle="Let's look at your fashion evolution and unlock your ideal style."
-            showAvatar={true}
+            subtitle="Let's look at your fashion evolution and unlock your ideal style — with Olivia's guidance."
+            showAvatar={false}
+            halfBodyImage="/lovable-uploads/34e8d801-61ee-4254-a7ce-39b52a3a7e65.png"
+            imagePosition="right"
           >
             {profile?.first_name && (
-              <p className="text-white/80">
+              <p className="text-white/80 mb-4">
                 Hi {profile.first_name}, here's your outfit planner!
               </p>
             )}
+            <Button 
+              className="bg-gradient-to-r from-purple-500 to-indigo-500 hover:opacity-90 shadow-md mb-2"
+              size="lg"
+            >
+              Show Me My Style Timeline
+            </Button>
           </PageHeader>
           
           <motion.div variants={itemVariants} className="w-full max-w-md mx-auto">
-            <EnhancedLocationSelector 
-              onLocationChange={handleLocationChange}
-              initialCity={location.city}
-              initialCountry={location.country}
-            />
+            {/* Add soft arc background to location selector */}
+            <div className="relative">
+              <div className="absolute inset-0 -z-10 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-2xl blur-md"></div>
+              <EnhancedLocationSelector 
+                onLocationChange={handleLocationChange}
+                initialCity={location.city}
+                initialCountry={location.country}
+                className="p-4 rounded-xl bg-slate-800/30 backdrop-blur-sm border border-white/10"
+              />
+            </div>
           </motion.div>
           
           {!isLoading && (

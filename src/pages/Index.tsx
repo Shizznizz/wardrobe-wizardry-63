@@ -110,7 +110,6 @@ const Index: React.FC = () => {
 
   // Function to navigate to shop and try with a pre-selected outfit
   const navigateToShopWithOutfit = () => {
-    // Navigate to shop-and-try page and pass the outfit selection information
     navigate('/shop-and-try', { 
       state: { 
         selectedOutfit: {
@@ -128,8 +127,136 @@ const Index: React.FC = () => {
       <Header />
       
       <main className="relative z-10">
-        {/* 1. Hero Section - Using our updated component */}
-        <HeroSection />
+        {/* 1. Hero Section - Updated with half-body image */}
+        <section className="py-16 md:py-20 lg:py-24 bg-gradient-to-b from-[#1d0034] to-[#2c0055] text-center relative overflow-hidden">
+          <motion.div 
+            className="container mx-auto px-4 flex flex-col items-center relative z-10"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
+          >
+            <motion.h1 
+              className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-6 tracking-wider leading-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-purple-100 to-pink-100"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              style={{ letterSpacing: '1.5px', lineHeight: '1.2' }}
+            >
+              <span className="block">The Future</span>
+              <span className="bg-gradient-to-r from-pink-400 to-purple-400 text-transparent bg-clip-text">of Fashion</span>
+            </motion.h1>
+            
+            {/* Social proof line */}
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="text-white/80 mb-8 text-base md:text-lg"
+            >
+              Trusted by 10,000+ style-conscious women.
+            </motion.p>
+            
+            <motion.h3 
+              className="text-lg md:text-xl lg:text-2xl font-semibold text-[#ffb3ec] mb-5"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              style={{ lineHeight: '1.5' }}
+            >
+              Say goodbye to style stress. <span className="relative">
+                <span className="bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent font-medium">
+                  Olivia
+                </span>
+                <span className="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-pink-400 to-purple-400 opacity-70"></span>
+              </span> curates outfits that match your vibe, wardrobe, and the weather.
+            </motion.h3>
+            
+            <motion.p 
+              className="text-[#e0d8f9] max-w-md md:max-w-lg mb-8 text-base"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              style={{ lineHeight: '1.5' }}
+            >
+              With <span className="relative">
+                <span className="bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent font-medium">
+                  Olivia
+                </span>
+                <span className="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-pink-400 to-purple-400 opacity-70"></span>
+              </span>, your AI stylist, you'll get personalized outfit ideas that feel just right — every single day.
+            </motion.p>
+
+            {/* Half-body Olivia image */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="relative mb-8 max-w-xs mx-auto"
+            >
+              {/* Glow effect */}
+              <div className="absolute inset-0 bg-gradient-to-b from-pink-500/20 to-purple-500/20 blur-2xl rounded-full"></div>
+              <img 
+                src="/lovable-uploads/34e8d801-61ee-4254-a7ce-39b52a3a7e65.png" 
+                alt="Olivia" 
+                className="relative z-10 max-h-[240px] mx-auto drop-shadow-2xl"
+              />
+            </motion.div>
+            
+            <motion.div 
+              className="flex gap-4 justify-center shadow-lg"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+            >
+              <Button 
+                onClick={() => navigate('/my-wardrobe')}
+                className="bg-gradient-to-r from-[#ff66cc] to-[#ff3366] hover:opacity-90 text-white px-6 py-6 rounded-lg font-semibold group shadow-md shadow-pink-500/20 hover:shadow-pink-500/30 transition-all duration-300"
+              >
+                Start Your Style Journey
+                <ArrowRight className="ml-2 h-5 w-5 duration-300 group-hover:translate-x-1" />
+              </Button>
+              
+              <Button 
+                onClick={() => navigate('/quizzes')}
+                variant="outline" 
+                className="bg-black/20 backdrop-blur-sm border border-white/20 text-white hover:bg-black/30 px-6 py-6 rounded-lg font-semibold shadow-md hover:shadow-lg transition-all duration-300"
+              >
+                Take a Style Quiz
+              </Button>
+            </motion.div>
+            
+            {/* Secondary line with emoji and animation */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.8 }}
+              className="text-white/70 text-sm mt-6 flex items-center justify-center"
+            >
+              <motion.span 
+                className="inline-block mr-1"
+                animate={{ 
+                  rotate: [0, 15, -15, 15, 0],
+                  scale: [1, 1.2, 1, 1.2, 1]
+                }}
+                transition={{ 
+                  duration: 2, 
+                  repeat: Infinity, 
+                  repeatDelay: 3
+                }}
+              >
+                ✨
+              </motion.span>
+              <span>
+                <span className="relative">
+                  <span className="bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent font-medium">
+                    Olivia
+                  </span>
+                  <span className="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-pink-400 to-purple-400 opacity-70"></span>
+                </span> styles your day in seconds. Let's go!
+              </span>
+            </motion.div>
+          </motion.div>
+        </section>
 
         {/* 2. Meet Olivia Section - Updated copy */}
         <section className="py-20">
