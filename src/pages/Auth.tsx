@@ -26,16 +26,26 @@ const passwordSchema = z.string()
     "Password must contain at least one number"
   );
 
-const authFormSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
-  password: passwordSchema,
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
+// Conditionally apply validation based on auth mode
+const createAuthSchema = (isSignIn: boolean) => {
+  const baseSchema = {
+    email: z.string().email("Please enter a valid email address"),
+    password: passwordSchema,
+  };
 
-type AuthFormValues = z.infer<typeof authFormSchema>;
+  // Only add confirm password validation for signup
+  if (!isSignIn) {
+    return z.object({
+      ...baseSchema,
+      confirmPassword: z.string()
+    }).refine((data) => data.password === data.confirmPassword, {
+      message: "Passwords don't match",
+      path: ["confirmPassword"],
+    });
+  }
+
+  return z.object(baseSchema);
+};
 
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -47,6 +57,26 @@ const Auth = () => {
   const location = useLocation();
   const { isAuthenticated } = useAuth();
   
+  // Create dynamic form based on current auth mode
+  const form = useForm({
+    resolver: zodResolver(createAuthSchema(authMode === "signin")),
+    defaultValues: {
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+    mode: "onChange",
+  });
+
+  // Reset form when switching modes
+  useEffect(() => {
+    form.reset({
+      email: form.getValues("email"),
+      password: "",
+      confirmPassword: "",
+    });
+  }, [authMode, form]);
+  
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
@@ -55,16 +85,6 @@ const Auth = () => {
       navigate(from, { replace: true, state: { fromAuth: true } });
     }
   }, [isAuthenticated, navigate, location.state]);
-
-  const form = useForm<AuthFormValues>({
-    resolver: zodResolver(authFormSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-      confirmPassword: "",
-    },
-    mode: "onChange",
-  });
 
   const watchPassword = form.watch("password");
 
@@ -97,8 +117,10 @@ const Auth = () => {
     }
   }, [watchPassword]);
 
-  const onSubmit = async (values: AuthFormValues) => {
+  const onSubmit = async (values: any) => {
+    console.log("Form submitted:", values);
     setIsLoading(true);
+    
     try {
       let response;
       
@@ -118,6 +140,8 @@ const Auth = () => {
           }
         });
       }
+
+      console.log("Auth response:", response);
 
       if (response.error) {
         console.error("Auth error:", response.error.message);
@@ -176,7 +200,6 @@ const Auth = () => {
 
   const toggleAuthMode = () => {
     setAuthMode(authMode === "signin" ? "signup" : "signin");
-    form.reset();
   };
 
   const togglePasswordVisibility = () => {

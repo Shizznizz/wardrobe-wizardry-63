@@ -10,7 +10,7 @@ type AuthContextType = {
   loading: boolean;
   signOut: () => Promise<void>;
   isAuthenticated: boolean;
-  isPremiumUser: boolean; // Added to track premium status
+  isPremiumUser: boolean;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -20,7 +20,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isPremiumUser, setIsPremiumUser] = useState(false); // Default to false
+  const [isPremiumUser, setIsPremiumUser] = useState(false);
 
   useEffect(() => {
     // Set up auth state listener FIRST
@@ -78,6 +78,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signOut = async () => {
     try {
       await supabase.auth.signOut();
+      toast.success("Signed out successfully");
     } catch (error) {
       console.error("Error signing out:", error);
       toast.error("Failed to sign out");
