@@ -1,107 +1,122 @@
 
-import React from 'react';
-import { Heart, Clock, Layers } from 'lucide-react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Outfit, ClothingItem } from '@/lib/types';
-import OutfitGrid from '@/components/OutfitGrid';
-import { toast } from 'sonner';
+import React, { useState } from 'react';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { OutfitCard } from '@/components/outfits/OutfitCard';
 import { cn } from '@/lib/utils';
+import { Heart, Clock, Grid } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Card, CardHeader } from '@/components/ui/card';
 
 interface OutfitTabSectionProps {
-  outfits: Outfit[];
-  clothingItems: ClothingItem[];
-  className?: string;
-  isDarkSection?: boolean;
+  outfits: any[];
+  clothingItems: any[];
 }
 
-const OutfitTabSection = ({ 
-  outfits, 
-  clothingItems,
-  className,
-  isDarkSection = false
-}: OutfitTabSectionProps) => {
-  const favorites = outfits.filter(outfit => outfit.favorite);
-  const recent = outfits.slice(0, 3); // Most recent outfits (would be based on date in a real app)
+const OutfitTabSection = ({ outfits, clothingItems }: OutfitTabSectionProps) => {
+  const [activeTab, setActiveTab] = useState('all');
   
-  // Handle outfit edit
-  const handleEdit = (outfit: Outfit) => {
-    toast.info(`Editing outfit: ${outfit.name}`);
-  };
+  const favoriteOutfits = outfits.filter(outfit => outfit.favorite);
+  const recentOutfits = [...outfits].sort((a, b) => {
+    const dateA = new Date(a.createdAt || new Date()).getTime();
+    const dateB = new Date(b.createdAt || new Date()).getTime();
+    return dateB - dateA;
+  }).slice(0, 6);
   
-  // Handle outfit delete
-  const handleDelete = (id: string) => {
-    toast.success("Outfit removed from collection");
-  };
-  
-  // Handle toggling favorite status
-  const handleToggleFavorite = (id: string) => {
-    toast.success("Favorite status updated");
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
   };
 
+  const tabVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.3 } }
+  };
+  
   return (
-    <div className={cn(
-      "rounded-xl border border-white/10 overflow-hidden backdrop-blur-md p-6",
-      isDarkSection ? "bg-slate-900/50" : "bg-slate-800/30",
-      className
-    )}>
-      <Tabs defaultValue="all" className="w-full">
-        <TabsList className={cn(
-          "grid grid-cols-3 mb-6", 
-          isDarkSection ? "bg-slate-800/70" : "bg-slate-700/50"
-        )}>
-          <TabsTrigger value="all" className="flex items-center gap-1.5">
-            <Layers className="h-3.5 w-3.5" />
+    <Card className="border border-white/20 bg-slate-900/50 backdrop-blur-md pt-4 pb-6 px-4">
+      <CardHeader className="pb-2">
+        <h2 className="text-2xl font-semibold text-white">My Collection</h2>
+      </CardHeader>
+      
+      <Tabs defaultValue="all" value={activeTab} onValueChange={handleTabChange} className="w-full">
+        <TabsList className="w-full bg-slate-800/60 mb-6">
+          <TabsTrigger 
+            value="all"
+            className={cn(
+              "flex-1 data-[state=active]:bg-slate-700 data-[state=active]:text-white",
+              "flex items-center justify-center gap-1.5"
+            )}
+          >
+            <Grid className="h-4 w-4" />
             All Outfits
           </TabsTrigger>
-          <TabsTrigger value="favorites" className="flex items-center gap-1.5">
-            <Heart className="h-3.5 w-3.5 text-pink-400" />
+          <TabsTrigger 
+            value="favorites"
+            className={cn(
+              "flex-1 data-[state=active]:bg-slate-700 data-[state=active]:text-white",
+              "flex items-center justify-center gap-1.5"
+            )}
+          >
+            <Heart className="h-4 w-4" />
             Favorites
           </TabsTrigger>
-          <TabsTrigger value="recent" className="flex items-center gap-1.5">
-            <Clock className="h-3.5 w-3.5 text-blue-400" />
+          <TabsTrigger 
+            value="recent"
+            className={cn(
+              "flex-1 data-[state=active]:bg-slate-700 data-[state=active]:text-white",
+              "flex items-center justify-center gap-1.5"
+            )}
+          >
+            <Clock className="h-4 w-4" />
             Recent
           </TabsTrigger>
         </TabsList>
         
-        <TabsContent value="all" className="mt-0">
-          <OutfitGrid 
-            outfits={outfits} 
-            clothingItems={clothingItems} 
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            onToggleFavorite={handleToggleFavorite}
-          />
+        <TabsContent value="all">
+          <motion.div
+            variants={tabVariants}
+            initial="hidden"
+            animate="visible"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+          >
+            {outfits.map((outfit) => (
+              <OutfitCard key={outfit.id} outfit={outfit} clothingItems={clothingItems} />
+            ))}
+          </motion.div>
         </TabsContent>
         
-        <TabsContent value="favorites" className="mt-0">
-          {favorites.length > 0 ? (
-            <OutfitGrid 
-              outfits={favorites} 
-              clothingItems={clothingItems} 
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-              onToggleFavorite={handleToggleFavorite}
-            />
-          ) : (
-            <div className="py-16 text-center text-white/60">
-              <Heart className="h-12 w-12 mx-auto mb-3 opacity-20" />
-              <p className="text-lg">No favorite outfits yet</p>
-              <p className="text-sm">Heart your favorite outfits to find them here</p>
-            </div>
-          )}
+        <TabsContent value="favorites">
+          <motion.div
+            variants={tabVariants}
+            initial="hidden"
+            animate="visible"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+          >
+            {favoriteOutfits.length > 0 ? (
+              favoriteOutfits.map((outfit) => (
+                <OutfitCard key={outfit.id} outfit={outfit} clothingItems={clothingItems} />
+              ))
+            ) : (
+              <p className="text-white/70 text-center col-span-full py-8">
+                You haven't added any outfits to your favorites yet.
+              </p>
+            )}
+          </motion.div>
         </TabsContent>
         
-        <TabsContent value="recent" className="mt-0">
-          <OutfitGrid 
-            outfits={recent} 
-            clothingItems={clothingItems} 
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            onToggleFavorite={handleToggleFavorite}
-          />
+        <TabsContent value="recent">
+          <motion.div
+            variants={tabVariants}
+            initial="hidden"
+            animate="visible"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+          >
+            {recentOutfits.map((outfit) => (
+              <OutfitCard key={outfit.id} outfit={outfit} clothingItems={clothingItems} />
+            ))}
+          </motion.div>
         </TabsContent>
       </Tabs>
-    </div>
+    </Card>
   );
 };
 

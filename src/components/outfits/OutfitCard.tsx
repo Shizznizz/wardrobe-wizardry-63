@@ -1,116 +1,166 @@
 
-import { motion } from 'framer-motion';
-import { Outfit, ClothingItem } from '@/lib/types';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { Heart, Sparkles } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
-import { OutfitLog } from '@/components/outfits/OutfitLogItem';
-import OutfitImageGrid from './OutfitImageGrid';
-import OutfitCardActions from './OutfitCardActions';
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
+import { Heart, Calendar, Share, ExternalLink, ChevronDown, ChevronUp, Check } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 interface OutfitCardProps {
-  outfit: Outfit;
-  onEdit: (outfit: Outfit) => void;
-  onDelete: (id: string) => void;
-  onToggleFavorite: (id: string) => void;
-  getClothingItemById: (id: string) => ClothingItem | undefined;
-  onOutfitAddedToCalendar?: (log: OutfitLog) => void;
-  onPreviewInFittingRoom: (outfit: Outfit) => void;
+  outfit: any;
+  clothingItems?: any[];
+  className?: string;
+  compact?: boolean;
 }
 
-const OutfitCard = ({
-  outfit,
-  onEdit,
-  onDelete,
-  onToggleFavorite,
-  getClothingItemById,
-  onOutfitAddedToCalendar,
-  onPreviewInFittingRoom
-}: OutfitCardProps) => {
-  const safeItems = Array.isArray(outfit.items) ? outfit.items : [];
+export function OutfitCard({ outfit, clothingItems, className, compact = false }: OutfitCardProps) {
+  const [isFavorite, setIsFavorite] = useState(outfit.favorite || false);
+  const [actionsOpen, setActionsOpen] = useState(false);
+  
+  // Helper functions
+  const toggleFavorite = () => {
+    setIsFavorite(!isFavorite);
+    toast.success(
+      !isFavorite ? "Added to favorites!" : "Removed from favorites!"
+    );
+  };
+
+  const addToCalendar = () => {
+    toast.success("Outfit added to calendar!");
+  };
+
+  const shareOutfit = () => {
+    toast.success("Sharing link copied to clipboard!");
+  };
+
+  const handleTryOn = () => {
+    toast.success("Opening fitting room with this outfit!");
+  };
+
+  // Returns a suitable image URL from the outfit or a default
+  const getOutfitImage = () => {
+    if (outfit.imageUrl) {
+      return outfit.imageUrl;
+    }
+    
+    if (outfit.items && outfit.items.length > 0 && clothingItems) {
+      const mainItem = clothingItems.find(item => item.id === outfit.items[0]);
+      return mainItem?.imageUrl || "/placeholder.svg";
+    }
+    
+    return "/placeholder.svg";
+  };
   
   return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.9 }}
-      whileHover={{ y: -5 }}
-      transition={{ duration: 0.2 }}
-      className="group"
-    >
-      <Card className={cn(
-        "overflow-hidden border-white/10 hover:border-purple-500/30 transition-all", 
-        "bg-gradient-to-br from-slate-900/90 to-purple-900/40 backdrop-blur-sm",
-        outfit.favorite ? "ring-2 ring-pink-500/40" : ""
-      )}>
-        <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-800/50">
-          {safeItems.length > 0 ? (
-            <OutfitImageGrid 
-              itemIds={safeItems} 
-              getClothingItemById={getClothingItemById} 
-            />
-          ) : (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <p className="text-white/40 text-sm">No items in this outfit</p>
-            </div>
+    <Card className={cn(
+      "overflow-hidden border border-white/10",
+      "bg-slate-800/20 backdrop-filter backdrop-blur-sm hover:bg-slate-800/30 transition-colors",
+      "shadow-md hover:shadow-lg", 
+      compact ? "max-w-xs" : "max-w-md w-full",
+      className
+    )}>
+      <div className="relative">
+        <img
+          src={getOutfitImage()}
+          alt={outfit.name || "Outfit"}
+          className={cn(
+            "w-full object-cover",
+            compact ? "h-32" : "h-48"
           )}
-          
-          <button
-            onClick={() => onToggleFavorite(outfit.id)}
-            className="absolute top-2 right-2 p-1.5 rounded-full bg-black/20 backdrop-blur-sm border border-white/10 z-10 
-              group-hover:opacity-100 transition-opacity"
-          >
-            <Heart 
-              className={cn(
-                "h-4 w-4 transition-colors", 
-                outfit.favorite ? "fill-pink-500 text-pink-500" : "text-white/70"
-              )} 
-            />
-          </button>
+        />
+        <Button
+          variant="ghost"
+          size="icon"
+          className={cn(
+            "absolute top-2 right-2 rounded-full bg-black/30 backdrop-blur-sm",
+            "h-8 w-8",
+            isFavorite ? "text-red-500" : "text-white/70"
+          )}
+          onClick={toggleFavorite}
+        >
+          <Heart className="h-4 w-4" fill={isFavorite ? "currentColor" : "none"} />
+        </Button>
+        
+        {outfit.featured && (
+          <Badge className="absolute top-2 left-2 bg-gradient-to-r from-purple-500 to-pink-500 border-none">
+            Featured
+          </Badge>
+        )}
+        
+        {outfit.new && (
+          <Badge className="absolute top-2 left-2 bg-gradient-to-r from-blue-500 to-indigo-500 border-none">
+            New
+          </Badge>
+        )}
+      </div>
+      
+      <CardContent className={cn("p-3", compact ? "pt-2" : "pt-3")}>
+        <div className="flex justify-between items-start mb-1">
+          <h3 className={cn(
+            "font-medium text-white line-clamp-1",
+            compact ? "text-sm" : "text-base"
+          )}>
+            {outfit.name || "Untitled Outfit"}
+          </h3>
         </div>
         
-        <CardContent className="p-4">
-          <div className="flex justify-between items-start mb-2">
-            <h3 className="font-semibold text-white">
-              {outfit.name}
-            </h3>
-            {outfit.favorite && (
-              <Badge variant="outline" className="bg-pink-500/10 text-pink-300 border-pink-500/30 text-xs">
-                <Sparkles className="h-3 w-3 mr-1" />
-                Favorite
-              </Badge>
+        <div className="flex flex-wrap gap-1 mt-1.5">
+          {outfit.tags?.map((tag: string, i: number) => (
+            <Badge
+              key={i}
+              variant="outline"
+              className="bg-slate-700/40 text-xs px-1.5 py-0 h-5 border-white/10"
+            >
+              {tag}
+            </Badge>
+          ))}
+        </div>
+      </CardContent>
+
+      <Collapsible open={actionsOpen} onOpenChange={setActionsOpen}>
+        <CollapsibleTrigger asChild>
+          <div className="flex justify-center border-t border-white/10 py-1 cursor-pointer hover:bg-white/5 transition-colors">
+            {actionsOpen ? (
+              <ChevronUp className="h-4 w-4 text-white/60" />
+            ) : (
+              <ChevronDown className="h-4 w-4 text-white/60" />
             )}
           </div>
-          
-          <div className="flex flex-wrap gap-1 my-2">
-            {Array.isArray(outfit.occasions) && outfit.occasions.map((occasion) => (
-              <Badge key={occasion} variant="outline" className="text-xs bg-slate-800 border-slate-700">
-                {occasion}
-              </Badge>
-            ))}
-          </div>
-          
-          <div className="flex flex-wrap gap-1 mb-3">
-            {Array.isArray(outfit.seasons) && outfit.seasons.map((season) => (
-              <Badge key={season} className="text-xs bg-gradient-to-r from-blue-600/30 to-purple-600/30 border-none">
-                {season}
-              </Badge>
-            ))}
-          </div>
-          
-          <OutfitCardActions 
-            outfit={outfit}
-            onEdit={onEdit}
-            onDelete={onDelete}
-            onOutfitAddedToCalendar={onOutfitAddedToCalendar}
-            onPreviewInFittingRoom={onPreviewInFittingRoom}
-          />
-        </CardContent>
-      </Card>
-    </motion.div>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <CardFooter className="p-3 pt-1 flex flex-wrap gap-2 justify-between">
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex-1 bg-slate-700/40 border-white/10 text-white hover:bg-slate-700/60"
+              onClick={addToCalendar}
+            >
+              <Calendar className="h-3.5 w-3.5 mr-1" /> Calendar
+            </Button>
+            
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex-1 bg-slate-700/40 border-white/10 text-white hover:bg-slate-700/60"
+              onClick={shareOutfit}
+            >
+              <Share className="h-3.5 w-3.5 mr-1" /> Share
+            </Button>
+            
+            <Button
+              variant="gradient"
+              size="sm"
+              className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 border-none text-white shadow-sm"
+              onClick={handleTryOn}
+            >
+              <ExternalLink className="h-3.5 w-3.5 mr-1" /> Try On
+            </Button>
+          </CardFooter>
+        </CollapsibleContent>
+      </Collapsible>
+    </Card>
   );
-};
-
-export default OutfitCard;
+}

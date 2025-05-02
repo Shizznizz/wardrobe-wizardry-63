@@ -1,5 +1,4 @@
-
-import { useState, useEffect, useCallback, Suspense, lazy } from 'react';
+import { useState, useEffect, useCallback, Suspense, lazy, memo } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import { sampleOutfits, sampleClothingItems } from '@/lib/wardrobeData';
@@ -19,6 +18,12 @@ const EnhancedWeatherSection = lazy(() => import('@/components/outfits/mix-match
 const OliviaRecommendationSection = lazy(() => import('@/components/outfits/mix-match/OliviaRecommendationSection'));
 const CreateOutfitSection = lazy(() => import('@/components/outfits/mix-match/CreateOutfitSection'));
 const SuggestedOutfitsSection = lazy(() => import('@/components/outfits/mix-match/SuggestedOutfitsSection'));
+
+// Use memo to prevent unnecessary re-renders
+const MemoizedEnhancedWeatherSection = memo(EnhancedWeatherSection);
+const MemoizedOliviaRecommendationSection = memo(OliviaRecommendationSection);
+const MemoizedCreateOutfitSection = memo(CreateOutfitSection);
+const MemoizedSuggestedOutfitsSection = memo(SuggestedOutfitsSection);
 
 const MixAndMatch = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -110,27 +115,34 @@ const MixAndMatch = () => {
     setWeatherCondition(condition);
   }, []);
 
+  // Animation variants
+  const fadeUp = {
+    initial: { opacity: 0, y: 30 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.7 }
+  };
+
   return (
     <OutfitProvider>
       <div className="min-h-screen bg-gradient-to-b from-slate-950 to-indigo-950 text-white">
         <Header />
         <main className="container mx-auto px-2 sm:px-4 py-6 pt-20 max-w-6xl">
           <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className="text-center mb-6 px-2"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
+            className="text-center mb-10 pt-4 px-2"
           >
-            <h1 className="text-2xl xs:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-coral-400 text-balance">
+            <h1 className="text-2xl xs:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-coral-400 text-balance">
               {profile?.first_name
                 ? `Hi ${profile.first_name}, Olivia's got a perfect outfit for you today!`
-                : 'Mix and Match Your Perfect Outfit'}
+                : 'Unlock Your Perfect Style Combinations'}
             </h1>
-            <p className="text-base xs:text-lg md:text-xl text-white/70 max-w-3xl mx-auto text-balance mb-4">
-              Let Olivia create a fresh outfit for you based on today's weather and your style.
+            <p className="text-base xs:text-lg md:text-xl text-white/70 max-w-3xl mx-auto text-balance mb-6">
+              Let Olivia design your perfect outfit, tailored to today's weather and your unique style.
             </p>
             
-            <div className="flex flex-col items-center space-y-4">
+            <div className="flex flex-col items-center space-y-5">
               <div className="flex justify-center w-full">
                 <WardrobeControls
                   viewMode={viewMode}
@@ -146,13 +158,12 @@ const MixAndMatch = () => {
 
           {/* Unified Weather & Context Section */}
           <motion.section
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            {...fadeUp}
             transition={{ delay: 0.1, duration: 0.5 }}
-            className="mb-6"
+            className="mb-8"
           >
             <Suspense fallback={<Skeleton className="w-full h-64 rounded-xl bg-slate-800" />}>
-              <EnhancedWeatherSection 
+              <MemoizedEnhancedWeatherSection 
                 onWeatherUpdate={handleWeatherUpdate}
                 onSituationChange={handleSituationChange}
                 onTemperatureChange={handleTemperatureChange}
@@ -165,13 +176,12 @@ const MixAndMatch = () => {
 
           {/* Olivia's Recommendation Section */}
           <motion.section
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            {...fadeUp}
             transition={{ delay: 0.2, duration: 0.5 }}
-            className="mb-6"
+            className="mb-8"
           >
             <Suspense fallback={<Skeleton className="w-full h-64 rounded-xl bg-slate-800" />}>
-              <OliviaRecommendationSection 
+              <MemoizedOliviaRecommendationSection 
                 weather={weather}
                 situation={situation}
               />
@@ -180,17 +190,16 @@ const MixAndMatch = () => {
           
           {/* Create Outfit Section */}
           <motion.section
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            {...fadeUp}
             transition={{ delay: 0.3, duration: 0.5 }}
-            className="mb-6"
+            className="mb-8"
           >
             <CollapsibleSection
               title={<h3 className="text-xl font-semibold text-white">Create Your Own Outfit</h3>}
               defaultOpen={false}
             >
               <Suspense fallback={<Skeleton className="w-full h-32 rounded-xl bg-slate-800" />}>
-                <CreateOutfitSection 
+                <MemoizedCreateOutfitSection 
                   clothingItems={sampleClothingItems}
                   isPremium={false}
                 />
@@ -200,10 +209,9 @@ const MixAndMatch = () => {
           
           {/* Context Adjustment Section */}
           <motion.section
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            {...fadeUp}
             transition={{ delay: 0.4, duration: 0.5 }}
-            className="mb-6"
+            className="mb-8"
           >
             <CollapsibleSection
               title={<h3 className="text-xl font-semibold text-white">Fine-Tune Style Context</h3>}
@@ -223,10 +231,9 @@ const MixAndMatch = () => {
           
           {/* My Collection Section */}
           <motion.section
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            {...fadeUp}
             transition={{ delay: 0.5, duration: 0.5 }}
-            className="mb-6"
+            className="mb-8"
           >
             <OutfitTabSection
               outfits={sampleOutfits}
@@ -236,13 +243,12 @@ const MixAndMatch = () => {
           
           {/* Suggested Outfits Section */}
           <motion.section
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            {...fadeUp}
             transition={{ delay: 0.6, duration: 0.5 }}
-            className="mb-8"
+            className="mb-10"
           >
             <Suspense fallback={<Skeleton className="w-full h-32 rounded-xl bg-slate-800" />}>
-              <SuggestedOutfitsSection
+              <MemoizedSuggestedOutfitsSection
                 outfits={popularOutfits.slice(0, 6)}
                 clothingItems={sampleClothingItems}
                 weather={{
