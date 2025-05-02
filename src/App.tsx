@@ -12,11 +12,12 @@ import Settings from '@/pages/Settings';
 // Additional pages
 import Auth from '@/pages/Auth';
 
-// Providers
+// Providers and Components
 import { Toaster } from 'sonner';
 import { OutfitProvider } from '@/hooks/useOutfitContext';
 import { LocationProvider } from '@/hooks/useLocationStorage';
 import { AuthProvider } from '@/hooks/useAuth';
+import PageLayout from '@/components/shared/PageLayout';
 
 function App() {
   return (
@@ -26,12 +27,13 @@ function App() {
           <Router>
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/my-wardrobe" element={<MyWardrobe />} />
-              <Route path="/mix-and-match" element={<MixAndMatch />} />
-              <Route path="/style-planner" element={<StylePlanner />} />
-              <Route path="/fitting-room" element={<FittingRoom />} />
-              <Route path="/shop-and-try" element={<ShopAndTry />} />
-              <Route path="/settings" element={<Settings />} />
+              {/* Use PageLayout for authenticated pages to ensure Footer appears on all pages */}
+              <Route path="/my-wardrobe" element={<PageLayout><MyWardrobe /></PageLayout>} />
+              <Route path="/mix-and-match" element={<PageLayout><MixAndMatch /></PageLayout>} />
+              <Route path="/style-planner" element={<PageLayout><StylePlanner /></PageLayout>} />
+              <Route path="/fitting-room" element={<PageLayout><FittingRoom /></PageLayout>} />
+              <Route path="/shop-and-try" element={<PageLayout><ShopAndTry /></PageLayout>} />
+              <Route path="/settings" element={<PageLayout><Settings /></PageLayout>} />
               <Route path="/auth" element={<Auth />} />
             </Routes>
           </Router>
