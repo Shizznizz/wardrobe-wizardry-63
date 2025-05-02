@@ -21,8 +21,8 @@ import { AuthProvider } from '@/hooks/useAuth';
 function App() {
   return (
     <AuthProvider>
-      <OutfitProvider>
-        <LocationProvider>
+      <LocationProvider>
+        <OutfitProvider>
           <Router>
             <Routes>
               <Route path="/" element={<Home />} />
@@ -36,8 +36,8 @@ function App() {
             </Routes>
           </Router>
           <Toaster position="top-center" richColors closeButton />
-        </LocationProvider>
-      </OutfitProvider>
+        </OutfitProvider>
+      </LocationProvider>
     </AuthProvider>
   );
 }
