@@ -14,7 +14,8 @@ import {
   Plane, 
   Heart, 
   Home, 
-  Palette 
+  Palette,
+  Sparkles
 } from 'lucide-react';
 
 interface StyleQuizProps {
@@ -27,6 +28,9 @@ const StyleQuiz = ({ onComplete, activityIcons, gradientButtonStyle = false }: S
   const [answers, setAnswers] = useState<Record<string, string>>({
     activity: 'casual'
   });
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [typingText, setTypingText] = useState('');
+  const [typingComplete, setTypingComplete] = useState(false);
 
   const handleChange = (value: string) => {
     setAnswers({
@@ -36,7 +40,43 @@ const StyleQuiz = ({ onComplete, activityIcons, gradientButtonStyle = false }: S
   };
 
   const handleSubmit = () => {
-    onComplete(answers);
+    setIsSubmitted(true);
+    
+    // Start typing effect
+    const activityName = getActivityDisplayName(answers.activity);
+    const fullText = `Got it! You're planning for a ${activityName} day — Olivia is crafting your perfect outfit...`;
+    
+    let charIndex = 0;
+    const typingInterval = setInterval(() => {
+      if (charIndex <= fullText.length) {
+        setTypingText(fullText.substring(0, charIndex));
+        charIndex++;
+      } else {
+        clearInterval(typingInterval);
+        setTypingComplete(true);
+      }
+    }, 30);
+    
+    // Complete the quiz after a brief delay
+    setTimeout(() => {
+      onComplete(answers);
+    }, 1000);
+  };
+  
+  const getActivityDisplayName = (activity: string): string => {
+    const displayNames: Record<string, string> = {
+      casual: 'casual',
+      work: 'work',
+      formal: 'formal',
+      sport: 'sport/active',
+      party: 'party',
+      travel: 'travel',
+      date: 'date',
+      lounge: 'lounge',
+      creative: 'creative'
+    };
+    
+    return displayNames[activity] || activity;
   };
 
   // Define default activity icons
@@ -53,6 +93,95 @@ const StyleQuiz = ({ onComplete, activityIcons, gradientButtonStyle = false }: S
   };
 
   const icons = activityIcons || defaultActivityIcons;
+
+  if (isSubmitted) {
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="p-4 space-y-4"
+      >
+        <div className="flex items-center justify-center mb-3">
+          <motion.div 
+            className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center relative"
+            animate={{ 
+              scale: [1, 1.05, 1],
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              repeatType: "reverse"
+            }}
+          >
+            {/* Olivia's avatar */}
+            <Sparkles className="h-6 w-6 text-white" />
+            
+            {/* Sparkle effects */}
+            <motion.div 
+              className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-300 rounded-full opacity-80"
+              animate={{
+                scale: [0, 1, 0],
+                opacity: [0, 0.8, 0]
+              }}
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                delay: 0.2,
+                repeatDelay: 1
+              }}
+            />
+            <motion.div 
+              className="absolute -bottom-1 -left-1 w-2 h-2 bg-purple-300 rounded-full opacity-80"
+              animate={{
+                scale: [0, 1, 0],
+                opacity: [0, 0.8, 0]
+              }}
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                delay: 0.7,
+                repeatDelay: 1
+              }}
+            />
+          </motion.div>
+        </div>
+        
+        <div className="bg-slate-700/30 rounded-lg p-5 shadow-inner">
+          <p className="text-white/90 text-center">
+            {typingText}
+            {!typingComplete && (
+              <span className="inline-block ml-1 animate-pulse">|</span>
+            )}
+          </p>
+          
+          {typingComplete && (
+            <motion.div 
+              className="mt-4 pt-4 border-t border-white/10 text-center text-white/70"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.3 }}
+            >
+              <span className="text-purple-300">✨</span> Analyzing your style preferences and today's weather
+              <span className="inline-flex ml-1">
+                <motion.span 
+                  animate={{ opacity: [0, 1, 0] }}
+                  transition={{ duration: 1, repeat: Infinity, repeatDelay: 0.2 }}
+                >.</motion.span>
+                <motion.span 
+                  animate={{ opacity: [0, 1, 0] }}
+                  transition={{ duration: 1, repeat: Infinity, repeatDelay: 0.4 }}
+                >.</motion.span>
+                <motion.span 
+                  animate={{ opacity: [0, 1, 0] }}
+                  transition={{ duration: 1, repeat: Infinity, repeatDelay: 0.6 }}
+                >.</motion.span>
+              </span>
+            </motion.div>
+          )}
+        </div>
+      </motion.div>
+    );
+  }
 
   return (
     <div className="space-y-3">

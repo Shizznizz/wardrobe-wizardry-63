@@ -61,7 +61,9 @@ const EnhancedWeatherSection = ({
     setQuizComplete(true);
     onSituationChange(answers.activity.toLowerCase());
     // Auto-collapse section after selection
-    setActivitySectionOpen(false);
+    setTimeout(() => {
+      setActivitySectionOpen(false);
+    }, 3000); // Keep open to show animation, then close
   };
 
   const handleRefreshWeather = () => {
