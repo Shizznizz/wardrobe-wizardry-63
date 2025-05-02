@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, memo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { MapPin, RefreshCw, Briefcase, Dumbbell, Sun, ChevronUp, ChevronDown, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -12,9 +12,7 @@ import { getCitiesByCountry } from '@/services/LocationService';
 import { useLocation } from '@/hooks/useLocation';
 import StyleQuiz from './StyleQuiz';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { cn } from '@/lib/utils';
 import { Card } from '@/components/ui/card';
-import WeatherDisplay from '@/components/weather/WeatherDisplay';
 
 interface EnhancedWeatherSectionProps {
   onWeatherUpdate: (weather: WeatherInfo) => void;
@@ -42,10 +40,10 @@ const EnhancedWeatherSection = ({
     saveLocationPreference, 
     isDetecting, 
     isSavingPreference,
-    hasLocationPreference
+    hasLocationPreference,
+    clearLocation
   } = useLocation();
   const [availableCities, setAvailableCities] = useState<string[]>([]);
-  const [quizComplete, setQuizComplete] = useState(false);
   const [weatherKey, setWeatherKey] = useState(1); // Start with 1 to auto-load
   const [weatherData, setWeatherData] = useState<WeatherInfo | null>(null);
   const [locationOpen, setLocationOpen] = useState(false);
@@ -66,20 +64,20 @@ const EnhancedWeatherSection = ({
     }
   }, [hasLocationPreference, country, city]);
   
+  // Handle quiz completion
   const handleQuizComplete = (answers: Record<string, string>) => {
-    setQuizComplete(true);
-    onSituationChange(answers.activity.toLowerCase());
-    // Auto-collapse section after selection
-    setTimeout(() => {
-      setActivitySectionOpen(false);
-    }, 3000); // Keep open to show animation, then close
+    if (answers.activity) {
+      onSituationChange(answers.activity.toLowerCase());
+    }
   };
 
+  // Handle weather refresh
   const handleRefreshWeather = () => {
     setWeatherKey(prev => prev + 1);
     toast.success('Refreshing weather data...');
   };
 
+  // Handle location save
   const handleSaveLocation = async () => {
     if (country && city) {
       const success = await saveLocationPreference();
@@ -92,6 +90,7 @@ const EnhancedWeatherSection = ({
     }
   };
 
+  // Handle weather update from widget
   const handleLocalWeatherUpdate = (weather: WeatherInfo) => {
     console.log("Weather update received:", weather);
     setWeatherData(weather);
@@ -113,6 +112,14 @@ const EnhancedWeatherSection = ({
     casual: <Sun className="h-4 w-4 mr-1" />,
     formal: <Calendar className="h-4 w-4 mr-1" />,
     party: <Sun className="h-4 w-4 mr-1" />
+  };
+  
+  // Handle clear location
+  const handleClearLocation = () => {
+    clearLocation();
+    setShouldAutoLoad(false);
+    setWeatherKey(prev => prev + 1);
+    toast.info('Location cleared');
   };
   
   return (
@@ -219,6 +226,17 @@ const EnhancedWeatherSection = ({
                     {isSavingPreference ? 'Saving...' : 'Save Preference'}
                   </Button>
                 </div>
+                
+                {hasLocationPreference && (
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={handleClearLocation}
+                    className="w-full text-xs text-white/60 hover:text-white/80 mt-1"
+                  >
+                    Clear Saved Location
+                  </Button>
+                )}
               </CollapsibleContent>
             </Collapsible>
             
@@ -232,6 +250,7 @@ const EnhancedWeatherSection = ({
                 showToasts={true}
                 showError={false}
                 autoLoad={shouldAutoLoad}
+                className={locationOpen ? "mt-2" : ""}
               />
             </div>
           </div>
@@ -264,6 +283,7 @@ const EnhancedWeatherSection = ({
                   onComplete={handleQuizComplete} 
                   activityIcons={activityIcons}
                   gradientButtonStyle={true}
+                  onSituationChange={onSituationChange}
                 />
               </CollapsibleContent>
             </Collapsible>
@@ -274,4 +294,4 @@ const EnhancedWeatherSection = ({
   );
 };
 
-export default memo(EnhancedWeatherSection);
+export default EnhancedWeatherSection;

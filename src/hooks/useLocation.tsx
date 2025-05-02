@@ -18,15 +18,12 @@ export const useLocation = () => {
   const [usingSavedPreference, setUsingSavedPreference] = useState(false);
   const [locationChangedManually, setLocationChangedManually] = useState(false);
   
-  const { saveLocation, isLoading } = useLocationStorage();
+  const { savedLocation, isLoading, saveLocation } = useLocationStorage();
 
   // Load saved location preference on mount
   useEffect(() => {
     const loadLocation = async () => {
       try {
-        // Since getLocation doesn't exist in useLocationStorage, we'll use savedLocation directly
-        const { savedLocation } = useLocationStorage();
-        
         if (savedLocation && savedLocation.country && savedLocation.city) {
           setCountry(savedLocation.country);
           setCity(savedLocation.city);
@@ -40,7 +37,7 @@ export const useLocation = () => {
     };
 
     loadLocation();
-  }, []);
+  }, [savedLocation]);
 
   const handleCountryChange = (value: string) => {
     setCountry(value);
