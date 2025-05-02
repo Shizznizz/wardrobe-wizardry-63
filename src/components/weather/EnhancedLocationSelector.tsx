@@ -23,19 +23,22 @@ import { countries } from '@/data/countries';
 import { getCitiesByCountry } from '@/services/LocationService';
 import { Loader2, MapPin, Save, X, Check } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 interface EnhancedLocationSelectorProps {
   onLocationChange?: (city: string, country: string) => void;
   initialCity?: string;
   initialCountry?: string;
   showToasts?: boolean;
+  className?: string;  // Added className prop to the interface
 }
 
 const EnhancedLocationSelector = ({ 
   onLocationChange,
   initialCity,
   initialCountry,
-  showToasts = false
+  showToasts = false,
+  className
 }: EnhancedLocationSelectorProps) => {
   // Get location hook with all necessary properties
   const {
@@ -100,7 +103,7 @@ const EnhancedLocationSelector = ({
   };
   
   return (
-    <Card className="bg-slate-800/40 border-purple-500/20 backdrop-blur-sm shadow-lg">
+    <Card className={cn("bg-slate-800/40 border-purple-500/20 backdrop-blur-sm shadow-lg", className)}>
       <CardHeader className="pb-2">
         <CardTitle className="text-xl text-purple-200 flex items-center justify-between">
           <span>Your Location</span>
