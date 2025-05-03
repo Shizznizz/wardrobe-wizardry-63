@@ -1,130 +1,203 @@
 
 import React, { useState, useEffect } from 'react';
-import { Search, MapPin } from 'lucide-react';
-import { Input } from '@/components/ui/input';
+import { motion } from 'framer-motion';
+import { 
+  Card, 
+  CardContent,
+  CardHeader,
+  CardTitle
+} from '@/components/ui/card';
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+import { Combobox } from '@/components/ui/combobox';
+import { Label } from '@/components/ui/label';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { useLocation } from '@/hooks/useLocation';
+import { countries } from '@/data/countries';
+import { getCitiesByCountry } from '@/services/LocationService';
+import { Loader2, MapPin, Save, X, Check } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import {
-  CommandDialog,
-  CommandInput,
-  CommandList,
-  CommandEmpty,
-  CommandGroup,
-  CommandItem,
-} from '@/components/ui/command';
-import { toast } from 'sonner';
 
 interface EnhancedLocationSelectorProps {
-  onLocationChange: (city: string, country: string) => void;
+  onLocationChange?: (city: string, country: string) => void;
   initialCity?: string;
   initialCountry?: string;
-  className?: string;
+  showToasts?: boolean;
+  className?: string;  // Added className prop to the interface
 }
 
-const EnhancedLocationSelector = ({
+const EnhancedLocationSelector = ({ 
   onLocationChange,
-  initialCity = '',
-  initialCountry = '',
+  initialCity,
+  initialCountry,
+  showToasts = false,
   className
 }: EnhancedLocationSelectorProps) => {
-  const [open, setOpen] = useState(false);
-  const [inputValue, setInputValue] = useState('');
-  const [displayValue, setDisplayValue] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [locations, setLocations] = useState<Array<{city: string, country: string}>>([]);
-
+  // Get location hook with all necessary properties
+  const {
+    country,
+    city,
+    isDetecting,
+    isSavingPreference,
+    hasLocationPreference,
+    hasChanges,
+    usingSavedPreference,
+    locationChangedManually,
+    detectLocation,
+    saveLocationPreference,
+    clearLocation,
+    handleCountryChange,
+    handleCityChange
+  } = useLocation();
+  
+  const isMobile = useIsMobile();
+  const [availableCities, setAvailableCities] = useState<string[]>([]);
+  const [citySearch, setCitySearch] = useState('');
+  const [initialSetupDone, setInitialSetupDone] = useState(false);
+  
+  // Initial setup from props - only run once
   useEffect(() => {
-    if (initialCity && initialCountry) {
-      setDisplayValue(`${initialCity}, ${initialCountry}`);
+    if (!initialSetupDone) {
+      if (initialCountry && !country) {
+        handleCountryChange(initialCountry);
+      }
+      if (initialCity && !city) {
+        handleCityChange(initialCity);
+      }
+      setInitialSetupDone(true);
     }
-  }, [initialCity, initialCountry]);
-
-  const handleSearch = async (query: string) => {
-    if (!query || query.length < 2) {
-      setLocations([]);
-      return;
+  }, [initialCountry, initialCity, initialSetupDone, country, city, handleCountryChange, handleCityChange]);
+  
+  // Notify parent component when location changes, but only after manual change
+  useEffect(() => {
+    if (onLocationChange && country && city && locationChangedManually) {
+      onLocationChange(city, country);
     }
-
-    setLoading(true);
+  }, [city, country, onLocationChange, locationChangedManually]);
+  
+  // Load available cities when country changes
+  useEffect(() => {
+    if (country) {
+      const cities = getCitiesByCountry(country, citySearch);
+      setAvailableCities(cities);
+    } else {
+      setAvailableCities([]);
+    }
+  }, [country, citySearch]);
+  
+  // Handle city search input change
+  const handleCitySearchChange = (value: string) => {
+    setCitySearch(value);
     
-    // Simulate API call with basic locations
-    setTimeout(() => {
-      const mockLocations = [
-        { city: 'New York', country: 'USA' },
-        { city: 'London', country: 'UK' },
-        { city: 'Paris', country: 'France' },
-        { city: 'Tokyo', country: 'Japan' },
-        { city: 'Sydney', country: 'Australia' },
-      ].filter(loc => 
-        loc.city.toLowerCase().includes(query.toLowerCase()) || 
-        loc.country.toLowerCase().includes(query.toLowerCase())
-      );
-      
-      setLocations(mockLocations);
-      setLoading(false);
-    }, 500);
-  };
-
-  const handleSelectLocation = (city: string, country: string) => {
-    setDisplayValue(`${city}, ${country}`);
-    onLocationChange(city, country);
-    setOpen(false);
-    toast.success(`Location set to ${city}, ${country}`);
-  };
-
-  const handleOpenChange = (newOpen: boolean) => {
-    setOpen(newOpen);
-    if (!newOpen) {
-      setInputValue('');
-      // Reset locations when dialog closes
-      setLocations([]);
+    if (country) {
+      const filteredCities = getCitiesByCountry(country, value);
+      setAvailableCities(filteredCities);
     }
   };
-
+  
   return (
-    <div className={cn("relative", className)}>
-      <div className="flex items-center justify-between space-x-2">
-        <Button
-          variant="outline"
-          onClick={() => setOpen(true)}
-          className="w-full justify-start text-left font-normal bg-background/50 backdrop-blur-sm border-white/10"
-        >
-          <MapPin className="mr-2 h-4 w-4 shrink-0" />
-          {displayValue || "Select location..."}
-        </Button>
-      </div>
-      
-      <CommandDialog open={open} onOpenChange={handleOpenChange}>
-        <CommandInput 
-          placeholder="Search for a city..." 
-          value={inputValue}
-          onValueChange={(value) => {
-            setInputValue(value);
-            handleSearch(value);
-          }}
-        />
-        <CommandList>
-          {loading ? (
-            <CommandEmpty>Loading locations...</CommandEmpty>
-          ) : locations.length === 0 ? (
-            <CommandEmpty>No locations found.</CommandEmpty>
-          ) : (
-            <CommandGroup heading="Locations">
-              {locations.map((location) => (
-                <CommandItem
-                  key={`${location.city}-${location.country}`}
-                  onSelect={() => handleSelectLocation(location.city, location.country)}
-                  className="cursor-pointer"
-                >
-                  <MapPin className="mr-2 h-4 w-4" />
-                  {location.city}, {location.country}
-                </CommandItem>
-              ))}
-            </CommandGroup>
+    <Card className={cn("bg-slate-800/40 border-purple-500/20 backdrop-blur-sm shadow-lg", className)}>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-xl text-purple-200 flex items-center justify-between">
+          <span>Your Location</span>
+          {usingSavedPreference && (
+            <Badge variant="outline" className="bg-green-600/20 text-green-300 border-green-500/30">
+              <Check className="h-3 w-3 mr-1" />
+              Using saved preference
+            </Badge>
           )}
-        </CommandList>
-      </CommandDialog>
-    </div>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="country" className="text-sm text-white/70">Country</Label>
+              <Select 
+                value={country} 
+                onValueChange={handleCountryChange}
+              >
+                <SelectTrigger className="border-purple-500/30 bg-slate-800">
+                  <SelectValue placeholder="Select country" />
+                </SelectTrigger>
+                <SelectContent className="bg-slate-900 border-purple-500/30 max-h-[300px]">
+                  {countries.map(c => (
+                    <SelectItem key={c.code} value={c.code}>
+                      {c.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="city" className="text-sm text-white/70">City</Label>
+              <Combobox
+                items={availableCities.map(city => ({ value: city, label: city }))}
+                value={city}
+                onChange={handleCityChange}
+                onInputChange={handleCitySearchChange}
+                placeholder="Select or search city"
+                disabled={!country}
+                className="border-purple-500/30 bg-slate-800"
+              />
+            </div>
+          </div>
+          
+          <div className="flex flex-wrap gap-2 justify-between">
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant="outline"
+                size={isMobile ? "sm" : "default"}
+                className="border-purple-500/30 hover:bg-purple-500/20 flex items-center"
+                onClick={detectLocation}
+                disabled={isDetecting}
+              >
+                {isDetecting ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <MapPin className="h-4 w-4 mr-2" />
+                )}
+                {isMobile ? "Detect" : "Detect My Location"}
+              </Button>
+              
+              <Button
+                variant="ghost"
+                size={isMobile ? "sm" : "default"}
+                className="text-white/70 hover:text-white flex items-center"
+                onClick={clearLocation}
+                disabled={!country && !city}
+              >
+                <X className="h-4 w-4 mr-2" />
+                {isMobile ? "Clear" : "Clear Selection"}
+              </Button>
+            </div>
+            
+            <Button
+              variant="secondary"
+              size={isMobile ? "sm" : "default"}
+              className="bg-purple-600 hover:bg-purple-700 text-white flex items-center"
+              onClick={saveLocationPreference}
+              disabled={isSavingPreference || !country || !hasChanges}
+            >
+              {isSavingPreference ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Save className="h-4 w-4 mr-2" />
+              )}
+              {isMobile ? "Save" : "Save as Preference"}
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 

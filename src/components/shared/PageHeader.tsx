@@ -1,143 +1,195 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Sparkles } from 'lucide-react';
 
-export interface PageHeaderProps {
+interface PageHeaderProps {
   title: string;
-  subtitle?: string;
-  children?: React.ReactNode;
+  subtitle: string;
   showAvatar?: boolean;
-  avatarSrc?: string;
-  imageVariant?: 'pink-suit' | 'casual' | 'formal' | 'street' | 'neutral';
-  imagePosition?: 'left' | 'right' | 'center' | 'none';
-  showSparkles?: boolean;
   className?: string;
+  children?: React.ReactNode;
+  avatarSrc?: string;
+  halfBodyImage?: string;
+  imagePosition?: 'left' | 'right';
+  showSparkles?: boolean;
+  imageVariant?: 'pink-suit' | 'portrait';
 }
 
 const PageHeader = ({
   title,
   subtitle,
-  children,
   showAvatar = true,
-  avatarSrc = '/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png',
-  imageVariant = 'neutral',
+  className,
+  children,
+  avatarSrc = "/lovable-uploads/34e8d801-61ee-4254-a7ce-39b52a3a7e65.png",
+  halfBodyImage,
   imagePosition = 'right',
   showSparkles = false,
-  className,
+  imageVariant = 'pink-suit'
 }: PageHeaderProps) => {
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        type: 'spring',
+        stiffness: 100,
+        damping: 10
+      }
+    }
+  };
+
+  const sparkleVariants = {
+    initial: { opacity: 0, scale: 0 },
+    animate: { 
+      opacity: 1, 
+      scale: 1,
+      transition: {
+        delay: 0.8,
+        duration: 0.5,
+        ease: "easeOut"
+      }
+    }
+  };
+
+  // Get the appropriate image based on the variant
   const getImageSrc = () => {
-    switch (imageVariant) {
-      case 'pink-suit':
-        return '/lovable-uploads/86bf74b8-b311-4e3c-bfd6-53819add3df8.png';
-      case 'casual':
-        return '/lovable-uploads/f1154816-6766-4478-ba89-6342580bc85b.png';
-      case 'formal':
-        return '/lovable-uploads/5e9a3938-d858-47e4-942e-e6f047b9e309.png';
-      case 'street':
-        return '/lovable-uploads/e4bf2134-0936-46f8-8d70-adcc220e50be.png';
-      default:
-        return '/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png';
+    if (halfBodyImage) return halfBodyImage;
+    
+    if (imageVariant === 'pink-suit') {
+      return "/lovable-uploads/f29b0fb8-330c-409a-8488-2e7ae2b351ed.png";
+    } else {
+      return "/lovable-uploads/7fc023d8-bd78-47c7-8725-d8cb48855e20.png";
     }
   };
 
   return (
-    <motion.div 
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
       className={cn(
-        "relative flex flex-col md:flex-row items-center md:items-start gap-8",
+        "relative overflow-hidden py-4 md:py-6 px-4 md:px-6",
+        (halfBodyImage || imageVariant) ? "min-h-[280px] md:min-h-[320px]" : "",
+        !(halfBodyImage || imageVariant) && "text-center",
         className
       )}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
     >
-      {/* Add a style element for custom CSS */}
-      <style>
-        {`
-          .mobile-header-fix .header-image-container {
-            max-width: 45% !important;
-          }
-          
-          @media (max-width: 640px) {
-            .mobile-header-fix .header-image-container {
-              max-width: 60% !important;
-              position: absolute;
-              right: 0;
-              bottom: 0;
-              z-index: 0;
-              opacity: 0.8;
-            }
-            
-            .mobile-header-fix .header-content {
-              position: relative;
-              z-index: 1;
-              width: 100%;
-            }
-          }
-        `}
-      </style>
+      {/* Enhanced background elements */}
+      <div className="absolute inset-0 overflow-hidden -z-10">
+        <div className="absolute top-1/3 left-1/4 w-64 h-64 rounded-full bg-purple-500/10 blur-3xl"></div>
+        <div className="absolute top-1/2 right-1/4 w-72 h-72 rounded-full bg-indigo-500/10 blur-3xl"></div>
+        {/* Additional futuristic elements */}
+        <div className="absolute bottom-0 left-0 w-full h-1/3 bg-gradient-to-t from-purple-900/10 to-transparent"></div>
+        <div className="absolute -left-20 top-1/4 w-40 h-40 rounded-full border border-pink-300/20"></div>
+        <div className="absolute right-10 bottom-1/4 w-20 h-20 rounded-full border border-indigo-300/20"></div>
+      </div>
       
-      {/* Text Content */}
-      <div className={cn(
-        "w-full md:w-3/5 space-y-4 header-content",
-        imagePosition === 'right' ? 'order-1 md:order-1 text-left' : 'order-1 md:order-2 text-left md:text-right'
-      )}>
-        {showSparkles && (
-          <motion.div 
-            className="inline-block"
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.3, duration: 0.5 }}
+      <div className={`flex ${(halfBodyImage || imageVariant) ? 'flex-row items-center' : 'flex-col items-center'} ${(halfBodyImage || imageVariant) && imagePosition === 'left' ? 'flex-row-reverse' : ''}`}>
+        {/* Text content */}
+        <div className={`z-10 ${(halfBodyImage || imageVariant) ? (imagePosition === 'left' ? 'pr-4' : 'pl-4') : 'w-full'} ${(halfBodyImage || imageVariant) ? 'max-w-[60%]' : ''}`}>
+          {/* Main headline */}
+          <motion.div className="relative">
+            {showSparkles && (
+              <motion.div 
+                className="absolute -top-6 -left-6"
+                variants={sparkleVariants}
+                initial="initial"
+                animate="animate"
+              >
+                <Sparkles className="w-5 h-5 text-pink-400" />
+              </motion.div>
+            )}
+            <motion.h1 
+              variants={itemVariants}
+              className="text-3xl xs:text-4xl sm:text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 leading-tight"
+            >
+              {title}
+            </motion.h1>
+          </motion.div>
+          
+          {/* Subheadline */}
+          <motion.p 
+            variants={itemVariants}
+            className="text-base xs:text-lg text-white/80 mb-6"
           >
-            <Sparkles className="w-6 h-6 text-pink-400 mb-2" />
+            {subtitle.includes('Olivia') ? (
+              <>
+                {subtitle.split('Olivia')[0]}
+                <span className="relative">
+                  <span className="bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent font-medium">
+                    Olivia
+                  </span>
+                  <span className="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-pink-400 to-purple-400 opacity-70"></span>
+                </span>
+                {subtitle.split('Olivia')[1]}
+              </>
+            ) : subtitle}
+          </motion.p>
+          
+          {/* Optional additional content */}
+          {children && (
+            <motion.div variants={itemVariants}>
+              {children}
+            </motion.div>
+          )}
+        </div>
+        
+        {/* Olivia image */}
+        {(halfBodyImage || imageVariant) && (
+          <motion.div 
+            className={`relative z-10 flex-shrink-0 ${imagePosition === 'left' ? 'mr-4' : 'ml-4'}`}
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+          >
+            {/* Glowing backlight effect for the image */}
+            <div className="absolute inset-0 -z-10 rounded-full bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-indigo-500/20 blur-2xl"></div>
+            
+            {/* Subtle animated rings */}
+            <div className="absolute inset-0 -z-5 rounded-full border border-pink-400/10 animate-pulse"></div>
+            <div className="absolute inset-2 -z-5 rounded-full border border-indigo-400/5"></div>
+            
+            {/* The image */}
+            <img 
+              src={getImageSrc()} 
+              alt="Olivia" 
+              className="max-h-[280px] md:max-h-[320px] drop-shadow-lg"
+            />
+            
+            {/* Subtle light effect */}
+            <div className="absolute top-0 right-1/4 w-10 h-10 bg-white/10 rounded-full blur-xl"></div>
           </motion.div>
         )}
         
-        <h1 className="text-3xl xs:text-4xl sm:text-5xl font-bold bg-gradient-to-r from-white via-purple-200 to-pink-200 bg-clip-text text-transparent">
-          {title}
-        </h1>
-        
-        {subtitle && (
-          <p className="text-base sm:text-lg text-white/80 max-w-xl">
-            {subtitle}
-          </p>
-        )}
-        
-        {children && (
-          <div className="pt-4">
-            {children}
-          </div>
+        {/* Avatar (optional) */}
+        {showAvatar && !halfBodyImage && !imageVariant && (
+          <motion.div 
+            variants={itemVariants}
+            className="mb-6"
+          >
+            <Avatar className="h-16 w-16 border-2 border-purple-400/50 bg-gradient-to-br from-purple-600/80 to-pink-600/80">
+              <AvatarImage src={avatarSrc} alt="Olivia" />
+              <AvatarFallback className="bg-gradient-to-br from-purple-600 to-pink-600 text-white text-lg">OB</AvatarFallback>
+            </Avatar>
+          </motion.div>
         )}
       </div>
-      
-      {/* Image */}
-      {imagePosition !== 'none' && (
-        <div className={cn(
-          "w-full md:w-2/5 flex justify-center header-image-container",
-          imagePosition === 'right' ? 'order-2 md:order-2' : 'order-2 md:order-1'
-        )}>
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 via-pink-500/10 to-purple-500/20 rounded-full blur-2xl"></div>
-            <img 
-              src={getImageSrc()} 
-              alt="Olivia Fashion Assistant" 
-              className="relative z-10 max-h-[350px] md:max-h-[400px] drop-shadow-lg"
-            />
-          </div>
-        </div>
-      )}
-      
-      {/* Avatar (optional) */}
-      {showAvatar && (
-        <div className="absolute -bottom-6 right-6 z-20 hidden md:block">
-          <Avatar className="w-12 h-12 border-2 border-white/20 shadow-lg">
-            <AvatarImage src={avatarSrc} alt="Olivia" />
-            <AvatarFallback>OB</AvatarFallback>
-          </Avatar>
-        </div>
-      )}
     </motion.div>
   );
 };

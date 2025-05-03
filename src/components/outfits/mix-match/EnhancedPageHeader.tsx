@@ -34,18 +34,6 @@ const EnhancedPageHeader = ({ userName, onScrollToWeather }: EnhancedPageHeaderP
       animate="visible"
       className="relative py-6 md:py-8 lg:py-10 px-4 text-center"
     >
-      {/* Add a style element for custom CSS */}
-      <style>
-        {`
-          @media (max-width: 640px) {
-            .enhanced-header-sparkle {
-              top: -15px !important;
-              left: 20% !important;
-            }
-          }
-        `}
-      </style>
-      
       {/* Background elements */}
       <div className="absolute inset-0 overflow-hidden -z-10">
         <div className="absolute top-1/3 left-1/4 w-64 h-64 rounded-full bg-purple-500/10 blur-3xl"></div>
@@ -60,7 +48,7 @@ const EnhancedPageHeader = ({ userName, onScrollToWeather }: EnhancedPageHeaderP
       {/* Main content */}
       <motion.div className="relative">
         <motion.div
-          className="absolute -top-6 left-1/4 enhanced-header-sparkle"
+          className="absolute -top-6 left-1/4"
           variants={sparkleVariants}
           initial="initial"
           animate="animate"

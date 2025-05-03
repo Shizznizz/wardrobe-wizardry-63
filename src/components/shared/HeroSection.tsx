@@ -106,32 +106,6 @@ const HeroSection = ({
       animate="visible"
       variants={containerVariants}
     >
-      {/* Add a style element for custom CSS */}
-      <style>
-        {`
-          @media (max-width: 768px) {
-            .hero-image-container {
-              max-width: 70% !important;
-              margin: 0 auto;
-            }
-            
-            .hero-image-container img {
-              max-height: 300px !important;
-            }
-          }
-          
-          @media (max-width: 640px) {
-            .hero-image-container {
-              max-width: 60% !important;
-            }
-            
-            .hero-image-container img {
-              max-height: 250px !important;
-            }
-          }
-        `}
-      </style>
-      
       {/* Enhanced background elements */}
       <div className="absolute inset-0 overflow-hidden -z-10">
         <div className="absolute top-1/3 left-1/4 w-64 h-64 rounded-full bg-purple-500/10 blur-3xl"></div>
@@ -222,7 +196,7 @@ const HeroSection = ({
 
           {/* Image container */}
           <motion.div 
-            className={`w-full md:w-1/2 flex justify-center hero-image-container`}
+            className={`w-full md:w-1/2 flex justify-center`}
             variants={imageVariants}
           >
             <div className="relative">
