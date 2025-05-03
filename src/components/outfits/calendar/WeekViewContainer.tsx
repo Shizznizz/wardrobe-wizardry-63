@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { addDays, format, startOfWeek, endOfWeek, isSameDay } from 'date-fns';
@@ -42,11 +41,11 @@ const WeekViewContainer = ({
   const isMobile = useIsMobile();
   
   // Generate array of dates for the week
-  const daysInWeek = [];
+  const weekDates = [];
   let day = weekStart;
   
   while (day <= weekEnd) {
-    daysInWeek.push(day);
+    weekDates.push(day);
     day = addDays(day, 1);
   }
 
@@ -70,7 +69,7 @@ const WeekViewContainer = ({
       className="h-full flex flex-col gap-6"
     >
       <div className="grid grid-cols-7 gap-2">
-        {daysInWeek.map((date) => (
+        {weekDates.map((date) => (
           <Button
             key={date.toISOString()}
             onClick={() => handleDateClick(date)}

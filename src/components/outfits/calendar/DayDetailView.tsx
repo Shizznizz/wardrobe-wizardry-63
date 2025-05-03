@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -6,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Plus, Trash, CalendarDays, Pencil, Shirt, MapPin } from 'lucide-react';
 import { Outfit } from '@/lib/types';
 import { OutfitLog } from '@/components/outfits/OutfitLogItem';
-import { CompactWeather } from './CompactWeather';
+import CompactWeather from './CompactWeather';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
@@ -80,6 +79,7 @@ const DayDetailView = ({
         {weatherLocation?.city && (
           <CompactWeather 
             date={selectedDate}
+            weather={null}
             location={weatherLocation}
             onWeatherChange={onWeatherChange}
           />

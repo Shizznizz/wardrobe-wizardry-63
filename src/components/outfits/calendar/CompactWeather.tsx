@@ -1,3 +1,4 @@
+
 import { WeatherInfo } from '@/lib/types';
 import { Sun, Cloud, CloudRain, CloudFog, Thermometer } from 'lucide-react';
 import {
@@ -11,9 +12,11 @@ interface CompactWeatherProps {
   weather: WeatherInfo | null;
   date: Date;
   customTip?: string;
+  location?: { city: string; country: string };
+  onWeatherChange?: (weather: any) => void;
 }
 
-const CompactWeather = ({ weather, date, customTip }: CompactWeatherProps) => {
+const CompactWeather = ({ weather, date, customTip, location, onWeatherChange }: CompactWeatherProps) => {
   const getWeatherIcon = () => {
     if (!weather) return <Thermometer className="w-4 h-4" />;
     
@@ -107,4 +110,6 @@ const CompactWeather = ({ weather, date, customTip }: CompactWeatherProps) => {
   );
 };
 
+// Fix: Export the component as default and also as a named export
 export default CompactWeather;
+export { CompactWeather };
