@@ -86,6 +86,19 @@ const EnhancedPageHeader = ({ userName, onScrollToWeather }: EnhancedPageHeaderP
           Let Olivia Style Me Today
         </Button>
       </motion.div>
+
+      {/* Added mobile style adjustments */}
+      <style>
+        {`
+          @media (max-width: 640px) {
+            .olivia-header-image {
+              max-height: 180px !important;
+              transform: translateX(-15%) scale(0.85);
+              opacity: 0.85;
+            }
+          }
+        `}
+      </style>
     </motion.div>
   );
 };

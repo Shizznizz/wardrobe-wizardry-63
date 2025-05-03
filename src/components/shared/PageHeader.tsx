@@ -12,10 +12,9 @@ interface PageHeaderProps {
   className?: string;
   children?: React.ReactNode;
   avatarSrc?: string;
-  halfBodyImage?: string;
   imagePosition?: 'left' | 'right';
   showSparkles?: boolean;
-  imageVariant?: 'pink-suit' | 'portrait';
+  imageVariant?: 'pink-suit';
 }
 
 const PageHeader = ({
@@ -25,7 +24,6 @@ const PageHeader = ({
   className,
   children,
   avatarSrc = "/lovable-uploads/34e8d801-61ee-4254-a7ce-39b52a3a7e65.png",
-  halfBodyImage,
   imagePosition = 'right',
   showSparkles = false,
   imageVariant = 'pink-suit'
@@ -69,8 +67,6 @@ const PageHeader = ({
 
   // Get the appropriate image based on the variant
   const getImageSrc = () => {
-    if (halfBodyImage) return halfBodyImage;
-    
     if (imageVariant === 'pink-suit') {
       return "/lovable-uploads/f29b0fb8-330c-409a-8488-2e7ae2b351ed.png";
     } else {
@@ -85,8 +81,8 @@ const PageHeader = ({
       variants={containerVariants}
       className={cn(
         "relative overflow-hidden py-4 md:py-6 px-4 md:px-6",
-        (halfBodyImage || imageVariant) ? "min-h-[280px] md:min-h-[320px]" : "",
-        !(halfBodyImage || imageVariant) && "text-center",
+        imageVariant ? "min-h-[280px] md:min-h-[320px]" : "",
+        !imageVariant && "text-center",
         className
       )}
     >
@@ -100,9 +96,9 @@ const PageHeader = ({
         <div className="absolute right-10 bottom-1/4 w-20 h-20 rounded-full border border-indigo-300/20"></div>
       </div>
       
-      <div className={`flex ${(halfBodyImage || imageVariant) ? 'flex-row items-center' : 'flex-col items-center'} ${(halfBodyImage || imageVariant) && imagePosition === 'left' ? 'flex-row-reverse' : ''}`}>
+      <div className={`flex ${imageVariant ? 'flex-row items-center' : 'flex-col items-center'} ${imageVariant && imagePosition === 'left' ? 'flex-row-reverse' : ''}`}>
         {/* Text content */}
-        <div className={`z-10 ${(halfBodyImage || imageVariant) ? (imagePosition === 'left' ? 'pr-4' : 'pl-4') : 'w-full'} ${(halfBodyImage || imageVariant) ? 'max-w-[60%]' : ''}`}>
+        <div className={`z-10 ${imageVariant ? (imagePosition === 'left' ? 'pr-4' : 'pl-4') : 'w-full'} ${imageVariant ? 'max-w-[60%] md:max-w-[60%]' : ''}`}>
           {/* Main headline */}
           <motion.div className="relative">
             {showSparkles && (
@@ -151,7 +147,7 @@ const PageHeader = ({
         </div>
         
         {/* Olivia image */}
-        {(halfBodyImage || imageVariant) && (
+        {imageVariant && (
           <motion.div 
             className={`relative z-10 flex-shrink-0 ${imagePosition === 'left' ? 'mr-4' : 'ml-4'}`}
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
@@ -165,12 +161,29 @@ const PageHeader = ({
             <div className="absolute inset-0 -z-5 rounded-full border border-pink-400/10 animate-pulse"></div>
             <div className="absolute inset-2 -z-5 rounded-full border border-indigo-400/5"></div>
             
-            {/* The image */}
+            {/* The image - with mobile adjustments */}
             <img 
               src={getImageSrc()} 
               alt="Olivia" 
-              className="max-h-[280px] md:max-h-[320px] drop-shadow-lg"
+              className="max-h-[200px] xs:max-h-[220px] sm:max-h-[250px] md:max-h-[320px] drop-shadow-lg mobile-olivia-image"
+              style={{
+                maxWidth: '100%',
+                height: 'auto'
+              }}
             />
+            
+            {/* Added mobile-specific styles */}
+            <style>
+              {`
+                @media (max-width: 640px) {
+                  .mobile-olivia-image {
+                    max-height: 180px !important;
+                    transform: translateX(-15%) scale(0.85);
+                    opacity: 0.85;
+                  }
+                }
+              `}
+            </style>
             
             {/* Subtle light effect */}
             <div className="absolute top-0 right-1/4 w-10 h-10 bg-white/10 rounded-full blur-xl"></div>
@@ -178,7 +191,7 @@ const PageHeader = ({
         )}
         
         {/* Avatar (optional) */}
-        {showAvatar && !halfBodyImage && !imageVariant && (
+        {showAvatar && !imageVariant && (
           <motion.div 
             variants={itemVariants}
             className="mb-6"

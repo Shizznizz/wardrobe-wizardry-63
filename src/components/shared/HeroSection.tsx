@@ -207,15 +207,28 @@ const HeroSection = ({
               <div className="absolute inset-0 -z-5 rounded-full border border-coral-400/10 animate-pulse-glow"></div>
               <div className="absolute inset-2 -z-5 rounded-full border border-purple-400/5"></div>
               
-              {/* The image */}
+              {/* The image with mobile-specific styling */}
               <img 
                 src={image.src} 
                 alt={image.alt || "Olivia AI Fashion Assistant"}
                 className={cn(
-                  "drop-shadow-lg max-h-[500px] animate-float",
+                  "drop-shadow-lg animate-float mobile-hero-image",
                   image.variant === 'portrait' ? "max-h-[400px]" : "max-h-[550px]"
                 )}
               />
+              
+              {/* Added mobile-specific styles */}
+              <style>
+                {`
+                  @media (max-width: 640px) {
+                    .mobile-hero-image {
+                      max-height: 220px !important;
+                      transform: translateX(-15%) scale(0.85);
+                      opacity: 0.85;
+                    }
+                  }
+                `}
+              </style>
               
               {/* Subtle light effect */}
               <div className="absolute top-0 right-1/4 w-10 h-10 bg-white/10 rounded-full blur-xl"></div>

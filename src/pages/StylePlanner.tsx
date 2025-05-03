@@ -51,7 +51,7 @@ const StylePlanner = () => {
       });
       setLocationUpdated(true);
     }
-  }, [savedLocation]);
+  }, [savedLocation, locationUpdated]);
 
   useEffect(() => {
     const loadItems = () => {
