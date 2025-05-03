@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useShowroom } from '@/hooks/useShowroom';
 import { useOutfitState } from '@/hooks/useOutfitState';
@@ -300,7 +301,7 @@ const FittingRoom = () => {
         <PageHeader
           title="Try On Your Wardrobe"
           subtitle="Upload your photo or use Olivia to try pieces from your closet."
-          imageVariant="casual"
+          halfBodyImage="/lovable-uploads/34e8d801-61ee-4254-a7ce-39b52a3a7e65.png"
           imagePosition="right"
         />
         

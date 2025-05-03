@@ -134,7 +134,6 @@ const StylePlanner = () => {
             imageVariant="pink-suit"
             imagePosition="right"
             showSparkles={true}
-            className="mobile-header-fix"
           >
             {profile?.first_name && (
               <p className="text-white/80 mb-4">

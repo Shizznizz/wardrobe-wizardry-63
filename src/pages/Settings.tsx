@@ -72,7 +72,7 @@ const Settings = () => {
           title="Settings & Preferences"
           subtitle="Customize your vibe, reminders, and preferences here with me."
           showAvatar={false}
-          imageVariant="neutral"
+          imageVariant="portrait"
           imagePosition="right"
           showSparkles={true}
         />
