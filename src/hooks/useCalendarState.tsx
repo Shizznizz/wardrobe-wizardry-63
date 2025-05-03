@@ -30,7 +30,12 @@ export function useCalendarState(initialOutfits: Outfit[], initialClothingItems:
         const { success, data, error } = await getOutfitLogs(user.id);
         
         if (success && data) {
-          setOutfitLogs(data);
+          // Ensure all logs have a properly formatted date
+          const formattedLogs = data.map((log: any) => ({
+            ...log,
+            date: new Date(log.date)
+          }));
+          setOutfitLogs(formattedLogs);
         } else if (error) {
           console.error('Error loading outfit logs:', error);
           // Fallback to localStorage
@@ -80,10 +85,16 @@ export function useCalendarState(initialOutfits: Outfit[], initialClothingItems:
         }
         
         if (data) {
+          // Format the date if necessary
+          const formattedData = {
+            ...data,
+            date: new Date(data.date)
+          };
+          
           // Add to state
-          setOutfitLogs(prev => [...prev, data]);
-          toast.success(`Outfit logged for ${format(log.date, 'MMMM d, yyyy')}`);
-          return data;
+          setOutfitLogs(prev => [...prev, formattedData]);
+          toast.success(`Outfit logged for ${format(new Date(log.date), 'MMMM d, yyyy')}`);
+          return formattedData;
         }
       } else {
         // For non-logged in users, save to localStorage
@@ -94,9 +105,15 @@ export function useCalendarState(initialOutfits: Outfit[], initialClothingItems:
         
         const updatedLogs = [...outfitLogs, newLog];
         setOutfitLogs(updatedLogs);
-        localStorage.setItem('outfitLogs', JSON.stringify(updatedLogs));
         
-        toast.success(`Outfit logged for ${format(log.date, 'MMMM d, yyyy')}`);
+        // Store the date as ISO string for localStorage
+        const logsForStorage = updatedLogs.map(log => ({
+          ...log,
+          date: log.date instanceof Date ? log.date.toISOString() : log.date
+        }));
+        localStorage.setItem('outfitLogs', JSON.stringify(logsForStorage));
+        
+        toast.success(`Outfit logged for ${format(new Date(log.date), 'MMMM d, yyyy')}`);
         return newLog;
       }
     } catch (error) {
@@ -120,8 +137,14 @@ export function useCalendarState(initialOutfits: Outfit[], initialClothingItems:
         }
         
         if (data) {
+          // Format the date if necessary
+          const formattedData = {
+            ...data,
+            date: new Date(data.date)
+          };
+          
           // Update in state
-          setOutfitLogs(prev => prev.map(log => log.id === id ? data : log));
+          setOutfitLogs(prev => prev.map(log => log.id === id ? formattedData : log));
           toast.success('Outfit log updated successfully');
           return true;
         }
@@ -135,7 +158,13 @@ export function useCalendarState(initialOutfits: Outfit[], initialClothingItems:
         });
         
         setOutfitLogs(updatedLogs);
-        localStorage.setItem('outfitLogs', JSON.stringify(updatedLogs));
+        
+        // Store the date as ISO string for localStorage
+        const logsForStorage = updatedLogs.map(log => ({
+          ...log,
+          date: log.date instanceof Date ? log.date.toISOString() : log.date
+        }));
+        localStorage.setItem('outfitLogs', JSON.stringify(logsForStorage));
         
         toast.success('Outfit log updated successfully');
         return true;
@@ -167,9 +196,16 @@ export function useCalendarState(initialOutfits: Outfit[], initialClothingItems:
       // Update localStorage for non-logged in users
       if (!user) {
         const updatedLogs = outfitLogs.filter(log => log.id !== id);
-        localStorage.setItem('outfitLogs', JSON.stringify(updatedLogs));
+        
+        // Store the date as ISO string for localStorage
+        const logsForStorage = updatedLogs.map(log => ({
+          ...log,
+          date: log.date instanceof Date ? log.date.toISOString() : log.date
+        }));
+        localStorage.setItem('outfitLogs', JSON.stringify(logsForStorage));
       }
       
+      toast.success('Outfit log deleted successfully');
       return true;
     } catch (error) {
       console.error('Failed to delete outfit log:', error);
@@ -258,8 +294,8 @@ export function useCalendarState(initialOutfits: Outfit[], initialClothingItems:
     
     // Find outfits appropriate for the current season
     const seasonalOutfits = outfits.filter(outfit => 
-      outfit.seasons.includes(currentSeason) ||
-      outfit.seasons.includes('all')
+      outfit.seasons && (outfit.seasons.includes(currentSeason) ||
+      outfit.seasons.includes('all'))
     );
     
     // From the seasonal outfits, prioritize those that are rarely worn

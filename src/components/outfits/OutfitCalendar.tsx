@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
@@ -46,7 +47,7 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog, location }: OutfitCa
   const isMobile = useIsMobile();
   const [selectedTab, setSelectedTab] = useState('calendar');
   const [calendarView, setCalendarView] = useState<'month' | 'week' | 'day'>(
-    isMobile ? 'day' : 'month'
+    'month'  // Default to month view for all devices
   );
   const { isAuthenticated } = useAuth();
   
@@ -79,12 +80,6 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog, location }: OutfitCa
       notes: "",
     },
   });
-
-  useEffect(() => {
-    if (isMobile) {
-      setCalendarView('week');
-    }
-  }, [isMobile]);
 
   const onSubmitLog = async (values: Omit<OutfitLog, 'id'>) => {
     if (!values.outfitId) {

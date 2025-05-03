@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import OutfitCalendar from '@/components/outfits/OutfitCalendar';
@@ -26,6 +26,7 @@ const StylePlanner = () => {
   const { savedLocation } = useLocationStorage();
   const { user } = useAuth();
   const [profile, setProfile] = useState<{ first_name: string | null } | null>(null);
+  const calendarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (user?.id) {
@@ -87,6 +88,12 @@ const StylePlanner = () => {
     setLocation({ city, country });
   };
 
+  const scrollToCalendar = () => {
+    if (calendarRef.current) {
+      calendarRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -136,6 +143,7 @@ const StylePlanner = () => {
             <Button 
               className="bg-gradient-to-r from-purple-500 to-indigo-500 hover:opacity-90 shadow-md shadow-purple-500/20 hover:shadow-purple-500/30 transition-all duration-300 mb-2"
               size="lg"
+              onClick={scrollToCalendar}
             >
               Show Me My Style Timeline
             </Button>
@@ -158,6 +166,7 @@ const StylePlanner = () => {
             <motion.div 
               variants={itemVariants} 
               className="w-full overflow-hidden rounded-2xl shadow-xl"
+              ref={calendarRef}
             >
               <OutfitCalendar 
                 outfits={outfits}

@@ -1,204 +1,213 @@
-import { useState, useEffect } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
-import { Outfit, WeatherInfo } from '@/lib/types';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, Trash2 } from 'lucide-react';
-import { OutfitLog } from '../OutfitLogItem';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { Plus, Trash, CalendarDays, Pencil, Shirt, MapPin } from 'lucide-react';
+import { Outfit } from '@/lib/types';
+import { OutfitLog } from '@/components/outfits/OutfitLogItem';
+import { CompactWeather } from './CompactWeather';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import CompactWeather from './CompactWeather';
-import OutfitPreview from './OutfitPreview';
-import OutfitSelectorDialog from './OutfitSelectorDialog';
-import ActivityInputDialog from './ActivityInputDialog';
-import { fetchWeatherData, generateRandomWeather } from '@/services/WeatherService';
 
 interface DayDetailViewProps {
   selectedDate: Date;
   outfits: Outfit[];
   outfitLogs: OutfitLog[];
-  onAddOutfit: (outfitId: string) => void;
-  onAddActivity: (activity: string) => void;
+  onAddOutfit?: (outfitId: string) => void;
+  onAddActivity?: (activity: string) => void;
   weatherLocation?: { city: string; country: string };
-  onWeatherChange?: (weather: WeatherInfo) => void;
-  onDeleteLog?: (logId: string) => Promise<boolean>;
+  onDeleteLog?: (id: string) => Promise<boolean>;
+  onWeatherChange?: (weather: any) => void;
 }
 
-const DayDetailView = ({
-  selectedDate,
-  outfits,
-  outfitLogs,
+const DayDetailView = ({ 
+  selectedDate, 
+  outfits, 
+  outfitLogs, 
   onAddOutfit,
   onAddActivity,
   weatherLocation,
-  onWeatherChange,
-  onDeleteLog
+  onDeleteLog,
+  onWeatherChange
 }: DayDetailViewProps) => {
+  const [newActivity, setNewActivity] = useState('');
   const [isAddingActivity, setIsAddingActivity] = useState(false);
-  const [isAddingOutfit, setIsAddingOutfit] = useState(false);
-  const [weather, setWeather] = useState<WeatherInfo | null>(null);
-  const isMobile = useIsMobile();
-  
-  const getWeatherBasedTip = (weather: WeatherInfo | null, date: Date) => {
-    if (!weather) return "Getting weather information...";
-    
-    const temp = weather.temperature;
-    const condition = weather.condition.toLowerCase();
-    const month = date.getMonth();
-    const season = month >= 2 && month <= 4 ? 'spring' :
-                  month >= 5 && month <= 7 ? 'summer' :
-                  month >= 8 && month <= 10 ? 'autumn' : 'winter';
-    
-    if (condition.includes('rain')) {
-      return `Don't forget your umbrella and waterproof layers for the ${temp}°C rainy weather!`;
-    }
-    
-    if (season === 'summer' && temp > 25) {
-      return "Stay cool with breathable fabrics and light colors today!";
-    }
-    
-    if (season === 'winter' && temp < 5) {
-      return "Bundle up with warm layers and don't forget your scarf!";
-    }
-    
-    if (condition.includes('wind')) {
-      return "Consider a windbreaker or layered outfit today.";
-    }
-    
-    return temp < 15 ? "Layer up for comfort in the cool weather." :
-           temp < 20 ? "Perfect weather for a light jacket or cardigan." :
-           "Opt for comfortable, breathable clothing today.";
-  };
 
   useEffect(() => {
-    const getWeather = async () => {
-      if (weatherLocation?.city && weatherLocation?.country) {
-        try {
-          const data = await fetchWeatherData(weatherLocation.city, weatherLocation.country);
-          setWeather(data);
-          if (onWeatherChange) {
-            onWeatherChange(data);
-          }
-        } catch (error) {
-          console.error("Failed to fetch weather data:", error);
-          const randomWeather = generateRandomWeather(weatherLocation.city, weatherLocation.country);
-          setWeather(randomWeather);
-          if (onWeatherChange) {
-            onWeatherChange(randomWeather);
-          }
-        }
-      }
-    };
-    
-    getWeather();
-  }, [weatherLocation, onWeatherChange]);
+    // Reset the activity input state when the selected date changes
+    setNewActivity('');
+    setIsAddingActivity(false);
+  }, [selectedDate]);
 
-  const handleDeleteLog = async (logId: string) => {
+  const handleAddActivity = () => {
+    if (newActivity.trim() !== '') {
+      onAddActivity?.(newActivity.trim());
+      setNewActivity('');
+      setIsAddingActivity(false);
+    } else {
+      toast.error("Please enter an activity");
+    }
+  };
+
+  const handleDeleteLog = async (id: string) => {
     if (onDeleteLog) {
-      const success = await onDeleteLog(logId);
+      const success = await onDeleteLog(id);
       if (success) {
-        toast.success('Item removed successfully');
-      } else {
-        toast.error('Failed to remove item');
+        toast.success("Item removed successfully");
       }
     }
   };
 
-  const getOutfitById = (id: string) => {
-    return outfits.find(outfit => outfit.id === id);
-  };
+  const favoriteOutfits = outfits.filter(outfit => outfit.favorite);
 
   return (
-    <Card className="w-full mt-4 bg-card/50 backdrop-blur-sm border-primary/20">
-      <CardHeader>
+    <Card className="bg-slate-800/40 border-purple-500/20 shadow-lg backdrop-blur-sm">
+      <CardHeader className="pb-2">
         <CardTitle className="flex justify-between items-center">
-          <span>{format(selectedDate, 'MMMM d, yyyy')}</span>
-          <div className="flex gap-2">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => setIsAddingActivity(true)}
-              className={isMobile ? "flex-1" : ""}
-            >
-              <Plus className="w-4 h-4 mr-1" />
-              Add Activity
-            </Button>
-
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => setIsAddingOutfit(true)}
-              className={isMobile ? "flex-1" : ""}
-            >
-              <Plus className="w-4 h-4 mr-1" />
-              Add Outfit
-            </Button>
-          </div>
+          <div className="text-lg text-purple-200">{format(selectedDate, 'EEEE, MMMM d')}</div>
+          <div className="text-sm text-purple-300/70">{format(selectedDate, 'yyyy')}</div>
         </CardTitle>
+        <CardDescription>
+          {outfitLogs.length > 0 
+            ? `${outfitLogs.length} item${outfitLogs.length > 1 ? 's' : ''} planned`
+            : "Nothing planned yet"}
+        </CardDescription>
       </CardHeader>
       
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-4">
         {weatherLocation?.city && (
-          <div className="flex flex-col gap-3">
-            <CompactWeather 
-              weather={weather} 
-              date={selectedDate}
-              customTip={getWeatherBasedTip(weather, selectedDate)}
-            />
-          </div>
+          <CompactWeather 
+            date={selectedDate}
+            location={weatherLocation}
+            onWeatherChange={onWeatherChange}
+          />
         )}
-
-        <div className="space-y-3">
-          <h3 className="text-sm font-medium text-muted-foreground">Planned for this day:</h3>
-          <div className="grid gap-3">
-            {outfitLogs.map(log => (
-              <Card key={log.id} className="bg-card/30 hover:bg-card/50 transition-colors">
-                <CardContent className="p-3">
-                  <div className="flex justify-between items-start">
+        
+        {/* Outfit and Activity Logs */}
+        {outfitLogs.length > 0 ? (
+          <div className="space-y-2">
+            {outfitLogs.map(log => {
+              // Find the outfit details for outfit logs
+              const outfitDetails = log.outfitId !== 'activity' 
+                ? outfits.find(o => o.id === log.outfitId) 
+                : null;
+                
+              return (
+                <div key={log.id} 
+                  className="flex items-center justify-between bg-slate-700/30 p-2 rounded-lg border border-slate-600/30">
+                  <div className="flex items-center gap-2">
                     {log.outfitId === 'activity' ? (
-                      <div className="flex items-center gap-2">
-                        <p className="text-sm">
-                          {log.customActivity || log.activity || "Activity"}
-                        </p>
-                      </div>
-                    ) : (
                       <>
-                        {getOutfitById(log.outfitId) && (
-                          <OutfitPreview 
-                            outfit={getOutfitById(log.outfitId)!} 
-                            isCompact={isMobile}
-                          />
-                        )}
+                        <MapPin className="h-4 w-4 text-orange-400" />
+                        <span className="text-sm">
+                          {log.customActivity || log.activity || "Activity"}
+                        </span>
                       </>
+                    ) : outfitDetails ? (
+                      <>
+                        <Shirt className="h-4 w-4 text-purple-400" />
+                        <span className="text-sm">{outfitDetails.name}</span>
+                      </>
+                    ) : (
+                      <span className="text-sm text-red-300">Unknown outfit</span>
                     )}
-                    <Button
-                      variant="ghost"
+                  </div>
+                  
+                  <div className="flex items-center gap-1">
+                    <Button 
+                      variant="ghost" 
                       size="sm"
-                      onClick={() => handleDeleteLog(log.id)}
-                      className="text-red-400 hover:text-red-300 hover:bg-red-900/20"
-                    >
-                      <Trash2 className="w-4 h-4" />
+                      className="h-7 w-7 p-0 text-gray-400 hover:text-white" 
+                      onClick={() => handleDeleteLog(log.id)}>
+                      <Trash className="h-3.5 w-3.5" />
                     </Button>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
+                </div>
+              );
+            })}
           </div>
+        ) : (
+          <div className="text-center py-4 text-slate-400 text-sm">
+            No items planned for this day
+          </div>
+        )}
+        
+        {/* Add Outfit/Activity Section */}
+        <div className="flex items-center justify-between pt-2 border-t border-slate-600/30">
+          {!isAddingActivity ? (
+            <>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="ghost" size="sm" className="text-xs">
+                    <Plus className="h-4 w-4 mr-1" />
+                    Add Outfit
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-72 p-2 bg-slate-800 border-purple-500/30">
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-medium mb-2">Quick add outfit:</h4>
+                    <div className="grid grid-cols-2 gap-2">
+                      {favoriteOutfits.length > 0 ? (
+                        favoriteOutfits.slice(0, 6).map(outfit => (
+                          <Button 
+                            key={outfit.id} 
+                            variant="outline" 
+                            size="sm"
+                            className="text-xs justify-start truncate"
+                            onClick={() => {
+                              onAddOutfit?.(outfit.id);
+                            }}>
+                            <Shirt className="h-3 w-3 mr-1 text-purple-400" />
+                            {outfit.name}
+                          </Button>
+                        ))
+                      ) : (
+                        <div className="col-span-2 text-center text-xs text-slate-400 p-2">
+                          No favorite outfits found
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
+          
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="text-xs"
+                onClick={() => setIsAddingActivity(true)}>
+                <MapPin className="h-4 w-4 mr-1" />
+                Add Activity
+              </Button>
+            </>
+          ) : (
+            <div className="flex w-full items-center gap-1">
+              <Input 
+                placeholder="Enter activity..." 
+                className="text-xs h-8 bg-slate-700/50"
+                value={newActivity}
+                onChange={(e) => setNewActivity(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleAddActivity()}
+              />
+              <Button 
+                size="sm" 
+                className="h-8" 
+                onClick={handleAddActivity}>
+                Add
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-8" 
+                onClick={() => setIsAddingActivity(false)}>
+                Cancel
+              </Button>
+            </div>
+          )}
         </div>
       </CardContent>
-
-      <ActivityInputDialog
-        isOpen={isAddingActivity}
-        onClose={() => setIsAddingActivity(false)}
-        onSubmit={onAddActivity}
-      />
-
-      <OutfitSelectorDialog
-        isOpen={isAddingOutfit}
-        onClose={() => setIsAddingOutfit(false)}
-        onSubmit={onAddOutfit}
-        outfits={outfits}
-      />
     </Card>
   );
 };

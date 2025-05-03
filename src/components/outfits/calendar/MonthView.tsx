@@ -1,10 +1,21 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { format, startOfMonth, getDaysInMonth, getDay, addDays, isSameDay, isToday, isSameMonth } from 'date-fns';
+import { 
+  format, 
+  startOfMonth, 
+  getDaysInMonth, 
+  getDay, 
+  addDays, 
+  isSameDay, 
+  isToday, 
+  isSameMonth,
+  subMonths,
+  addMonths
+} from 'date-fns';
 import { Outfit } from '@/lib/types';
 import { Button } from '@/components/ui/button';
-import { Shirt, CalendarDays, MapPin } from 'lucide-react';
+import { Shirt, CalendarDays, MapPin, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
@@ -28,6 +39,7 @@ const MonthView = ({
   selectedDate,
   setSelectedDate,
   currentMonth,
+  setCurrentMonth,
   outfits, 
   outfitLogs, 
   handleOpenLogDialog,
@@ -64,6 +76,19 @@ const MonthView = ({
     }
   }
 
+  const goToPreviousMonth = () => {
+    setCurrentMonth(subMonths(currentMonth, 1));
+  };
+
+  const goToNextMonth = () => {
+    setCurrentMonth(addMonths(currentMonth, 1));
+  };
+
+  const goToToday = () => {
+    setCurrentMonth(new Date());
+    setSelectedDate(new Date());
+  };
+
   return (
     <motion.div 
       initial={{ opacity: 0 }}
@@ -71,18 +96,48 @@ const MonthView = ({
       exit={{ opacity: 0 }}
       className="w-full space-y-4"
     >
-      {/* Month heading and weekday labels */}
-      <div className="flex justify-between items-center">
-        <div className="grid grid-cols-7 gap-1 text-center text-xs font-medium text-gray-400">
-          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-            <div key={day} className="py-1">
-              {isMobile ? day.charAt(0) : day}
-            </div>
-          ))}
+      {/* Month heading and navigation */}
+      <div className="flex justify-between items-center mb-4">
+        <div className="flex items-center">
+          <h2 className="text-2xl font-light bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+            {format(currentMonth, 'MMMM yyyy')}
+          </h2>
         </div>
-        <div className="text-2xl font-light bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-          {format(currentMonth, 'MMMM yyyy')}
+        <div className="flex items-center space-x-2">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={goToPreviousMonth}
+            className="h-8 w-8 p-0"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={goToToday}
+            className={`h-8 text-xs ${isToday(currentMonth) ? 'bg-primary/20' : ''}`}
+          >
+            Today
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={goToNextMonth}
+            className="h-8 w-8 p-0"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
         </div>
+      </div>
+      
+      {/* Weekday labels in a grid, aligned with days */}
+      <div className="grid grid-cols-7 gap-1 text-center">
+        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+          <div key={day} className="py-1 text-xs font-medium text-gray-400">
+            {isMobile ? day.charAt(0) : day}
+          </div>
+        ))}
       </div>
       
       <div className="space-y-1">
