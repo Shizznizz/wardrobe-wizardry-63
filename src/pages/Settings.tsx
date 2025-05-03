@@ -1,4 +1,3 @@
-
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import AppearanceSettings from '@/components/settings/AppearanceSettings';
@@ -72,7 +71,7 @@ const Settings = () => {
           title="Settings & Preferences"
           subtitle="Customize your vibe, reminders, and preferences here with me."
           showAvatar={false}
-          imageVariant="portrait"
+          imageVariant="pink-suit"
           imagePosition="right"
           showSparkles={true}
         />

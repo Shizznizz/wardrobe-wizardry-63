@@ -161,12 +161,12 @@ const MixAndMatch = () => {
       <div className="min-h-screen bg-gradient-to-b from-slate-950 to-indigo-950 text-white">
         <Header />
         <main className="container mx-auto px-2 sm:px-4 py-6 pt-20 max-w-6xl">
-          {/* Updated PageHeader with new image */}
+          {/* Updated PageHeader with correct imageVariant */}
           <PageHeader
             title="Your Daily Style, Curated by Olivia"
             subtitle="Get outfits tailored to your vibe, activity, and the weather."
             showAvatar={false}
-            imageVariant="portrait"
+            imageVariant="pink-suit"
             imagePosition="right"
             showSparkles={true}
           >

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -223,7 +222,7 @@ const HeroSection = ({
                   @media (max-width: 640px) {
                     .mobile-hero-image {
                       max-height: 220px !important;
-                      transform: translateX(-15%) scale(0.85);
+                      transform: translateX(-45%) scale(0.8);
                       opacity: 0.85;
                     }
                   }

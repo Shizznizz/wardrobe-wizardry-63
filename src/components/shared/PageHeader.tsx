@@ -15,6 +15,7 @@ interface PageHeaderProps {
   imagePosition?: 'left' | 'right';
   showSparkles?: boolean;
   imageVariant?: 'pink-suit';
+  halfBodyImage?: string;
 }
 
 const PageHeader = ({
@@ -26,7 +27,8 @@ const PageHeader = ({
   avatarSrc = "/lovable-uploads/34e8d801-61ee-4254-a7ce-39b52a3a7e65.png",
   imagePosition = 'right',
   showSparkles = false,
-  imageVariant = 'pink-suit'
+  imageVariant = 'pink-suit',
+  halfBodyImage
 }: PageHeaderProps) => {
   // Animation variants
   const containerVariants = {
@@ -65,8 +67,11 @@ const PageHeader = ({
     }
   };
 
-  // Get the appropriate image based on the variant
+  // Get the appropriate image based on the variant or use halfBodyImage if provided
   const getImageSrc = () => {
+    if (halfBodyImage) {
+      return halfBodyImage;
+    }
     if (imageVariant === 'pink-suit') {
       return "/lovable-uploads/f29b0fb8-330c-409a-8488-2e7ae2b351ed.png";
     } else {
@@ -81,8 +86,8 @@ const PageHeader = ({
       variants={containerVariants}
       className={cn(
         "relative overflow-hidden py-4 md:py-6 px-4 md:px-6",
-        imageVariant ? "min-h-[280px] md:min-h-[320px]" : "",
-        !imageVariant && "text-center",
+        imageVariant || halfBodyImage ? "min-h-[280px] md:min-h-[320px]" : "",
+        !imageVariant && !halfBodyImage && "text-center",
         className
       )}
     >
@@ -96,9 +101,9 @@ const PageHeader = ({
         <div className="absolute right-10 bottom-1/4 w-20 h-20 rounded-full border border-indigo-300/20"></div>
       </div>
       
-      <div className={`flex ${imageVariant ? 'flex-row items-center' : 'flex-col items-center'} ${imageVariant && imagePosition === 'left' ? 'flex-row-reverse' : ''}`}>
+      <div className={`flex ${(imageVariant || halfBodyImage) ? 'flex-row items-center' : 'flex-col items-center'} ${(imageVariant || halfBodyImage) && imagePosition === 'left' ? 'flex-row-reverse' : ''}`}>
         {/* Text content */}
-        <div className={`z-10 ${imageVariant ? (imagePosition === 'left' ? 'pr-4' : 'pl-4') : 'w-full'} ${imageVariant ? 'max-w-[60%] md:max-w-[60%]' : ''}`}>
+        <div className={`z-10 ${(imageVariant || halfBodyImage) ? (imagePosition === 'left' ? 'pr-4' : 'pl-4') : 'w-full'} ${(imageVariant || halfBodyImage) ? 'max-w-[60%] md:max-w-[60%]' : ''}`}>
           {/* Main headline */}
           <motion.div className="relative">
             {showSparkles && (
@@ -147,7 +152,7 @@ const PageHeader = ({
         </div>
         
         {/* Olivia image */}
-        {imageVariant && (
+        {(imageVariant || halfBodyImage) && (
           <motion.div 
             className={`relative z-10 flex-shrink-0 ${imagePosition === 'left' ? 'mr-4' : 'ml-4'}`}
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
@@ -178,7 +183,7 @@ const PageHeader = ({
                 @media (max-width: 640px) {
                   .mobile-olivia-image {
                     max-height: 180px !important;
-                    transform: translateX(-15%) scale(0.85);
+                    transform: translateX(-45%) scale(0.8);
                     opacity: 0.85;
                   }
                 }
@@ -191,7 +196,7 @@ const PageHeader = ({
         )}
         
         {/* Avatar (optional) */}
-        {showAvatar && !imageVariant && (
+        {showAvatar && !imageVariant && !halfBodyImage && (
           <motion.div 
             variants={itemVariants}
             className="mb-6"

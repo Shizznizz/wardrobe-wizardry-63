@@ -93,7 +93,7 @@ const EnhancedPageHeader = ({ userName, onScrollToWeather }: EnhancedPageHeaderP
           @media (max-width: 640px) {
             .olivia-header-image {
               max-height: 180px !important;
-              transform: translateX(-15%) scale(0.85);
+              transform: translateX(-45%) scale(0.8);
               opacity: 0.85;
             }
           }
