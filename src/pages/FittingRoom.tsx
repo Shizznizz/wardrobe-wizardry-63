@@ -300,7 +300,7 @@ const FittingRoom = () => {
         <PageHeader
           title="Try On Your Wardrobe"
           subtitle="Upload your photo or use Olivia to try pieces from your closet."
-          imageVariant="pink-suit"
+          imageVariant="casual"
           imagePosition="right"
         />
         

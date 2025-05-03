@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -288,7 +289,7 @@ const ShopAndTry = () => {
         <PageHeader
           title="Shop & Try Fashion"
           subtitle="Try trending fashion pieces with Olivia — you'll love the fit!"
-          imageVariant="pink-suit"
+          imageVariant="casual"
           imagePosition="left"
           className="mb-6"
           showSparkles={true}

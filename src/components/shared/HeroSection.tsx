@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -105,6 +106,32 @@ const HeroSection = ({
       animate="visible"
       variants={containerVariants}
     >
+      {/* Add a style element for custom CSS */}
+      <style>
+        {`
+          @media (max-width: 768px) {
+            .hero-image-container {
+              max-width: 70% !important;
+              margin: 0 auto;
+            }
+            
+            .hero-image-container img {
+              max-height: 300px !important;
+            }
+          }
+          
+          @media (max-width: 640px) {
+            .hero-image-container {
+              max-width: 60% !important;
+            }
+            
+            .hero-image-container img {
+              max-height: 250px !important;
+            }
+          }
+        `}
+      </style>
+      
       {/* Enhanced background elements */}
       <div className="absolute inset-0 overflow-hidden -z-10">
         <div className="absolute top-1/3 left-1/4 w-64 h-64 rounded-full bg-purple-500/10 blur-3xl"></div>
@@ -195,7 +222,7 @@ const HeroSection = ({
 
           {/* Image container */}
           <motion.div 
-            className={`w-full md:w-1/2 flex justify-center`}
+            className={`w-full md:w-1/2 flex justify-center hero-image-container`}
             variants={imageVariants}
           >
             <div className="relative">
@@ -206,28 +233,15 @@ const HeroSection = ({
               <div className="absolute inset-0 -z-5 rounded-full border border-coral-400/10 animate-pulse-glow"></div>
               <div className="absolute inset-2 -z-5 rounded-full border border-purple-400/5"></div>
               
-              {/* The image with mobile-specific styling */}
+              {/* The image */}
               <img 
                 src={image.src} 
                 alt={image.alt || "Olivia AI Fashion Assistant"}
                 className={cn(
-                  "drop-shadow-lg animate-float mobile-hero-image",
+                  "drop-shadow-lg max-h-[500px] animate-float",
                   image.variant === 'portrait' ? "max-h-[400px]" : "max-h-[550px]"
                 )}
               />
-              
-              {/* Added mobile-specific styles */}
-              <style>
-                {`
-                  @media (max-width: 640px) {
-                    .mobile-hero-image {
-                      max-height: 220px !important;
-                      transform: translateX(-45%) scale(0.8);
-                      opacity: 0.85;
-                    }
-                  }
-                `}
-              </style>
               
               {/* Subtle light effect */}
               <div className="absolute top-0 right-1/4 w-10 h-10 bg-white/10 rounded-full blur-xl"></div>
