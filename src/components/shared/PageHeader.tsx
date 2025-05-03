@@ -53,29 +53,31 @@ const PageHeader = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
     >
-      {/* Add a style tag for custom CSS */}
-      <style jsx global>{`
-        .mobile-header-fix .header-image-container {
-          max-width: 45% !important;
-        }
-        
-        @media (max-width: 640px) {
+      {/* Add a style element for custom CSS */}
+      <style>
+        {`
           .mobile-header-fix .header-image-container {
-            max-width: 60% !important;
-            position: absolute;
-            right: 0;
-            bottom: 0;
-            z-index: 0;
-            opacity: 0.8;
+            max-width: 45% !important;
           }
           
-          .mobile-header-fix .header-content {
-            position: relative;
-            z-index: 1;
-            width: 100%;
+          @media (max-width: 640px) {
+            .mobile-header-fix .header-image-container {
+              max-width: 60% !important;
+              position: absolute;
+              right: 0;
+              bottom: 0;
+              z-index: 0;
+              opacity: 0.8;
+            }
+            
+            .mobile-header-fix .header-content {
+              position: relative;
+              z-index: 1;
+              width: 100%;
+            }
           }
-        }
-      `}</style>
+        `}
+      </style>
       
       {/* Text Content */}
       <div className={cn(

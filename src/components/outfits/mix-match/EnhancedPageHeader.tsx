@@ -34,15 +34,17 @@ const EnhancedPageHeader = ({ userName, onScrollToWeather }: EnhancedPageHeaderP
       animate="visible"
       className="relative py-6 md:py-8 lg:py-10 px-4 text-center"
     >
-      {/* Add a style tag for custom CSS */}
-      <style jsx global>{`
-        @media (max-width: 640px) {
-          .enhanced-header-sparkle {
-            top: -15px !important;
-            left: 20% !important;
+      {/* Add a style element for custom CSS */}
+      <style>
+        {`
+          @media (max-width: 640px) {
+            .enhanced-header-sparkle {
+              top: -15px !important;
+              left: 20% !important;
+            }
           }
-        }
-      `}</style>
+        `}
+      </style>
       
       {/* Background elements */}
       <div className="absolute inset-0 overflow-hidden -z-10">

@@ -106,29 +106,31 @@ const HeroSection = ({
       animate="visible"
       variants={containerVariants}
     >
-      {/* Add a style tag for custom CSS */}
-      <style jsx global>{`
-        @media (max-width: 768px) {
-          .hero-image-container {
-            max-width: 70% !important;
-            margin: 0 auto;
+      {/* Add a style element for custom CSS */}
+      <style>
+        {`
+          @media (max-width: 768px) {
+            .hero-image-container {
+              max-width: 70% !important;
+              margin: 0 auto;
+            }
+            
+            .hero-image-container img {
+              max-height: 300px !important;
+            }
           }
           
-          .hero-image-container img {
-            max-height: 300px !important;
+          @media (max-width: 640px) {
+            .hero-image-container {
+              max-width: 60% !important;
+            }
+            
+            .hero-image-container img {
+              max-height: 250px !important;
+            }
           }
-        }
-        
-        @media (max-width: 640px) {
-          .hero-image-container {
-            max-width: 60% !important;
-          }
-          
-          .hero-image-container img {
-            max-height: 250px !important;
-          }
-        }
-      `}</style>
+        `}
+      </style>
       
       {/* Enhanced background elements */}
       <div className="absolute inset-0 overflow-hidden -z-10">

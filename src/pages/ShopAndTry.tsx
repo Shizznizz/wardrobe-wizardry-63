@@ -289,7 +289,7 @@ const ShopAndTry = () => {
         <PageHeader
           title="Shop & Try Fashion"
           subtitle="Try trending fashion pieces with Olivia — you'll love the fit!"
-          imageVariant="portrait"
+          imageVariant="casual"
           imagePosition="left"
           className="mb-6"
           showSparkles={true}
