@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback, Suspense, lazy, memo, useRef } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -16,6 +15,7 @@ import ContextAdjustmentSection from '@/components/outfits/mix-match/ContextAdju
 import EnhancedWeatherSection from '@/components/outfits/mix-match/EnhancedWeatherSection';
 import PageHeader from '@/components/shared/PageHeader';
 import OutfitBuilder from '@/components/OutfitBuilder';
+import { toast } from 'sonner';
 
 // Lazily loaded components
 const OliviaRecommendationSection = lazy(() => import('@/components/outfits/mix-match/OliviaRecommendationSection'));
