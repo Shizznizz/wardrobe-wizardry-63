@@ -11,6 +11,7 @@ import ShopAndTry from '@/pages/ShopAndTry';
 import Settings from '@/pages/Settings';
 // Additional pages
 import Auth from '@/pages/Auth';
+import Quizzes from '@/pages/Quizzes';
 
 // Providers and Components
 import { Toaster } from 'sonner';
@@ -35,6 +36,8 @@ function App() {
               <Route path="/fitting-room" element={<PageLayout><FittingRoom /></PageLayout>} />
               <Route path="/shop-and-try" element={<PageLayout><ShopAndTry /></PageLayout>} />
               <Route path="/settings" element={<PageLayout><Settings /></PageLayout>} />
+              {/* Add the Quizzes route */}
+              <Route path="/quizzes" element={<PageLayout><Quizzes /></PageLayout>} />
               {/* Add PageLayout to Auth page as well to ensure footer appears there too */}
               <Route path="/auth" element={<PageLayout><Auth /></PageLayout>} />
             </Routes>

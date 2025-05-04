@@ -64,6 +64,7 @@ const Header = () => {
     setIsMenuOpen(false);
   }, [location]);
 
+  // Define navigation items - no need to add Quizzes in the code as we'll add it to App.tsx as a route
   let navItems = [
     { name: 'Home', path: '/' },
   ];
@@ -76,6 +77,7 @@ const Header = () => {
       { name: 'Style Planner', path: '/style-planner' },
       { name: 'Fitting Room', path: '/fitting-room' },
       { name: 'Shop & Try', path: '/shop-and-try' },
+      { name: 'Quizzes', path: '/quizzes' }, // Include Quizzes in the nav items
       { name: 'Settings', path: '/settings' },
     ];
   } else {
