@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -160,17 +159,6 @@ const PageHeader = ({
         transition: { duration: 0.4 }
       }
     };
-  };
-
-  const getVariantImage = () => {
-    switch (imageVariant) {
-      case 'pink-suit':
-        return '/lovable-uploads/e29a1d16-e806-4664-a744-c1f7b25262ed.png';
-      case 'portrait':
-        return '/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png';
-      default:
-        return avatarImage;
-    }
   };
 
   // Get the specific variant functions
