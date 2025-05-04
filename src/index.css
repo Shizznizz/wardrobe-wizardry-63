@@ -1,85 +1,63 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Inter:wght@400;500&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-:root {
-  --background-start: #12002f;
-  --background-end: #1b013c;
-  --primary-start: #ff4ecb;
-  --primary-end: #a97eff;
-}
-
+ 
 @layer base {
-  html {
-    font-family: 'Inter', sans-serif;
-    scroll-behavior: smooth;
+  :root {
+    --background: 224 71.4% 4.1%;
+    --foreground: 210 20% 98%;
+    --card: 224 71.4% 4.1%;
+    --card-foreground: 210 20% 98%;
+    --popover: 224 71.4% 4.1%;
+    --popover-foreground: 210 20% 98%;
+    --primary: 263.4 70% 50.4%;
+    --primary-foreground: 210 20% 98%;
+    --secondary: 215 27.9% 16.9%;
+    --secondary-foreground: 210 20% 98%;
+    --muted: 215 27.9% 16.9%;
+    --muted-foreground: 217.9 10.6% 64.9%;
+    --accent: 215 27.9% 16.9%;
+    --accent-foreground: 210 20% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 215 27.9% 16.9%;
+    --input: 215 27.9% 16.9%;
+    --ring: 263.4 70% 50.4%;
+    --sidebar: 224 71% 4%;
+    --sidebar-foreground: 213 31% 91%;
+    --sidebar-muted-foreground: 215.4 16.3% 56.9%;
+    --sidebar-accent: 216 34% 17%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 215 27.9% 16.9%;
+    --sidebar-ring: 216 34% 17%;
+
+    --radius: 0.5rem;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 700;
-    letter-spacing: -0.5px;
+  * {
+    @apply border-border;
   }
-
   body {
-    @apply bg-gradient-to-b from-[var(--background-start)] to-[var(--background-end)] min-h-screen text-white;
+    @apply bg-background text-foreground;
+  }
+
+  .bg-fix-ios {
+    @apply bg-purple-950;
+    background-color: #471968;
+  }
+
+  /* Better touch targets */
+  .touch-target-large {
+    min-height: 44px;
+    touch-action: manipulation;
+  }
+
+  /* Fix blurry backdrop on iOS */
+  @supports (-webkit-backdrop-filter: blur(1px)) {
+    .backdrop-blur-md {
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+    }
   }
 }
-
-@layer components {
-  .glass-dark {
-    @apply bg-black/20 backdrop-blur-md;
-  }
-  
-  .shadow-glow {
-    box-shadow: 0 0 10px 2px rgba(255, 78, 203, 0.3);
-  }
-
-  .btn-primary {
-    @apply bg-gradient-to-r from-[var(--primary-start)] to-[var(--primary-end)] 
-    text-white font-bold rounded-xl shadow-md shadow-purple-900/20 
-    hover:scale-[1.03] transition-transform duration-300 ease-in-out;
-  }
-  
-  .btn-secondary {
-    @apply bg-black text-white font-bold rounded-xl shadow-md 
-    hover:scale-[1.03] transition-transform duration-300 ease-in-out;
-  }
-
-  .speech-bubble-right {
-    @apply relative;
-  }
-
-  .speech-bubble-right::after {
-    content: '';
-    position: absolute;
-    bottom: -8px;
-    right: 10px;
-    width: 0;
-    height: 0;
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-top: 8px solid rgba(255, 255, 255, 0.1);
-  }
-
-  .speech-bubble-left {
-    @apply relative;
-  }
-
-  .speech-bubble-left::after {
-    content: '';
-    position: absolute;
-    bottom: 15px;
-    right: -10px;
-    width: 0;
-    height: 0;
-    border-top: 10px solid transparent;
-    border-bottom: 10px solid transparent;
-    border-left: 10px solid rgba(255, 255, 255, 0.1);
-  }
-}
-
-/* ... keep existing code */

@@ -77,7 +77,7 @@ const Header = () => {
       { name: 'Style Planner', path: '/style-planner' },
       { name: 'Fitting Room', path: '/fitting-room' },
       { name: 'Shop & Try', path: '/shop-and-try' },
-      { name: 'Quizzes', path: '/quizzes' }, // Include Quizzes in the nav items
+      { name: 'Quizzes', path: '/quizzes' },
       { name: 'Settings', path: '/settings' },
     ];
   } else {

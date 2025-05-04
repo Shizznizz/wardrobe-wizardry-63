@@ -38,6 +38,7 @@ export const MobileMenu = ({
     <AnimatePresence>
       {isOpen && (
         <>
+          {/* Overlay */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -48,6 +49,7 @@ export const MobileMenu = ({
             aria-hidden="true"
           />
           
+          {/* Mobile menu panel */}
           <motion.div
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
@@ -83,7 +85,7 @@ export const MobileMenu = ({
                     to={item.path}
                     onClick={onClose}
                     className={cn(
-                      "block py-3.5 px-4 rounded-lg text-lg transition-colors touch-target mobile-tap-transparent",
+                      "block py-3.5 px-4 rounded-lg text-lg transition-colors touch-target-large",
                       currentPath === item.path
                         ? "bg-white/10 text-white font-medium"
                         : "text-white/70 hover:bg-white/5 hover:text-white"
@@ -99,7 +101,7 @@ export const MobileMenu = ({
                 <div className="pt-4 border-t border-white/10">
                   <Button
                     variant="ghost"
-                    className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-900/20 py-3 touch-target"
+                    className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-900/20 py-3 touch-target-large"
                     onClick={() => {
                       onSignOut();
                       onClose();

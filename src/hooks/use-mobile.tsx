@@ -1,45 +1,32 @@
 
-import * as React from "react"
-
-const MOBILE_BREAKPOINT = 768
+import { useState, useEffect } from 'react';
 
 export function useIsMobile() {
-  const [isMobile, setIsMobile] = React.useState<boolean>(() => {
-    // Initialize with the current window width if available
+  const [isMobile, setIsMobile] = useState(() => {
+    // Initial check on client-side
     if (typeof window !== 'undefined') {
-      return window.innerWidth < MOBILE_BREAKPOINT
+      return window.innerWidth < 768;
     }
-    return false
-  })
+    return false; // Server-side rendering default
+  });
 
-  React.useEffect(() => {
-    if (typeof window === 'undefined') return
-
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
-    }
-
-    // Add event listener with better debounce for performance
-    let timeoutId: ReturnType<typeof setTimeout>;
-    const debouncedHandleResize = () => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(handleResize, 100);
+  useEffect(() => {
+    // Skip in SSR environments
+    if (typeof window === 'undefined') return;
+    
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
     };
-
-    // Add listeners for both resize and orientation change for mobile devices
-    window.addEventListener('resize', debouncedHandleResize)
-    window.addEventListener('orientationchange', handleResize)
     
-    // Set initial value
-    handleResize()
+    // Add event listener for resize
+    window.addEventListener('resize', checkMobile);
     
-    // Clean up
-    return () => {
-      window.removeEventListener('resize', debouncedHandleResize)
-      window.removeEventListener('orientationchange', handleResize)
-      clearTimeout(timeoutId);
-    }
-  }, [])
-
-  return isMobile
+    // Check once on mount
+    checkMobile();
+    
+    // Cleanup
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+  
+  return isMobile;
 }
