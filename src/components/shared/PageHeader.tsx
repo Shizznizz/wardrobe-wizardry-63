@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -134,29 +135,32 @@ const PageHeader = ({
     }
   };
 
-  // Define image animation variants with more dramatic effects
+  // Enhanced image animation variants with more dramatic effects
   const getImageVariants = () => {
     return {
       hidden: { 
         opacity: 0, 
         scale: 0.85, 
-        x: imagePosition === 'right' ? 40 : -40 
+        x: imagePosition === 'right' ? 40 : -40,
+        y: 20
       },
       visible: {
         opacity: 1,
         scale: 1,
         x: 0,
+        y: 0,
         transition: { 
           type: "spring", 
-          stiffness: 70, 
-          damping: 15, 
-          duration: 0.9,
-          delay: 0.3
+          stiffness: 60, 
+          damping: 13, 
+          duration: 1.2,
+          delay: 0.2
         }
       },
       hover: {
-        scale: 1.03,
-        transition: { duration: 0.4 }
+        scale: 1.04,
+        y: -8,
+        transition: { duration: 0.6, ease: "easeOut" }
       }
     };
   };
@@ -169,7 +173,7 @@ const PageHeader = ({
   return (
     <motion.div
       className={cn(
-        "relative py-8 md:py-14 overflow-hidden",
+        "relative py-4 md:py-8 overflow-hidden",
         isLeftAligned ? "text-left" : "text-center",
         className
       )}
@@ -225,35 +229,46 @@ const PageHeader = ({
           {/* Mobile layout - Stacked in specific order */}
           <div className="flex flex-col md:hidden">
             {/* 1. Title first */}
-            <motion.div variants={itemVariants} className="text-center mb-4">
-              <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-300 via-pink-400 to-purple-500 mb-4">
+            <motion.div variants={itemVariants} className="text-center">
+              <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-300 via-pink-400 to-purple-500 mb-2">
                 {title}
               </h1>
               
               {/* 2. Subtitle/text second */}
-              <p className="text-base text-white/80 mb-6">
+              <p className="text-base text-white/80 mb-3 max-w-xs mx-auto">
                 {subtitle}
               </p>
             </motion.div>
             
-            {/* 3. Image third (when on mobile) */}
+            {/* 3. Image now much bigger, integrated with text */}
             {showAvatar && (
               <motion.div 
-                className="flex justify-center mb-8"
+                className="flex justify-center -mt-2 mb-4 relative z-10"
                 variants={imageVariants}
                 whileHover="hover"
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ 
+                  scale: 1, 
+                  opacity: 1,
+                  transition: {
+                    type: "spring",
+                    stiffness: 50,
+                    damping: 10,
+                    duration: 1.4
+                  }
+                }}
               >
                 {/* Image glow effects */}
                 {overlayEffect === 'glow' && (
                   <>
                     <motion.div 
-                      className="absolute inset-0 -z-10 rounded-full bg-gradient-to-r from-purple-500/40 to-pink-500/40 blur-2xl transform translate-y-4"
+                      className="absolute inset-0 -z-10 rounded-full bg-gradient-to-r from-purple-500/40 to-pink-500/40 blur-3xl transform translate-y-4"
                       animate={{ 
-                        scale: [1, 1.1, 1],
-                        opacity: [0.6, 0.8, 0.6]
+                        scale: [1, 1.15, 1],
+                        opacity: [0.5, 0.8, 0.5]
                       }}
                       transition={{
-                        duration: 4,
+                        duration: 5,
                         repeat: Infinity,
                         repeatType: "reverse"
                       }}
@@ -264,9 +279,9 @@ const PageHeader = ({
                 <img 
                   src={halfBodyImage || getVariantImage()} 
                   alt="Model"
-                  className="relative z-10 max-w-full max-h-[300px] object-contain"
+                  className="relative z-10 max-w-full max-h-[380px] object-contain"
                   style={{
-                    filter: "drop-shadow(0 8px 20px rgba(159, 122, 234, 0.4))"
+                    filter: "drop-shadow(0 8px 30px rgba(159, 122, 234, 0.5))"
                   }}
                 />
               </motion.div>
@@ -276,29 +291,29 @@ const PageHeader = ({
             {children && (
               <motion.div 
                 variants={itemVariants}
-                className="flex justify-center mb-6"
+                className="flex justify-center -mt-2"
               >
                 {children}
               </motion.div>
             )}
           </div>
 
-          {/* Desktop layout - Side by side */}
+          {/* Desktop layout - Enhanced integrated design */}
           <div className={cn(
-            "hidden md:flex md:flex-row items-center gap-8",
+            "hidden md:grid md:grid-cols-12 md:gap-0 items-center",
             imagePosition === 'left' ? "md:flex-row-reverse" : ""
           )}>
             <div className={cn(
-              "max-w-3xl",
+              "md:col-span-6 lg:col-span-6 z-10",
               isLeftAligned ? "text-left" : "text-center",
-              isLeftAligned ? "mx-0 md:w-1/2" : ""
+              imagePosition === 'right' ? "md:pr-0" : "md:pl-0"
             )}>
               <motion.div variants={itemVariants} className="relative">
                 {showSparkles && (
                   <Sparkles className="absolute -top-6 left-1/3 w-5 h-5 text-pink-400" />
                 )}
                 <h1 className={cn(
-                  "text-3xl md:text-5xl lg:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-300 via-pink-400 to-purple-500 mb-6",
+                  "text-3xl md:text-5xl lg:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-300 via-pink-400 to-purple-500 mb-4",
                   isLeftAligned ? "text-left" : "text-center"
                 )}>
                   {title}
@@ -308,7 +323,7 @@ const PageHeader = ({
               <motion.p 
                 variants={itemVariants} 
                 className={cn(
-                  "text-base md:text-lg lg:text-xl text-white/80 mb-8",
+                  "text-base md:text-lg lg:text-xl text-white/80 mb-6",
                   isLeftAligned ? "text-left" : "text-center"
                 )}
               >
@@ -328,8 +343,8 @@ const PageHeader = ({
             {showAvatar && (
               <motion.div 
                 className={cn(
-                  "relative",
-                  isLeftAligned ? "md:w-1/2 flex justify-center" : "",
+                  "relative md:col-span-7 lg:col-span-7 flex justify-center",
+                  imagePosition === 'right' ? "md:-ml-10 md:-mr-4 md:col-start-6" : "md:-mr-10 md:-ml-4"
                 )}
                 variants={imageVariants}
                 whileHover="hover"
@@ -338,22 +353,22 @@ const PageHeader = ({
                 {overlayEffect === 'glow' && (
                   <>
                     <motion.div 
-                      className="absolute inset-0 -z-10 rounded-full bg-gradient-to-r from-purple-500/40 to-pink-500/40 blur-2xl transform translate-y-4"
+                      className="absolute inset-0 -z-10 rounded-full bg-gradient-to-r from-purple-500/40 to-pink-500/40 blur-3xl transform translate-y-4"
                       animate={{ 
-                        scale: [1, 1.1, 1],
-                        opacity: [0.6, 0.8, 0.6]
+                        scale: [1, 1.15, 1],
+                        opacity: [0.5, 0.8, 0.5]
                       }}
                       transition={{
-                        duration: 4,
+                        duration: 5,
                         repeat: Infinity,
                         repeatType: "reverse"
                       }}
                     />
                     <motion.div 
-                      className="absolute -inset-4 -z-10 bg-gradient-to-tl from-purple-500/20 via-transparent to-pink-500/20 rounded-full blur-xl"
+                      className="absolute -inset-4 -z-10 bg-gradient-to-tl from-purple-500/30 via-transparent to-pink-500/30 rounded-full blur-xl"
                       animate={{ 
                         rotate: [0, 5, 0, -5, 0],
-                        scale: [1, 1.05, 1]
+                        scale: [1, 1.08, 1]
                       }}
                       transition={{
                         duration: 8,
@@ -372,12 +387,11 @@ const PageHeader = ({
                   src={halfBodyImage || getVariantImage()} 
                   alt="Model"
                   className={cn(
-                    "relative z-10 max-w-full",
-                    halfBodyImage ? "max-h-[600px] object-contain" : 'max-h-[300px]',
-                    isLeftAligned ? 'md:max-h-[550px]' : ''
+                    "relative z-10 max-w-[130%] w-auto",
+                    halfBodyImage ? "max-h-[700px] object-contain" : 'max-h-[500px]'
                   )}
                   style={{
-                    filter: "drop-shadow(0 8px 20px rgba(159, 122, 234, 0.4))"
+                    filter: "drop-shadow(0 10px 30px rgba(159, 122, 234, 0.6))"
                   }}
                 />
               </motion.div>

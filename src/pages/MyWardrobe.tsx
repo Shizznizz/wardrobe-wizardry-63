@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -396,25 +395,25 @@ const MyWardrobe = () => {
       
       <main className="w-full px-3 sm:px-4 pt-20 pb-16 max-w-full overflow-hidden">
         <motion.div 
-          className="space-y-8 max-w-full"
+          className="space-y-6 max-w-full"
           initial="hidden"
           animate="visible"
           variants={containerVariants}
         >
-          {/* Updated PageHeader with the new image and custom mobile layout */}
+          {/* Updated PageHeader with enhanced image and improved mobile layout */}
           <PageHeader
             title="Your Digital Wardrobe"
             subtitle="Elevate your style with our AI-powered organization tools. Rediscover your fashion sense."
             showAvatar={true}
             imagePosition="right"
             isLeftAligned={true}
-            className="mb-8 relative overflow-visible py-12 md:py-16"
+            className="mb-4 relative overflow-visible py-6 md:py-8"
             halfBodyImage="/lovable-uploads/60ffb487-6be9-4d8d-b767-ade57592238d.png"
             animationStyle="slide"
             overlayEffect="glow"
             useCustomMobileLayout={true}
           >
-            <div className="flex flex-wrap gap-3 mt-6 z-10 relative">
+            <div className="flex flex-wrap gap-3 mt-4 z-10 relative">
               <UploadModal onUpload={handleUpload}>
                 <motion.div
                   whileHover={{ scale: 1.05 }}
@@ -476,10 +475,9 @@ const MyWardrobe = () => {
             </div>
           </PageHeader>
 
-          {/* Remove the redundant collection title since it's now in the PageHeader */}
           <motion.div 
             variants={itemVariants} 
-            className="flex flex-col w-full"
+            className="flex flex-col w-full mt-2"
           >
             <WardrobeInsights items={items} />
             
