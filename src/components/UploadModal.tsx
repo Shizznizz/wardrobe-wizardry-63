@@ -32,7 +32,7 @@ const UploadModal = ({ onUpload, buttonText = "Add Item", children }: UploadModa
   const [attemptedSubmit, setAttemptedSubmit] = useState(false);
 
   const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-  const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
+  const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif']; // Added webp
 
   // Reset validation errors when form fields change
   useEffect(() => {

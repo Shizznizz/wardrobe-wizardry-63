@@ -15,6 +15,7 @@ interface PageHeaderProps {
   className?: string;
   showSparkles?: boolean;
   isLeftAligned?: boolean;
+  halfBodyImage?: string; // Added halfBodyImage prop
   children?: React.ReactNode;
 }
 
@@ -28,6 +29,7 @@ const PageHeader = ({
   className,
   showSparkles = false,
   isLeftAligned = false,
+  halfBodyImage,
   children,
 }: PageHeaderProps) => {
   const getVariantImage = () => {
@@ -119,7 +121,7 @@ const PageHeader = ({
           >
             <div className="absolute inset-0 -z-10 rounded-full bg-gradient-to-r from-purple-500/20 to-pink-500/20 blur-2xl"></div>
             <img 
-              src={getVariantImage()} 
+              src={halfBodyImage || getVariantImage()} 
               alt="Olivia" 
               className={cn(
                 "relative z-10 max-w-full",

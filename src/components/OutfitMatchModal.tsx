@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -12,6 +13,8 @@ import WardrobeGrid from '@/components/WardrobeGrid';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { TrousersIcon } from '@/components/ui/icons';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 
 interface OutfitMatchModalProps {
   open: boolean;
@@ -25,6 +28,7 @@ const OutfitMatchModal = ({ open, onOpenChange, item, allItems }: OutfitMatchMod
   const [outfitName, setOutfitName] = useState(`Outfit with ${item.name}`);
   const [selectedItems, setSelectedItems] = useState<ClothingItem[]>([item]);
   const navigate = useNavigate();
+  const { user } = useAuth();
   
   const itemTypeCategories = {
     tops: ['shirt', 'sweater', 'hoodie'],
@@ -83,7 +87,7 @@ const OutfitMatchModal = ({ open, onOpenChange, item, allItems }: OutfitMatchMod
     return selectedItems.some(i => i.id === id);
   };
   
-  const handleSaveOutfit = () => {
+  const handleSaveOutfit = async () => {
     const newOutfit: Outfit = {
       id: uuidv4(),
       name: outfitName,
@@ -98,11 +102,41 @@ const OutfitMatchModal = ({ open, onOpenChange, item, allItems }: OutfitMatchMod
     
     console.log('New outfit created:', newOutfit);
     
+    // Save to Supabase if logged in
+    if (user) {
+      try {
+        const { error } = await supabase
+          .from('outfits')
+          .insert({
+            id: newOutfit.id,
+            name: newOutfit.name,
+            user_id: user.id,
+            items: newOutfit.items,
+            season: newOutfit.season,
+            occasion: newOutfit.occasion,
+            occasions: newOutfit.occasions,
+            favorite: newOutfit.favorite,
+            times_worn: 0,
+            date_added: new Date().toISOString()
+          });
+          
+        if (error) throw error;
+      } catch (error) {
+        console.error('Error saving outfit:', error);
+        // Continue with local saving even if database save fails
+      }
+    }
+    
+    // Save to local storage for Mix & Match page
+    const savedOutfits = JSON.parse(localStorage.getItem('savedOutfits') || '[]');
+    savedOutfits.push(newOutfit);
+    localStorage.setItem('savedOutfits', JSON.stringify(savedOutfits));
+    
     toast.success('Outfit created successfully!', {
       description: 'View it in your outfits collection.',
       action: {
         label: 'View Outfits',
-        onClick: () => navigate('/outfits')
+        onClick: () => navigate('/mix-and-match')
       }
     });
     
@@ -112,7 +146,7 @@ const OutfitMatchModal = ({ open, onOpenChange, item, allItems }: OutfitMatchMod
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] bg-slate-900 text-white border-slate-700 max-h-[90vh] overflow-hidden flex flex-col">
+      <DialogContent className="sm:max-w-[600px] bg-slate-900 text-white border-slate-700 max-h-[90vh] overflow-hidden flex flex-col mt-6 md:mt-0">
         <DialogHeader>
           <DialogTitle className="text-xl flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-purple-400" />

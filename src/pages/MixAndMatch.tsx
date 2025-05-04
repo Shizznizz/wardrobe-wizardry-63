@@ -1,8 +1,9 @@
+
 import { useState, useEffect, useCallback, Suspense, lazy, memo, useRef } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import { sampleOutfits, sampleClothingItems } from '@/lib/wardrobeData';
-import { WeatherInfo } from '@/lib/types';
+import { WeatherInfo, Outfit } from '@/lib/types';
 import { OutfitProvider } from '@/hooks/useOutfitContext';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -45,6 +46,8 @@ const MixAndMatch = () => {
   const { user } = useAuth();
   const [profile, setProfile] = useState<{ first_name: string | null } | null>(null);
   const [isBuilderOpen, setIsBuilderOpen] = useState(false);
+  const [outfits, setOutfits] = useState<Outfit[]>(sampleOutfits);
+  const [savedOutfits, setSavedOutfits] = useState<Outfit[]>([]);
 
   // Scroll to weather section
   const scrollToWeatherSection = useCallback(() => {
@@ -88,6 +91,60 @@ const MixAndMatch = () => {
     }
   }, [user?.id]);
 
+  // Fetch saved outfits from localStorage
+  useEffect(() => {
+    const localSavedOutfits = localStorage.getItem('savedOutfits');
+    if (localSavedOutfits) {
+      try {
+        const parsedOutfits = JSON.parse(localSavedOutfits);
+        setSavedOutfits(parsedOutfits);
+        
+        // Merge with sample outfits, ensuring no duplicates by ID
+        const existingIds = new Set(sampleOutfits.map(outfit => outfit.id));
+        const uniqueSavedOutfits = parsedOutfits.filter((outfit: Outfit) => !existingIds.has(outfit.id));
+        
+        setOutfits([...sampleOutfits, ...uniqueSavedOutfits]);
+      } catch (error) {
+        console.error('Error parsing saved outfits:', error);
+      }
+    }
+  }, []);
+
+  // Fetch outfits from Supabase if user is logged in
+  useEffect(() => {
+    const fetchOutfits = async () => {
+      if (user?.id) {
+        try {
+          const { data, error } = await supabase
+            .from('outfits')
+            .select('*')
+            .eq('user_id', user.id);
+            
+          if (error) {
+            throw error;
+          }
+          
+          if (data && data.length > 0) {
+            const formattedOutfits = data.map(outfit => ({
+              ...outfit,
+              dateAdded: new Date(outfit.date_added),
+              timesWorn: outfit.times_worn
+            }));
+            
+            const existingIds = new Set([...sampleOutfits, ...savedOutfits].map(outfit => outfit.id));
+            const uniqueDbOutfits = formattedOutfits.filter((outfit: Outfit) => !existingIds.has(outfit.id));
+            
+            setOutfits(prev => [...prev, ...uniqueDbOutfits]);
+          }
+        } catch (error) {
+          console.error('Error fetching outfits from Supabase:', error);
+        }
+      }
+    };
+    
+    fetchOutfits();
+  }, [user?.id, savedOutfits]);
+
   // Simulate loading time
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -98,13 +155,13 @@ const MixAndMatch = () => {
 
   // Initialize selected outfit
   useEffect(() => {
-    if (!selectedOutfitId && sampleOutfits.length > 0) {
-      setSelectedOutfitId(sampleOutfits[0].id);
+    if (!selectedOutfitId && outfits.length > 0) {
+      setSelectedOutfitId(outfits[0].id);
     }
-  }, [selectedOutfitId]);
+  }, [selectedOutfitId, outfits]);
 
-  const personalOutfits = sampleOutfits.filter(outfit => outfit.favorite);
-  const popularOutfits = sampleOutfits.slice().sort(() => 0.5 - Math.random());
+  const personalOutfits = outfits.filter(outfit => outfit.favorite);
+  const popularOutfits = outfits.slice().sort(() => 0.5 - Math.random());
 
   const handleWeatherUpdate = useCallback((weatherData: WeatherInfo) => {
     setWeather(weatherData);
@@ -135,10 +192,49 @@ const MixAndMatch = () => {
   }, []);
 
   const handleRefreshOutfit = useCallback(() => {
-    const availableOutfits = sampleOutfits.filter(outfit => outfit.id !== selectedOutfitId);
+    const availableOutfits = outfits.filter(outfit => outfit.id !== selectedOutfitId);
     const randomIndex = Math.floor(Math.random() * availableOutfits.length);
     setSelectedOutfitId(availableOutfits[randomIndex].id);
-  }, [selectedOutfitId]);
+  }, [selectedOutfitId, outfits]);
+
+  // Save outfit to collection
+  const handleSaveOutfit = (outfit: Outfit) => {
+    // Add generated ID if none exists
+    const outfitToSave = {
+      ...outfit,
+      id: outfit.id || Date.now().toString(),
+    };
+
+    // Save to localStorage
+    const localSavedOutfits = JSON.parse(localStorage.getItem('savedOutfits') || '[]');
+    const updatedOutfits = [...localSavedOutfits, outfitToSave];
+    localStorage.setItem('savedOutfits', JSON.stringify(updatedOutfits));
+    
+    // Update state
+    setSavedOutfits(updatedOutfits);
+    setOutfits(prev => [...prev, outfitToSave]);
+    
+    // Save to Supabase if user is logged in
+    if (user?.id) {
+      supabase
+        .from('outfits')
+        .insert({
+          id: outfitToSave.id,
+          name: outfitToSave.name,
+          user_id: user.id,
+          items: outfitToSave.items,
+          season: outfitToSave.season,
+          occasion: outfitToSave.occasion,
+          occasions: outfitToSave.occasions,
+          favorite: outfitToSave.favorite,
+          times_worn: 0,
+          date_added: new Date().toISOString()
+        })
+        .then(({ error }) => {
+          if (error) console.error('Error saving outfit to Supabase:', error);
+        });
+    }
+  };
 
   // Use memoized handlers for temperature and weather condition
   const handleTemperatureChange = useCallback((temp: number) => {
@@ -166,7 +262,7 @@ const MixAndMatch = () => {
             title="Your Daily Style, Curated by Olivia"
             subtitle="Get outfits tailored to your vibe, activity, and the weather."
             showAvatar={false}
-            imageVariant="portrait"
+            imageVariant="pink-suit"
             imagePosition="right"
             showSparkles={true}
           >
@@ -275,7 +371,7 @@ const MixAndMatch = () => {
             className="mb-8 scroll-mt-24"
           >
             <OutfitTabSection
-              outfits={sampleOutfits}
+              outfits={outfits}
               clothingItems={sampleClothingItems}
             />
           </motion.section>
@@ -304,9 +400,7 @@ const MixAndMatch = () => {
           <OutfitBuilder
             isOpen={isBuilderOpen}
             onClose={() => setIsBuilderOpen(false)}
-            onSave={() => {
-              setIsBuilderOpen(false);
-            }}
+            onSave={handleSaveOutfit}
             clothingItems={sampleClothingItems}
           />
         )}
@@ -316,3 +410,4 @@ const MixAndMatch = () => {
 };
 
 export default MixAndMatch;
+
