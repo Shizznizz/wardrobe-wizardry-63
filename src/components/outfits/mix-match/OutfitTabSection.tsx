@@ -3,10 +3,14 @@ import React, { useState } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { OutfitCard } from '@/components/outfits/OutfitCard';
 import { cn } from '@/lib/utils';
-import { Heart, Clock, Grid3X3, Star } from 'lucide-react';
+import { Heart, Clock, Grid3X3 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Card, CardHeader } from '@/components/ui/card';
 import { Outfit, ClothingItem, OutfitLog } from '@/lib/types';
+import OutfitBuilder from '@/components/OutfitBuilder';
+import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 
 interface OutfitTabSectionProps {
   outfits: Outfit[];
@@ -15,11 +19,20 @@ interface OutfitTabSectionProps {
 
 const OutfitTabSection = ({ outfits, clothingItems }: OutfitTabSectionProps) => {
   const [activeTab, setActiveTab] = useState('all');
+  const [isBuilderOpen, setIsBuilderOpen] = useState(false);
+  const [outfitToEdit, setOutfitToEdit] = useState<Outfit | null>(null);
+  const { user } = useAuth();
+  const [localOutfits, setLocalOutfits] = useState<Outfit[]>(outfits);
   
-  const favoriteOutfits = outfits.filter(outfit => outfit.favorite);
-  const recentOutfits = [...outfits].sort((a, b) => {
-    const dateA = new Date(a.createdAt || new Date()).getTime();
-    const dateB = new Date(b.createdAt || new Date()).getTime();
+  // Update local outfits when props change
+  React.useEffect(() => {
+    setLocalOutfits(outfits);
+  }, [outfits]);
+  
+  const favoriteOutfits = localOutfits.filter(outfit => outfit.favorite);
+  const recentOutfits = [...localOutfits].sort((a, b) => {
+    const dateA = new Date(a.dateAdded || a.createdAt || new Date()).getTime();
+    const dateB = new Date(b.dateAdded || b.createdAt || new Date()).getTime();
     return dateB - dateA;
   }).slice(0, 6);
   
@@ -32,23 +45,119 @@ const OutfitTabSection = ({ outfits, clothingItems }: OutfitTabSectionProps) => 
   };
   
   const handleEdit = (outfit: Outfit) => {
-    console.log('Edit outfit:', outfit);
-    // Implementation would go here
+    setOutfitToEdit(outfit);
+    setIsBuilderOpen(true);
   };
   
-  const handleDelete = (id: string) => {
-    console.log('Delete outfit:', id);
-    // Implementation would go here
+  const handleDelete = async (id: string) => {
+    // Remove from local state
+    setLocalOutfits(prev => prev.filter(outfit => outfit.id !== id));
+    
+    // Remove from localStorage
+    const savedOutfits = JSON.parse(localStorage.getItem('savedOutfits') || '[]');
+    const updatedOutfits = savedOutfits.filter((outfit: Outfit) => outfit.id !== id);
+    localStorage.setItem('savedOutfits', JSON.stringify(updatedOutfits));
+    
+    // Remove from Supabase if user is logged in
+    if (user?.id) {
+      try {
+        const { error } = await supabase
+          .from('outfits')
+          .delete()
+          .eq('id', id)
+          .eq('user_id', user.id);
+          
+        if (error) throw error;
+      } catch (error) {
+        console.error('Error deleting outfit from Supabase:', error);
+      }
+    }
+    
+    toast.success('Outfit deleted successfully');
   };
   
-  const handleToggleFavorite = (id: string) => {
-    console.log('Toggle favorite:', id);
-    // Implementation would go here
+  const handleToggleFavorite = async (id: string) => {
+    // Update in local state
+    setLocalOutfits(prev => 
+      prev.map(outfit => 
+        outfit.id === id ? { ...outfit, favorite: !outfit.favorite } : outfit
+      )
+    );
+    
+    // Update in localStorage
+    const savedOutfits = JSON.parse(localStorage.getItem('savedOutfits') || '[]');
+    const updatedOutfits = savedOutfits.map((outfit: Outfit) => 
+      outfit.id === id ? { ...outfit, favorite: !outfit.favorite } : outfit
+    );
+    localStorage.setItem('savedOutfits', JSON.stringify(updatedOutfits));
+    
+    // Update in Supabase if user is logged in
+    if (user?.id) {
+      // First get the current outfit to toggle the favorite status
+      const outfitToToggle = localOutfits.find(outfit => outfit.id === id);
+      if (!outfitToToggle) return;
+      
+      try {
+        const { error } = await supabase
+          .from('outfits')
+          .update({ favorite: !outfitToToggle.favorite })
+          .eq('id', id)
+          .eq('user_id', user.id);
+          
+        if (error) throw error;
+      } catch (error) {
+        console.error('Error updating outfit in Supabase:', error);
+      }
+    }
+    
+    toast.success('Favorite status updated');
   };
   
   const handleOutfitAddedToCalendar = (log: OutfitLog) => {
-    console.log('Outfit added to calendar:', log);
+    toast.success(`Outfit added to your calendar for ${new Date(log.date).toLocaleDateString()}`);
     // Implementation would go here
+  };
+
+  const handleUpdateOutfit = async (updatedOutfit: Outfit) => {
+    // Update in local state
+    setLocalOutfits(prev => 
+      prev.map(outfit => 
+        outfit.id === updatedOutfit.id ? updatedOutfit : outfit
+      )
+    );
+    
+    // Update in localStorage
+    const savedOutfits = JSON.parse(localStorage.getItem('savedOutfits') || '[]');
+    const updatedOutfits = savedOutfits.map((outfit: Outfit) => 
+      outfit.id === updatedOutfit.id ? updatedOutfit : outfit
+    );
+    localStorage.setItem('savedOutfits', JSON.stringify(updatedOutfits));
+    
+    // Update in Supabase if user is logged in
+    if (user?.id) {
+      try {
+        const { error } = await supabase
+          .from('outfits')
+          .update({
+            name: updatedOutfit.name,
+            items: updatedOutfit.items,
+            season: updatedOutfit.season,
+            occasion: updatedOutfit.occasion,
+            occasions: updatedOutfit.occasions,
+            favorite: updatedOutfit.favorite,
+          })
+          .eq('id', updatedOutfit.id)
+          .eq('user_id', user.id);
+          
+        if (error) throw error;
+      } catch (error) {
+        console.error('Error updating outfit in Supabase:', error);
+      }
+    }
+    
+    setIsBuilderOpen(false);
+    setOutfitToEdit(null);
+    toast.success('Outfit updated successfully');
   };
 
   const tabVariants = {
@@ -103,18 +212,24 @@ const OutfitTabSection = ({ outfits, clothingItems }: OutfitTabSectionProps) => 
             animate="visible"
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
           >
-            {outfits.map((outfit) => (
-              <OutfitCard 
-                key={outfit.id} 
-                outfit={outfit} 
-                clothingItems={clothingItems}
-                getClothingItemById={getClothingItemById}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-                onToggleFavorite={handleToggleFavorite}
-                onOutfitAddedToCalendar={handleOutfitAddedToCalendar}
-              />
-            ))}
+            {localOutfits.length > 0 ? (
+              localOutfits.map((outfit) => (
+                <OutfitCard 
+                  key={outfit.id} 
+                  outfit={outfit} 
+                  clothingItems={clothingItems}
+                  getClothingItemById={getClothingItemById}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                  onToggleFavorite={handleToggleFavorite}
+                  onOutfitAddedToCalendar={handleOutfitAddedToCalendar}
+                />
+              ))
+            ) : (
+              <p className="text-white/70 text-center col-span-full py-8">
+                No outfits found. Create your first outfit!
+              </p>
+            )}
           </motion.div>
         </TabsContent>
         
@@ -153,21 +268,41 @@ const OutfitTabSection = ({ outfits, clothingItems }: OutfitTabSectionProps) => 
             animate="visible"
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
           >
-            {recentOutfits.map((outfit) => (
-              <OutfitCard 
-                key={outfit.id} 
-                outfit={outfit} 
-                clothingItems={clothingItems}
-                getClothingItemById={getClothingItemById}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-                onToggleFavorite={handleToggleFavorite}
-                onOutfitAddedToCalendar={handleOutfitAddedToCalendar}
-              />
-            ))}
+            {recentOutfits.length > 0 ? (
+              recentOutfits.map((outfit) => (
+                <OutfitCard 
+                  key={outfit.id} 
+                  outfit={outfit} 
+                  clothingItems={clothingItems}
+                  getClothingItemById={getClothingItemById}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                  onToggleFavorite={handleToggleFavorite}
+                  onOutfitAddedToCalendar={handleOutfitAddedToCalendar}
+                />
+              ))
+            ) : (
+              <p className="text-white/70 text-center col-span-full py-8">
+                No recent outfits found.
+              </p>
+            )}
           </motion.div>
         </TabsContent>
       </Tabs>
+      
+      {/* Outfit Builder Modal for editing outfits */}
+      {isBuilderOpen && (
+        <OutfitBuilder
+          isOpen={isBuilderOpen}
+          onClose={() => {
+            setIsBuilderOpen(false);
+            setOutfitToEdit(null);
+          }}
+          onSave={handleUpdateOutfit}
+          clothingItems={clothingItems}
+          initialOutfit={outfitToEdit}
+        />
+      )}
     </Card>
   );
 };

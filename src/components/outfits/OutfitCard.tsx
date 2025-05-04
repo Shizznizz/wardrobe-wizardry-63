@@ -93,6 +93,10 @@ export const OutfitCard = ({
     toast.success(`${outfit.name} added to calendar for ${formatDate(selectedDate)}`);
   };
 
+  const handleEdit = () => {
+    onEdit(outfit);
+  };
+
   return (
     <>
       <Card className="overflow-hidden border-slate-700 bg-slate-800 text-slate-50 hover:shadow-md transition-shadow duration-300">
@@ -171,7 +175,7 @@ export const OutfitCard = ({
         </CardContent>
 
         <CardFooter className="p-3 pt-0 flex justify-between">
-          <Button size="sm" variant="outline" className="text-xs border-slate-700" onClick={() => onEdit(outfit)}>
+          <Button size="sm" variant="outline" className="text-xs border-slate-700" onClick={handleEdit}>
             <Pencil className="h-3 w-3 mr-1" />
             Edit
           </Button>
