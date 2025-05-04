@@ -56,6 +56,7 @@ const Header = () => {
   };
 
   const toggleMenu = () => {
+    console.log("Toggle menu clicked. Current state:", isMenuOpen);
     setIsMenuOpen(!isMenuOpen);
   };
 
@@ -95,7 +96,7 @@ const Header = () => {
   return (
     <header 
       className={cn(
-        "fixed top-0 left-0 right-0 transition-all duration-500 py-2 sm:py-4 z-[100]",
+        "fixed top-0 left-0 right-0 transition-all duration-500 py-2 sm:py-4 z-50",
         isScrolled 
           ? "bg-purple-900/95 shadow-lg border-b border-white/10" 
           : "bg-[rgba(50,0,80,0.5)] backdrop-blur-md border-transparent text-white"
@@ -126,16 +127,12 @@ const Header = () => {
               variant="ghost"
               size="icon"
               className={cn(
-                "ml-2 transition-colors touch-target",
+                "ml-2 transition-colors touch-target-large",
                 isScrolled ? "text-white hover:text-white/80" : "text-white hover:bg-white/10"
               )}
               onClick={toggleMenu}
               aria-label="Toggle mobile menu"
-              style={{
-                minHeight: "44px",
-                minWidth: "44px",
-                touchAction: "manipulation"
-              }}
+              aria-expanded={isMenuOpen}
             >
               <Menu className="h-5 w-5" />
             </Button>

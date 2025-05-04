@@ -78,7 +78,7 @@ export const MobileMenu = ({
             </div>
             
             <ScrollArea className="flex-1 px-4 py-2">
-              <div className="space-y-1 mb-8">
+              <nav className="space-y-1 mb-8">
                 {navItems.map((item) => (
                   <Link
                     key={item.path}
@@ -94,7 +94,7 @@ export const MobileMenu = ({
                     {item.name}
                   </Link>
                 ))}
-              </div>
+              </nav>
               
               {/* Only show sign out if user is authenticated */}
               {navItems.some(item => item.name !== 'Login') && (

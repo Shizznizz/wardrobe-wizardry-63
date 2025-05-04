@@ -49,8 +49,11 @@
 
   /* Better touch targets */
   .touch-target-large {
-    min-height: 44px;
+    min-height: 48px;
+    min-width: 48px; /* Added minimum width for better touch targets */
     touch-action: manipulation;
+    display: flex;
+    align-items: center;
   }
 
   /* Fix blurry backdrop on iOS */
@@ -60,4 +63,20 @@
       backdrop-filter: blur(12px);
     }
   }
+  
+  /* Prevent interaction when mobile menu is open */
+  body.overflow-hidden {
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Ensure buttons are clearly indicated as interactive */
+  button, 
+  [role="button"] {
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent; /* Remove tap highlight on iOS */
+  }
 }
+
