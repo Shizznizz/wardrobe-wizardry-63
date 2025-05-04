@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -400,15 +401,15 @@ const MyWardrobe = () => {
           animate="visible"
           variants={containerVariants}
         >
-          {/* Updated PageHeader with left alignment */}
+          {/* Updated PageHeader with right alignment and new image */}
           <PageHeader
             title="Your Digital Wardrobe"
             subtitle="Olivia helps you organize, analyze, and fall in love with your closet again."
             showAvatar={true}
-            imageVariant="pink-suit"
-            imagePosition="left"
+            imagePosition="right"
             isLeftAligned={true}
             className="mb-8"
+            halfBodyImage="/lovable-uploads/d39047b3-c0ad-4b2c-9d73-c654479f56c4.png"
           >
             <div className="flex flex-wrap gap-3 mt-4">
               <UploadModal onUpload={handleUpload}>
