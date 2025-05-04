@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -29,20 +30,21 @@ const OutfitMatchModal = ({ open, onOpenChange, item, allItems }: OutfitMatchMod
   const navigate = useNavigate();
   const { user } = useAuth();
   
+  // Enhanced item type categories to include more top types
   const itemTypeCategories = {
-    tops: ['shirt', 'sweater', 'hoodie'],
-    bottoms: ['jeans', 'pants', 'shorts', 'skirt'],
-    shoes: ['shoes', 'sneakers', 'boots'],
-    accessories: ['accessories']
+    tops: ['shirt', 'sweater', 'hoodie', 't-shirt', 'blouse', 'tank top', 'top', 'polo'],
+    bottoms: ['jeans', 'pants', 'shorts', 'skirt', 'trousers'],
+    shoes: ['shoes', 'sneakers', 'boots', 'sandals', 'heels'],
+    accessories: ['accessories', 'hat', 'jewelry', 'bag', 'scarf']
   };
   
   const getItemCategory = (type: ClothingType): string => {
     for (const [category, types] of Object.entries(itemTypeCategories)) {
-      if (types.includes(type)) {
+      if (types.includes(type.toLowerCase())) {
         return category;
       }
     }
-    return "tops";
+    return "tops"; // Default fallback
   };
   
   const initialCategory = getItemCategory(item.type);
@@ -50,7 +52,7 @@ const OutfitMatchModal = ({ open, onOpenChange, item, allItems }: OutfitMatchMod
   const getCategoryItems = (category: string): ClothingItem[] => {
     return allItems.filter(i => {
       const types = itemTypeCategories[category as keyof typeof itemTypeCategories];
-      return types?.includes(i.type) && i.id !== item.id;
+      return types?.includes(i.type.toLowerCase()) && i.id !== item.id;
     });
   };
   
@@ -140,8 +142,13 @@ const OutfitMatchModal = ({ open, onOpenChange, item, allItems }: OutfitMatchMod
     
     // Save to local storage for Mix & Match page
     const savedOutfits = JSON.parse(localStorage.getItem('savedOutfits') || '[]');
-    savedOutfits.push(newOutfit);
-    localStorage.setItem('savedOutfits', JSON.stringify(savedOutfits));
+    
+    // Check if this outfit ID already exists (shouldn't happen with uuidv4 but just to be safe)
+    const outfitExists = savedOutfits.some((o: Outfit) => o.id === newOutfit.id);
+    if (!outfitExists) {
+      savedOutfits.push(newOutfit);
+      localStorage.setItem('savedOutfits', JSON.stringify(savedOutfits));
+    }
     
     toast.success('Outfit created successfully!', {
       description: 'View it in your outfits collection.',
@@ -158,7 +165,7 @@ const OutfitMatchModal = ({ open, onOpenChange, item, allItems }: OutfitMatchMod
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] bg-slate-900 text-white border-slate-700 max-h-[90vh] overflow-hidden flex flex-col mt-6 md:mt-0">
+      <DialogContent className="sm:max-w-[600px] bg-slate-900 text-white border-slate-700 max-h-[90vh] overflow-hidden flex flex-col mt-16 md:mt-0">
         <DialogHeader>
           <DialogTitle className="text-xl flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-purple-400" />

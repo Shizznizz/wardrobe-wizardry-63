@@ -91,17 +91,33 @@ const MixAndMatch = () => {
     }
   }, [user?.id]);
 
-  // Fetch saved outfits from localStorage
+  // Fetch saved outfits from localStorage and deduplicate them
   useEffect(() => {
     const localSavedOutfits = localStorage.getItem('savedOutfits');
     if (localSavedOutfits) {
       try {
         const parsedOutfits = JSON.parse(localSavedOutfits);
-        setSavedOutfits(parsedOutfits);
+        
+        // Deduplicate outfits by ID
+        const uniqueIds = new Set();
+        const uniqueOutfits = parsedOutfits.filter((outfit: Outfit) => {
+          if (!uniqueIds.has(outfit.id)) {
+            uniqueIds.add(outfit.id);
+            return true;
+          }
+          return false;
+        });
+        
+        // Save the deduplicated outfits back to localStorage
+        if (uniqueOutfits.length !== parsedOutfits.length) {
+          localStorage.setItem('savedOutfits', JSON.stringify(uniqueOutfits));
+        }
+        
+        setSavedOutfits(uniqueOutfits);
         
         // Merge with sample outfits, ensuring no duplicates by ID
         const existingIds = new Set(sampleOutfits.map(outfit => outfit.id));
-        const uniqueSavedOutfits = parsedOutfits.filter((outfit: Outfit) => !existingIds.has(outfit.id));
+        const uniqueSavedOutfits = uniqueOutfits.filter((outfit: Outfit) => !existingIds.has(outfit.id));
         
         setOutfits([...sampleOutfits, ...uniqueSavedOutfits]);
       } catch (error) {
@@ -131,6 +147,7 @@ const MixAndMatch = () => {
               timesWorn: outfit.times_worn
             }));
             
+            // Create a set of existing IDs to avoid duplicates
             const existingIds = new Set([...sampleOutfits, ...savedOutfits].map(outfit => outfit.id));
             const uniqueDbOutfits = formattedOutfits.filter((outfit: Outfit) => !existingIds.has(outfit.id));
             
@@ -205,34 +222,45 @@ const MixAndMatch = () => {
       id: outfit.id || Date.now().toString(),
     };
 
-    // Save to localStorage
+    // Check if this outfit ID already exists to prevent duplicates
     const localSavedOutfits = JSON.parse(localStorage.getItem('savedOutfits') || '[]');
-    const updatedOutfits = [...localSavedOutfits, outfitToSave];
-    localStorage.setItem('savedOutfits', JSON.stringify(updatedOutfits));
+    const outfitExists = localSavedOutfits.some((o: Outfit) => o.id === outfitToSave.id);
     
-    // Update state
-    setSavedOutfits(updatedOutfits);
-    setOutfits(prev => [...prev, outfitToSave]);
-    
-    // Save to Supabase if user is logged in
-    if (user?.id) {
-      supabase
-        .from('outfits')
-        .insert({
-          id: outfitToSave.id,
-          name: outfitToSave.name,
-          user_id: user.id,
-          items: outfitToSave.items,
-          season: outfitToSave.season,
-          occasion: outfitToSave.occasion,
-          occasions: outfitToSave.occasions,
-          favorite: outfitToSave.favorite,
-          times_worn: 0,
-          date_added: new Date().toISOString()
-        })
-        .then(({ error }) => {
-          if (error) console.error('Error saving outfit to Supabase:', error);
-        });
+    if (!outfitExists) {
+      // Save to localStorage
+      const updatedOutfits = [...localSavedOutfits, outfitToSave];
+      localStorage.setItem('savedOutfits', JSON.stringify(updatedOutfits));
+      
+      // Update state
+      setSavedOutfits(updatedOutfits);
+      setOutfits(prev => {
+        // Check if outfit with this ID already exists in state too
+        if (!prev.some(o => o.id === outfitToSave.id)) {
+          return [...prev, outfitToSave];
+        }
+        return prev;
+      });
+      
+      // Save to Supabase if user is logged in
+      if (user?.id) {
+        supabase
+          .from('outfits')
+          .insert({
+            id: outfitToSave.id,
+            name: outfitToSave.name,
+            user_id: user.id,
+            items: outfitToSave.items,
+            season: outfitToSave.season,
+            occasion: outfitToSave.occasion,
+            occasions: outfitToSave.occasions,
+            favorite: outfitToSave.favorite,
+            times_worn: 0,
+            date_added: new Date().toISOString()
+          })
+          .then(({ error }) => {
+            if (error) console.error('Error saving outfit to Supabase:', error);
+          });
+      }
     }
   };
 
@@ -410,4 +438,3 @@ const MixAndMatch = () => {
 };
 
 export default MixAndMatch;
-
