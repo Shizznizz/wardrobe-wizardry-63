@@ -38,7 +38,7 @@ const DailyOutfitSection = ({
     let normalizedType = item.type.toLowerCase();
     
     // Map similar types to common categories
-    if (['shirt', 'blouse', 'top', 't-shirt'].includes(normalizedType)) {
+    if (['shirt', 'blouse', 'top', 't-shirt', 'sweater', 'hoodie', 'jacket', 'coat', 'cardigan', 'blazer'].includes(normalizedType)) {
       normalizedType = 'top';
     } else if (['pants', 'jeans', 'shorts', 'skirt', 'trousers'].includes(normalizedType)) {
       normalizedType = 'bottom';
@@ -62,8 +62,32 @@ const DailyOutfitSection = ({
       weather ? `${weather.temperature}°C` : ''
     } Outfit`;
 
-  // Show placeholder image if no outfit image is available
-  const placeholderImage = "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?auto=format&fit=crop&q=80&w=500&h=600";
+  // Show placeholder image if no outfit image is available  
+  const findMainImage = () => {
+    // Try to find an item that has an image, prioritizing tops, then bottoms
+    const priorityTypes = ['top', 'bottom', 'footwear'];
+    
+    for (const type of priorityTypes) {
+      if (itemsByType[type] && itemsByType[type].length > 0) {
+        const items = itemsByType[type];
+        const itemWithImage = items.find(item => item.imageUrl || item.image);
+        if (itemWithImage) {
+          return itemWithImage.imageUrl || itemWithImage.image;
+        }
+      }
+    }
+    
+    // If no image is found in priority types, look for any image
+    const anyItemWithImage = outfitItems.find(item => item.imageUrl || item.image);
+    if (anyItemWithImage) {
+      return anyItemWithImage.imageUrl || anyItemWithImage.image;
+    }
+    
+    // Fallback to a placeholder
+    return "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?auto=format&fit=crop&q=80&w=500&h=600";
+  };
+  
+  const mainImage = findMainImage();
   
   return (
     <Card className="bg-gradient-to-br from-slate-800/70 to-purple-900/20 border-0 shadow-xl overflow-hidden border-white/10">
@@ -75,13 +99,7 @@ const DailyOutfitSection = ({
             
             {/* Display outfit image or placeholder */}
             <div className="absolute inset-0 bg-cover bg-center"
-              style={{ 
-                backgroundImage: `url(${
-                  (outfitItems[0]?.imageUrl || outfitItems[0]?.image) ? 
-                  (outfitItems[0]?.imageUrl || outfitItems[0]?.image) : 
-                  placeholderImage
-                })` 
-              }}>
+              style={{ backgroundImage: `url(${mainImage})` }}>
             </div>
             
             <div className="absolute bottom-0 left-0 right-0 p-6 z-20">

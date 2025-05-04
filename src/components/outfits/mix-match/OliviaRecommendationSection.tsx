@@ -94,7 +94,7 @@ const OliviaRecommendationSection = ({ weather, situation }: OliviaRecommendatio
     const occasionToMatch = currentSituation || 'casual';
     
     const seasonalItems = clothingItems.filter(item => 
-      item.season?.includes(season) || item.season?.includes('all')
+      item.season?.includes(season as string) || item.season?.includes('all')
     );
     
     const suitableItems = seasonalItems.filter(item => 
@@ -119,49 +119,83 @@ const OliviaRecommendationSection = ({ weather, situation }: OliviaRecommendatio
       itemsByType[item.type].push(item);
     });
 
-    // Select one item from each essential category (top, bottom, shoes)
-    const essentialCategories = ['top', 'shirt', 'bottom', 'pants', 'jeans', 'shoes', 'sneakers'];
-    const selectedItems: ClothingItem[] = [];
+    // Define essential clothing categories that should be in every outfit
+    const essentialCategories = {
+      tops: ['top', 'shirt', 'blouse', 't-shirt', 'sweater', 'jacket', 'hoodie', 'coat', 'blazer', 'cardigan'],
+      bottoms: ['bottom', 'pants', 'jeans', 'skirt', 'shorts', 'trousers'],
+      footwear: ['shoes', 'sneakers', 'boots', 'sandals']
+    };
+    
+    // Create map to hold one selected item per essential category
+    const selectedEssentials: Record<string, ClothingItem | undefined> = {
+      top: undefined,
+      bottom: undefined,
+      footwear: undefined
+    };
     
     // Try to find at least one item for each essential category
-    essentialCategories.forEach(category => {
-      const categoryItems = itemsByType[category];
-      if (categoryItems && categoryItems.length > 0) {
-        // Select random item from category (could be improved with color matching algorithms)
-        const randomItem = categoryItems[Math.floor(Math.random() * categoryItems.length)];
-        selectedItems.push(randomItem);
-      }
-    });
-
-    // If not enough items were found, add some random suitable items
-    if (selectedItems.length < 3 && suitableItems.length > 0) {
-      const remainingItems = suitableItems.filter(item => 
-        !selectedItems.find(selected => selected.id === item.id)
-      );
+    for (const category in essentialCategories) {
+      const categoryTypes = essentialCategories[category as keyof typeof essentialCategories];
       
-      // Add up to 3 more items
-      for (let i = 0; i < 3 && i < remainingItems.length; i++) {
-        const randomIndex = Math.floor(Math.random() * remainingItems.length);
-        const randomItem = remainingItems.splice(randomIndex, 1)[0];
-        selectedItems.push(randomItem);
+      for (const type of categoryTypes) {
+        if (itemsByType[type] && itemsByType[type].length > 0) {
+          // Select random item from category
+          const randomIndex = Math.floor(Math.random() * itemsByType[type].length);
+          const selectedItem = itemsByType[type][randomIndex];
+          
+          // Determine which essential category this belongs to
+          if (essentialCategories.tops.includes(type)) {
+            selectedEssentials.top = selectedItem;
+          } else if (essentialCategories.bottoms.includes(type)) {
+            selectedEssentials.bottom = selectedItem;
+          } else if (essentialCategories.footwear.includes(type)) {
+            selectedEssentials.footwear = selectedItem;
+          }
+          
+          // Break once we found an item for this category type
+          break;
+        }
       }
     }
-
-    // Create outfit object
-    if (selectedItems.length > 0) {
+    
+    // Create our selected items array from the essentials
+    const selectedItems: ClothingItem[] = Object.values(selectedEssentials).filter(Boolean) as ClothingItem[];
+    
+    // Add any extra accessory items if needed (optional items)
+    const accessoryTypes = ['hat', 'scarf', 'jewelry', 'belt', 'watch', 'accessory'];
+    let accessoryAdded = false;
+    
+    // Try to add one accessory if we have any available
+    for (const type of accessoryTypes) {
+      if (itemsByType[type] && itemsByType[type].length > 0 && !accessoryAdded) {
+        selectedItems.push(itemsByType[type][0]);
+        accessoryAdded = true;
+      }
+    }
+    
+    // If any essential items are missing, fall back to sample outfit
+    if (!selectedEssentials.top || !selectedEssentials.bottom) {
+      console.warn('Missing essential items in wardrobe, using fallback outfit');
+      const fallbackOutfit = getSituationOutfit(currentSituation);
+      setRecommendedOutfit(fallbackOutfit);
+      return;
+    }
+    
+    // Create outfit object if we have at least top and bottom items
+    if (selectedItems.length >= 2) {
       const newOutfit: Outfit = {
         id: `olivia-recommendation-${Date.now()}`,
         name: `${currentSituation || 'Casual'} ${season.charAt(0).toUpperCase() + season.slice(1)} Outfit`,
         items: selectedItems.map(item => item.id),
-        season: [season],
+        season: [season as ClothingSeason],
         occasions: [occasionToMatch],
-        occasion: occasionToMatch, // Add the required occasion property here
+        occasion: occasionToMatch, // Add the required occasion property
         favorite: false,
         tags: [occasionToMatch, season as string, 'Olivia recommendation'],
         personalityTags: ['minimalist', 'casual'] as PersonalityTag[],
         dateAdded: new Date(),
         timesWorn: 0,
-        seasons: [season]
+        seasons: [season as ClothingSeason]
       };
       
       setRecommendedOutfit(newOutfit);
@@ -306,12 +340,12 @@ const OliviaRecommendationSection = ({ weather, situation }: OliviaRecommendatio
               <CollapsibleContent className="p-5 bg-purple-900/30">
                 {hasUserClothing ? (
                   <p className="text-white/90 mb-6">
-                    I've created this outfit using items from your wardrobe that work perfectly for {situation || 'casual'} in {weather?.temperature || '16'}°C weather. 
-                    The color palette is complementary and the style balances comfort with appropriate formality.
+                    I've created this complete outfit using pieces from your wardrobe that work perfectly for {situation || 'casual'} in {weather?.temperature || '16'}°C weather. 
+                    Each item complements the others, and the color palette is harmonious. This ensemble provides both style and appropriate coverage for the occasion.
                   </p>
                 ) : (
                   <p className="text-white/90 mb-6">
-                    This outfit is perfect for {situation || 'casual'} in {weather?.temperature || '16'}°C weather. 
+                    This outfit is perfect for {situation || 'casual'} in {weather?.temperature || '16'}°C weather.
                     Add more items to your wardrobe for more personalized recommendations!
                   </p>
                 )}
@@ -333,7 +367,7 @@ const OliviaRecommendationSection = ({ weather, situation }: OliviaRecommendatio
                     </li>
                     <li className="flex items-center gap-2">
                       <div className="h-1.5 w-1.5 rounded-full bg-purple-400"></div>
-                      <span>Breathable fabrics will keep you comfortable all day</span>
+                      <span>{weather && weather.temperature < 15 ? 'Layered pieces will keep you warm in this weather' : 'Breathable fabrics will keep you comfortable all day'}</span>
                     </li>
                   </ul>
                 </div>
