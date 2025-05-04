@@ -1,7 +1,6 @@
 
 import { useEffect } from 'react';
 import { motion } from 'framer-motion';
-import Header from '@/components/Header';
 import FindYourStyleQuiz from '@/components/FindYourStyleQuiz';
 import { UserPreferences } from '@/lib/types';
 import { useNavigate } from 'react-router-dom';
@@ -27,9 +26,7 @@ const StyleQuizPage = () => {
   
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white">
-      <Header />
-      
-      <main className="container mx-auto px-4 pt-24 pb-16">
+      <main className="container mx-auto px-4">
         <PageHeader
           title="Find Your Style"
           subtitle="Let's discover your unique aesthetic together — I'll guide your style journey."

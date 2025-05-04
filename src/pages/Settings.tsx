@@ -1,6 +1,5 @@
 
 import { motion } from 'framer-motion';
-import Header from '@/components/Header';
 import AppearanceSettings from '@/components/settings/AppearanceSettings';
 import NotificationSettings from '@/components/settings/NotificationSettings';
 import PreferenceSettings from '@/components/settings/PreferenceSettings';
@@ -65,9 +64,7 @@ const Settings = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#12002f] to-[#1b013c] text-white">
-      <Header />
-      
-      <main className="container mx-auto px-4 pt-24 pb-16">
+      <main className="container mx-auto px-4">
         <PageHeader
           title="Settings & Preferences"
           subtitle="Customize your vibe, reminders, and preferences here with me."

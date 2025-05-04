@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -118,9 +117,8 @@ const StylePlanner = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white overflow-x-hidden max-w-[100vw]">
       <ScrollToTop />
-      <Header />
       
-      <main className="w-full px-4 sm:px-6 md:px-8 pt-20 pb-32 max-w-7xl mx-auto overflow-hidden">
+      <main className="w-full px-4 sm:px-6 md:px-8 max-w-7xl mx-auto overflow-hidden">
         <motion.div 
           className="space-y-8 md:space-y-10"
           initial="hidden"

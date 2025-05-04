@@ -1,6 +1,6 @@
+
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import Header from '@/components/Header';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -23,9 +23,7 @@ const Quizzes = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white">
-      <Header />
-      
-      <main className="container mx-auto px-4 pt-24 pb-16">
+      <main className="container mx-auto px-4">
         {!showQuiz ? (
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
