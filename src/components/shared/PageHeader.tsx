@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -159,6 +160,17 @@ const PageHeader = ({
         transition: { duration: 0.4 }
       }
     };
+  };
+
+  const getVariantImage = () => {
+    switch (imageVariant) {
+      case 'pink-suit':
+        return '/lovable-uploads/e29a1d16-e806-4664-a744-c1f7b25262ed.png';
+      case 'portrait':
+        return '/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png';
+      default:
+        return avatarImage;
+    }
   };
 
   // Get the specific variant functions
@@ -387,9 +399,9 @@ const PageHeader = ({
       ) : (
         // Original layout implementation - non-customized mobile layout
         <div className={`container mx-auto max-w-7xl`}>
-          <div className={`flex flex-col ${layoutPosition === 'left' ? 'md:flex-row-reverse' : 'md:flex-row'} items-center gap-8 md:gap-12`}>
+          <div className={`flex flex-col ${imagePosition === 'left' ? 'md:flex-row-reverse' : 'md:flex-row'} items-center gap-8 md:gap-12`}>
             {/* Text content - always stacks above image on mobile */}
-            <div className={`w-full md:w-1/2 text-center md:text-left ${layoutPosition === 'left' ? 'md:pr-8' : 'md:pl-8'} space-y-6`}>
+            <div className={`w-full md:w-1/2 text-center md:text-left ${imagePosition === 'left' ? 'md:pr-8' : 'md:pl-8'} space-y-6`}>
               <motion.div variants={itemVariants} className="relative">
                 {showSparkles && (
                   <Sparkles className="absolute -top-6 left-1/2 md:left-0 transform -translate-x-1/2 md:translate-x-0 text-pink-400" />

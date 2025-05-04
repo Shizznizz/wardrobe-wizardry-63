@@ -401,7 +401,7 @@ const MyWardrobe = () => {
           animate="visible"
           variants={containerVariants}
         >
-          {/* Updated PageHeader with a different mobile layout structure */}
+          {/* Updated PageHeader with the new image and custom mobile layout */}
           <PageHeader
             title="Your Digital Wardrobe"
             subtitle="Elevate your style with our AI-powered organization tools. Rediscover your fashion sense."
@@ -409,7 +409,7 @@ const MyWardrobe = () => {
             imagePosition="right"
             isLeftAligned={true}
             className="mb-8 relative overflow-visible py-12 md:py-16"
-            halfBodyImage="/lovable-uploads/c937b60e-901e-48ae-b01d-28d901a11503.png"
+            halfBodyImage="/lovable-uploads/60ffb487-6be9-4d8d-b767-ade57592238d.png"
             animationStyle="slide"
             overlayEffect="glow"
             useCustomMobileLayout={true}
