@@ -24,6 +24,7 @@ const OliviaRecommendationSection = ({ weather, situation }: OliviaRecommendatio
   const [isLoading, setIsLoading] = useState(true);
   const { user } = useAuth();
   const [quizAnswers, setQuizAnswers] = useState<Record<string, any>>({});
+  const [outfitGenerationAttempts, setOutfitGenerationAttempts] = useState(0);
 
   // Fetch user's clothing items from Supabase
   useEffect(() => {
@@ -138,6 +139,7 @@ const OliviaRecommendationSection = ({ weather, situation }: OliviaRecommendatio
     for (const category in essentialCategories) {
       const categoryTypes = essentialCategories[category as keyof typeof essentialCategories];
       
+      // Check all available types in this category
       for (const type of categoryTypes) {
         if (itemsByType[type] && itemsByType[type].length > 0) {
           // Select random item from category
@@ -153,11 +155,31 @@ const OliviaRecommendationSection = ({ weather, situation }: OliviaRecommendatio
             selectedEssentials.footwear = selectedItem;
           }
           
-          // Break once we found an item for this category type
-          break;
+          // Break only after finding this specific type
+          // We continue looping to potentially find other category items
         }
       }
     }
+    
+    // Check if we have both top and bottom, which are essential
+    // If not, try generating the outfit again with different selections (max 3 attempts)
+    if (!selectedEssentials.top || !selectedEssentials.bottom) {
+      if (outfitGenerationAttempts < 3) {
+        setOutfitGenerationAttempts(prev => prev + 1);
+        generateOutfitRecommendation(clothingItems, currentWeather, currentSituation);
+        return;
+      } else {
+        // After 3 attempts, use fallback outfit
+        console.warn('Missing essential items in wardrobe after multiple attempts, using fallback outfit');
+        const fallbackOutfit = getSituationOutfit(currentSituation);
+        setRecommendedOutfit(fallbackOutfit);
+        setOutfitGenerationAttempts(0);
+        return;
+      }
+    }
+    
+    // Reset attempt counter
+    setOutfitGenerationAttempts(0);
     
     // Create our selected items array from the essentials
     const selectedItems: ClothingItem[] = Object.values(selectedEssentials).filter(Boolean) as ClothingItem[];
@@ -174,38 +196,24 @@ const OliviaRecommendationSection = ({ weather, situation }: OliviaRecommendatio
       }
     }
     
-    // If any essential items are missing, fall back to sample outfit
-    if (!selectedEssentials.top || !selectedEssentials.bottom) {
-      console.warn('Missing essential items in wardrobe, using fallback outfit');
-      const fallbackOutfit = getSituationOutfit(currentSituation);
-      setRecommendedOutfit(fallbackOutfit);
-      return;
-    }
+    // Create outfit object if we have the essential items
+    const seasonValue = season as ClothingSeason;
+    const newOutfit: Outfit = {
+      id: `olivia-recommendation-${Date.now()}`,
+      name: `${currentSituation || 'Casual'} ${season.charAt(0).toUpperCase() + season.slice(1)} Outfit`,
+      items: selectedItems.map(item => item.id),
+      season: [seasonValue],
+      occasions: [occasionToMatch],
+      occasion: occasionToMatch,
+      favorite: false,
+      tags: [occasionToMatch, season, 'Olivia recommendation'],
+      personalityTags: ['minimalist', 'casual'] as PersonalityTag[],
+      dateAdded: new Date(),
+      timesWorn: 0,
+      seasons: [seasonValue]
+    };
     
-    // Create outfit object if we have at least top and bottom items
-    if (selectedItems.length >= 2) {
-      const seasonValue = season as ClothingSeason;
-      const newOutfit: Outfit = {
-        id: `olivia-recommendation-${Date.now()}`,
-        name: `${currentSituation || 'Casual'} ${season.charAt(0).toUpperCase() + season.slice(1)} Outfit`,
-        items: selectedItems.map(item => item.id),
-        season: [seasonValue],
-        occasions: [occasionToMatch],
-        occasion: occasionToMatch,
-        favorite: false,
-        tags: [occasionToMatch, season, 'Olivia recommendation'],
-        personalityTags: ['minimalist', 'casual'] as PersonalityTag[],
-        dateAdded: new Date(),
-        timesWorn: 0,
-        seasons: [seasonValue]
-      };
-      
-      setRecommendedOutfit(newOutfit);
-    } else {
-      // Fallback if no outfit could be created
-      const fallbackOutfit = getSituationOutfit(currentSituation);
-      setRecommendedOutfit(fallbackOutfit);
-    }
+    setRecommendedOutfit(newOutfit);
   };
 
   // Find a sample outfit that matches the situation (fallback)
@@ -222,19 +230,136 @@ const OliviaRecommendationSection = ({ weather, situation }: OliviaRecommendatio
   
   // Handle action button clicks
   const handleLike = () => {
+    if (!recommendedOutfit) return;
+    
     toast.success("You liked this outfit! We'll remember your preference.");
+    
+    // Store the preference in database if user is logged in
+    if (user?.id) {
+      supabase.from('outfit_feedback').insert({
+        user_id: user.id,
+        outfit_id: recommendedOutfit.id,
+        feedback_type: 'like',
+        weather_context: weather ? JSON.stringify({
+          temperature: weather.temperature,
+          condition: weather.condition
+        }) : null,
+        situation: situation
+      }).then(({ error }) => {
+        if (error) console.error('Error saving feedback:', error);
+      });
+    }
   };
   
   const handleDislike = () => {
+    if (!recommendedOutfit) return;
+    
     toast.success("Thanks for your feedback!");
+    
+    // Store the negative feedback and try to generate a new outfit
+    if (user?.id) {
+      supabase.from('outfit_feedback').insert({
+        user_id: user.id,
+        outfit_id: recommendedOutfit.id,
+        feedback_type: 'dislike',
+        weather_context: weather ? JSON.stringify({
+          temperature: weather.temperature,
+          condition: weather.condition
+        }) : null,
+        situation: situation
+      }).then(({ error }) => {
+        if (error) console.error('Error saving feedback:', error);
+        
+        // Generate a new outfit recommendation after disliking
+        generateOutfitRecommendation(userClothingItems, weather, situation);
+      });
+    } else {
+      // Even without user, generate a new outfit
+      generateOutfitRecommendation(userClothingItems, weather, situation);
+    }
   };
   
   const handleMakeWarmer = () => {
     toast.success("Finding warmer alternatives for this outfit...");
+    
+    // Logic to adjust for warmer outfit
+    // Get current temp and add additional layers
+    const layeringTypes = ['jacket', 'sweater', 'coat', 'cardigan'];
+    
+    // Find warmer items in user's wardrobe
+    const warmerItems = userClothingItems.filter(item => 
+      layeringTypes.includes(item.type.toLowerCase()) && 
+      (item.season?.includes('winter') || item.season?.includes('autumn'))
+    );
+    
+    if (warmerItems.length > 0 && recommendedOutfit) {
+      // Select a random warmer item
+      const randomWarmerItem = warmerItems[Math.floor(Math.random() * warmerItems.length)];
+      
+      // Add to current outfit if not already included
+      if (!recommendedOutfit.items.includes(randomWarmerItem.id)) {
+        const updatedOutfit = {
+          ...recommendedOutfit,
+          items: [...recommendedOutfit.items, randomWarmerItem.id],
+          name: `${recommendedOutfit.name} (Warmer)`
+        };
+        
+        setRecommendedOutfit(updatedOutfit);
+        toast.success(`Added ${randomWarmerItem.name} for extra warmth!`);
+      } else {
+        // If item already in outfit, just regenerate
+        generateOutfitRecommendation(userClothingItems, weather, situation);
+      }
+    } else {
+      // If no warmer items, regenerate with winter preference
+      const modifiedWeather = weather ? {
+        ...weather,
+        temperature: Math.max((weather.temperature || 20) - 10, 0) // Make temperature colder
+      } : null;
+      
+      generateOutfitRecommendation(userClothingItems, modifiedWeather, situation);
+    }
   };
   
   const handleChangeTop = () => {
     toast.success("Exploring different top options for you...");
+    
+    if (!recommendedOutfit) return;
+    
+    // Find top item IDs in the current outfit
+    const topTypes = ['top', 'shirt', 'blouse', 't-shirt', 'sweater', 'jacket', 'hoodie', 'coat', 'blazer', 'cardigan'];
+    const currentItems = userClothingItems.filter(item => recommendedOutfit.items.includes(item.id));
+    const currentTopIds = currentItems
+      .filter(item => topTypes.includes(item.type.toLowerCase()))
+      .map(item => item.id);
+    
+    // Filter for alternative tops from user's wardrobe
+    const alternativeTops = userClothingItems.filter(item => 
+      topTypes.includes(item.type.toLowerCase()) && 
+      !currentTopIds.includes(item.id)
+    );
+    
+    if (alternativeTops.length > 0) {
+      // Select a random alternative top
+      const newTop = alternativeTops[Math.floor(Math.random() * alternativeTops.length)];
+      
+      // Replace current top with new one
+      const updatedItems = recommendedOutfit.items.filter(id => 
+        !currentTopIds.includes(id)
+      );
+      
+      const updatedOutfit = {
+        ...recommendedOutfit,
+        items: [...updatedItems, newTop.id],
+        name: recommendedOutfit.name
+      };
+      
+      setRecommendedOutfit(updatedOutfit);
+      toast.success(`Swapped in ${newTop.name}!`);
+    } else {
+      // If no alternative tops, notify user
+      toast.info("No alternative tops available in your wardrobe");
+    }
   };
   
   const handleSaveOutfit = () => {
@@ -296,13 +421,72 @@ const OliviaRecommendationSection = ({ weather, situation }: OliviaRecommendatio
   };
   
   const handleAddToCalendar = () => {
+    if (!recommendedOutfit) {
+      toast.error("No outfit to schedule");
+      return;
+    }
+    
+    // Just a toast for now - future enhancement would be to open a calendar modal
     toast.success("Outfit added to your calendar!");
+    
+    // If user is authenticated, save to outfit logs
+    if (user?.id) {
+      // Get tomorrow's date for scheduling
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      
+      supabase.from('outfit_logs').insert({
+        user_id: user.id,
+        date: tomorrow.toISOString(),
+        outfit_id: recommendedOutfit.id,
+        activity: situation || 'casual',
+        weather_condition: weather?.condition || null,
+        temperature: weather?.temperature ? String(weather.temperature) : null,
+        time_of_day: 'morning',
+        ai_suggested: true
+      }).then(({ error }) => {
+        if (error) console.error('Error scheduling outfit:', error);
+      });
+    }
   };
 
   const hasUserClothing = userClothingItems && userClothingItems.length > 0;
   const outfitItems = hasUserClothing && recommendedOutfit ? 
     userClothingItems.filter(item => recommendedOutfit.items.includes(item.id)) : 
     [];
+  
+  // Generate tips based on weather and situation
+  const getWeatherTip = () => {
+    if (!weather) return "Dress appropriately for today's weather!";
+    
+    const { temperature, condition } = weather;
+    const conditionLower = condition?.toLowerCase() || '';
+    
+    if (temperature < 5) return "Layer up! It's freezing outside today.";
+    if (temperature < 10) return "Don't forget a warm jacket in this cold weather.";
+    if (temperature < 15 && conditionLower.includes('rain')) return "Bring a waterproof outer layer for the chilly rain.";
+    if (temperature < 15) return "A light jacket or sweater would be perfect for today's cool weather.";
+    if (temperature < 22 && conditionLower.includes('rain')) return "Grab a light raincoat for the mild, rainy conditions.";
+    if (temperature < 22) return "The mild temperature today calls for light layers you can adjust throughout the day.";
+    if (temperature < 28 && conditionLower.includes('sun')) return "It's sunny and warm! Light, breathable fabrics are your friend today.";
+    if (temperature < 28) return "Opt for breathable fabrics in this warm weather.";
+    return "It's very hot today! Choose lightweight, loose-fitting clothes and stay hydrated.";
+  };
+  
+  const getActivityTip = () => {
+    if (!situation) return "Your outfit should match your planned activities for the day!";
+    
+    const situationLower = situation.toLowerCase();
+    
+    if (situationLower.includes('work')) return "Professional doesn't have to mean boring! Add a personal touch with accessories.";
+    if (situationLower.includes('formal')) return "For formal events, the fit of your clothing is just as important as the style.";
+    if (situationLower.includes('casual')) return "Keep it casual but intentional - even relaxed looks can be stylish!";
+    if (situationLower.includes('sport') || situationLower.includes('gym')) return "Choose performance fabrics that wick moisture and allow freedom of movement.";
+    if (situationLower.includes('date')) return "Confidence is your best accessory. Wear something that makes you feel amazing!";
+    if (situationLower.includes('party')) return "Have fun with your look! This is a great time to experiment with a bolder style.";
+    
+    return "Dress for the occasion while staying true to your personal style.";
+  };
   
   return (
     <motion.div
@@ -342,7 +526,7 @@ const OliviaRecommendationSection = ({ weather, situation }: OliviaRecommendatio
               <CollapsibleContent className="p-5 bg-purple-900/30">
                 {hasUserClothing ? (
                   <p className="text-white/90 mb-6">
-                    I've created this complete outfit using pieces from your wardrobe that work perfectly for {situation || 'casual'} in {weather?.temperature || '16'}°C weather. 
+                    I've created this complete outfit using pieces from your wardrobe that work perfectly for {situation || 'casual'} in {weather?.temperature || '16'}°C {weather?.condition?.toLowerCase() || ''} weather. 
                     Each item complements the others, and the color palette is harmonious. This ensemble provides both style and appropriate coverage for the occasion.
                   </p>
                 ) : (
@@ -350,6 +534,32 @@ const OliviaRecommendationSection = ({ weather, situation }: OliviaRecommendatio
                     This outfit is perfect for {situation || 'casual'} in {weather?.temperature || '16'}°C weather.
                     Add more items to your wardrobe for more personalized recommendations!
                   </p>
+                )}
+                
+                {hasUserClothing && outfitItems.length > 0 && (
+                  <div className="mb-6">
+                    <h4 className="text-white/90 font-medium mb-3">Selected Pieces:</h4>
+                    <div className="grid grid-cols-3 gap-2">
+                      {outfitItems.map(item => (
+                        <div key={item.id} className="bg-white/5 rounded-md p-2 flex flex-col items-center">
+                          {item.imageUrl ? (
+                            <div className="h-24 w-24 overflow-hidden rounded-md mb-2">
+                              <img 
+                                src={item.imageUrl} 
+                                alt={item.name} 
+                                className="h-full w-full object-cover"
+                              />
+                            </div>
+                          ) : (
+                            <div className="h-24 w-24 bg-slate-800/50 rounded-md flex items-center justify-center mb-2">
+                              <span className="text-white/40 text-xs">No image</span>
+                            </div>
+                          )}
+                          <span className="text-xs text-white/80 text-center line-clamp-1">{item.name}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 )}
                 
                 <div className="border-t border-white/10 pt-4">
@@ -370,6 +580,14 @@ const OliviaRecommendationSection = ({ weather, situation }: OliviaRecommendatio
                     <li className="flex items-center gap-2">
                       <div className="h-1.5 w-1.5 rounded-full bg-purple-400"></div>
                       <span>{weather && weather.temperature < 15 ? 'Layered pieces will keep you warm in this weather' : 'Breathable fabrics will keep you comfortable all day'}</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <div className="h-1.5 w-1.5 rounded-full bg-purple-400"></div>
+                      <span>{getWeatherTip()}</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <div className="h-1.5 w-1.5 rounded-full bg-purple-400"></div>
+                      <span>{getActivityTip()}</span>
                     </li>
                   </ul>
                 </div>
