@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { WeatherInfo, Outfit, ClothingItem, ClothingSeason, PersonalityTag } from '@/lib/types';
@@ -156,6 +155,7 @@ const OliviaRecommendationSection = ({ weather, situation }: OliviaRecommendatio
         items: selectedItems.map(item => item.id),
         season: [season],
         occasions: [occasionToMatch],
+        occasion: occasionToMatch, // Add the required occasion property here
         favorite: false,
         tags: [occasionToMatch, season as string, 'Olivia recommendation'],
         personalityTags: ['minimalist', 'casual'] as PersonalityTag[],
