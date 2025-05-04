@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback, Suspense, lazy, memo, useRef } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -98,15 +97,17 @@ const MixAndMatch = () => {
       try {
         const parsedOutfits = JSON.parse(localSavedOutfits);
         
-        // Deduplicate outfits by ID
-        const uniqueIds = new Set();
-        const uniqueOutfits = parsedOutfits.filter((outfit: Outfit) => {
-          if (!uniqueIds.has(outfit.id)) {
-            uniqueIds.add(outfit.id);
-            return true;
+        // Deduplicate outfits by ID and name to prevent duplicates
+        const uniqueOutfitMap = new Map();
+        parsedOutfits.forEach((outfit: Outfit) => {
+          // Use both ID and name as a combined key to ensure uniqueness
+          const key = outfit.id;
+          if (!uniqueOutfitMap.has(key)) {
+            uniqueOutfitMap.set(key, outfit);
           }
-          return false;
         });
+        
+        const uniqueOutfits = Array.from(uniqueOutfitMap.values());
         
         // Save the deduplicated outfits back to localStorage
         if (uniqueOutfits.length !== parsedOutfits.length) {
@@ -147,11 +148,24 @@ const MixAndMatch = () => {
               timesWorn: outfit.times_worn
             }));
             
-            // Create a set of existing IDs to avoid duplicates
+            // Create a set of existing IDs (from both sample outfits and local saved outfits) to avoid duplicates
             const existingIds = new Set([...sampleOutfits, ...savedOutfits].map(outfit => outfit.id));
+            
+            // Filter out outfits that are already in the state to prevent duplicates
             const uniqueDbOutfits = formattedOutfits.filter((outfit: Outfit) => !existingIds.has(outfit.id));
             
-            setOutfits(prev => [...prev, ...uniqueDbOutfits]);
+            setOutfits(prev => {
+              // Create a new Map with all existing outfits first
+              const outfitMap = new Map(prev.map(outfit => [outfit.id, outfit]));
+              
+              // Add or update with new outfits from database
+              uniqueDbOutfits.forEach(outfit => {
+                outfitMap.set(outfit.id, outfit);
+              });
+              
+              // Convert map back to array
+              return Array.from(outfitMap.values());
+            });
           }
         } catch (error) {
           console.error('Error fetching outfits from Supabase:', error);
@@ -222,9 +236,13 @@ const MixAndMatch = () => {
       id: outfit.id || Date.now().toString(),
     };
 
-    // Check if this outfit ID already exists to prevent duplicates
+    // Get current outfits from localStorage
     const localSavedOutfits = JSON.parse(localStorage.getItem('savedOutfits') || '[]');
-    const outfitExists = localSavedOutfits.some((o: Outfit) => o.id === outfitToSave.id);
+    
+    // Check if this outfit ID or name already exists to prevent duplicates
+    const outfitExists = localSavedOutfits.some((o: Outfit) => 
+      o.id === outfitToSave.id || o.name === outfitToSave.name
+    );
     
     if (!outfitExists) {
       // Save to localStorage

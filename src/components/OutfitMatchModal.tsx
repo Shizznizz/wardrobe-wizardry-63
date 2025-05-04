@@ -165,7 +165,7 @@ const OutfitMatchModal = ({ open, onOpenChange, item, allItems }: OutfitMatchMod
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] bg-slate-900 text-white border-slate-700 max-h-[90vh] overflow-hidden flex flex-col mt-16 md:mt-0">
+      <DialogContent className="sm:max-w-[600px] bg-slate-900 text-white border-slate-700 max-h-[85vh] overflow-hidden flex flex-col mt-6 md:mt-6">
         <DialogHeader>
           <DialogTitle className="text-xl flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-purple-400" />
