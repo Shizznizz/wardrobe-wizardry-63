@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback, Suspense, lazy, memo, useRef } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -21,13 +20,13 @@ import { toast } from 'sonner';
 // Lazily loaded components
 const OliviaRecommendationSection = lazy(() => import('@/components/outfits/mix-match/OliviaRecommendationSection'));
 const CreateOutfitSection = lazy(() => import('@/components/outfits/mix-match/CreateOutfitSection'));
-const SuggestedOutfitsSection = lazy(() => import('@/components/outfits/mix-match/SuggestedOutfitsSection'));
+const TrendingStylesSection = lazy(() => import('@/components/outfits/mix-match/TrendingStylesSection'));
 
 // Use memo to prevent unnecessary re-renders
 const MemoizedEnhancedWeatherSection = memo(EnhancedWeatherSection);
 const MemoizedOliviaRecommendationSection = memo(OliviaRecommendationSection);
 const MemoizedCreateOutfitSection = memo(CreateOutfitSection);
-const MemoizedSuggestedOutfitsSection = memo(SuggestedOutfitsSection);
+const MemoizedTrendingStylesSection = memo(TrendingStylesSection);
 
 const MixAndMatch = () => {
   // References for scroll behavior
@@ -162,6 +161,7 @@ const MixAndMatch = () => {
           
           // Create initial outfits state by combining sample outfits and saved outfits
           const existingIds = new Set(sampleOutfits.map(outfit => outfit.id));
+          
           const uniqueSavedOutfits = uniqueOutfits.filter((outfit: Outfit) => !existingIds.has(outfit.id));
           
           setOutfits([...sampleOutfits, ...uniqueSavedOutfits]);
@@ -479,21 +479,14 @@ const MixAndMatch = () => {
             />
           </motion.section>
           
-          {/* Suggested Outfits Section */}
+          {/* Trending Styles Section - Replacing Suggested Outfits Section */}
           <motion.section
             {...fadeUp}
             transition={{ delay: 0.6, duration: 0.5 }}
             className="mb-10"
           >
             <Suspense fallback={<Skeleton className="w-full h-32 rounded-xl bg-slate-800" />}>
-              <MemoizedSuggestedOutfitsSection
-                outfits={popularOutfits.slice(0, 6)}
-                clothingItems={userClothingItems}
-                weather={{
-                  temperature: temperature,
-                  condition: weatherCondition,
-                }}
-              />
+              <MemoizedTrendingStylesSection />
             </Suspense>
           </motion.section>
         </main>

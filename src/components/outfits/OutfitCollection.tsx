@@ -75,7 +75,7 @@ const OutfitCollection = ({
         </div>
       </div>
       <OutfitGrid 
-        outfits={outfits} 
+        outfits={validOutfits} 
         onEdit={onEditOutfit}
         onDelete={onDeleteOutfit}
         onToggleFavorite={onToggleFavorite}
@@ -84,15 +84,28 @@ const OutfitCollection = ({
         onSelectOutfit={onSelectOutfit}
       />
       
-      <div className="mt-6 flex justify-center">
-        <Button 
-          variant="outline" 
-          onClick={onCreateOutfit}
-          className="border-purple-400/30 text-white hover:bg-white/10 backdrop-blur-sm shadow-md"
-        >
-          <Plus className="mr-2 h-4 w-4" /> Add Another Outfit
-        </Button>
-      </div>
+      {validOutfits.length === 0 ? (
+        <div className="text-center p-8 border border-dashed border-white/20 rounded-xl bg-slate-900/30 mt-4">
+          <h3 className="font-medium text-white mb-2">No outfits found with items from your wardrobe</h3>
+          <p className="text-white/70 mb-6">Add some clothing items to your wardrobe or create new outfits.</p>
+          <Button 
+            onClick={onCreateOutfit}
+            className="bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90"
+          >
+            <Plus className="mr-2 h-4 w-4" /> Create Your First Outfit
+          </Button>
+        </div>
+      ) : (
+        <div className="mt-6 flex justify-center">
+          <Button 
+            variant="outline" 
+            onClick={onCreateOutfit}
+            className="border-purple-400/30 text-white hover:bg-white/10 backdrop-blur-sm shadow-md"
+          >
+            <Plus className="mr-2 h-4 w-4" /> Add Another Outfit
+          </Button>
+        </div>
+      )}
     </motion.section>
   );
 };
