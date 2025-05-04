@@ -3,7 +3,6 @@ import { toast } from 'sonner';
 import { WeatherInfo } from '@/lib/types';
 import WeatherDisplay from '@/components/weather/WeatherDisplay';
 import { Skeleton } from '@/components/ui/skeleton';
-import { fetchWeatherData, generateRandomWeather } from '@/services/WeatherService';
 
 type WeatherWidgetProps = {
   city?: string;
@@ -31,7 +30,7 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({
   const [error, setError] = useState<string | null>(null);
 
   // Function to fetch weather data
-  const fetchWeather = async () => {
+  const fetchWeatherData = async () => {
     if (!city || !country) {
       if (showError) {
         setError('Please select a location');
@@ -43,8 +42,23 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({
     setError(null);
 
     try {
-      // Attempt to fetch real weather data
-      const data = await fetchWeatherData(city, country);
+      // Simulate API call with mock data
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const temperature = Math.floor(Math.random() * (30 - 10) + 10);
+      const condition = ['sunny', 'cloudy', 'rainy', 'stormy', 'windy', 'snowy'][
+        Math.floor(Math.random() * 6)
+      ];
+      
+      const data: WeatherInfo = {
+        city,
+        country,
+        temperature,
+        feelsLike: temperature - Math.floor(Math.random() * 3),
+        humidity: Math.floor(Math.random() * 50) + 30,
+        windSpeed: Math.floor(Math.random() * 30),
+        condition,
+      };
       
       setWeatherData(data);
       onWeatherChange(data);
@@ -53,21 +67,17 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({
         toast.success(`Weather updated for ${city}, ${country}`);
       }
       
-      // Handle savePreferences if needed
+      // Handle savePreferences if needed (not implemented in this component)
       if (savePreferences) {
+        // This is just a placeholder as the actual implementation would depend on your app
         console.log('Preferences would be saved here if implemented');
       }
-    } catch (error) {
-      console.error('Error fetching weather:', error);
-      
-      // Fallback to simulated weather data in case of API error
-      const fallbackData = generateRandomWeather(city, country);
-      
-      setWeatherData(fallbackData);
-      onWeatherChange(fallbackData);
+    } catch (e) {
+      const errorMessage = e instanceof Error ? e.message : 'Failed to fetch weather data';
+      setError(errorMessage);
       
       if (showToasts) {
-        toast.info(`Using simulated weather data for ${city}, ${country}`);
+        toast.error(errorMessage);
       }
     } finally {
       setIsLoading(false);
@@ -77,7 +87,7 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({
   // Auto fetch weather when city, country changes or on autoLoad
   useEffect(() => {
     if ((city && country) && autoLoad) {
-      fetchWeather();
+      fetchWeatherData();
     }
   }, [city, country, autoLoad]);
 

@@ -21,7 +21,7 @@ export const fetchWeatherData = async (city: string, country: string): Promise<W
 
   console.log(`Fetching weather for ${city}, ${country}...`);
   
-  const apiKey = '72b9c69df76684e113804b44895d2599'; // OpenWeather API key
+  const apiKey = '72b9c69df76684e113804b44895d2599';
   const url = `https://api.openweathermap.org/data/2.5/weather?q=${city},${country}&appid=${apiKey}&units=metric`;
   
   console.log("Fetching weather data from:", url);
@@ -30,6 +30,7 @@ export const fetchWeatherData = async (city: string, country: string): Promise<W
     const data = await response.json();
     
     console.log("API Response status:", response.status);
+    console.log("API Response data:", data);
     
     if (response.status === 401) {
       throw new Error('Invalid API key. Please update the API key and try again.');
