@@ -30,6 +30,22 @@ const OutfitCollection = ({
 }: OutfitCollectionProps) => {
   const isMobile = useIsMobile();
   
+  // Helper function to check if an outfit has valid items
+  const outfitHasValidItems = (outfit: Outfit): boolean => {
+    if (!outfit || !Array.isArray(outfit.items) || outfit.items.length === 0) {
+      return false;
+    }
+    
+    return outfit.items.some(itemId => 
+      clothingItems.some(item => item && item.id === itemId)
+    );
+  };
+  
+  // Filter outfits to only include those with valid items
+  const validOutfits = Array.isArray(outfits) 
+    ? outfits.filter(outfitHasValidItems) 
+    : [];
+  
   return (
     <motion.section variants={{
       hidden: { y: 20, opacity: 0 },

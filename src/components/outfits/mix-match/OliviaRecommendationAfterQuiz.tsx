@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
@@ -18,6 +19,13 @@ const OliviaRecommendationAfterQuiz = ({ quizAnswers, outfit, clothingItems }) =
   const items = (outfit.items || []).map((itemId) =>
     clothingItems.find((ci) => ci.id === itemId)
   ).filter(Boolean);
+  
+  // If no valid items were found in this outfit, don't display it
+  if (items.length === 0) {
+    return (
+      <div className="text-white/80 p-6 text-center">This outfit doesn't contain any items from your wardrobe.</div>
+    );
+  }
 
   // Group items by type for better display organization
   const itemsByCategory = {
