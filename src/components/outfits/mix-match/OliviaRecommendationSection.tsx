@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { WeatherInfo, Outfit, ClothingItem, ClothingSeason, PersonalityTag } from '@/lib/types';
@@ -94,7 +95,7 @@ const OliviaRecommendationSection = ({ weather, situation }: OliviaRecommendatio
     const occasionToMatch = currentSituation || 'casual';
     
     const seasonalItems = clothingItems.filter(item => 
-      item.season?.includes(season as string) || item.season?.includes('all')
+      item.season?.includes(season) || item.season?.includes('all')
     );
     
     const suitableItems = seasonalItems.filter(item => 
@@ -183,19 +184,20 @@ const OliviaRecommendationSection = ({ weather, situation }: OliviaRecommendatio
     
     // Create outfit object if we have at least top and bottom items
     if (selectedItems.length >= 2) {
+      const seasonValue = season as ClothingSeason;
       const newOutfit: Outfit = {
         id: `olivia-recommendation-${Date.now()}`,
         name: `${currentSituation || 'Casual'} ${season.charAt(0).toUpperCase() + season.slice(1)} Outfit`,
         items: selectedItems.map(item => item.id),
-        season: [season as ClothingSeason],
+        season: [seasonValue],
         occasions: [occasionToMatch],
-        occasion: occasionToMatch, // Add the required occasion property
+        occasion: occasionToMatch,
         favorite: false,
-        tags: [occasionToMatch, season as string, 'Olivia recommendation'],
+        tags: [occasionToMatch, season, 'Olivia recommendation'],
         personalityTags: ['minimalist', 'casual'] as PersonalityTag[],
         dateAdded: new Date(),
         timesWorn: 0,
-        seasons: [season as ClothingSeason]
+        seasons: [seasonValue]
       };
       
       setRecommendedOutfit(newOutfit);
