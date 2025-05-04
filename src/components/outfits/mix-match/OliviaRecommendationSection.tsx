@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { WeatherInfo, Outfit, ClothingItem } from '@/lib/types';
+import { WeatherInfo, Outfit, ClothingItem, ClothingSeason, PersonalityTag } from '@/lib/types';
 import { sampleOutfits } from '@/lib/wardrobeData';
 import DailyOutfitSection from './DailyOutfitSection';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -81,7 +81,7 @@ const OliviaRecommendationSection = ({ weather, situation }: OliviaRecommendatio
 
     // Get temperature category based on the weather
     const temp = currentWeather?.temperature || 20;
-    let season = 'spring';
+    let season: ClothingSeason = 'spring';
     
     if (temp < 5) {
       season = 'winter';
@@ -157,8 +157,8 @@ const OliviaRecommendationSection = ({ weather, situation }: OliviaRecommendatio
         season: [season],
         occasions: [occasionToMatch],
         favorite: false,
-        tags: [occasionToMatch, season, 'Olivia recommendation'],
-        personalityTags: ['stylish', 'comfortable'],
+        tags: [occasionToMatch, season as string, 'Olivia recommendation'],
+        personalityTags: ['minimalist', 'casual'] as PersonalityTag[],
         dateAdded: new Date(),
         timesWorn: 0,
         seasons: [season]
