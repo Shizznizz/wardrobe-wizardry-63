@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback, Suspense, lazy, memo, useRef } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -48,7 +49,7 @@ const MixAndMatch = () => {
   const [isBuilderOpen, setIsBuilderOpen] = useState(false);
   const [outfits, setOutfits] = useState<Outfit[]>([]);
   const [savedOutfits, setSavedOutfits] = useState<Outfit[]>([]);
-  const [userClothingItems, setUserClothingItems] = useState<ClothingItem[]>(sampleClothingItems);
+  const [userClothingItems, setUserClothingItems] = useState<ClothingItem[]>([]);
 
   // Scroll to weather section
   const scrollToWeatherSection = useCallback(() => {
@@ -105,7 +106,7 @@ const MixAndMatch = () => {
           
         if (error) throw error;
         
-        if (data) {
+        if (data && data.length > 0) {
           const formattedItems: ClothingItem[] = data.map(item => ({
             id: item.id,
             name: item.name,
@@ -122,9 +123,14 @@ const MixAndMatch = () => {
           }));
           
           setUserClothingItems(formattedItems);
+        } else {
+          // If the user has no clothing items yet, use sample data
+          setUserClothingItems(sampleClothingItems);
         }
       } catch (error) {
         console.error('Error fetching user clothing items:', error);
+        // Fallback to sample data on error
+        setUserClothingItems(sampleClothingItems);
       }
     };
     
@@ -190,7 +196,9 @@ const MixAndMatch = () => {
           const formattedOutfits = data.map(outfit => ({
             ...outfit,
             dateAdded: new Date(outfit.date_added),
-            timesWorn: outfit.times_worn
+            timesWorn: outfit.times_worn,
+            // Make sure the items array exists
+            items: outfit.items || []
           }));
           
           // Get existing outfit IDs from both sample outfits and local saved outfits
@@ -271,7 +279,7 @@ const MixAndMatch = () => {
     // Add generated ID if none exists
     const outfitToSave = {
       ...outfit,
-      id: outfit.id || Date.now().toString(),
+      id: outfit.id || `outfit-${Date.now()}`,
     };
 
     // Check for outfit duplication before saving
@@ -317,6 +325,7 @@ const MixAndMatch = () => {
               occasion: outfitToSave.occasion,
               occasions: outfitToSave.occasions,
               favorite: outfitToSave.favorite,
+              tags: outfitToSave.tags,
               times_worn: 0,
               date_added: new Date().toISOString()
             });
@@ -384,7 +393,7 @@ const MixAndMatch = () => {
             />
           </div>
 
-          {/* Weather & Context Section - added ref for scrolling */}
+          {/* Weather & Context Section */}
           <motion.section
             ref={weatherSectionRef}
             {...fadeUp}
@@ -428,7 +437,7 @@ const MixAndMatch = () => {
             >
               <Suspense fallback={<Skeleton className="w-full h-32 rounded-xl bg-slate-800" />}>
                 <MemoizedCreateOutfitSection 
-                  clothingItems={userClothingItems.length > 0 ? userClothingItems : sampleClothingItems}
+                  clothingItems={userClothingItems}
                   isPremium={false}
                 />
               </Suspense>
@@ -466,7 +475,7 @@ const MixAndMatch = () => {
           >
             <OutfitTabSection
               outfits={outfits}
-              clothingItems={userClothingItems.length > 0 ? userClothingItems : sampleClothingItems}
+              clothingItems={userClothingItems}
             />
           </motion.section>
           
@@ -479,7 +488,7 @@ const MixAndMatch = () => {
             <Suspense fallback={<Skeleton className="w-full h-32 rounded-xl bg-slate-800" />}>
               <MemoizedSuggestedOutfitsSection
                 outfits={popularOutfits.slice(0, 6)}
-                clothingItems={userClothingItems.length > 0 ? userClothingItems : sampleClothingItems}
+                clothingItems={userClothingItems}
                 weather={{
                   temperature: temperature,
                   condition: weatherCondition,
@@ -495,7 +504,7 @@ const MixAndMatch = () => {
             isOpen={isBuilderOpen}
             onClose={() => setIsBuilderOpen(false)}
             onSave={handleSaveOutfit}
-            clothingItems={userClothingItems.length > 0 ? userClothingItems : sampleClothingItems}
+            clothingItems={userClothingItems}
           />
         )}
       </div>
