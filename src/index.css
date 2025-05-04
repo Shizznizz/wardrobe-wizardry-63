@@ -50,7 +50,7 @@
   /* Better touch targets */
   .touch-target-large {
     min-height: 48px;
-    min-width: 48px; /* Added minimum width for better touch targets */
+    min-width: 48px; 
     touch-action: manipulation;
     display: flex;
     align-items: center;
@@ -66,10 +66,11 @@
   
   /* Prevent interaction when mobile menu is open */
   body.overflow-hidden {
-    overflow: hidden;
+    overflow: hidden !important;
     position: fixed;
     width: 100%;
     height: 100%;
+    touch-action: none;
   }
 
   /* Ensure buttons are clearly indicated as interactive */
@@ -78,5 +79,10 @@
     cursor: pointer;
     -webkit-tap-highlight-color: transparent; /* Remove tap highlight on iOS */
   }
-}
 
+  /* Fix iOS issues */
+  .ios-fixed {
+    position: fixed !important;
+    width: 100% !important;
+  }
+}

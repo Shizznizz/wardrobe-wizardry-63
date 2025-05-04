@@ -57,7 +57,7 @@ const Header = () => {
 
   const toggleMenu = () => {
     console.log("Toggle menu clicked. Current state:", isMenuOpen);
-    setIsMenuOpen(!isMenuOpen);
+    setIsMenuOpen(prevState => !prevState);
   };
 
   // Close mobile menu when location changes
@@ -65,7 +65,7 @@ const Header = () => {
     setIsMenuOpen(false);
   }, [location]);
 
-  // Define navigation items - no need to add Quizzes in the code as we'll add it to App.tsx as a route
+  // Define navigation items
   let navItems = [
     { name: 'Home', path: '/' },
   ];
