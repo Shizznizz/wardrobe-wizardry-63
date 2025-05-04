@@ -75,7 +75,7 @@ const OutfitCollection = ({
         </div>
       </div>
       <OutfitGrid 
-        outfits={outfits} 
+        outfits={outfits}  // Pass all outfits to OutfitGrid which will handle the filtering
         onEdit={onEditOutfit}
         onDelete={onDeleteOutfit}
         onToggleFavorite={onToggleFavorite}

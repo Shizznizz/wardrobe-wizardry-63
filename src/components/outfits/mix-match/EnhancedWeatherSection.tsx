@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { MapPin, RefreshCw, Briefcase, Dumbbell, Sun, ChevronUp, ChevronDown, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -84,6 +84,7 @@ const EnhancedWeatherSection = ({
       if (success) {
         handleRefreshWeather();
         setLocationOpen(false);
+        setShouldAutoLoad(true);
       }
     } else {
       toast.error('Please select both country and city');
@@ -96,7 +97,7 @@ const EnhancedWeatherSection = ({
     setWeatherData(weather);
     onWeatherUpdate(weather);
     
-    if (weather.temperature) {
+    if (typeof weather.temperature === 'number') {
       onTemperatureChange(weather.temperature);
     }
     
@@ -240,7 +241,7 @@ const EnhancedWeatherSection = ({
               </CollapsibleContent>
             </Collapsible>
             
-            {/* Enhanced Weather Display */}
+            {/* Weather Widget */}
             <div className="flex-grow px-4 pb-4">
               <WeatherWidget
                 key={weatherKey}

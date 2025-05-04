@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback, Suspense, lazy, memo, useRef } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -124,13 +123,16 @@ const MixAndMatch = () => {
           
           setUserClothingItems(formattedItems);
         } else {
-          // If the user has no clothing items yet, use sample data
-          setUserClothingItems(sampleClothingItems);
+          // If the user has no clothing items yet, use a minimal set of sample data
+          // instead of the full sample data that might include items we don't want
+          const essentialItems = sampleClothingItems.slice(0, 5);
+          setUserClothingItems(essentialItems);
         }
       } catch (error) {
         console.error('Error fetching user clothing items:', error);
-        // Fallback to sample data on error
-        setUserClothingItems(sampleClothingItems);
+        // Fallback to minimal sample data on error
+        const essentialItems = sampleClothingItems.slice(0, 5);
+        setUserClothingItems(essentialItems);
       }
     };
     
@@ -160,17 +162,19 @@ const MixAndMatch = () => {
           
           setSavedOutfits(uniqueOutfits);
           
-          // Create initial outfits state by combining sample outfits and saved outfits
-          const existingIds = new Set(sampleOutfits.map(outfit => outfit.id));
+          // Create initial outfits state by combining minimal sample outfits and saved outfits
+          const minimalSampleOutfits = sampleOutfits.slice(0, 2); // Using only a few sample outfits
+          const existingIds = new Set(minimalSampleOutfits.map(outfit => outfit.id));
           const uniqueSavedOutfits = uniqueOutfits.filter((outfit: Outfit) => !existingIds.has(outfit.id));
           
-          setOutfits([...sampleOutfits, ...uniqueSavedOutfits]);
+          setOutfits([...minimalSampleOutfits, ...uniqueSavedOutfits]);
         } catch (error) {
           console.error('Error parsing saved outfits:', error);
         }
       } else {
-        // Set initial outfits to sample outfits if no saved outfits
-        setOutfits(sampleOutfits);
+        // Set initial outfits to minimal sample outfits if no saved outfits
+        const minimalSampleOutfits = sampleOutfits.slice(0, 2); // Using only a few sample outfits
+        setOutfits(minimalSampleOutfits);
       }
     };
     
