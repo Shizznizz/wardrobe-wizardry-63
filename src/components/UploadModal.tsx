@@ -32,7 +32,7 @@ const UploadModal = ({ onUpload, buttonText = "Add Item", children }: UploadModa
   const [attemptedSubmit, setAttemptedSubmit] = useState(false);
 
   const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-  const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/jpg', 'image/png'];
+  const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
 
   // Reset validation errors when form fields change
   useEffect(() => {
@@ -46,7 +46,7 @@ const UploadModal = ({ onUpload, buttonText = "Add Item", children }: UploadModa
   const handleImageChange = (file: File) => {
     // Validate file type
     if (!ALLOWED_FILE_TYPES.includes(file.type)) {
-      toast.error('Invalid file type. Please upload a PNG, JPG, or JPEG image.');
+      toast.error('Invalid file type. Please upload a PNG, JPG, JPEG, WEBP, or GIF image.');
       return;
     }
 
@@ -222,7 +222,7 @@ const UploadModal = ({ onUpload, buttonText = "Add Item", children }: UploadModa
               imagePreview={imagePreview}
               onImageChange={handleImageChange}
               onClearImage={clearImage}
-              label="Upload an image (PNG, JPG, or JPEG, max 10MB)"
+              label="Upload an image (PNG, JPG, JPEG, WEBP, or GIF, max 10MB)"
             />
 
             <ClothingDetailsForm

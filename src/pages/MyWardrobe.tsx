@@ -404,10 +404,11 @@ const MyWardrobe = () => {
           <PageHeader
             title="Your Digital Wardrobe"
             subtitle="Olivia helps you organize, analyze, and fall in love with your closet again."
-            showAvatar={false}
+            showAvatar={true}
             imageVariant="pink-suit"
             imagePosition="left"
-            className="mb-8 text-left pl-4"
+            isLeftAligned={true}
+            className="mb-8"
           >
             <div className="flex flex-wrap gap-3 mt-4">
               <UploadModal onUpload={handleUpload}>
@@ -459,17 +460,11 @@ const MyWardrobe = () => {
             </div>
           </PageHeader>
 
+          {/* Remove the redundant collection title since it's now in the PageHeader */}
           <motion.div 
             variants={itemVariants} 
             className="flex flex-col w-full"
           >
-            <div className="relative mb-6 text-left pl-4">
-              <h2 className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 mb-3">
-                {user?.email ? `${profile?.first_name || user.email.split('@')[0]}'s Collection` : "My Collection"}
-              </h2>
-              <div className="h-1 w-3/4 bg-gradient-to-r from-blue-400/70 via-purple-400/70 to-pink-400/70 rounded-full shadow-[0_0_10px_rgba(168,85,247,0.5)]"></div>
-            </div>
-          
             <WardrobeInsights items={items} />
             
             <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-6 pl-4">

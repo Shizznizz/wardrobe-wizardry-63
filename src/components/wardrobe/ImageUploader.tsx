@@ -95,7 +95,7 @@ const ImageUploader = ({
               {label}
             </p>
             <p className="text-xs text-gray-500">
-              JPG, PNG or GIF
+              JPG, PNG, GIF, or WEBP
             </p>
           </div>
         )}
