@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -400,7 +401,7 @@ const MyWardrobe = () => {
           animate="visible"
           variants={containerVariants}
         >
-          {/* Enhanced PageHeader with new image and animation styling */}
+          {/* Updated PageHeader with a different mobile layout structure */}
           <PageHeader
             title="Your Digital Wardrobe"
             subtitle="Elevate your style with our AI-powered organization tools. Rediscover your fashion sense."
@@ -408,9 +409,10 @@ const MyWardrobe = () => {
             imagePosition="right"
             isLeftAligned={true}
             className="mb-8 relative overflow-visible py-12 md:py-16"
-            halfBodyImage="/lovable-uploads/7bf89910-ba2c-43e0-a523-899d90c3022e.png"
+            halfBodyImage="/lovable-uploads/c937b60e-901e-48ae-b01d-28d901a11503.png"
             animationStyle="slide"
             overlayEffect="glow"
+            useCustomMobileLayout={true}
           >
             <div className="flex flex-wrap gap-3 mt-6 z-10 relative">
               <UploadModal onUpload={handleUpload}>

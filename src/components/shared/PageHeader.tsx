@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -20,6 +19,7 @@ interface PageHeaderProps {
   children?: React.ReactNode;
   animationStyle?: 'fade' | 'slide' | 'zoom' | 'float';
   overlayEffect?: 'glow' | 'shimmer' | 'none';
+  useCustomMobileLayout?: boolean; // New prop for mobile layout control
 }
 
 const PageHeader = ({
@@ -36,6 +36,7 @@ const PageHeader = ({
   children,
   animationStyle = 'fade',
   overlayEffect = 'glow',
+  useCustomMobileLayout = false, // Default to false for backward compatibility
 }: PageHeaderProps) => {
   const getVariantImage = () => {
     switch (imageVariant) {
@@ -218,108 +219,271 @@ const PageHeader = ({
         />
       </div>
       
-      <div className={cn(
-        "container mx-auto px-4",
-        isLeftAligned ? "flex flex-col md:flex-row items-center gap-8" : ""
-      )}>
-        <div className={cn(
-          "max-w-3xl mx-auto",
-          isLeftAligned ? "mx-0 md:w-1/2 order-2 md:order-1" : "",
-          isLeftAligned && imagePosition === 'right' ? "md:pr-8" : "",
-          isLeftAligned && imagePosition === 'left' ? "md:pl-8 md:order-2" : ""
-        )}>
-          <motion.div variants={itemVariants} className="relative">
-            {showSparkles && (
-              <Sparkles className="absolute -top-6 left-1/3 w-5 h-5 text-pink-400" />
-            )}
-            <h1 className={cn(
-              "text-3xl md:text-5xl lg:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-300 via-pink-400 to-purple-500 mb-6",
-              isLeftAligned ? "text-left" : "text-center"
-            )}>
-              {title}
-            </h1>
-          </motion.div>
-
-          <motion.p 
-            variants={itemVariants} 
-            className={cn(
-              "text-base md:text-lg lg:text-xl text-white/80 mb-8",
-              isLeftAligned ? "text-left" : "text-center"
-            )}
-          >
-            {subtitle}
-          </motion.p>
-
-          {children && (
-            <motion.div 
-              variants={itemVariants}
-              className="relative z-20"
-            >
-              {children}
+      {/* Custom mobile layout implementation */}
+      {useCustomMobileLayout ? (
+        <div className="container mx-auto px-4">
+          {/* Mobile layout - Stacked in specific order */}
+          <div className="flex flex-col md:hidden">
+            {/* 1. Title first */}
+            <motion.div variants={itemVariants} className="text-center mb-4">
+              <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-300 via-pink-400 to-purple-500 mb-4">
+                {title}
+              </h1>
+              
+              {/* 2. Subtitle/text second */}
+              <p className="text-base text-white/80 mb-6">
+                {subtitle}
+              </p>
             </motion.div>
-          )}
-        </div>
+            
+            {/* 3. Image third (when on mobile) */}
+            {showAvatar && (
+              <motion.div 
+                className="flex justify-center mb-8"
+                variants={imageVariants}
+                whileHover="hover"
+              >
+                {/* Image glow effects */}
+                {overlayEffect === 'glow' && (
+                  <>
+                    <motion.div 
+                      className="absolute inset-0 -z-10 rounded-full bg-gradient-to-r from-purple-500/40 to-pink-500/40 blur-2xl transform translate-y-4"
+                      animate={{ 
+                        scale: [1, 1.1, 1],
+                        opacity: [0.6, 0.8, 0.6]
+                      }}
+                      transition={{
+                        duration: 4,
+                        repeat: Infinity,
+                        repeatType: "reverse"
+                      }}
+                    />
+                  </>
+                )}
+                
+                <img 
+                  src={halfBodyImage || getVariantImage()} 
+                  alt="Model"
+                  className="relative z-10 max-w-full max-h-[300px] object-contain"
+                  style={{
+                    filter: "drop-shadow(0 8px 20px rgba(159, 122, 234, 0.4))"
+                  }}
+                />
+              </motion.div>
+            )}
+            
+            {/* 4. Action buttons fourth */}
+            {children && (
+              <motion.div 
+                variants={itemVariants}
+                className="flex justify-center mb-6"
+              >
+                {children}
+              </motion.div>
+            )}
+          </div>
 
-        {showAvatar && (
-          <motion.div 
-            className={cn(
-              "relative mt-6 md:mt-0",
-              isLeftAligned ? "md:w-1/2 order-1 md:order-2 flex justify-center" : "",
-              isLeftAligned && imagePosition === 'right' ? "md:order-2" : "",
-              isLeftAligned && imagePosition === 'left' ? "md:order-1" : ""
-            )}
-            variants={imageVariants}
-            whileHover="hover"
-          >
-            {/* Enhanced image styling with more dramatic, animated glow effects */}
-            {overlayEffect === 'glow' && (
-              <>
+          {/* Desktop layout - Side by side */}
+          <div className={cn(
+            "hidden md:flex md:flex-row items-center gap-8",
+            imagePosition === 'left' ? "md:flex-row-reverse" : ""
+          )}>
+            <div className={cn(
+              "max-w-3xl",
+              isLeftAligned ? "text-left" : "text-center",
+              isLeftAligned ? "mx-0 md:w-1/2" : ""
+            )}>
+              <motion.div variants={itemVariants} className="relative">
+                {showSparkles && (
+                  <Sparkles className="absolute -top-6 left-1/3 w-5 h-5 text-pink-400" />
+                )}
+                <h1 className={cn(
+                  "text-3xl md:text-5xl lg:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-300 via-pink-400 to-purple-500 mb-6",
+                  isLeftAligned ? "text-left" : "text-center"
+                )}>
+                  {title}
+                </h1>
+              </motion.div>
+
+              <motion.p 
+                variants={itemVariants} 
+                className={cn(
+                  "text-base md:text-lg lg:text-xl text-white/80 mb-8",
+                  isLeftAligned ? "text-left" : "text-center"
+                )}
+              >
+                {subtitle}
+              </motion.p>
+
+              {children && (
                 <motion.div 
-                  className="absolute inset-0 -z-10 rounded-full bg-gradient-to-r from-purple-500/40 to-pink-500/40 blur-2xl transform translate-y-4"
-                  animate={{ 
-                    scale: [1, 1.1, 1],
-                    opacity: [0.6, 0.8, 0.6]
-                  }}
-                  transition={{
-                    duration: 4,
-                    repeat: Infinity,
-                    repeatType: "reverse"
-                  }}
-                />
-                <motion.div 
-                  className="absolute -inset-4 -z-10 bg-gradient-to-tl from-purple-500/20 via-transparent to-pink-500/20 rounded-full blur-xl"
-                  animate={{ 
-                    rotate: [0, 5, 0, -5, 0],
-                    scale: [1, 1.05, 1]
-                  }}
-                  transition={{
-                    duration: 8,
-                    repeat: Infinity,
-                    repeatType: "reverse"
-                  }}
-                />
-              </>
-            )}
-            
-            {overlayEffect === 'shimmer' && (
-              <div className="absolute inset-0 -z-10 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer" />
-            )}
-            
-            <img 
-              src={halfBodyImage || getVariantImage()} 
-              alt="Model"
-              className={cn(
-                "relative z-10 max-w-full",
-                halfBodyImage ? "max-h-[600px] object-contain" : 'max-h-[300px]',
-                isLeftAligned ? 'md:max-h-[550px]' : ''
+                  variants={itemVariants}
+                  className="relative z-20"
+                >
+                  {children}
+                </motion.div>
               )}
-              style={{
-                filter: "drop-shadow(0 8px 20px rgba(159, 122, 234, 0.4))"
-              }}
-            />
-          </motion.div>
-        )}
-      </div>
+            </div>
+
+            {showAvatar && (
+              <motion.div 
+                className={cn(
+                  "relative",
+                  isLeftAligned ? "md:w-1/2 flex justify-center" : "",
+                )}
+                variants={imageVariants}
+                whileHover="hover"
+              >
+                {/* Enhanced image styling with more dramatic, animated glow effects */}
+                {overlayEffect === 'glow' && (
+                  <>
+                    <motion.div 
+                      className="absolute inset-0 -z-10 rounded-full bg-gradient-to-r from-purple-500/40 to-pink-500/40 blur-2xl transform translate-y-4"
+                      animate={{ 
+                        scale: [1, 1.1, 1],
+                        opacity: [0.6, 0.8, 0.6]
+                      }}
+                      transition={{
+                        duration: 4,
+                        repeat: Infinity,
+                        repeatType: "reverse"
+                      }}
+                    />
+                    <motion.div 
+                      className="absolute -inset-4 -z-10 bg-gradient-to-tl from-purple-500/20 via-transparent to-pink-500/20 rounded-full blur-xl"
+                      animate={{ 
+                        rotate: [0, 5, 0, -5, 0],
+                        scale: [1, 1.05, 1]
+                      }}
+                      transition={{
+                        duration: 8,
+                        repeat: Infinity,
+                        repeatType: "reverse"
+                      }}
+                    />
+                  </>
+                )}
+                
+                {overlayEffect === 'shimmer' && (
+                  <div className="absolute inset-0 -z-10 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer" />
+                )}
+                
+                <img 
+                  src={halfBodyImage || getVariantImage()} 
+                  alt="Model"
+                  className={cn(
+                    "relative z-10 max-w-full",
+                    halfBodyImage ? "max-h-[600px] object-contain" : 'max-h-[300px]',
+                    isLeftAligned ? 'md:max-h-[550px]' : ''
+                  )}
+                  style={{
+                    filter: "drop-shadow(0 8px 20px rgba(159, 122, 234, 0.4))"
+                  }}
+                />
+              </motion.div>
+            )}
+          </div>
+        </div>
+      ) : (
+        // Original layout implementation - non-customized mobile layout
+        <div className={`container mx-auto max-w-7xl`}>
+          <div className={`flex flex-col ${layoutPosition === 'left' ? 'md:flex-row-reverse' : 'md:flex-row'} items-center gap-8 md:gap-12`}>
+            {/* Text content - always stacks above image on mobile */}
+            <div className={`w-full md:w-1/2 text-center md:text-left ${layoutPosition === 'left' ? 'md:pr-8' : 'md:pl-8'} space-y-6`}>
+              <motion.div variants={itemVariants} className="relative">
+                {showSparkles && (
+                  <Sparkles className="absolute -top-6 left-1/2 md:left-0 transform -translate-x-1/2 md:translate-x-0 text-pink-400" />
+                )}
+                <h1 className={cn(
+                  "text-3xl md:text-5xl lg:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-300 via-pink-400 to-purple-500 mb-6",
+                  isLeftAligned ? "text-left" : "text-center"
+                )}>
+                  {title}
+                </h1>
+              </motion.div>
+
+              <motion.p 
+                variants={itemVariants} 
+                className={cn(
+                  "text-base md:text-lg lg:text-xl text-white/80 mb-8",
+                  isLeftAligned ? "text-left" : "text-center"
+                )}
+              >
+                {subtitle}
+              </motion.p>
+
+              {children && (
+                <motion.div 
+                  variants={itemVariants}
+                  className="relative z-20"
+                >
+                  {children}
+                </motion.div>
+              )}
+            </div>
+
+            {showAvatar && (
+              <motion.div 
+                className={cn(
+                  "relative mt-6 md:mt-0",
+                  isLeftAligned ? "md:w-1/2 order-1 md:order-2 flex justify-center" : "",
+                  isLeftAligned && imagePosition === 'right' ? "md:order-2" : "",
+                  isLeftAligned && imagePosition === 'left' ? "md:order-1" : ""
+                )}
+                variants={imageVariants}
+                whileHover="hover"
+              >
+                {/* Enhanced image styling with more dramatic, animated glow effects */}
+                {overlayEffect === 'glow' && (
+                  <>
+                    <motion.div 
+                      className="absolute inset-0 -z-10 rounded-full bg-gradient-to-r from-purple-500/40 to-pink-500/40 blur-2xl transform translate-y-4"
+                      animate={{ 
+                        scale: [1, 1.1, 1],
+                        opacity: [0.6, 0.8, 0.6]
+                      }}
+                      transition={{
+                        duration: 4,
+                        repeat: Infinity,
+                        repeatType: "reverse"
+                      }}
+                    />
+                    <motion.div 
+                      className="absolute -inset-4 -z-10 bg-gradient-to-tl from-purple-500/20 via-transparent to-pink-500/20 rounded-full blur-xl"
+                      animate={{ 
+                        rotate: [0, 5, 0, -5, 0],
+                        scale: [1, 1.05, 1]
+                      }}
+                      transition={{
+                        duration: 8,
+                        repeat: Infinity,
+                        repeatType: "reverse"
+                      }}
+                    />
+                  </>
+                )}
+                
+                {overlayEffect === 'shimmer' && (
+                  <div className="absolute inset-0 -z-10 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer" />
+                )}
+                
+                <img 
+                  src={halfBodyImage || getVariantImage()} 
+                  alt="Model"
+                  className={cn(
+                    "relative z-10 max-w-full",
+                    halfBodyImage ? "max-h-[600px] object-contain" : 'max-h-[300px]',
+                    isLeftAligned ? 'md:max-h-[550px]' : ''
+                  )}
+                  style={{
+                    filter: "drop-shadow(0 8px 20px rgba(159, 122, 234, 0.4))"
+                  }}
+                />
+              </motion.div>
+            )}
+          </div>
+        </div>
+      )}
     </motion.div>
   );
 };
