@@ -1,5 +1,4 @@
 
-import { motion, AnimatePresence } from 'framer-motion';
 import { X, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -25,29 +24,33 @@ export const MobileMenu = ({
   // Lock body scroll when menu is open
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
+      document.body.classList.add('overflow-hidden');
     } else {
-      document.body.style.overflow = '';
+      document.body.classList.remove('overflow-hidden');
     }
+    
     return () => {
-      document.body.style.overflow = '';
+      document.body.classList.remove('overflow-hidden');
     };
   }, [isOpen]);
   
+  // If not open, don't render anything to improve performance
+  if (!isOpen) return null;
+  
   return (
     <>
-      {isOpen && (
-        <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[1000]" 
-          onClick={onClose} 
-          aria-hidden="true"
-        />
-      )}
-      
+      {/* Overlay */}
       <div 
-        className={`fixed top-0 right-0 bottom-0 w-[75%] max-w-sm bg-gradient-to-b from-purple-950 to-slate-950 z-[1001] border-l border-white/10 flex flex-col shadow-lg transition-transform duration-300 ease-out ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
+        className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50" 
+        onClick={onClose} 
+        aria-hidden="true"
+      />
+      
+      {/* Menu */}
+      <div 
+        className="fixed top-0 right-0 bottom-0 w-[75%] max-w-sm bg-gradient-to-b from-purple-950 to-slate-950 z-50 border-l border-white/10 flex flex-col shadow-lg"
         role="dialog"
         aria-modal="true"
-        aria-hidden={!isOpen}
         aria-label="Mobile navigation menu"
       >
         <div className="sticky top-0 px-4 py-3 bg-gradient-to-b from-purple-950 to-purple-950/95 z-10 border-b border-white/10">
