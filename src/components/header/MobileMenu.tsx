@@ -105,7 +105,10 @@ export const MobileMenu = ({
                   <Button
                     variant="ghost"
                     className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-900/20 py-3 touch-target"
-                    onClick={onSignOut}
+                    onClick={() => {
+                      onSignOut();
+                      onClose();
+                    }}
                   >
                     <LogOut className="mr-2 h-5 w-5" />
                     Sign Out

@@ -49,6 +49,7 @@ const Header = () => {
     try {
       await signOut();
       navigate("/");
+      setIsMenuOpen(false);
     } catch (error) {
       console.error("Error signing out:", error);
     }
