@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -6,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ClothingItem, Outfit, ClothingType } from '@/lib/types';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { v4 as uuidv4 } from '@/lib/utils';
-import { Shirt, Footprints, Sparkles, ArrowRight, Check, Save } from 'lucide-react';
+import { Shirt, Footprints, Sparkles, ArrowRight, Check, Save, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import WardrobeGrid from '@/components/WardrobeGrid';
@@ -56,35 +55,47 @@ const OutfitMatchModal = ({ open, onOpenChange, item, allItems }: OutfitMatchMod
   };
   
   const handleToggleSelect = (id: string) => {
-    const itemCategory = getItemCategory(
-      allItems.find(i => i.id === id)?.type as ClothingType
-    );
+    const clickedItem = allItems.find(i => i.id === id);
+    if (!clickedItem) return;
+    
+    const itemCategory = getItemCategory(clickedItem.type);
     
     setSelectedItems(prev => {
+      // Check if item is already selected
+      const existingItemIndex = prev.findIndex(i => i.id === id);
+      
+      // If item is already selected, remove it
+      if (existingItemIndex !== -1) {
+        // Don't allow deselection of the initial item
+        if (id === item.id) return prev;
+        
+        const newItems = [...prev];
+        newItems.splice(existingItemIndex, 1);
+        return newItems;
+      }
+      
+      // Otherwise handle normal selection logic with category replacement
       const existingItemOfCategoryIndex = prev.findIndex(
         i => i.id !== item.id && getItemCategory(i.type) === itemCategory
       );
       
       if (existingItemOfCategoryIndex !== -1) {
         const newItems = [...prev];
-        const targetItem = allItems.find(i => i.id === id);
-        if (targetItem) {
-          newItems[existingItemOfCategoryIndex] = targetItem;
-        }
+        newItems[existingItemOfCategoryIndex] = clickedItem;
         return newItems;
       }
       
-      const newItem = allItems.find(i => i.id === id);
-      if (newItem) {
-        return [...prev, newItem];
-      }
-      
-      return prev;
+      return [...prev, clickedItem];
     });
   };
   
   const isItemSelected = (id: string): boolean => {
     return selectedItems.some(i => i.id === id);
+  };
+
+  const resetModal = () => {
+    setSelectedItems([item]);
+    setOutfitName(`Outfit with ${item.name}`);
   };
   
   const handleSaveOutfit = async () => {
@@ -140,8 +151,9 @@ const OutfitMatchModal = ({ open, onOpenChange, item, allItems }: OutfitMatchMod
       }
     });
     
+    // Reset the modal after saving
+    resetModal();
     onOpenChange(false);
-    setSelectedItems([item]);
   };
 
   return (
@@ -172,7 +184,7 @@ const OutfitMatchModal = ({ open, onOpenChange, item, allItems }: OutfitMatchMod
                 <ArrowRight className="h-5 w-5 mx-2 text-purple-400" />
                 <div className="flex flex-wrap gap-1 max-w-[300px]">
                   {selectedItems.filter(i => i.id !== item.id).map(i => (
-                    <div key={i.id} className="relative w-16 h-16 rounded-md overflow-hidden">
+                    <div key={i.id} className="relative w-16 h-16 rounded-md overflow-hidden group">
                       <img 
                         src={i.imageUrl} 
                         alt={i.name} 
@@ -181,6 +193,13 @@ const OutfitMatchModal = ({ open, onOpenChange, item, allItems }: OutfitMatchMod
                       <div className="absolute bottom-0 left-0 right-0 bg-black/60 p-0.5 text-[10px] text-white text-center truncate">
                         {i.name}
                       </div>
+                      <button 
+                        onClick={() => handleToggleSelect(i.id)}
+                        className="absolute top-0 right-0 bg-red-500/80 rounded-bl p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                        aria-label="Remove item"
+                      >
+                        <X className="h-3 w-3 text-white" />
+                      </button>
                     </div>
                   ))}
                 </div>
