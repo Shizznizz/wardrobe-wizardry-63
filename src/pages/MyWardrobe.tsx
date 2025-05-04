@@ -401,21 +401,21 @@ const MyWardrobe = () => {
           animate="visible"
           variants={containerVariants}
         >
-          {/* Updated PageHeader with right alignment and new image */}
+          {/* Updated PageHeader with new image positioning and enhanced styling */}
           <PageHeader
             title="Your Digital Wardrobe"
             subtitle="Olivia helps you organize, analyze, and fall in love with your closet again."
             showAvatar={true}
             imagePosition="right"
             isLeftAligned={true}
-            className="mb-8"
-            halfBodyImage="/lovable-uploads/d39047b3-c0ad-4b2c-9d73-c654479f56c4.png"
+            className="mb-8 relative overflow-visible"
+            halfBodyImage="/lovable-uploads/f816da94-4177-47eb-bc82-48ae6be6e8f9.png"
           >
-            <div className="flex flex-wrap gap-3 mt-4">
+            <div className="flex flex-wrap gap-3 mt-4 z-10 relative">
               <UploadModal onUpload={handleUpload}>
                 <Button 
                   size="lg" 
-                  className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-90 shadow-lg shadow-purple-600/20 hover:shadow-purple-600/30 transition-all duration-300"
+                  className="bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90 shadow-lg shadow-purple-600/20 hover:shadow-purple-600/30 transition-all duration-300"
                 >
                   <Upload className="mr-2 h-4 w-4" /> Add Clothing Item
                 </Button>

@@ -15,7 +15,7 @@ interface PageHeaderProps {
   className?: string;
   showSparkles?: boolean;
   isLeftAligned?: boolean;
-  halfBodyImage?: string; // Added halfBodyImage prop
+  halfBodyImage?: string;
   children?: React.ReactNode;
 }
 
@@ -71,10 +71,11 @@ const PageHeader = ({
       animate="visible"
       variants={containerVariants}
     >
-      {/* Background elements */}
+      {/* Enhanced background elements for better visual appeal */}
       <div className="absolute inset-0 -z-10 overflow-hidden">
         <div className="absolute top-1/3 left-1/4 w-64 h-64 rounded-full bg-purple-500/10 blur-3xl"></div>
-        <div className="absolute top-1/2 right-1/4 w-72 h-72 rounded-full bg-indigo-500/10 blur-3xl"></div>
+        <div className="absolute top-1/2 right-1/4 w-72 h-72 rounded-full bg-pink-500/10 blur-3xl"></div>
+        <div className="absolute bottom-0 left-1/2 w-56 h-56 rounded-full bg-indigo-400/10 blur-3xl"></div>
       </div>
       
       <div className={cn(
@@ -92,7 +93,7 @@ const PageHeader = ({
               <Sparkles className="absolute -top-6 left-1/3 w-5 h-5 text-pink-400" />
             )}
             <h1 className={cn(
-              "text-3xl md:text-4xl lg:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 mb-4",
+              "text-3xl md:text-4xl lg:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-300 via-pink-400 to-purple-500 mb-4",
               isLeftAligned ? "text-left" : "text-center"
             )}>
               {title}
@@ -119,15 +120,21 @@ const PageHeader = ({
             )}
             variants={itemVariants}
           >
-            <div className="absolute inset-0 -z-10 rounded-full bg-gradient-to-r from-purple-500/20 to-pink-500/20 blur-2xl"></div>
+            {/* Enhanced image styling with purple glow effect */}
+            <div className="absolute inset-0 -z-10 rounded-full bg-gradient-to-r from-purple-500/30 to-pink-500/30 blur-2xl transform translate-y-4"></div>
+            <div className="absolute -inset-4 -z-10 bg-gradient-to-tl from-purple-500/10 via-transparent to-pink-500/10 rounded-full blur-xl"></div>
+            
             <img 
               src={halfBodyImage || getVariantImage()} 
-              alt="Olivia" 
+              alt="Model"
               className={cn(
                 "relative z-10 max-w-full",
-                imageVariant === 'pink-suit' ? 'max-h-[400px]' : 'max-h-[300px]',
+                halfBodyImage ? "max-h-[500px] object-contain" : 'max-h-[300px]',
                 isLeftAligned ? 'md:max-h-[450px]' : ''
               )}
+              style={{
+                filter: "drop-shadow(0 8px 16px rgba(159, 122, 234, 0.3))"
+              }}
             />
           </motion.div>
         )}
