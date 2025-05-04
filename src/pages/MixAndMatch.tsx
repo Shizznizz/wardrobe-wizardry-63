@@ -1,8 +1,9 @@
+
 import { useState, useEffect, useCallback, Suspense, lazy, memo, useRef } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import { sampleOutfits, sampleClothingItems } from '@/lib/wardrobeData';
-import { WeatherInfo, Outfit } from '@/lib/types';
+import { WeatherInfo, Outfit, ClothingItem } from '@/lib/types';
 import { OutfitProvider } from '@/hooks/useOutfitContext';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -45,8 +46,9 @@ const MixAndMatch = () => {
   const { user } = useAuth();
   const [profile, setProfile] = useState<{ first_name: string | null } | null>(null);
   const [isBuilderOpen, setIsBuilderOpen] = useState(false);
-  const [outfits, setOutfits] = useState<Outfit[]>(sampleOutfits);
+  const [outfits, setOutfits] = useState<Outfit[]>([]);
   const [savedOutfits, setSavedOutfits] = useState<Outfit[]>([]);
+  const [userClothingItems, setUserClothingItems] = useState<ClothingItem[]>(sampleClothingItems);
 
   // Scroll to weather section
   const scrollToWeatherSection = useCallback(() => {
@@ -90,91 +92,127 @@ const MixAndMatch = () => {
     }
   }, [user?.id]);
 
+  // Fetch user's clothing items from Supabase
+  useEffect(() => {
+    const fetchUserClothingItems = async () => {
+      if (!user?.id) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from('clothing_items')
+          .select('*')
+          .eq('user_id', user.id);
+          
+        if (error) throw error;
+        
+        if (data) {
+          const formattedItems: ClothingItem[] = data.map(item => ({
+            id: item.id,
+            name: item.name,
+            type: item.type,
+            color: item.color,
+            material: item.material || '',
+            season: item.season || ['all'],
+            occasions: item.occasions || ['casual'],
+            favorite: item.favorite || false,
+            imageUrl: item.image_url,
+            image: item.image_url,
+            timesWorn: item.times_worn || 0,
+            dateAdded: new Date(item.date_added)
+          }));
+          
+          setUserClothingItems(formattedItems);
+        }
+      } catch (error) {
+        console.error('Error fetching user clothing items:', error);
+      }
+    };
+    
+    fetchUserClothingItems();
+  }, [user?.id]);
+
   // Fetch saved outfits from localStorage and deduplicate them
   useEffect(() => {
-    const localSavedOutfits = localStorage.getItem('savedOutfits');
-    if (localSavedOutfits) {
-      try {
-        const parsedOutfits = JSON.parse(localSavedOutfits);
-        
-        // Deduplicate outfits by ID and name to prevent duplicates
-        const uniqueOutfitMap = new Map();
-        parsedOutfits.forEach((outfit: Outfit) => {
-          // Use both ID and name as a combined key to ensure uniqueness
-          const key = outfit.id;
-          if (!uniqueOutfitMap.has(key)) {
-            uniqueOutfitMap.set(key, outfit);
+    const loadOutfitsFromLocalStorage = () => {
+      const localSavedOutfits = localStorage.getItem('savedOutfits');
+      if (localSavedOutfits) {
+        try {
+          const parsedOutfits = JSON.parse(localSavedOutfits);
+          
+          // Use a Map for deduplication based on ID
+          const uniqueOutfitMap = new Map<string, Outfit>();
+          parsedOutfits.forEach((outfit: Outfit) => {
+            uniqueOutfitMap.set(outfit.id, outfit);
+          });
+          
+          const uniqueOutfits = Array.from(uniqueOutfitMap.values());
+          
+          // Save deduplicated outfits back to localStorage
+          if (uniqueOutfits.length !== parsedOutfits.length) {
+            localStorage.setItem('savedOutfits', JSON.stringify(uniqueOutfits));
           }
-        });
-        
-        const uniqueOutfits = Array.from(uniqueOutfitMap.values());
-        
-        // Save the deduplicated outfits back to localStorage
-        if (uniqueOutfits.length !== parsedOutfits.length) {
-          localStorage.setItem('savedOutfits', JSON.stringify(uniqueOutfits));
+          
+          setSavedOutfits(uniqueOutfits);
+          
+          // Create initial outfits state by combining sample outfits and saved outfits
+          const existingIds = new Set(sampleOutfits.map(outfit => outfit.id));
+          const uniqueSavedOutfits = uniqueOutfits.filter((outfit: Outfit) => !existingIds.has(outfit.id));
+          
+          setOutfits([...sampleOutfits, ...uniqueSavedOutfits]);
+        } catch (error) {
+          console.error('Error parsing saved outfits:', error);
         }
-        
-        setSavedOutfits(uniqueOutfits);
-        
-        // Merge with sample outfits, ensuring no duplicates by ID
-        const existingIds = new Set(sampleOutfits.map(outfit => outfit.id));
-        const uniqueSavedOutfits = uniqueOutfits.filter((outfit: Outfit) => !existingIds.has(outfit.id));
-        
-        setOutfits([...sampleOutfits, ...uniqueSavedOutfits]);
-      } catch (error) {
-        console.error('Error parsing saved outfits:', error);
+      } else {
+        // Set initial outfits to sample outfits if no saved outfits
+        setOutfits(sampleOutfits);
       }
-    }
+    };
+    
+    loadOutfitsFromLocalStorage();
   }, []);
 
   // Fetch outfits from Supabase if user is logged in
   useEffect(() => {
-    const fetchOutfits = async () => {
-      if (user?.id) {
-        try {
-          const { data, error } = await supabase
-            .from('outfits')
-            .select('*')
-            .eq('user_id', user.id);
-            
-          if (error) {
-            throw error;
-          }
+    const fetchOutfitsFromSupabase = async () => {
+      if (!user?.id) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from('outfits')
+          .select('*')
+          .eq('user_id', user.id);
           
-          if (data && data.length > 0) {
-            const formattedOutfits = data.map(outfit => ({
-              ...outfit,
-              dateAdded: new Date(outfit.date_added),
-              timesWorn: outfit.times_worn
-            }));
-            
-            // Create a set of existing IDs (from both sample outfits and local saved outfits) to avoid duplicates
-            const existingIds = new Set([...sampleOutfits, ...savedOutfits].map(outfit => outfit.id));
-            
-            // Filter out outfits that are already in the state to prevent duplicates
-            const uniqueDbOutfits = formattedOutfits.filter((outfit: Outfit) => !existingIds.has(outfit.id));
-            
-            setOutfits(prev => {
-              // Create a new Map with all existing outfits first
-              const outfitMap = new Map(prev.map(outfit => [outfit.id, outfit]));
-              
-              // Add or update with new outfits from database
-              uniqueDbOutfits.forEach(outfit => {
-                outfitMap.set(outfit.id, outfit);
-              });
-              
-              // Convert map back to array
-              return Array.from(outfitMap.values());
-            });
-          }
-        } catch (error) {
-          console.error('Error fetching outfits from Supabase:', error);
+        if (error) {
+          throw error;
         }
+        
+        if (data && data.length > 0) {
+          const formattedOutfits = data.map(outfit => ({
+            ...outfit,
+            dateAdded: new Date(outfit.date_added),
+            timesWorn: outfit.times_worn
+          }));
+          
+          // Get existing outfit IDs from both sample outfits and local saved outfits
+          const existingOutfitIds = new Set([...outfits.map(outfit => outfit.id)]);
+          
+          // Filter out outfits that are already in the state
+          const uniqueDbOutfits = formattedOutfits.filter(
+            (outfit: Outfit) => !existingOutfitIds.has(outfit.id)
+          );
+          
+          if (uniqueDbOutfits.length > 0) {
+            // Merge unique outfits from database with existing outfits
+            setOutfits(prev => [...prev, ...uniqueDbOutfits]);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching outfits from Supabase:', error);
       }
     };
     
-    fetchOutfits();
-  }, [user?.id, savedOutfits]);
+    fetchOutfitsFromSupabase();
+  }, [user?.id, outfits]);
 
   // Simulate loading time
   useEffect(() => {
@@ -229,57 +267,67 @@ const MixAndMatch = () => {
   }, [selectedOutfitId, outfits]);
 
   // Save outfit to collection
-  const handleSaveOutfit = (outfit: Outfit) => {
+  const handleSaveOutfit = async (outfit: Outfit) => {
     // Add generated ID if none exists
     const outfitToSave = {
       ...outfit,
       id: outfit.id || Date.now().toString(),
     };
 
-    // Get current outfits from localStorage
-    const localSavedOutfits = JSON.parse(localStorage.getItem('savedOutfits') || '[]');
+    // Check for outfit duplication before saving
+    const isDuplicate = outfits.some(existing => existing.id === outfitToSave.id);
+    if (isDuplicate) {
+      toast.error('This outfit already exists in your collection.');
+      return;
+    }
+
+    // Update local state
+    setOutfits(prev => [...prev, outfitToSave]);
     
-    // Check if this outfit ID or name already exists to prevent duplicates
-    const outfitExists = localSavedOutfits.some((o: Outfit) => 
-      o.id === outfitToSave.id || o.name === outfitToSave.name
-    );
+    // Save to localStorage - first check if already exists
+    const localSavedOutfits = JSON.parse(localStorage.getItem('savedOutfits') || '[]');
+    const outfitExists = localSavedOutfits.some((o: Outfit) => o.id === outfitToSave.id);
     
     if (!outfitExists) {
-      // Save to localStorage
       const updatedOutfits = [...localSavedOutfits, outfitToSave];
       localStorage.setItem('savedOutfits', JSON.stringify(updatedOutfits));
-      
-      // Update state
       setSavedOutfits(updatedOutfits);
-      setOutfits(prev => {
-        // Check if outfit with this ID already exists in state too
-        if (!prev.some(o => o.id === outfitToSave.id)) {
-          return [...prev, outfitToSave];
-        }
-        return prev;
-      });
-      
-      // Save to Supabase if user is logged in
-      if (user?.id) {
-        supabase
+    }
+    
+    // Save to Supabase if user is logged in
+    if (user?.id) {
+      try {
+        // Check if outfit exists in Supabase first
+        const { data: existingData } = await supabase
           .from('outfits')
-          .insert({
-            id: outfitToSave.id,
-            name: outfitToSave.name,
-            user_id: user.id,
-            items: outfitToSave.items,
-            season: outfitToSave.season,
-            occasion: outfitToSave.occasion,
-            occasions: outfitToSave.occasions,
-            favorite: outfitToSave.favorite,
-            times_worn: 0,
-            date_added: new Date().toISOString()
-          })
-          .then(({ error }) => {
-            if (error) console.error('Error saving outfit to Supabase:', error);
-          });
+          .select('id')
+          .eq('id', outfitToSave.id)
+          .eq('user_id', user.id);
+          
+        if (!existingData || existingData.length === 0) {
+          // Insert only if not exists
+          await supabase
+            .from('outfits')
+            .insert({
+              id: outfitToSave.id,
+              name: outfitToSave.name,
+              user_id: user.id,
+              items: outfitToSave.items,
+              season: outfitToSave.season,
+              occasion: outfitToSave.occasion,
+              occasions: outfitToSave.occasions,
+              favorite: outfitToSave.favorite,
+              times_worn: 0,
+              date_added: new Date().toISOString()
+            });
+        }
+      } catch (error) {
+        console.error('Error saving outfit to Supabase:', error);
+        // Continue with local saving even if database save fails
       }
     }
+    
+    toast.success('Outfit created successfully!');
   };
 
   // Use memoized handlers for temperature and weather condition
@@ -380,7 +428,7 @@ const MixAndMatch = () => {
             >
               <Suspense fallback={<Skeleton className="w-full h-32 rounded-xl bg-slate-800" />}>
                 <MemoizedCreateOutfitSection 
-                  clothingItems={sampleClothingItems}
+                  clothingItems={userClothingItems.length > 0 ? userClothingItems : sampleClothingItems}
                   isPremium={false}
                 />
               </Suspense>
@@ -418,7 +466,7 @@ const MixAndMatch = () => {
           >
             <OutfitTabSection
               outfits={outfits}
-              clothingItems={sampleClothingItems}
+              clothingItems={userClothingItems.length > 0 ? userClothingItems : sampleClothingItems}
             />
           </motion.section>
           
@@ -431,7 +479,7 @@ const MixAndMatch = () => {
             <Suspense fallback={<Skeleton className="w-full h-32 rounded-xl bg-slate-800" />}>
               <MemoizedSuggestedOutfitsSection
                 outfits={popularOutfits.slice(0, 6)}
-                clothingItems={sampleClothingItems}
+                clothingItems={userClothingItems.length > 0 ? userClothingItems : sampleClothingItems}
                 weather={{
                   temperature: temperature,
                   condition: weatherCondition,
@@ -447,7 +495,7 @@ const MixAndMatch = () => {
             isOpen={isBuilderOpen}
             onClose={() => setIsBuilderOpen(false)}
             onSave={handleSaveOutfit}
-            clothingItems={sampleClothingItems}
+            clothingItems={userClothingItems.length > 0 ? userClothingItems : sampleClothingItems}
           />
         )}
       </div>

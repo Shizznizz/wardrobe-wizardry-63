@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -27,8 +27,48 @@ const OutfitMatchModal = ({ open, onOpenChange, item, allItems }: OutfitMatchMod
   const [activeTab, setActiveTab] = useState<string>("tops");
   const [outfitName, setOutfitName] = useState(`Outfit with ${item.name}`);
   const [selectedItems, setSelectedItems] = useState<ClothingItem[]>([item]);
+  const [userClothingItems, setUserClothingItems] = useState<ClothingItem[]>(allItems);
   const navigate = useNavigate();
   const { user } = useAuth();
+  
+  // Fetch user's clothing items from Supabase when component mounts
+  useEffect(() => {
+    const fetchUserClothingItems = async () => {
+      if (!user?.id) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from('clothing_items')
+          .select('*')
+          .eq('user_id', user.id);
+          
+        if (error) throw error;
+        
+        if (data) {
+          const formattedItems: ClothingItem[] = data.map(item => ({
+            id: item.id,
+            name: item.name,
+            type: item.type,
+            color: item.color,
+            material: item.material || '',
+            season: item.season || ['all'],
+            occasions: item.occasions || ['casual'],
+            favorite: item.favorite || false,
+            imageUrl: item.image_url,
+            image: item.image_url,
+            timesWorn: item.times_worn || 0,
+            dateAdded: new Date(item.date_added)
+          }));
+          
+          setUserClothingItems(formattedItems);
+        }
+      } catch (error) {
+        console.error('Error fetching user clothing items:', error);
+      }
+    };
+    
+    fetchUserClothingItems();
+  }, [user?.id]);
   
   // Enhanced item type categories to include more top types
   const itemTypeCategories = {
@@ -50,14 +90,15 @@ const OutfitMatchModal = ({ open, onOpenChange, item, allItems }: OutfitMatchMod
   const initialCategory = getItemCategory(item.type);
   
   const getCategoryItems = (category: string): ClothingItem[] => {
-    return allItems.filter(i => {
+    // Use userClothingItems instead of allItems to ensure we only show items from the user's wardrobe
+    return userClothingItems.filter(i => {
       const types = itemTypeCategories[category as keyof typeof itemTypeCategories];
       return types?.includes(i.type.toLowerCase()) && i.id !== item.id;
     });
   };
   
   const handleToggleSelect = (id: string) => {
-    const clickedItem = allItems.find(i => i.id === id);
+    const clickedItem = userClothingItems.find(i => i.id === id);
     if (!clickedItem) return;
     
     const itemCategory = getItemCategory(clickedItem.type);
@@ -165,7 +206,7 @@ const OutfitMatchModal = ({ open, onOpenChange, item, allItems }: OutfitMatchMod
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] bg-slate-900 text-white border-slate-700 max-h-[85vh] overflow-hidden flex flex-col mt-6 md:mt-6">
+      <DialogContent className="sm:max-w-[600px] bg-slate-900 text-white border-slate-700 max-h-[90vh] overflow-hidden flex flex-col mt-6 md:mt-6">
         <DialogHeader>
           <DialogTitle className="text-xl flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-purple-400" />

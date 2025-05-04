@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { OutfitCard } from '@/components/outfits/OutfitCard';
 import { cn } from '@/lib/utils';
@@ -23,9 +23,49 @@ const OutfitTabSection = ({ outfits, clothingItems }: OutfitTabSectionProps) => 
   const [outfitToEdit, setOutfitToEdit] = useState<Outfit | null>(null);
   const { user } = useAuth();
   const [localOutfits, setLocalOutfits] = useState<Outfit[]>(outfits);
+  const [userClothingItems, setUserClothingItems] = useState<ClothingItem[]>(clothingItems);
+  
+  // Fetch user's clothing items from Supabase when component mounts
+  useEffect(() => {
+    const fetchUserClothingItems = async () => {
+      if (!user?.id) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from('clothing_items')
+          .select('*')
+          .eq('user_id', user.id);
+          
+        if (error) throw error;
+        
+        if (data) {
+          const formattedItems: ClothingItem[] = data.map(item => ({
+            id: item.id,
+            name: item.name,
+            type: item.type,
+            color: item.color,
+            material: item.material || '',
+            season: item.season || ['all'],
+            occasions: item.occasions || ['casual'],
+            favorite: item.favorite || false,
+            imageUrl: item.image_url,
+            image: item.image_url,
+            timesWorn: item.times_worn || 0,
+            dateAdded: new Date(item.date_added)
+          }));
+          
+          setUserClothingItems(formattedItems);
+        }
+      } catch (error) {
+        console.error('Error fetching user clothing items:', error);
+      }
+    };
+    
+    fetchUserClothingItems();
+  }, [user?.id]);
   
   // Update local outfits when props change
-  React.useEffect(() => {
+  useEffect(() => {
     setLocalOutfits(outfits);
   }, [outfits]);
   
@@ -41,6 +81,11 @@ const OutfitTabSection = ({ outfits, clothingItems }: OutfitTabSectionProps) => 
   };
 
   const getClothingItemById = (id: string): ClothingItem | undefined => {
+    // First try to find the item in the user's clothing items from Supabase
+    const userItem = userClothingItems.find(item => item && item.id === id);
+    if (userItem) return userItem;
+    
+    // Fallback to the sample clothing items if not found in user items
     return clothingItems.find(item => item && item.id === id);
   };
   
@@ -217,7 +262,7 @@ const OutfitTabSection = ({ outfits, clothingItems }: OutfitTabSectionProps) => 
                 <OutfitCard 
                   key={outfit.id} 
                   outfit={outfit} 
-                  clothingItems={clothingItems}
+                  clothingItems={userClothingItems.length > 0 ? userClothingItems : clothingItems}
                   getClothingItemById={getClothingItemById}
                   onEdit={handleEdit}
                   onDelete={handleDelete}
@@ -245,7 +290,7 @@ const OutfitTabSection = ({ outfits, clothingItems }: OutfitTabSectionProps) => 
                 <OutfitCard 
                   key={outfit.id} 
                   outfit={outfit} 
-                  clothingItems={clothingItems}
+                  clothingItems={userClothingItems.length > 0 ? userClothingItems : clothingItems}
                   getClothingItemById={getClothingItemById}
                   onEdit={handleEdit}
                   onDelete={handleDelete}
@@ -273,7 +318,7 @@ const OutfitTabSection = ({ outfits, clothingItems }: OutfitTabSectionProps) => 
                 <OutfitCard 
                   key={outfit.id} 
                   outfit={outfit} 
-                  clothingItems={clothingItems}
+                  clothingItems={userClothingItems.length > 0 ? userClothingItems : clothingItems}
                   getClothingItemById={getClothingItemById}
                   onEdit={handleEdit}
                   onDelete={handleDelete}
@@ -299,7 +344,7 @@ const OutfitTabSection = ({ outfits, clothingItems }: OutfitTabSectionProps) => 
             setOutfitToEdit(null);
           }}
           onSave={handleUpdateOutfit}
-          clothingItems={clothingItems}
+          clothingItems={userClothingItems.length > 0 ? userClothingItems : clothingItems}
           initialOutfit={outfitToEdit}
         />
       )}
