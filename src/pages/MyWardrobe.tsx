@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -401,35 +400,49 @@ const MyWardrobe = () => {
           animate="visible"
           variants={containerVariants}
         >
-          {/* Updated PageHeader with new image positioning and enhanced styling */}
+          {/* Enhanced PageHeader with new image and animation styling */}
           <PageHeader
             title="Your Digital Wardrobe"
-            subtitle="Olivia helps you organize, analyze, and fall in love with your closet again."
+            subtitle="Elevate your style with our AI-powered organization tools. Rediscover your fashion sense."
             showAvatar={true}
             imagePosition="right"
             isLeftAligned={true}
-            className="mb-8 relative overflow-visible"
-            halfBodyImage="/lovable-uploads/f816da94-4177-47eb-bc82-48ae6be6e8f9.png"
+            className="mb-8 relative overflow-visible py-12 md:py-16"
+            halfBodyImage="/lovable-uploads/7bf89910-ba2c-43e0-a523-899d90c3022e.png"
+            animationStyle="slide"
+            overlayEffect="glow"
           >
-            <div className="flex flex-wrap gap-3 mt-4 z-10 relative">
+            <div className="flex flex-wrap gap-3 mt-6 z-10 relative">
               <UploadModal onUpload={handleUpload}>
-                <Button 
-                  size="lg" 
-                  className="bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90 shadow-lg shadow-purple-600/20 hover:shadow-purple-600/30 transition-all duration-300"
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 17 }}
                 >
-                  <Upload className="mr-2 h-4 w-4" /> Add Clothing Item
-                </Button>
+                  <Button 
+                    size="lg" 
+                    className="bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90 shadow-lg shadow-purple-600/20 hover:shadow-purple-600/30 transition-all duration-300"
+                  >
+                    <Upload className="mr-2 h-4 w-4" /> Add Clothing Item
+                  </Button>
+                </motion.div>
               </UploadModal>
               
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button 
-                    size="lg" 
-                    variant="outline" 
-                    className="border-purple-400/30 text-white hover:bg-white/10"
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
                   >
-                    <Shirt className="mr-2 h-4 w-4" /> Wardrobe Options
-                  </Button>
+                    <Button 
+                      size="lg" 
+                      variant="outline" 
+                      className="border-purple-400/30 text-white hover:bg-white/10"
+                    >
+                      <Shirt className="mr-2 h-4 w-4" /> Wardrobe Options
+                    </Button>
+                  </motion.div>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="bg-slate-900/95 backdrop-blur-md border-slate-700/50 text-white w-56">
                   <DropdownMenuItem 
