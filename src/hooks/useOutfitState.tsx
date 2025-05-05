@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Outfit, ClothingItem, WeatherInfo, TimeOfDay, Activity, ClothingSeason } from '@/lib/types';
 import { OutfitLog } from '@/components/outfits/OutfitLogItem';
@@ -280,7 +279,7 @@ export function useOutfitState(initialOutfits: Outfit[] = [], initialClothingIte
         const suitabilityScore = outfitLogs
           .filter(log => 
             log && log.outfitId === outfit.id && 
-            log.weatherCondition === currentWeather.condition?.toLowerCase()
+            log.weather_condition === currentWeather.condition?.toLowerCase()
           )
           .length;
         

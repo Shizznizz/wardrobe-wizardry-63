@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Plus, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -54,7 +55,7 @@ const AddToCalendarButton = ({
         date: selectedDate,
         timeOfDay: 'morning' as TimeOfDay,
         notes: '',
-        weatherCondition: '',
+        weather_condition: '',
         temperature: ''
       };
 
@@ -86,12 +87,19 @@ const AddToCalendarButton = ({
           date: new Date(data.date),
           timeOfDay: data.time_of_day as TimeOfDay,
           notes: data.notes,
-          weatherCondition: data.weather_condition,
-          temperature: data.temperature
+          weather_condition: data.weather_condition,
+          temperature: data.temperature,
+          user_id: data.user_id,
+          activity: data.activity,
+          customActivity: data.custom_activity,
+          askForAiSuggestion: data.ask_for_ai_suggestion,
+          aiSuggested: data.ai_suggested,
+          aiSuggestionFeedback: data.ai_suggestion_feedback
         };
       } else {
         savedLog = {
           id: Date.now().toString(),
+          user_id: '',
           ...newLog as any
         };
       }

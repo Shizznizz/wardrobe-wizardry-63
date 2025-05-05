@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { OutfitCard } from '@/components/outfits/OutfitCard';
@@ -11,6 +10,7 @@ import OutfitBuilder from '@/components/OutfitBuilder';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { OutfitLogItem } from '@/components/outfits/OutfitLogItem';
 
 interface OutfitTabSectionProps {
   outfits: Outfit[];
@@ -158,7 +158,7 @@ const OutfitTabSection = ({ outfits, clothingItems }: OutfitTabSectionProps) => 
     toast.success('Favorite status updated');
   };
   
-  const handleOutfitAddedToCalendar = (log: OutfitLog) => {
+  const handleOutfitAddedToCalendar = (log: OutfitLogItem) => {
     toast.success(`Outfit added to your calendar for ${new Date(log.date).toLocaleDateString()}`);
     // Implementation would go here
   };
