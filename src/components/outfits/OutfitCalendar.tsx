@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
@@ -49,7 +48,7 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog, location }: OutfitCa
   const [calendarView, setCalendarView] = useState<'month' | 'week' | 'day'>(
     'month'  // Default to month view for all devices
   );
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   
   const {
     selectedDate,
@@ -124,6 +123,7 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog, location }: OutfitCa
       outfitId,
       date: selectedDate,
       timeOfDay: 'all-day',
+      user_id: user?.id || ''
     };
     
     await addOutfitLog(newLog);
@@ -140,6 +140,7 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog, location }: OutfitCa
       date: selectedDate,
       timeOfDay: 'all-day',
       customActivity: activity,
+      user_id: user?.id || ''
     };
     
     await addOutfitLog(newLog);

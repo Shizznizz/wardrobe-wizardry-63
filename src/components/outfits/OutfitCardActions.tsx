@@ -71,7 +71,15 @@ const OutfitCardActions = ({
             fullWidth={true}
             variant="outline"
             className="border-purple-500/30 hover:bg-purple-500/10 w-full text-xs h-8"
-            onSuccess={onOutfitAddedToCalendar}
+            onSuccess={onOutfitAddedToCalendar ? 
+              (log) => {
+                // Add user_id if it's missing
+                const completeLog: OutfitLog = {
+                  ...log,
+                  user_id: log.user_id || ''
+                };
+                onOutfitAddedToCalendar(completeLog);
+              } : undefined}
           />
 
           <div className="flex justify-between mt-3">

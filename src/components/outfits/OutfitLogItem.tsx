@@ -1,5 +1,5 @@
-
 import { Outfit } from '@/lib/types';
+import { TimeOfDay } from '@/lib/types';
 
 export interface OutfitLog {
   id: string;
@@ -10,6 +10,11 @@ export interface OutfitLog {
   weather_condition?: string;
   temperature?: string;
   user_id: string;
+  activity?: string;
+  customActivity?: string;
+  askForAiSuggestion?: boolean;
+  aiSuggested?: boolean;
+  aiSuggestionFeedback?: 'positive' | 'negative' | null;
 }
 
 export interface OutfitLogExtended extends OutfitLog {

@@ -1,4 +1,3 @@
-
 import { format, eachDayOfInterval, isToday, isSameDay, startOfMonth, endOfMonth, isFuture } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { OutfitLog } from '../OutfitLogItem';
@@ -28,6 +27,7 @@ const activityEmojis: Record<string, string> = {
   other: '📝'
 };
 
+// Mapping of weather conditions to emojis
 const weatherConditionMap: Record<string, string> = {
   sunny: 'sunny',
   cloudy: 'cloudy',
@@ -59,16 +59,16 @@ const MonthlyCalendarView = ({
       const outfit = getOutfitById(log.outfitId);
       if (!outfit) return null;
       
-      const activity = log.activity === 'other' && log.customActivity ? log.customActivity : log.activity;
-      const weatherInfo = log.weatherCondition || log.temperature 
-        ? `${log.weatherCondition || ''} ${log.temperature ? `(${log.temperature})` : ''}`
+      const activityDisplay = log.activity === 'other' && log.customActivity ? log.customActivity : log.activity;
+      const weatherInfo = log.weather_condition || log.temperature 
+        ? `${log.weather_condition || ''} ${log.temperature ? `(${log.temperature})` : ''}`
         : '';
       
       return (
         <div key={log.id} className="py-1">
           {isFuture(new Date(log.date)) 
-            ? `Planned: "${outfit.name}" for ${activity}`
-            : `Wore "${outfit.name}" for ${activity}`}
+            ? `Planned: "${outfit.name}" for ${activityDisplay}`
+            : `Wore "${outfit.name}" for ${activityDisplay}`}
           {weatherInfo && <div className="text-xs opacity-70">{weatherInfo}</div>}
         </div>
       );

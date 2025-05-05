@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -12,6 +11,7 @@ import { format } from 'date-fns';
 import { Outfit, TimeOfDay, Activity } from '@/lib/types';
 import { OutfitLog } from '../OutfitLogItem';
 import { CalendarIcon, X } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 
 interface OutfitLogFormProps {
   isOpen: boolean;
@@ -39,13 +39,14 @@ const OutfitLogForm = ({
   const [date, setDate] = useState<Date>(selectedDate);
   const [outfitId, setOutfitId] = useState<string>('');
   const [timeOfDay, setTimeOfDay] = useState<TimeOfDay>('morning');
-  const [weatherCondition, setWeatherCondition] = useState<string>('');
+  const [weather_condition, setWeatherCondition] = useState<string>('');
   const [temperature, setTemperature] = useState<string>('');
   const [activity, setActivity] = useState<Activity | ''>('');
   const [customActivity, setCustomActivity] = useState<string>('');
   const [notes, setNotes] = useState<string>('');
   const [askForAiSuggestion, setAskForAiSuggestion] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const { user } = useAuth();
 
   // Populate form with initialData when in edit mode
   useEffect(() => {
@@ -54,7 +55,7 @@ const OutfitLogForm = ({
       setOutfitId(initialData.outfitId);
       // Type assertion to ensure proper types
       setTimeOfDay(initialData.timeOfDay as TimeOfDay || 'morning');
-      setWeatherCondition(initialData.weatherCondition || '');
+      setWeatherCondition(initialData.weather_condition || '');
       setTemperature(initialData.temperature || '');
       setActivity(initialData.activity as Activity | '' || '');
       setCustomActivity(initialData.customActivity || '');
@@ -85,12 +86,13 @@ const OutfitLogForm = ({
         outfitId,
         date,
         timeOfDay,
-        weatherCondition: weatherCondition || undefined,
+        weather_condition: weather_condition || undefined,
         temperature: temperature || undefined,
         activity: activity as Activity | undefined,
         customActivity: activity === 'other' ? customActivity : undefined,
         notes: notes || undefined,
         askForAiSuggestion,
+        user_id: user?.id || '',
       };
       
       await onSubmit(logData);
@@ -193,7 +195,7 @@ const OutfitLogForm = ({
             <div className="space-y-2">
               <Label htmlFor="weather">Weather (Optional)</Label>
               <Select 
-                value={weatherCondition} 
+                value={weather_condition} 
                 onValueChange={setWeatherCondition}
               >
                 <SelectTrigger className="w-full bg-slate-800 border-slate-700">

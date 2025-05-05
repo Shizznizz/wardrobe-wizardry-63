@@ -1,9 +1,8 @@
-
 import { format } from 'date-fns';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import OutfitLogItem, { OutfitLog } from '../OutfitLogItem';
+import { OutfitLog } from '../OutfitLogItem';
 import { Outfit } from '@/lib/types';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { toast } from 'sonner';

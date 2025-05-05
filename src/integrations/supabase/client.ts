@@ -1,4 +1,3 @@
-
 import { createClient } from '@supabase/supabase-js';
 import { UserPreferences, Outfit, ClothingItem } from '@/lib/types';
 import { OutfitLog } from '@/components/outfits/OutfitLogItem';
@@ -149,8 +148,10 @@ export const saveOutfitLog = async (userId: string, log: Omit<OutfitLog, 'id'>) 
       date: log.date instanceof Date ? log.date.toISOString() : new Date(log.date).toISOString(),
       time_of_day: log.timeOfDay,
       notes: log.notes || null,
-      weather_condition: log.weatherCondition || null,
-      temperature: log.temperature || null
+      weather_condition: log.weather_condition || null,
+      temperature: log.temperature || null,
+      activity: log.activity || null,
+      custom_activity: log.customActivity || null
     };
     
     const { data, error } = await supabase
@@ -171,8 +172,11 @@ export const saveOutfitLog = async (userId: string, log: Omit<OutfitLog, 'id'>) 
       date: new Date(data.date),
       timeOfDay: data.time_of_day,
       notes: data.notes,
-      weatherCondition: data.weather_condition,
-      temperature: data.temperature
+      weather_condition: data.weather_condition,
+      temperature: data.temperature,
+      activity: data.activity,
+      customActivity: data.custom_activity,
+      user_id: data.user_id
     };
     
     return { success: true, data: savedLog };
@@ -195,8 +199,10 @@ export const updateOutfitLog = async (userId: string, logId: string, updates: Pa
     }
     if (updates.timeOfDay !== undefined) updateData.time_of_day = updates.timeOfDay;
     if (updates.notes !== undefined) updateData.notes = updates.notes;
-    if (updates.weatherCondition !== undefined) updateData.weather_condition = updates.weatherCondition;
+    if (updates.weather_condition !== undefined) updateData.weather_condition = updates.weather_condition;
     if (updates.temperature !== undefined) updateData.temperature = updates.temperature;
+    if (updates.activity !== undefined) updateData.activity = updates.activity;
+    if (updates.customActivity !== undefined) updateData.custom_activity = updates.customActivity;
     
     const { data, error } = await supabase
       .from('outfit_logs')
@@ -218,8 +224,11 @@ export const updateOutfitLog = async (userId: string, logId: string, updates: Pa
       date: new Date(data.date),
       timeOfDay: data.time_of_day,
       notes: data.notes,
-      weatherCondition: data.weather_condition,
-      temperature: data.temperature
+      weather_condition: data.weather_condition,
+      temperature: data.temperature,
+      activity: data.activity,
+      customActivity: data.custom_activity,
+      user_id: data.user_id
     };
     
     return { success: true, data: updatedLog };

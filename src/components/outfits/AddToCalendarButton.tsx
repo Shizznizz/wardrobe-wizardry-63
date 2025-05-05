@@ -9,16 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { Outfit, TimeOfDay } from '@/lib/types';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
-
-export interface OutfitLog {
-  id: string;
-  outfitId: string;
-  date: Date;
-  timeOfDay: TimeOfDay;
-  notes?: string;
-  weatherCondition?: string;
-  temperature?: string;
-}
+import { OutfitLog } from './OutfitLogItem';
 
 interface AddToCalendarButtonProps {
   outfit: Outfit;
