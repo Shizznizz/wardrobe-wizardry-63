@@ -277,49 +277,60 @@ const MixAndMatch = () => {
 
   // Save outfit to collection
   const handleSaveOutfit = async (outfit: Outfit) => {
-    // Add generated ID if none exists
-    const outfitToSave = {
-      ...outfit,
-      id: outfit.id || `outfit-${Date.now()}`,
-    };
-
-    // Check for outfit duplication before saving
-    const isDuplicate = outfits.some(existing => existing.id === outfitToSave.id);
-    if (isDuplicate) {
-      toast.error('This outfit already exists in your collection.');
-      return;
+    try {
+      // Add generated ID if none exists
+      const outfitToSave = {
+        ...outfit,
+        id: outfit.id || `outfit-${Date.now()}`,
+      };
+  
+      // Check for outfit duplication before saving
+      const isDuplicate = outfits.some(existing => existing.id === outfitToSave.id);
+      if (isDuplicate) {
+        toast.error('This outfit already exists in your collection.');
+        return;
+      }
+  
+      console.log("Saving outfit:", outfitToSave);
+  
+      // Update local state
+      setOutfits(prev => {
+        const updated = [...prev, outfitToSave];
+        console.log("Updated outfits:", updated);
+        return updated;
+      });
+      
+      // Save to localStorage - first check if already exists
+      const localSavedOutfits = JSON.parse(localStorage.getItem('savedOutfits') || '[]');
+      const outfitExists = localSavedOutfits.some((o: Outfit) => o.id === outfitToSave.id);
+      
+      if (!outfitExists) {
+        const updatedOutfits = [...localSavedOutfits, outfitToSave];
+        localStorage.setItem('savedOutfits', JSON.stringify(updatedOutfits));
+        setSavedOutfits(updatedOutfits);
+      }
+      
+      // Close the builder modal
+      setIsBuilderOpen(false);
+      
+      // Force tab section to re-render
+      setOutfitTabKey(prev => prev + 1);
+      
+      toast.success('Outfit created successfully!');
+      
+      // Scroll to the outfits section to show the newly added outfit
+      setTimeout(() => {
+        const outfitCollection = document.getElementById('outfit-collection');
+        if (outfitCollection) {
+          outfitCollection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+          scrollToOutfitsSection();
+        }
+      }, 500);
+    } catch (error) {
+      console.error("Error saving outfit:", error);
+      toast.error("Failed to save outfit. Please try again.");
     }
-
-    console.log("Saving outfit:", outfitToSave);
-
-    // Update local state
-    setOutfits(prev => {
-      const updated = [...prev, outfitToSave];
-      console.log("Updated outfits:", updated);
-      return updated;
-    });
-    
-    // Save to localStorage - first check if already exists
-    const localSavedOutfits = JSON.parse(localStorage.getItem('savedOutfits') || '[]');
-    const outfitExists = localSavedOutfits.some((o: Outfit) => o.id === outfitToSave.id);
-    
-    if (!outfitExists) {
-      const updatedOutfits = [...localSavedOutfits, outfitToSave];
-      localStorage.setItem('savedOutfits', JSON.stringify(updatedOutfits));
-      setSavedOutfits(updatedOutfits);
-    }
-    
-    // Save to Supabase is now handled directly in the OutfitBuilder component
-    
-    // Force tab section to re-render
-    setOutfitTabKey(prev => prev + 1);
-    
-    toast.success('Outfit created successfully!');
-    
-    // Scroll to the outfits section to show the newly added outfit
-    setTimeout(() => {
-      scrollToOutfitsSection();
-    }, 500);
   };
 
   // Use memoized handlers for temperature and weather condition
@@ -462,6 +473,7 @@ const MixAndMatch = () => {
             onClose={() => setIsBuilderOpen(false)}
             onSave={handleSaveOutfit}
             clothingItems={userClothingItems}
+            initialOutfit={selectedOutfit}
           />
         )}
       </div>

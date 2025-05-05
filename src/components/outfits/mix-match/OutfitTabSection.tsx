@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Outfit, ClothingItem } from '@/lib/types';
 import { Heart, Clock, RefreshCw } from 'lucide-react';
@@ -24,7 +24,7 @@ const OutfitTabSection = ({ outfits, clothingItems }: OutfitTabSectionProps) => 
   const { user } = useAuth();
 
   // Fetch outfits from Supabase that match items in user's wardrobe
-  const fetchUserOutfits = async () => {
+  const fetchUserOutfits = useCallback(async () => {
     if (!user) {
       setIsLoading(false);
       return;
@@ -86,11 +86,11 @@ const OutfitTabSection = ({ outfits, clothingItems }: OutfitTabSectionProps) => 
       setIsLoading(false);
       setIsRefreshing(false);
     }
-  };
+  }, [user, clothingItems]);
 
   useEffect(() => {
     fetchUserOutfits();
-  }, [user, clothingItems]);
+  }, [fetchUserOutfits]);
 
   const handleRefresh = () => {
     setIsRefreshing(true);
@@ -98,7 +98,7 @@ const OutfitTabSection = ({ outfits, clothingItems }: OutfitTabSectionProps) => 
   };
 
   return (
-    <div className="rounded-xl border border-white/10 overflow-hidden bg-slate-900/50 backdrop-blur-md p-4">
+    <div className="rounded-xl border border-white/10 overflow-hidden bg-slate-900/50 backdrop-blur-md p-4" id="outfit-collection">
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-xl font-semibold text-white">Outfit Collections</h3>
         {user && (

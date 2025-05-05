@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -74,9 +73,16 @@ const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }
       toast.error("Please select at least one occasion");
       return;
     }
+
+    if (!user) {
+      toast.error("You must be logged in to save outfits");
+      return;
+    }
+    
+    const outfitId = initialOutfit?.id || crypto.randomUUID();
     
     const newOutfit: Outfit = {
-      id: initialOutfit?.id || String(Date.now()),
+      id: outfitId,
       name: outfitName,
       items: selectedItems.map(item => item.id),
       season: selectedSeasons,
@@ -93,60 +99,72 @@ const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }
     console.log("Saving outfit:", newOutfit);
     
     // If user is authenticated, save to Supabase
-    if (user) {
-      setIsSaving(true);
-      try {
-        const outfitData = {
-          id: newOutfit.id,
-          name: newOutfit.name,
-          user_id: user.id,
-          items: newOutfit.items,
-          season: newOutfit.season,
-          occasion: newOutfit.occasion,
-          occasions: newOutfit.occasions,
-          favorite: newOutfit.favorite,
-          times_worn: newOutfit.timesWorn || 0,
-          date_added: new Date().toISOString()
-        };
-        
-        // Check if the outfit already exists
-        const { data: existingOutfit } = await supabase
-          .from('outfits')
-          .select('id')
-          .eq('id', newOutfit.id)
-          .single();
-        
-        let result;
-        if (existingOutfit) {
-          // Update existing outfit
-          result = await supabase
-            .from('outfits')
-            .update(outfitData)
-            .eq('id', newOutfit.id);
-        } else {
-          // Insert new outfit
-          result = await supabase
-            .from('outfits')
-            .insert([outfitData]);
-        }
-        
-        if (result.error) {
-          console.error("Error saving outfit to Supabase:", result.error);
-          toast.error("Failed to save outfit to database");
-        } else {
-          toast.success("Outfit saved to your collection!");
-        }
-      } catch (error) {
-        console.error("Exception saving outfit:", error);
-        toast.error("An unexpected error occurred");
-      } finally {
+    setIsSaving(true);
+    try {
+      const outfitData = {
+        id: newOutfit.id,
+        name: newOutfit.name,
+        user_id: user.id,
+        items: newOutfit.items,
+        season: newOutfit.season,
+        occasion: newOutfit.occasion,
+        occasions: newOutfit.occasions,
+        favorite: newOutfit.favorite,
+        times_worn: newOutfit.timesWorn || 0,
+        date_added: new Date().toISOString()
+      };
+      
+      // Check if the outfit already exists
+      const { data: existingOutfit, error: checkError } = await supabase
+        .from('outfits')
+        .select('id')
+        .eq('id', newOutfit.id)
+        .single();
+      
+      if (checkError && checkError.code !== 'PGRST116') {
+        console.error("Error checking for existing outfit:", checkError);
+        toast.error("Failed to check if outfit exists");
         setIsSaving(false);
+        return;
       }
+      
+      let result;
+      if (existingOutfit) {
+        // Update existing outfit
+        result = await supabase
+          .from('outfits')
+          .update(outfitData)
+          .eq('id', newOutfit.id);
+      } else {
+        // Insert new outfit
+        result = await supabase
+          .from('outfits')
+          .insert([outfitData]);
+      }
+      
+      if (result.error) {
+        console.error("Error saving outfit to Supabase:", result.error);
+        toast.error("Failed to save outfit to database");
+        setIsSaving(false);
+        return;
+      } else {
+        toast.success("Outfit saved to your collection!");
+        
+        // Call the onSave prop to update local state as well
+        onSave(newOutfit);
+        
+        // Reset form and close modal
+        resetForm();
+        onClose();
+      }
+    } catch (error) {
+      console.error("Exception saving outfit:", error);
+      toast.error("An unexpected error occurred");
+      setIsSaving(false);
+      return;
     }
     
-    // Call the onSave prop to update local state as well
-    onSave(newOutfit);
-    resetForm();
+    setIsSaving(false);
   };
   
   const toggleItem = (item: ClothingItem) => {

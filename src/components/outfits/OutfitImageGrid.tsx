@@ -62,13 +62,18 @@ const OutfitImageGrid = ({ itemIds, getClothingItemById, clothingItems }: Outfit
             ? "col-span-full" 
             : "";
         
+        if (!item) {
+          console.log(`Item not found for ID: ${itemId}`);
+          return null; // Skip rendering if item not found
+        }
+        
         return (
           <div 
             key={`${itemId}-${index}`} 
             className={`overflow-hidden ${spanClasses}`}
           >
             <div className="bg-slate-800 rounded-md h-full w-full overflow-hidden flex items-center justify-center">
-              {item?.imageUrl ? (
+              {item.imageUrl ? (
                 <OptimizedImage 
                   src={item.imageUrl} 
                   alt={item.name || 'Clothing item'} 
@@ -79,7 +84,7 @@ const OutfitImageGrid = ({ itemIds, getClothingItemById, clothingItems }: Outfit
               ) : (
                 <div className="text-gray-400 text-xs flex flex-col items-center justify-center h-full">
                   <Shirt className="h-5 w-5 mb-1" />
-                  <span>{item?.name || 'Item'}</span>
+                  <span>{item.name || 'Item'}</span>
                 </div>
               )}
             </div>
