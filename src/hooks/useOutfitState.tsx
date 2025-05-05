@@ -279,7 +279,7 @@ export function useOutfitState(initialOutfits: Outfit[] = [], initialClothingIte
         const suitabilityScore = outfitLogs
           .filter(log => 
             log && log.outfitId === outfit.id && 
-            log.weather_condition === currentWeather.condition?.toLowerCase()
+            log.weatherCondition === currentWeather.condition?.toLowerCase()
           )
           .length;
         
