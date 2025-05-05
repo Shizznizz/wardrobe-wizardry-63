@@ -148,7 +148,7 @@ export const saveOutfitLog = async (userId: string, log: Omit<OutfitLog, 'id'>) 
       date: log.date instanceof Date ? log.date.toISOString() : new Date(log.date).toISOString(),
       time_of_day: log.timeOfDay,
       notes: log.notes || null,
-      weather_condition: log.weather_condition || null,
+      weather_condition: log.weatherCondition || null,
       temperature: log.temperature || null,
       activity: log.activity || null,
       custom_activity: log.customActivity || null
@@ -172,7 +172,7 @@ export const saveOutfitLog = async (userId: string, log: Omit<OutfitLog, 'id'>) 
       date: new Date(data.date),
       timeOfDay: data.time_of_day,
       notes: data.notes,
-      weather_condition: data.weather_condition,
+      weatherCondition: data.weather_condition,
       temperature: data.temperature,
       activity: data.activity,
       customActivity: data.custom_activity,
@@ -199,7 +199,7 @@ export const updateOutfitLog = async (userId: string, logId: string, updates: Pa
     }
     if (updates.timeOfDay !== undefined) updateData.time_of_day = updates.timeOfDay;
     if (updates.notes !== undefined) updateData.notes = updates.notes;
-    if (updates.weather_condition !== undefined) updateData.weather_condition = updates.weather_condition;
+    if (updates.weatherCondition !== undefined) updateData.weather_condition = updates.weatherCondition;
     if (updates.temperature !== undefined) updateData.temperature = updates.temperature;
     if (updates.activity !== undefined) updateData.activity = updates.activity;
     if (updates.customActivity !== undefined) updateData.custom_activity = updates.customActivity;
@@ -224,7 +224,7 @@ export const updateOutfitLog = async (userId: string, logId: string, updates: Pa
       date: new Date(data.date),
       timeOfDay: data.time_of_day,
       notes: data.notes,
-      weather_condition: data.weather_condition,
+      weatherCondition: data.weather_condition,
       temperature: data.temperature,
       activity: data.activity,
       customActivity: data.custom_activity,

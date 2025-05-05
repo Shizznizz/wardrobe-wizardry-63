@@ -1,6 +1,7 @@
+
 import { format, eachDayOfInterval, isToday, isSameDay, startOfMonth, endOfMonth, isFuture } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { OutfitLog } from '../OutfitLogItem';
+import { OutfitLog } from '@/lib/types';
 import { Outfit } from '@/lib/types';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -60,8 +61,8 @@ const MonthlyCalendarView = ({
       if (!outfit) return null;
       
       const activityDisplay = log.activity === 'other' && log.customActivity ? log.customActivity : log.activity;
-      const weatherInfo = log.weather_condition || log.temperature 
-        ? `${log.weather_condition || ''} ${log.temperature ? `(${log.temperature})` : ''}`
+      const weatherInfo = log.weatherCondition || log.temperature 
+        ? `${log.weatherCondition || ''} ${log.temperature ? `(${log.temperature})` : ''}`
         : '';
       
       return (

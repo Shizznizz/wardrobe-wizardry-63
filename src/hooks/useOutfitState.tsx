@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Outfit, ClothingItem, WeatherInfo, TimeOfDay, Activity, ClothingSeason } from '@/lib/types';
-import { OutfitLog } from '@/components/outfits/OutfitLogItem';
+import { OutfitLog } from '@/lib/types';
 
 export function useOutfitState(initialOutfits: Outfit[] = [], initialClothingItems: ClothingItem[] = []) {
   // Ensure outfits is always initialized as an array, even if initialOutfits is undefined

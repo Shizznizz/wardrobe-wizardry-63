@@ -3,7 +3,7 @@ import { format } from 'date-fns';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { OutfitLog, OutfitLogExtended } from '../OutfitLogItem';
+import { OutfitLog } from '@/lib/types';
 import { Outfit } from '@/lib/types';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { toast } from 'sonner';
@@ -32,7 +32,7 @@ const OutfitLogItem = ({
           <h4 className="font-medium text-purple-200">{outfitName}</h4>
           <p className="text-xs text-slate-400 mt-1">
             {log.timeOfDay}{' '}
-            {log.weather_condition && `• ${log.weather_condition}`}{' '}
+            {log.weatherCondition && `• ${log.weatherCondition}`}{' '}
             {log.temperature && `• ${log.temperature}`}
           </p>
         </div>

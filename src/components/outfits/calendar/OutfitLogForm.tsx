@@ -39,7 +39,7 @@ const OutfitLogForm = ({
   const [date, setDate] = useState<Date>(selectedDate);
   const [outfitId, setOutfitId] = useState<string>('');
   const [timeOfDay, setTimeOfDay] = useState<TimeOfDay>('morning');
-  const [weather_condition, setWeatherCondition] = useState<string>('');
+  const [weatherCondition, setWeatherCondition] = useState<string>('');
   const [temperature, setTemperature] = useState<string>('');
   const [activity, setActivity] = useState<Activity | ''>('');
   const [customActivity, setCustomActivity] = useState<string>('');
@@ -55,7 +55,7 @@ const OutfitLogForm = ({
       setOutfitId(initialData.outfitId);
       // Type assertion to ensure proper types
       setTimeOfDay(initialData.timeOfDay as TimeOfDay || 'morning');
-      setWeatherCondition(initialData.weather_condition || '');
+      setWeatherCondition(initialData.weatherCondition || '');
       setTemperature(initialData.temperature || '');
       setActivity(initialData.activity as Activity | '' || '');
       setCustomActivity(initialData.customActivity || '');
@@ -86,7 +86,7 @@ const OutfitLogForm = ({
         outfitId,
         date,
         timeOfDay,
-        weather_condition: weather_condition || undefined,
+        weatherCondition: weatherCondition || undefined,
         temperature: temperature || undefined,
         activity: activity as Activity | undefined,
         customActivity: activity === 'other' ? customActivity : undefined,
@@ -195,7 +195,7 @@ const OutfitLogForm = ({
             <div className="space-y-2">
               <Label htmlFor="weather">Weather (Optional)</Label>
               <Select 
-                value={weather_condition} 
+                value={weatherCondition} 
                 onValueChange={setWeatherCondition}
               >
                 <SelectTrigger className="w-full bg-slate-800 border-slate-700">

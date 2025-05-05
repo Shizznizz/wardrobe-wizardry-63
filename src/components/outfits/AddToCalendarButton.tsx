@@ -19,6 +19,7 @@ interface AddToCalendarButtonProps {
   fullWidth?: boolean;
   onSuccess?: (log: OutfitLog) => void;  // Changed from onOutfitAdded to onSuccess
   className?: string;
+  setIsAddingToCalendar?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const AddToCalendarButton = ({
@@ -27,7 +28,8 @@ const AddToCalendarButton = ({
   size = 'sm',
   fullWidth = false,
   onSuccess,
-  className = ''
+  className = '',
+  setIsAddingToCalendar
 }: AddToCalendarButtonProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -37,6 +39,9 @@ const AddToCalendarButton = ({
 
   const handleOpenChange = (open: boolean) => {
     setIsOpen(open);
+    if (setIsAddingToCalendar) {
+      setIsAddingToCalendar(open);
+    }
     if (open) {
       setSelectedDate(new Date());
     }
@@ -49,6 +54,10 @@ const AddToCalendarButton = ({
     }
 
     setIsSubmitting(true);
+    if (setIsAddingToCalendar) {
+      setIsAddingToCalendar(true);
+    }
+    
     try {
       const newLog: Partial<OutfitLog> = {
         outfitId: outfit.id,
@@ -118,6 +127,9 @@ const AddToCalendarButton = ({
       toast.error('Failed to add outfit to calendar');
     } finally {
       setIsSubmitting(false);
+      if (setIsAddingToCalendar) {
+        setIsAddingToCalendar(false);
+      }
     }
   };
 

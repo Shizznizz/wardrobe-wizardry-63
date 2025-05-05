@@ -7,8 +7,8 @@ import { useForm } from "react-hook-form";
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
-import { Outfit, ClothingItem } from '@/lib/types';
-import { OutfitLog } from './OutfitLogItem';
+import { Outfit, ClothingItem, TimeOfDay } from '@/lib/types';
+import { OutfitLog } from '@/lib/types';
 import { useCalendarState } from '@/hooks/useCalendarState';
 import CalendarTabs from './calendar/CalendarTabs';
 import ViewToggle from './calendar/ViewToggle';
@@ -122,7 +122,7 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog, location }: OutfitCa
     const newLog = {
       outfitId,
       date: selectedDate,
-      timeOfDay: 'all-day',
+      timeOfDay: 'all-day' as TimeOfDay,
       user_id: user?.id || ''
     };
     
@@ -138,7 +138,7 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog, location }: OutfitCa
     const newLog = {
       outfitId: 'activity',
       date: selectedDate,
-      timeOfDay: 'all-day',
+      timeOfDay: 'all-day' as TimeOfDay,
       customActivity: activity,
       user_id: user?.id || ''
     };
