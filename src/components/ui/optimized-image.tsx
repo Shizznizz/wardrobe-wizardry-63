@@ -35,7 +35,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   onError,
   showSkeleton,
   aspectRatio,
-  fallbackSrc,
+  fallbackSrc = '/placeholder.svg',
   containerClassName,
   width,
   height,
@@ -54,7 +54,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   const [imgError, setImgError] = useState(false);
 
   // Use fallback source if provided and original source had an error
-  const finalSrc = imgError && fallbackSrc ? fallbackSrc : (optimizedSrc || '');
+  const finalSrc = imgError ? fallbackSrc : (optimizedSrc || src);
 
   // Handle aspect ratio styling
   const aspectRatioStyle = aspectRatio ? {
@@ -77,7 +77,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
         height: height ? `${height}px` : undefined,
       }}
       onLoad={() => {
-        imgProps.onLoad();
+        if (imgProps.onLoad) imgProps.onLoad();
         if (onLoad) onLoad();
       }}
       onError={() => {

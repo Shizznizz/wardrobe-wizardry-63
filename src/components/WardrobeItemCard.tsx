@@ -1,3 +1,4 @@
+
 import { motion } from 'framer-motion';
 import { Star, Tally4, Calendar, Tags, Heart, ArrowRight, Trash2, Edit } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -74,6 +75,9 @@ const WardrobeItemCard = ({
     ? item.occasions.filter(occ => typeof occ === 'string') as ClothingOccasion[]
     : ['casual'] as ClothingOccasion[];
 
+  // Make sure we have a valid image URL
+  const imageUrl = item.imageUrl || item.image || '';
+
   return (
     <>
       <motion.div
@@ -98,14 +102,21 @@ const WardrobeItemCard = ({
           "relative overflow-hidden",
           viewMode === 'grid' ? "aspect-square w-full" : "w-32 h-32 flex-shrink-0"
         )}>
-          <OptimizedImage
-            src={item.imageUrl || item.image || ''}
-            alt={item.name || 'Clothing item'}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-            showSkeleton={true}
-            aspectRatio="aspect-square"
-            fallbackSrc="/placeholder.svg"
-          />
+          {imageUrl ? (
+            <img
+              src={imageUrl}
+              alt={item.name || 'Clothing item'}
+              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+              onError={(e) => {
+                console.error("Image failed to load:", imageUrl);
+                (e.target as HTMLImageElement).src = '/placeholder.svg';
+              }}
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-slate-700">
+              <span className="text-white/70">{item.name || 'Unnamed Item'}</span>
+            </div>
+          )}
           
           <div className="absolute top-2 right-2 flex gap-2">
             <button

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -113,6 +114,8 @@ const MyWardrobe = () => {
         setLoadError("Failed to load your wardrobe items");
         return;
       }
+
+      console.log("Loaded clothing items:", data);
 
       const formattedItems: ClothingItem[] = data.map(item => ({
         id: item.id,

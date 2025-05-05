@@ -4,12 +4,16 @@ import { ClothingItem } from '@/lib/types';
 interface OutfitImageGridProps {
   itemIds: string[];
   getClothingItemById: (id: string) => ClothingItem | undefined;
+  clothingItems?: ClothingItem[]; // Optional prop for direct access to clothing items
 }
 
-const OutfitImageGrid = ({ itemIds, getClothingItemById }: OutfitImageGridProps) => {
+const OutfitImageGrid = ({ itemIds, getClothingItemById, clothingItems }: OutfitImageGridProps) => {
+  // Make sure itemIds is an array
+  const safeItemIds = Array.isArray(itemIds) ? itemIds : [];
+  
   return (
     <div className="absolute inset-0 flex flex-wrap justify-center items-center p-2 gap-1">
-      {itemIds.slice(0, 4).map((itemId, index) => {
+      {safeItemIds.slice(0, 4).map((itemId, index) => {
         const item = getClothingItemById(itemId);
         return (
           <div 
@@ -22,6 +26,10 @@ const OutfitImageGrid = ({ itemIds, getClothingItemById }: OutfitImageGridProps)
                   src={item.imageUrl} 
                   alt={item.name} 
                   className="h-full w-full object-cover rounded-md"
+                  onError={(e) => {
+                    console.error("Failed to load outfit image:", item.imageUrl);
+                    (e.target as HTMLImageElement).src = '/placeholder.svg';
+                  }}
                 />
               ) : (
                 <div className="text-gray-400 text-xs">{item?.name || 'Unknown Item'}</div>
