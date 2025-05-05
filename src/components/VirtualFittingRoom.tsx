@@ -143,7 +143,7 @@ const VirtualFittingRoom = ({
               transition={{ delay: 0.2, duration: 0.3 }}
             >
               <p className="text-white text-center px-4 py-2 rounded-lg bg-black/50 max-w-xs">
-                Select an outfit from your wardrobe to see how it looks
+                Select an outfit to see how it looks on your photo
               </p>
             </motion.div>
           </div>
@@ -156,7 +156,7 @@ const VirtualFittingRoom = ({
     return (
       <div className={`neo-blur border border-white/10 rounded-lg p-3 sm:p-6 h-full flex flex-col items-center justify-center text-center ${className}`}>
         <div className="text-white/70 text-sm sm:text-base">
-          Upload a photo and select an outfit from your wardrobe to see the preview
+          Upload a photo and select an outfit to see the preview
         </div>
       </div>
     );
@@ -213,7 +213,7 @@ const VirtualFittingRoom = ({
         >
           <h4 className="text-white/80 text-xs sm:text-sm font-medium mb-1 sm:mb-2 flex items-center">
             <Info className="h-3 w-3 mr-1 text-blue-400" />
-            Items from your wardrobe in this outfit:
+            Items in this outfit:
           </h4>
           <div className="flex gap-1 sm:gap-2 overflow-x-auto py-1 px-1 pb-2 scrollbar-none">
             {outfitItems.map((item, index) => (

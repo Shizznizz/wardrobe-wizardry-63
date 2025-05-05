@@ -1,41 +1,16 @@
 
-import { ClothingItem, Outfit } from '@/lib/types';
+import { ClothingItem } from '@/lib/types';
 
 interface OutfitImageGridProps {
-  itemIds?: string[];
-  outfit?: Outfit;
-  clothingItems: ClothingItem[];
-  getClothingItemById?: (id: string) => ClothingItem | undefined;
-  className?: string;
+  itemIds: string[];
+  getClothingItemById: (id: string) => ClothingItem | undefined;
 }
 
-const OutfitImageGrid = ({ 
-  itemIds, 
-  outfit, 
-  clothingItems, 
-  getClothingItemById,
-  className = "" 
-}: OutfitImageGridProps) => {
-  // Handle case where outfit is provided instead of itemIds
-  const displayItemIds = itemIds || (outfit?.items || []);
-  
-  // If getClothingItemById is not provided, create a default function
-  const getItem = getClothingItemById || ((id: string) => {
-    return clothingItems.find(item => item && item.id === id);
-  });
-  
-  if (!displayItemIds || displayItemIds.length === 0) {
-    return (
-      <div className={`absolute inset-0 flex items-center justify-center ${className}`}>
-        <p className="text-sm text-white/50">No items to display</p>
-      </div>
-    );
-  }
-
+const OutfitImageGrid = ({ itemIds, getClothingItemById }: OutfitImageGridProps) => {
   return (
-    <div className={`absolute inset-0 flex flex-wrap justify-center items-center p-2 gap-1 ${className}`}>
-      {displayItemIds.slice(0, 4).map((itemId, index) => {
-        const item = getItem(itemId);
+    <div className="absolute inset-0 flex flex-wrap justify-center items-center p-2 gap-1">
+      {itemIds.slice(0, 4).map((itemId, index) => {
+        const item = getClothingItemById(itemId);
         return (
           <div 
             key={index} 

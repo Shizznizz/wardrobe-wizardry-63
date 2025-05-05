@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Outfit, ClothingItem } from '@/lib/types';
 import { useNavigate } from 'react-router-dom';
