@@ -1,6 +1,6 @@
 
 import { Button } from '@/components/ui/button';
-import { Plus, Shirt, Calendar } from 'lucide-react';
+import { Plus, Shirt } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useOutfitContext } from '@/hooks/useOutfitContext';
@@ -12,12 +12,14 @@ interface MixMatchActionsProps {
 
 const MixMatchActions = ({ onScrollToOutfits, onCreateOutfit }: MixMatchActionsProps) => {
   const navigate = useNavigate();
-  const { setIsBuilderOpen } = useOutfitContext();
+  const { setIsBuilderOpen, setSelectedOutfitId } = useOutfitContext();
 
   const handleAddOutfit = () => {
     if (onCreateOutfit) {
       onCreateOutfit();
     } else {
+      // Ensure we clear any selected outfit
+      setSelectedOutfitId(null);
       setIsBuilderOpen(true);
       toast.info("Opening outfit builder");
     }

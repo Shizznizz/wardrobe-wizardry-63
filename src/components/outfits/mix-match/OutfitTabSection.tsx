@@ -14,13 +14,14 @@ import { Button } from '@/components/ui/button';
 interface OutfitTabSectionProps {
   outfits: Outfit[];
   clothingItems: ClothingItem[];
+  isRefreshing?: boolean;
+  onRefresh?: () => void;
 }
 
-const OutfitTabSection = ({ outfits, clothingItems }: OutfitTabSectionProps) => {
+const OutfitTabSection = ({ outfits, clothingItems, isRefreshing = false, onRefresh }: OutfitTabSectionProps) => {
   const [activeTab, setActiveTab] = useState('my-collection');
   const [userOutfits, setUserOutfits] = useState<Outfit[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const { user } = useAuth();
 
   // Fetch outfits from Supabase that match items in user's wardrobe
@@ -47,6 +48,7 @@ const OutfitTabSection = ({ outfits, clothingItems }: OutfitTabSectionProps) => 
 
       // If outfits were found, format them correctly
       if (outfitsData && outfitsData.length > 0) {
+        console.log("Fetched outfits from Supabase:", outfitsData);
         // Get clothing item IDs from the user's wardrobe
         const userClothingItemIds = clothingItems.map(item => item.id);
 
@@ -73,7 +75,6 @@ const OutfitTabSection = ({ outfits, clothingItems }: OutfitTabSectionProps) => 
           tags: Array.isArray(outfit.tags) ? outfit.tags : []
         }));
 
-        console.log("Fetched outfits from Supabase:", formattedOutfits);
         setUserOutfits(formattedOutfits);
       } else {
         // No outfits found or error occurred
@@ -84,17 +85,19 @@ const OutfitTabSection = ({ outfits, clothingItems }: OutfitTabSectionProps) => 
       toast.error('An error occurred while loading your outfits');
     } finally {
       setIsLoading(false);
-      setIsRefreshing(false);
     }
   }, [user, clothingItems]);
 
   useEffect(() => {
     fetchUserOutfits();
-  }, [fetchUserOutfits]);
+  }, [fetchUserOutfits, outfits]);
 
   const handleRefresh = () => {
-    setIsRefreshing(true);
-    fetchUserOutfits();
+    if (onRefresh) {
+      onRefresh();
+    } else {
+      fetchUserOutfits();
+    }
   };
 
   return (
@@ -129,7 +132,7 @@ const OutfitTabSection = ({ outfits, clothingItems }: OutfitTabSectionProps) => 
         </TabsList>
         
         <TabsContent value="my-collection">
-          {isLoading ? (
+          {isLoading || isRefreshing ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {[1, 2, 3].map((n) => (
                 <Skeleton key={n} className="h-64 bg-slate-800/50 rounded-xl" />
@@ -149,7 +152,7 @@ const OutfitTabSection = ({ outfits, clothingItems }: OutfitTabSectionProps) => 
         </TabsContent>
         
         <TabsContent value="favorites">
-          {isLoading ? (
+          {isLoading || isRefreshing ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {[1, 2, 3].map((n) => (
                 <Skeleton key={n} className="h-64 bg-slate-800/50 rounded-xl" />

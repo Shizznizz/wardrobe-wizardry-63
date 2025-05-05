@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import { sampleOutfits, sampleClothingItems } from '@/lib/wardrobeData';
 import { WeatherInfo, Outfit, ClothingItem } from '@/lib/types';
-import { OutfitProvider } from '@/hooks/useOutfitContext';
+import { OutfitProvider, useOutfitContext } from '@/hooks/useOutfitContext';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import MixMatchActions from '@/components/outfits/mix-match/MixMatchActions';
@@ -50,6 +50,7 @@ const MixAndMatch = () => {
   const [savedOutfits, setSavedOutfits] = useState<Outfit[]>([]);
   const [userClothingItems, setUserClothingItems] = useState<ClothingItem[]>([]);
   const [outfitTabKey, setOutfitTabKey] = useState(0); // Add this to force re-render
+  const [isRefreshingOutfits, setIsRefreshingOutfits] = useState(false);
 
   // Scroll to weather section
   const scrollToWeatherSection = useCallback(() => {
@@ -181,48 +182,48 @@ const MixAndMatch = () => {
   }, []);
 
   // Fetch outfits from Supabase if user is logged in
-  useEffect(() => {
-    const fetchOutfitsFromSupabase = async () => {
-      if (!user?.id) return;
-      
-      try {
-        const { data, error } = await supabase
-          .from('outfits')
-          .select('*')
-          .eq('user_id', user.id);
-          
-        if (error) {
-          throw error;
-        }
-        
-        if (data && data.length > 0) {
-          const formattedOutfits = data.map(outfit => ({
-            ...outfit,
-            dateAdded: new Date(outfit.date_added),
-            timesWorn: outfit.times_worn,
-            // Make sure the items array exists
-            items: outfit.items || []
-          }));
-          
-          // Get existing outfit IDs from both sample outfits and local saved outfits
-          const existingOutfitIds = new Set([...outfits.map(outfit => outfit.id)]);
-          
-          // Filter out outfits that are already in the state
-          const uniqueDbOutfits = formattedOutfits.filter(
-            (outfit: Outfit) => !existingOutfitIds.has(outfit.id)
-          );
-          
-          if (uniqueDbOutfits.length > 0) {
-            // Merge unique outfits from database with existing outfits
-            setOutfits(prev => [...prev, ...uniqueDbOutfits]);
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching outfits from Supabase:', error);
-      }
-    };
+  const fetchOutfitsFromSupabase = useCallback(async () => {
+    if (!user?.id) return;
     
-    fetchOutfitsFromSupabase();
+    try {
+      setIsRefreshingOutfits(true);
+      const { data, error } = await supabase
+        .from('outfits')
+        .select('*')
+        .eq('user_id', user.id);
+        
+      if (error) {
+        throw error;
+      }
+      
+      if (data && data.length > 0) {
+        console.log("Fetched outfits from Supabase:", data);
+        const formattedOutfits = data.map(outfit => ({
+          ...outfit,
+          dateAdded: new Date(outfit.date_added),
+          timesWorn: outfit.times_worn,
+          // Make sure the items array exists
+          items: outfit.items || []
+        }));
+        
+        // Get existing outfit IDs from both sample outfits and local saved outfits
+        const existingOutfitIds = new Set([...outfits.map(outfit => outfit.id)]);
+        
+        // Filter out outfits that are already in the state
+        const uniqueDbOutfits = formattedOutfits.filter(
+          (outfit: Outfit) => !existingOutfitIds.has(outfit.id)
+        );
+        
+        if (uniqueDbOutfits.length > 0) {
+          // Merge unique outfits from database with existing outfits
+          setOutfits(prev => [...prev, ...uniqueDbOutfits]);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching outfits from Supabase:', error);
+    } finally {
+      setIsRefreshingOutfits(false);
+    }
   }, [user?.id, outfits]);
 
   // Simulate loading time
@@ -280,10 +281,10 @@ const MixAndMatch = () => {
   // Save outfit to collection
   const handleSaveOutfit = async (outfit: Outfit) => {
     try {
-      // Add generated ID if none exists
+      // Add generated ID if none exists and ensure it's a valid UUID
       const outfitToSave = {
         ...outfit,
-        id: outfit.id || `outfit-${Date.now()}`,
+        id: outfit.id || crypto.randomUUID(),
       };
   
       // Check for outfit duplication before saving
@@ -295,6 +296,41 @@ const MixAndMatch = () => {
   
       console.log("Saving outfit:", outfitToSave);
   
+      // Save to Supabase if user is logged in
+      if (user) {
+        try {
+          // Prepare outfit data for Supabase
+          const outfitData = {
+            id: outfitToSave.id,
+            name: outfitToSave.name,
+            user_id: user.id,
+            items: outfitToSave.items,
+            season: outfitToSave.season,
+            occasion: outfitToSave.occasion,
+            occasions: outfitToSave.occasions,
+            favorite: outfitToSave.favorite,
+            times_worn: outfitToSave.timesWorn || 0,
+            date_added: new Date().toISOString()
+          };
+          
+          const { data, error } = await supabase
+            .from('outfits')
+            .insert([outfitData]);
+            
+          if (error) {
+            console.error("Error saving outfit to Supabase:", error);
+            toast.error("Failed to save outfit to database");
+            return;
+          }
+          
+          console.log("Outfit saved to Supabase successfully");
+        } catch (err) {
+          console.error("Exception saving to Supabase:", err);
+          toast.error("Failed to save outfit to database");
+          return;
+        }
+      }
+      
       // Update local state
       setOutfits(prev => {
         const updated = [...prev, outfitToSave];
@@ -319,6 +355,9 @@ const MixAndMatch = () => {
       setOutfitTabKey(prev => prev + 1);
       
       toast.success('Outfit created successfully!');
+      
+      // Fetch the latest outfits from Supabase
+      fetchOutfitsFromSupabase();
       
       // Scroll to the outfits section to show the newly added outfit
       setTimeout(() => {
@@ -459,6 +498,8 @@ const MixAndMatch = () => {
               key={outfitTabKey} // Add key to force re-render on updates
               outfits={outfits}
               clothingItems={userClothingItems}
+              isRefreshing={isRefreshingOutfits}
+              onRefresh={fetchOutfitsFromSupabase}
             />
           </motion.section>
           

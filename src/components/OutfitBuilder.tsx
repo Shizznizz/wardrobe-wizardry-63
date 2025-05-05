@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -123,7 +124,7 @@ const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }
         .from('outfits')
         .select('id')
         .eq('id', newOutfit.id)
-        .single();
+        .maybeSingle();
       
       if (checkError && checkError.code !== 'PGRST116') {
         console.error("Error checking for existing outfit:", checkError);
