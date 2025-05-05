@@ -349,6 +349,12 @@ const MixAndMatch = () => {
     transition: { duration: 0.7 }
   };
 
+  // Find the selected outfit using the selectedOutfitId
+  const getSelectedOutfit = () => {
+    if (!selectedOutfitId) return null;
+    return outfits.find(outfit => outfit.id === selectedOutfitId) || null;
+  };
+
   return (
     <OutfitProvider>
       <div className="min-h-screen bg-gradient-to-b from-slate-950 to-indigo-950 text-white">
@@ -473,7 +479,7 @@ const MixAndMatch = () => {
             onClose={() => setIsBuilderOpen(false)}
             onSave={handleSaveOutfit}
             clothingItems={userClothingItems}
-            initialOutfit={selectedOutfit}
+            initialOutfit={getSelectedOutfit()}
           />
         )}
       </div>
