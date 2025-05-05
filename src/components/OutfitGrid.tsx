@@ -40,21 +40,22 @@ const OutfitGrid = ({
       setIsLoading(true);
       const fetchOutfits = async () => {
         try {
-          const { data, error } = await supabase
+          const { data: outfitsData, error: outfitsError } = await supabase
             .from('outfits')
             .select('*')
             .eq('user_id', user.id);
           
-          if (error) {
-            console.error('Error fetching outfits:', error);
+          if (outfitsError) {
+            console.error('Error fetching outfits:', outfitsError);
             toast.error('Failed to load your outfits');
-          } else {
-            console.log('Fetched outfits:', data);
-            setUserOutfits(Array.isArray(data) ? data : []);
+            setIsLoading(false);
+            return;
           }
+          
+          setUserOutfits(Array.isArray(outfitsData) ? outfitsData : []);
+          setIsLoading(false);
         } catch (err) {
           console.error('Exception fetching outfits:', err);
-        } finally {
           setIsLoading(false);
         }
       };
@@ -108,32 +109,34 @@ const OutfitGrid = ({
     );
   }
   
+  if (validOutfits.length === 0) {
+    return (
+      <div className="col-span-full p-8 text-center text-white/70">
+        <p>No outfits with valid items from your wardrobe found.</p>
+        <p className="mt-2 text-sm">Try adding more clothing items to your wardrobe or creating new outfits.</p>
+      </div>
+    );
+  }
+  
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      {validOutfits.length > 0 ? (
-        validOutfits.map((outfit) => {
-          if (!outfit) return null;
-          
-          return (
-            <OutfitCard
-              key={outfit.id || `outfit-${Math.random()}`}
-              outfit={outfit}
-              clothingItems={safeClothingItems}
-              onEdit={onEdit}
-              onDelete={onDelete}
-              onToggleFavorite={onToggleFavorite}
-              getClothingItemById={getClothingItemById}
-              onOutfitAddedToCalendar={onOutfitAddedToCalendar}
-              onPreviewInFittingRoom={handlePreviewInFittingRoom}
-            />
-          );
-        })
-      ) : (
-        <div className="col-span-full p-8 text-center text-white/70">
-          <p>No outfits with valid items from your wardrobe found.</p>
-          <p className="mt-2 text-sm">Try adding more clothing items to your wardrobe or creating new outfits.</p>
-        </div>
-      )}
+      {validOutfits.map((outfit) => {
+        if (!outfit) return null;
+        
+        return (
+          <OutfitCard
+            key={outfit.id || `outfit-${Math.random()}`}
+            outfit={outfit}
+            clothingItems={safeClothingItems}
+            onEdit={onEdit}
+            onDelete={onDelete}
+            onToggleFavorite={onToggleFavorite}
+            getClothingItemById={getClothingItemById}
+            onOutfitAddedToCalendar={onOutfitAddedToCalendar}
+            onPreviewInFittingRoom={handlePreviewInFittingRoom}
+          />
+        );
+      })}
     </div>
   );
 };

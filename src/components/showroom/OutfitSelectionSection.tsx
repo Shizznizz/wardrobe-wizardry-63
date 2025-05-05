@@ -5,7 +5,7 @@ import { Outfit, ClothingItem } from '@/lib/types';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Card } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
-import OutfitCollection from '@/components/outfits/OutfitCollection';
+import OutfitGrid from '@/components/OutfitGrid';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -26,13 +26,14 @@ const OutfitSelectionSection = ({
 }: OutfitSelectionSectionProps) => {
   const { isAuthenticated, user } = useAuth();
   const [userOutfits, setUserOutfits] = useState<Outfit[]>([]);
+  const [oliviaOutfits, setOliviaOutfits] = useState<Outfit[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   
   // Modified to explicitly check user email for non-premium view
   const isDanielDeurlooEmail = user?.email === 'danieldeurloo@hotmail.com';
   // If you're Daniel, don't get premium features
   const effectivePremiumUser = isPremiumUser || (isAuthenticated && !isDanielDeurlooEmail);
-  const [activeCollection, setActiveCollection] = useState(fashionCollections[0]?.id || 'recommended');
+  const [activeCollection, setActiveCollection] = useState('my-outfits');
   
   // Fetch user's outfits from Supabase
   useEffect(() => {
@@ -51,6 +52,14 @@ const OutfitSelectionSection = ({
           } else {
             console.log('Fetched outfits:', data);
             setUserOutfits(Array.isArray(data) ? data : []);
+            
+            // Create Olivia's picks from user outfits
+            // For now, we'll just use some of the user's outfits as Olivia's picks
+            const picks = Array.isArray(data) && data.length > 0 
+              ? data.filter(outfit => outfit.favorite || Math.random() > 0.5).slice(0, 3) 
+              : [];
+            
+            setOliviaOutfits(picks);
           }
         } catch (err) {
           console.error('Exception fetching outfits:', err);
@@ -63,27 +72,23 @@ const OutfitSelectionSection = ({
     }
   }, [user]);
 
+  // Custom collections including user outfits and Olivia's picks
+  const collections = [
+    { id: 'my-outfits', name: "Your Outfits", outfits: userOutfits, premium: false },
+    { id: 'olivia-picks', name: "Olivia's Picks", outfits: oliviaOutfits, premium: false },
+    ...fashionCollections.filter(c => c.id !== 'my-outfits')
+  ];
+
   // Filter collections - show premium ones only to premium or authenticated users (except Daniel)
-  const visibleCollections = fashionCollections.filter(collection => 
+  const visibleCollections = collections.filter(collection => 
     !collection.premium || effectivePremiumUser
   );
 
-  // Merge user outfits with collection outfits
-  const enhancedCollections = visibleCollections.map(collection => {
-    if (collection.id === 'my-outfits') {
-      return {
-        ...collection,
-        outfits: userOutfits
-      };
-    }
-    return collection;
-  });
-
-  // Function to handle outfit selection and forward it to parent component
-  const handleOutfitSelection = (outfit: Outfit) => {
-    onSelectOutfit(outfit);
-  };
-
+  // No need to edit outfits in this view, just handle selection
+  const handleEditOutfit = () => {};
+  const handleDeleteOutfit = () => {};
+  const handleToggleFavorite = () => {};
+  
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
@@ -94,7 +99,7 @@ const OutfitSelectionSection = ({
       <h2 className="text-xl font-semibold mb-4">Outfit Collections</h2>
       <ScrollArea className="rounded-md border border-white/[0.15] bg-black/[0.1] backdrop-blur-sm">
         <div className="flex flex-nowrap gap-4 p-3">
-          {enhancedCollections.map(collection => (
+          {visibleCollections.map(collection => (
             <motion.button
               key={collection.id}
               whileHover={{ scale: 1.05 }}
@@ -112,22 +117,20 @@ const OutfitSelectionSection = ({
         </div>
       </ScrollArea>
       
-      {enhancedCollections.map(collection => (
+      {visibleCollections.map(collection => (
         <div key={collection.id} className={collection.id === activeCollection ? 'block' : 'hidden'}>
-          {isLoading && collection.id === 'my-outfits' ? (
+          {isLoading ? (
             <div className="flex justify-center items-center h-40">
               <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-white"></div>
             </div>
           ) : (
-            <OutfitCollection
-              outfits={collection.outfits}
+            <OutfitGrid
+              outfits={collection.outfits || []} 
               clothingItems={clothingItems}
-              onCreateOutfit={() => {}}
-              onEditOutfit={() => {}}
-              onDeleteOutfit={() => {}}
-              onToggleFavorite={() => {}}
-              onOutfitAddedToCalendar={() => {}}
-              onSelectOutfit={handleOutfitSelection}
+              onEdit={handleEditOutfit}
+              onDelete={handleDeleteOutfit}
+              onToggleFavorite={handleToggleFavorite}
+              onSelectOutfit={onSelectOutfit}
             />
           )}
         </div>
