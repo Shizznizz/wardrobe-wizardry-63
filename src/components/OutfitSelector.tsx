@@ -31,6 +31,22 @@ const OutfitSelector = ({
 }: OutfitSelectorProps) => {
   const isMobile = useIsMobile();
 
+  // Filter outfits to only include those with valid items from the user's wardrobe
+  const getValidOutfits = (outfits: Outfit[], clothingItems: ClothingItem[]): Outfit[] => {
+    if (!Array.isArray(outfits) || !Array.isArray(clothingItems)) return [];
+    
+    return outfits.filter(outfit => {
+      if (!outfit || !Array.isArray(outfit.items) || outfit.items.length === 0) return false;
+      
+      // Check if at least one item from the outfit exists in the user's wardrobe
+      return outfit.items.some(itemId => 
+        clothingItems.some(item => item && item.id === itemId)
+      );
+    });
+  };
+  
+  const validOutfits = getValidOutfits(outfits, clothingItems);
+
   const handleSelect = (outfit: Outfit) => {
     onSelect(outfit);
     
@@ -45,6 +61,17 @@ const OutfitSelector = ({
     }
   };
 
+  if (validOutfits.length === 0) {
+    return (
+      <div className="w-full p-6 bg-slate-800/30 rounded-lg border border-white/10 text-center">
+        <p className="text-white/70">No valid outfits found with items from your wardrobe.</p>
+        <p className="text-sm text-white/50 mt-2">
+          Add more clothing items to your wardrobe to see outfit options.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full overflow-hidden">
       <Carousel 
@@ -55,7 +82,7 @@ const OutfitSelector = ({
         className="w-full"
       >
         <CarouselContent className="-ml-2 md:-ml-4">
-          {outfits.map((outfit) => {
+          {validOutfits.map((outfit) => {
             const isSelected = outfit.id === selectedOutfitId;
             
             return (
