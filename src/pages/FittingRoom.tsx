@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useShowroom } from '@/hooks/useShowroom';
 import { sampleClothingItems, sampleOutfits } from '@/lib/wardrobeData';
@@ -139,14 +140,58 @@ const FittingRoom = () => {
 
   const safeOutfits = Array.isArray(userOutfits) ? userOutfits : [];
 
-  useEffect(() => {
-    const idleTimer = setTimeout(() => {
-      if (userPhoto && !finalImage) {
-        setShowOliviaHint(true);
+  // Define the missing functions that were previously provided by useOutfitState
+  const handleToggleFavorite = async (id: string) => {
+    try {
+      // Find the outfit to toggle
+      const outfitToToggle = safeOutfits.find(outfit => outfit.id === id);
+      if (!outfitToToggle) return;
+      
+      // Toggle the favorite status
+      const updatedFavorite = !outfitToToggle.favorite;
+      
+      // Update in Supabase
+      const { error } = await supabase
+        .from('outfits')
+        .update({ favorite: updatedFavorite })
+        .eq('id', id)
+        .eq('user_id', user?.id);
+      
+      if (error) {
+        console.error('Error updating favorite status:', error);
+        toast.error('Failed to update favorite status');
+        return;
       }
-    }, 15000);
+      
+      // Update local state
+      setUserOutfits(prev => 
+        prev.map(outfit => 
+          outfit.id === id ? { ...outfit, favorite: updatedFavorite } : outfit
+        )
+      );
+      
+      toast.success(updatedFavorite ? 'Added to favorites' : 'Removed from favorites');
+    } catch (err) {
+      console.error('Exception in handleToggleFavorite:', err);
+      toast.error('An error occurred');
+    }
+  };
+  
+  const handleAssistantAction = () => {
+    toast.info("Olivia is thinking about your style...");
+    // This would normally open an assistant panel or dialog
+    setShowOliviaTips(true);
+  };
+  
+  const handleRefreshOutfit = () => {
+    toast.info("Refreshing outfit suggestions...");
+    // In a real implementation, this would fetch new outfit suggestions
+  };
 
-    return () => clearTimeout(idleTimer);
+  useEffect(() => {
+    if (userPhoto && !finalImage) {
+      setShowOliviaHint(true);
+    }
   }, [userPhoto, finalImage]);
 
   useEffect(() => {
