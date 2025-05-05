@@ -13,7 +13,7 @@ import CollapsibleSection from '@/components/outfits/mix-match/CollapsibleSectio
 import OutfitTabSection from '@/components/outfits/mix-match/OutfitTabSection';
 import ContextAdjustmentSection from '@/components/outfits/mix-match/ContextAdjustmentSection';
 import EnhancedWeatherSection from '@/components/outfits/mix-match/EnhancedWeatherSection';
-import PageHeader from '@/components/shared/PageHeader';
+import EnhancedPageHeader from '@/components/outfits/mix-match/EnhancedPageHeader';
 import OutfitBuilder from '@/components/OutfitBuilder';
 import { toast } from 'sonner';
 
@@ -360,31 +360,11 @@ const MixAndMatch = () => {
       <div className="min-h-screen bg-gradient-to-b from-slate-950 to-indigo-950 text-white">
         <Header />
         <main className="container mx-auto px-2 sm:px-4 py-6 pt-20 max-w-6xl">
-          {/* Updated PageHeader with new image */}
-          <PageHeader
-            title="Your Daily Style, Curated by Olivia"
-            subtitle="Get outfits tailored to your vibe, activity, and the weather."
-            showAvatar={false}
-            imageVariant="pink-suit"
-            imagePosition="right"
-            showSparkles={true}
-          >
-            {profile?.first_name && (
-              <p className="text-white/80">
-                Hi {profile.first_name}, let me style you today!
-              </p>
-            )}
-            <div className="mt-4">
-              <Button 
-                variant="hero-primary"
-                size="lg"
-                onClick={scrollToWeatherSection}
-                className="text-base md:text-lg px-8 py-6 h-auto bg-gradient-to-r from-pink-500 to-purple-500 hover:opacity-95 shadow-lg shadow-pink-500/20 hover:shadow-pink-500/30 transition-all duration-300"
-              >
-                Let Olivia Style Me Today
-              </Button>
-            </div>
-          </PageHeader>
+          {/* Replace PageHeader with EnhancedPageHeader */}
+          <EnhancedPageHeader
+            userName={profile?.first_name}
+            onScrollToWeather={scrollToWeatherSection}
+          />
 
           <div className="mt-8 flex justify-center">
             <MixMatchActions 

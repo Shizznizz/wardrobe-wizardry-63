@@ -27,6 +27,31 @@ const EnhancedPageHeader = ({ userName, onScrollToWeather }: EnhancedPageHeaderP
       }
     }
   };
+
+  const imageVariants = {
+    hidden: { 
+      opacity: 0, 
+      x: 40,
+      scale: 0.9
+    },
+    visible: { 
+      opacity: 1, 
+      x: 0,
+      scale: 1,
+      transition: { 
+        type: "spring", 
+        stiffness: 60, 
+        damping: 13, 
+        duration: 1.2,
+        delay: 0.2
+      }
+    },
+    hover: {
+      scale: 1.05,
+      y: -5,
+      transition: { duration: 0.5, ease: "easeOut" }
+    }
+  };
   
   return (
     <motion.div 
@@ -45,47 +70,83 @@ const EnhancedPageHeader = ({ userName, onScrollToWeather }: EnhancedPageHeaderP
         <div className="absolute right-10 bottom-1/4 w-20 h-20 rounded-full border border-indigo-300/20"></div>
       </div>
 
-      {/* Main content */}
-      <motion.div className="relative">
-        <motion.div
-          className="absolute -top-6 left-1/4"
-          variants={sparkleVariants}
-          initial="initial"
-          animate="animate"
-        >
-          <Sparkles className="w-5 h-5 text-pink-400" />
-        </motion.div>
-        <motion.h1 
-          variants={fadeUp}
-          className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-coral-500 via-purple-400 to-indigo-400 leading-tight max-w-5xl mx-auto"
-        >
-          Your Daily Style, Curated by Olivia
-        </motion.h1>
-      </motion.div>
+      {/* Main content with image */}
+      <div className="container mx-auto max-w-6xl">
+        <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-8">
+          <motion.div className="relative">
+            <motion.div
+              className="absolute -top-6 left-1/4"
+              variants={sparkleVariants}
+              initial="initial"
+              animate="animate"
+            >
+              <Sparkles className="w-5 h-5 text-pink-400" />
+            </motion.div>
+            <motion.h1 
+              variants={fadeUp}
+              className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-coral-500 via-purple-400 to-indigo-400 leading-tight mx-auto"
+            >
+              Your Daily Style, Curated by Olivia
+            </motion.h1>
+            
+            <motion.p 
+              variants={fadeUp} 
+              className="text-base xs:text-lg md:text-xl text-white/80 max-w-2xl mx-auto mb-8 leading-relaxed"
+            >
+              {userName 
+                ? `Hi ${userName}, get AI-powered outfits based on your style, mood, and local weather.`
+                : `Get AI-powered outfits based on your style, mood, and local weather.`
+              }
+            </motion.p>
 
-      <motion.p 
-        variants={fadeUp} 
-        className="text-base xs:text-lg md:text-xl text-white/80 max-w-2xl mx-auto mb-8 leading-relaxed"
-      >
-        {userName 
-          ? `Hi ${userName}, get AI-powered outfits based on your style, mood, and local weather.`
-          : `Get AI-powered outfits based on your style, mood, and local weather.`
-        }
-      </motion.p>
-
-      <motion.div 
-        variants={fadeUp}
-        className="flex flex-col items-center justify-center"
-      >
-        <Button 
-          variant="hero-primary"
-          size="lg"
-          onClick={onScrollToWeather}
-          className="text-base md:text-lg px-6 py-6 h-auto bg-gradient-to-r from-pink-500 to-purple-500 hover:opacity-95 shadow-lg shadow-pink-500/20 hover:shadow-pink-500/30 transition-all duration-300"
-        >
-          Let Olivia Style Me Today
-        </Button>
-      </motion.div>
+            <motion.div 
+              variants={fadeUp}
+              className="flex flex-col items-center justify-center"
+            >
+              <Button 
+                variant="hero-primary"
+                size="lg"
+                onClick={onScrollToWeather}
+                className="text-base md:text-lg px-6 py-6 h-auto bg-gradient-to-r from-pink-500 to-purple-500 hover:opacity-95 shadow-lg shadow-pink-500/20 hover:shadow-pink-500/30 transition-all duration-300"
+              >
+                Let Olivia Style Me Today
+              </Button>
+            </motion.div>
+          </motion.div>
+          
+          {/* New Olivia image with animation */}
+          <motion.div
+            className="hidden md:flex justify-center items-center"
+            variants={imageVariants}
+            whileHover="hover"
+          >
+            <div className="relative">
+              {/* Image glow effects */}
+              <motion.div 
+                className="absolute inset-0 -z-10 rounded-full bg-gradient-to-r from-purple-500/20 to-pink-500/20 blur-3xl transform translate-y-4"
+                animate={{ 
+                  scale: [1, 1.1, 1],
+                  opacity: [0.6, 0.8, 0.6] 
+                }}
+                transition={{ 
+                  duration: 6, 
+                  repeat: Infinity,
+                  repeatType: "reverse" 
+                }}
+              />
+              
+              <img 
+                src="/lovable-uploads/1d4e81c7-dcef-4208-ba9f-77c0544f9e12.png" 
+                alt="Olivia Bloom"
+                className="rounded-full max-h-[400px] w-auto object-cover border-2 border-purple-300/30 shadow-lg shadow-purple-500/20"
+                style={{
+                  filter: "drop-shadow(0 8px 20px rgba(159, 122, 234, 0.4))"
+                }}
+              />
+            </div>
+          </motion.div>
+        </div>
+      </div>
     </motion.div>
   );
 };
