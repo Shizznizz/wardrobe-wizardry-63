@@ -1,8 +1,8 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useOptimizedImage } from '@/hooks/useOptimizedImage';
 
-interface OptimizedImageProps {
+export interface OptimizedImageProps {
   src: string;
   alt: string;
   className?: string;
@@ -13,6 +13,13 @@ interface OptimizedImageProps {
   placeholderColor?: string;
   onLoad?: () => void;
   onError?: () => void;
+  // Adding props that were causing TypeScript errors
+  showSkeleton?: boolean;
+  aspectRatio?: string;
+  fallbackSrc?: string;
+  containerClassName?: string;
+  width?: number;
+  height?: number;
 }
 
 const OptimizedImage: React.FC<OptimizedImageProps> = ({
@@ -26,6 +33,12 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   placeholderColor = '#1e293b',
   onLoad,
   onError,
+  showSkeleton,
+  aspectRatio,
+  fallbackSrc,
+  containerClassName,
+  width,
+  height,
 }) => {
   const { 
     src: optimizedSrc, 
@@ -37,27 +50,54 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
     quality,
     priority
   });
+  
+  const [imgError, setImgError] = useState(false);
 
-  return (
+  // Use fallback source if provided and original source had an error
+  const finalSrc = imgError && fallbackSrc ? fallbackSrc : (optimizedSrc || '');
+
+  // Handle aspect ratio styling
+  const aspectRatioStyle = aspectRatio ? {
+    aspectRatio,
+    objectFit: 'cover' as const,
+    ...style
+  } : style;
+
+  // Element to render
+  const imgElement = (
     <img
-      src={optimizedSrc || ''}
+      src={finalSrc}
       alt={alt}
-      className={`${className} ${!isLoaded ? 'animate-pulse bg-opacity-50' : ''}`}
+      className={`${className} ${!isLoaded && showSkeleton ? 'animate-pulse bg-opacity-50' : ''}`}
       loading={lazyLoad && !priority ? 'lazy' : 'eager'}
       style={{
-        ...style,
-        backgroundColor: !isLoaded ? placeholderColor : undefined,
+        ...aspectRatioStyle,
+        backgroundColor: !isLoaded && showSkeleton ? placeholderColor : undefined,
+        width: width ? `${width}px` : undefined,
+        height: height ? `${height}px` : undefined,
       }}
       onLoad={() => {
         imgProps.onLoad();
         if (onLoad) onLoad();
       }}
       onError={() => {
+        setImgError(true);
         if (imgProps.onError) imgProps.onError();
         if (onError) onError();
       }}
     />
   );
+
+  // If containerClassName is provided, wrap the image in a div
+  if (containerClassName) {
+    return (
+      <div className={containerClassName}>
+        {imgElement}
+      </div>
+    );
+  }
+
+  return imgElement;
 };
 
 export default OptimizedImage;
