@@ -16,13 +16,13 @@ interface PageHeaderProps {
   isLeftAligned?: boolean;
   showSparkles?: boolean;
   fullWidthImage?: boolean;
-  imageVariant?: 'default' | 'pink-suit';
+  imageVariant?: 'default' | 'pink-suit' | 'portrait';
   imageAlt?: string;
   halfBodyImage?: string;
   animationStyle?: 'fade' | 'slide' | 'scale';
   overlayEffect?: 'none' | 'glow' | 'shadow';
   useCustomMobileLayout?: boolean;
-  imageOnTop?: boolean; // New prop for positioning image on top/right of text content
+  imageOnTop?: boolean;
 }
 
 const PageHeader: React.FC<PageHeaderProps> = ({
@@ -43,7 +43,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
   animationStyle = 'fade',
   overlayEffect = 'none',
   useCustomMobileLayout = false,
-  imageOnTop = false, // Default to false to maintain current behavior
+  imageOnTop = false,
 }) => {
   // Animation variants
   const containerVariants = {
@@ -126,6 +126,8 @@ const PageHeader: React.FC<PageHeaderProps> = ({
     switch (imageVariant) {
       case 'pink-suit':
         return '/lovable-uploads/f1154816-6766-4478-ba89-6342580bc85b.png';
+      case 'portrait':
+        return '/lovable-uploads/60ffb487-6be9-4d8d-b767-ade57592238d.png'; // Portrait variant image
       default:
         return '/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png';
     }
