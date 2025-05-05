@@ -48,8 +48,7 @@ export const OutfitCard = ({
         id: `log-${Date.now()}`,
         outfitId: outfit.id,
         date: new Date(),
-        outfit: outfit,
-        time_of_day: 'day',
+        timeOfDay: 'day',
         user_id: '', // This will be filled in by parent component
         weather_condition: ''
       };
@@ -66,9 +65,9 @@ export const OutfitCard = ({
         <div className="grid grid-cols-2 gap-1">
           {displayItems.map((item, index) => (
             <div key={index} className="aspect-square overflow-hidden border border-white/10">
-              {item.image_url ? (
+              {item.imageUrl ? (
                 <img 
-                  src={item.image_url} 
+                  src={item.imageUrl} 
                   alt={item.name} 
                   className="w-full h-full object-cover"
                 />

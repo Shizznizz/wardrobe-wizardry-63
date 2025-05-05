@@ -221,7 +221,7 @@ const VirtualFittingRoom = ({
                 transition={{ delay: 0.1 * index, duration: 0.3 }}
               >
                 <img 
-                  src={item.image_url || '/placeholder.svg'} 
+                  src={item.imageUrl || '/placeholder.svg'} 
                   alt={item.name} 
                   className="w-full h-full object-cover"
                 />
