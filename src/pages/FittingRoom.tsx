@@ -1,7 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
 import { useShowroom } from '@/hooks/useShowroom';
-import { useOutfitState } from '@/hooks/useOutfitState';
 import { sampleClothingItems, sampleOutfits } from '@/lib/wardrobeData';
 import Header from '@/components/Header';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -14,7 +12,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { ClothingSeason, ClothingOccasion, WeatherInfo, Outfit } from '@/lib/types';
+import { ClothingSeason, ClothingOccasion, WeatherInfo, Outfit, ClothingItem } from '@/lib/types';
 import PageHeader from '@/components/shared/PageHeader';
 import OptimizedImage from '@/components/ui/optimized-image';
 import { supabase } from '@/integrations/supabase/client';
@@ -41,23 +39,7 @@ const FittingRoom = () => {
   const { user } = useAuth();
   const [userOutfits, setUserOutfits] = useState<Outfit[]>([]);
   const [isLoadingOutfits, setIsLoadingOutfits] = useState(true);
-
-  const { 
-    outfits = [], 
-    clothingItems = [],
-    handleCreateOutfit = () => {},
-    handleEditOutfit = () => {},
-    handleSaveOutfit = () => {},
-    handleDeleteOutfit = () => {},
-    handleToggleFavorite = () => {},
-    handleWeatherChange = () => {},
-    handleShowTips = () => {},
-    handleAssistantAction = () => {},
-    handleRefreshOutfit = () => {},
-    handleUserPhotoChange = () => {},
-    handleClearUserPhoto = () => {},
-    handleTryOnOutfit = () => {}
-  } = useOutfitState(userOutfits || [], clothingItems || []);
+  const [clothingItems, setClothingItems] = useState<ClothingItem[]>([]);
 
   // Fetch user's outfits from Supabase
   useEffect(() => {
@@ -85,7 +67,28 @@ const FittingRoom = () => {
       }
     };
 
+    // Also fetch clothing items
+    const fetchClothingItems = async () => {
+      if (!user) return;
+      try {
+        const { data, error } = await supabase
+          .from('clothing_items')
+          .select('*')
+          .eq('user_id', user.id);
+          
+        if (error) {
+          console.error('Error fetching clothing items:', error);
+        } else {
+          console.log('Fetched clothing items:', data);
+          setClothingItems(Array.isArray(data) ? data : []);
+        }
+      } catch (err) {
+        console.error('Exception fetching clothing items:', err);
+      }
+    };
+
     fetchUserOutfits();
+    fetchClothingItems();
   }, [user]);
 
   const [photoSide, setPhotoSide] = useState<'left' | 'right'>('left');
