@@ -154,7 +154,7 @@ export const OutfitCard = ({
                 {onOutfitAddedToCalendar && (
                   <AddToCalendarButton
                     outfit={outfit}
-                    onOutfitAdded={onOutfitAddedToCalendar}
+                    onSuccess={onOutfitAddedToCalendar} // Changed from onOutfitAdded to onSuccess
                     setIsAddingToCalendar={setIsAddingToCalendar}
                   />
                 )}

@@ -164,6 +164,12 @@ export interface OutfitLog {
   notes?: string;
   weatherCondition?: string;
   temperature?: string;
+  user_id: string;  // Adding the required user_id field
+  activity?: string;
+  customActivity?: string;
+  askForAiSuggestion?: boolean;
+  aiSuggested?: boolean;
+  aiSuggestionFeedback?: 'positive' | 'negative' | null;
 }
 
 export interface OutfitLogExtended extends OutfitLog {

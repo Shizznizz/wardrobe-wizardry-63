@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { ChevronDown, ChevronUp, Edit, ExternalLink, Trash2 } from 'lucide-react';
 import { Outfit } from '@/lib/types';
 import AddToCalendarButton from '@/components/outfits/AddToCalendarButton';
-import { OutfitLog } from '@/components/outfits/OutfitLogItem';
+import { OutfitLog } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 

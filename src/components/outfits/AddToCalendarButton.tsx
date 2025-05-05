@@ -10,14 +10,14 @@ import { useNavigate } from 'react-router-dom';
 import { Outfit, TimeOfDay } from '@/lib/types';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
-import { OutfitLog } from './OutfitLogItem';
+import { OutfitLog } from '@/lib/types';
 
 interface AddToCalendarButtonProps {
   outfit: Outfit;
   variant?: 'default' | 'outline' | 'secondary' | 'ghost';
   size?: 'default' | 'sm' | 'lg' | 'icon';
   fullWidth?: boolean;
-  onSuccess?: (log: OutfitLog) => void;
+  onSuccess?: (log: OutfitLog) => void;  // Changed from onOutfitAdded to onSuccess
   className?: string;
 }
 
@@ -55,8 +55,9 @@ const AddToCalendarButton = ({
         date: selectedDate,
         timeOfDay: 'morning' as TimeOfDay,
         notes: '',
-        weather_condition: '',
-        temperature: ''
+        weatherCondition: '',
+        temperature: '',
+        user_id: user?.id || '' // Make sure user_id is set
       };
 
       let savedLog: OutfitLog | null = null;
@@ -87,7 +88,7 @@ const AddToCalendarButton = ({
           date: new Date(data.date),
           timeOfDay: data.time_of_day as TimeOfDay,
           notes: data.notes,
-          weather_condition: data.weather_condition,
+          weatherCondition: data.weather_condition,
           temperature: data.temperature,
           user_id: data.user_id,
           activity: data.activity,
