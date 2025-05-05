@@ -19,6 +19,7 @@ const CreateOutfitSection = ({ clothingItems, isPremium }: CreateOutfitSectionPr
   const { setIsBuilderOpen } = useOutfitContext();
   
   const handleCreateOutfit = () => {
+    // Clear any selected outfit in the context
     setIsBuilderOpen(true);
     toast.info("Opening outfit builder...");
   };

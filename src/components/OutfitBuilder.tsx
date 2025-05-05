@@ -31,8 +31,10 @@ const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }
   const [isSaving, setIsSaving] = useState(false);
   const { user } = useAuth();
   
+  // Reset the form and initialize with initialOutfit if provided
   useEffect(() => {
     if (initialOutfit) {
+      console.log("Editing existing outfit:", initialOutfit);
       setOutfitName(initialOutfit.name);
       const itemObjects = initialOutfit.items
         .map(itemId => clothingItems.find(item => item.id === itemId))
@@ -41,6 +43,7 @@ const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }
       setSelectedSeasons(initialOutfit.season || []);
       setSelectedOccasions(initialOutfit.occasions || [initialOutfit.occasion]);
     } else {
+      console.log("Creating new outfit");
       resetForm();
     }
   }, [initialOutfit, isOpen, clothingItems]);
@@ -79,6 +82,7 @@ const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }
       return;
     }
     
+    // Use a crypto.randomUUID for new outfits or the existing ID for edits
     const outfitId = initialOutfit?.id || crypto.randomUUID();
     
     const newOutfit: Outfit = {
@@ -148,7 +152,7 @@ const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }
         setIsSaving(false);
         return;
       } else {
-        toast.success("Outfit saved to your collection!");
+        toast.success(initialOutfit ? "Outfit updated successfully!" : "Outfit saved to your collection!");
         
         // Call the onSave prop to update local state as well
         onSave(newOutfit);

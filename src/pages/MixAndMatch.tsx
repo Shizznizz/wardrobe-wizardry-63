@@ -72,8 +72,10 @@ const MixAndMatch = () => {
     }
   }, []);
 
-  // Handle create outfit
+  // Handle create outfit - FIXED to clear selectedOutfitId
   const handleCreateOutfit = useCallback(() => {
+    // Clear selected outfit ID to ensure we're creating a new outfit
+    setSelectedOutfitId(null);
     setIsBuilderOpen(true);
   }, []);
 
