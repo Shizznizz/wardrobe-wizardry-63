@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useShowroom } from '@/hooks/useShowroom';
 import { sampleClothingItems, sampleOutfits } from '@/lib/wardrobeData';
@@ -1123,6 +1122,30 @@ const FittingRoom = () => {
             <ArrowUp className="h-5 w-5" />
           </Button>
         </motion.div>
+      )}
+      
+      {isSelectingOutfit && (
+        <AnimatePresence>
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+            className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/50 backdrop-blur-sm"
+          >
+            <WardrobeOutfitSelector 
+              outfits={safeOutfits}
+              selectedSeason={selectedSeason}
+              selectedOccasion={selectedOccasion}
+              showFavoritesOnly={showFavoritesOnly}
+              onSeasonChange={handleSeasonChange}
+              onOccasionChange={handleOccasionChange}
+              onFavoritesToggle={toggleFavorites}
+              onPreview={handleOutfitPreview}
+              onCancel={() => setIsSelectingOutfit(false)}
+              clothingItems={clothingItems} // Pass the clothingItems here
+            />
+          </motion.div>
+        </AnimatePresence>
       )}
       
       <ShowroomDialogs 

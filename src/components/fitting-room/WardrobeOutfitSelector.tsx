@@ -1,10 +1,11 @@
+
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, X, ArrowLeft, Filter, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
-import { ClothingSeason, ClothingOccasion, Outfit } from '@/lib/types';
+import { ClothingSeason, ClothingOccasion, Outfit, ClothingItem } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import OutfitFilters from '@/components/fitting-room/OutfitFilters';
@@ -20,6 +21,7 @@ interface WardrobeOutfitSelectorProps {
   onFavoritesToggle: () => void;
   onPreview: (outfit: Outfit) => void;
   onCancel: () => void;
+  clothingItems?: ClothingItem[]; // Add this prop to receive clothing items
 }
 
 const WardrobeOutfitSelector = ({
@@ -31,7 +33,8 @@ const WardrobeOutfitSelector = ({
   onOccasionChange,
   onFavoritesToggle,
   onPreview,
-  onCancel
+  onCancel,
+  clothingItems = [] // Add default empty array
 }: WardrobeOutfitSelectorProps) => {
   const [activeTab, setActiveTab] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -86,9 +89,8 @@ const WardrobeOutfitSelector = ({
   };
   
   // Helper function to get clothing item by ID
-  const getClothingItemById = (id: string): any => {
-    // This will be replaced with the actual implementation from parent component
-    return null;
+  const getClothingItemById = (id: string): ClothingItem | undefined => {
+    return clothingItems.find(item => item && item.id === id);
   };
   
   return (
@@ -207,11 +209,12 @@ const WardrobeOutfitSelector = ({
                 onClick={() => onPreview(outfit)}
               >
                 <div className="aspect-square rounded-lg overflow-hidden border border-white/10 transition-all group-hover:border-purple-500 relative">
-                  {/* Render outfit images grid if there are items */}
+                  {/* Update OutfitImageGrid with clothingItems prop */}
                   {outfit.items && outfit.items.length > 0 ? (
                     <OutfitImageGrid 
                       itemIds={outfit.items} 
-                      getClothingItemById={getClothingItemById} 
+                      getClothingItemById={getClothingItemById}
+                      clothingItems={clothingItems}
                     />
                   ) : (
                     <img 
