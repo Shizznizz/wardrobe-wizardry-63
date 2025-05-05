@@ -84,9 +84,35 @@ export const GetOliviasLook: React.FC = () => {
       </div>
       
       <div className="container mx-auto px-4">
-        <div className="flex flex-col-reverse md:flex-row items-center gap-8 md:gap-16">
-          {/* Left Column - Product Information */}
-          <div className="w-full md:w-3/5 max-w-3xl">
+        <div className="flex flex-col md:flex-row items-center gap-8 md:gap-16">
+          {/* Left Column - Olivia's Image */}
+          <motion.div 
+            className="w-full md:w-1/2"
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
+          >
+            <div className="relative">
+              {/* Decorative elements */}
+              <div className="absolute -top-4 -left-4 w-32 h-32 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-full blur-2xl" />
+              <div className="absolute -bottom-8 -right-8 w-40 h-40 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-full blur-2xl" />
+              
+              <div className="relative rounded-2xl overflow-hidden shadow-xl border border-white/10">
+                <OptimizedImage 
+                  src="/lovable-uploads/db51966b-4679-4d51-81f2-8844a7a57817.png"
+                  alt="Olivia wearing a beige off-shoulder crop top and ivory high-waisted trousers"
+                  className="w-full h-auto object-cover rounded-2xl"
+                  aspectRatio="aspect-[3/4]"
+                  priority={true}
+                  containerClassName="w-full"
+                />
+              </div>
+            </div>
+          </motion.div>
+          
+          {/* Right Column - Product Information */}
+          <div className="w-full md:w-1/2 max-w-xl">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -134,32 +160,6 @@ export const GetOliviasLook: React.FC = () => {
               </Button>
             </motion.div>
           </div>
-          
-          {/* Right Column - Olivia's Image */}
-          <motion.div 
-            className="w-full md:w-2/5"
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7 }}
-          >
-            <div className="relative">
-              {/* Decorative elements */}
-              <div className="absolute -top-4 -left-4 w-32 h-32 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-full blur-2xl" />
-              <div className="absolute -bottom-8 -right-8 w-40 h-40 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-full blur-2xl" />
-              
-              <div className="relative rounded-2xl overflow-hidden shadow-xl border border-white/10">
-                <OptimizedImage 
-                  src="/lovable-uploads/db51966b-4679-4d51-81f2-8844a7a57817.png"
-                  alt="Olivia wearing a beige off-shoulder crop top and ivory high-waisted trousers"
-                  className="w-full h-auto object-cover rounded-2xl"
-                  aspectRatio="aspect-[3/4]"
-                  priority={true}
-                  containerClassName="w-full"
-                />
-              </div>
-            </div>
-          </motion.div>
         </div>
       </div>
     </section>
