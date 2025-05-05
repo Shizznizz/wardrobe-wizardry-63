@@ -68,11 +68,11 @@ const Home = () => {
           </div>
         </motion.section>
 
-        {/* Premium Teaser Section with Olivia */}
-        <HomepagePremiumTeaser />
-        
         {/* NEW: Get Olivia's Look Section */}
         <GetOliviasLook />
+
+        {/* Premium Teaser Section with Olivia */}
+        <HomepagePremiumTeaser />
 
         {/* How It Works Section */}
         <HowItWorksSection />
