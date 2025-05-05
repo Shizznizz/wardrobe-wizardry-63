@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, ShoppingBag, Save, Sparkles } from 'lucide-react';
@@ -118,7 +117,6 @@ const OliviaRecommendationSection = ({ weather, situation }: OliviaRecommendatio
         filteredItems = filteredItems.filter(item => 
           item.occasions && (
             item.occasions.includes(situation as any) || 
-            item.occasions.includes('all') ||
             item.occasions.includes('casual')
           )
         );
@@ -400,7 +398,7 @@ const OliviaRecommendationSection = ({ weather, situation }: OliviaRecommendatio
             
             <div className="mb-6">
               <OutfitImageGrid 
-                outfit={generatedOutfit} 
+                itemIds={generatedOutfit.items} 
                 clothingItems={userClothingItems}
                 className="rounded-lg overflow-hidden"
               />

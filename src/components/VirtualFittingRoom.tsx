@@ -1,4 +1,3 @@
-
 import { ClothingItem, Outfit } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
