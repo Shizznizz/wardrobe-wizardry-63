@@ -57,9 +57,9 @@ const OutfitImageGrid = ({ itemIds, getClothingItemById, clothingItems }: Outfit
         const shouldSpanFull = displayItemIds.length === 1 && isFirstItem;
         
         const spanClasses = shouldSpanFull 
-          ? "col-span-2 row-span-2" 
+          ? "col-span-full row-span-full" 
           : shouldSpanWide 
-            ? "col-span-2" 
+            ? "col-span-full" 
             : "";
         
         return (

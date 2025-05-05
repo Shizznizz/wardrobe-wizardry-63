@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback, Suspense, lazy, memo, useRef } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -310,39 +309,7 @@ const MixAndMatch = () => {
       setSavedOutfits(updatedOutfits);
     }
     
-    // Save to Supabase if user is logged in
-    if (user?.id) {
-      try {
-        // Check if outfit exists in Supabase first
-        const { data: existingData } = await supabase
-          .from('outfits')
-          .select('id')
-          .eq('id', outfitToSave.id)
-          .eq('user_id', user.id);
-          
-        if (!existingData || existingData.length === 0) {
-          // Insert only if not exists
-          await supabase
-            .from('outfits')
-            .insert({
-              id: outfitToSave.id,
-              name: outfitToSave.name,
-              user_id: user.id,
-              items: outfitToSave.items,
-              season: outfitToSave.season,
-              occasion: outfitToSave.occasion,
-              occasions: outfitToSave.occasions,
-              favorite: outfitToSave.favorite,
-              tags: outfitToSave.tags,
-              times_worn: 0,
-              date_added: new Date().toISOString()
-            });
-        }
-      } catch (error) {
-        console.error('Error saving outfit to Supabase:', error);
-        // Continue with local saving even if database save fails
-      }
-    }
+    // Save to Supabase is now handled directly in the OutfitBuilder component
     
     // Force tab section to re-render
     setOutfitTabKey(prev => prev + 1);

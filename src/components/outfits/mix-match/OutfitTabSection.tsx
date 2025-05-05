@@ -2,13 +2,14 @@
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Outfit, ClothingItem } from '@/lib/types';
-import { Heart, Clock } from 'lucide-react';
+import { Heart, Clock, RefreshCw } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import OutfitCollectionSection from './OutfitCollectionSection';
 import RecommendedOutfits from '@/components/outfits/RecommendedOutfits';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
 
 interface OutfitTabSectionProps {
   outfits: Outfit[];
@@ -19,79 +20,99 @@ const OutfitTabSection = ({ outfits, clothingItems }: OutfitTabSectionProps) => 
   const [activeTab, setActiveTab] = useState('my-collection');
   const [userOutfits, setUserOutfits] = useState<Outfit[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const { user } = useAuth();
 
   // Fetch outfits from Supabase that match items in user's wardrobe
-  useEffect(() => {
-    const fetchUserOutfits = async () => {
-      if (!user) {
+  const fetchUserOutfits = async () => {
+    if (!user) {
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      // Fetch outfits from Supabase
+      const { data: outfitsData, error } = await supabase
+        .from('outfits')
+        .select('*')
+        .eq('user_id', user.id);
+
+      if (error) {
+        console.error('Error fetching outfits:', error);
+        toast.error('Failed to load your outfits');
         setIsLoading(false);
         return;
       }
 
-      try {
-        setIsLoading(true);
-        // Fetch outfits from Supabase
-        const { data: outfitsData, error } = await supabase
-          .from('outfits')
-          .select('*')
-          .eq('user_id', user.id);
+      // If outfits were found, format them correctly
+      if (outfitsData && outfitsData.length > 0) {
+        // Get clothing item IDs from the user's wardrobe
+        const userClothingItemIds = clothingItems.map(item => item.id);
 
-        if (error) {
-          console.error('Error fetching outfits:', error);
-          toast.error('Failed to load your outfits');
-          setIsLoading(false);
-          return;
-        }
+        // Filter outfits to only include those that have items from the user's wardrobe
+        const validOutfits = outfitsData.filter(outfit => {
+          // Make sure outfit.items is an array
+          const outfitItems = Array.isArray(outfit.items) ? outfit.items : [];
+          // Check if at least one item in the outfit exists in the user's wardrobe
+          return outfitItems.some(itemId => userClothingItemIds.includes(itemId));
+        });
 
-        // If outfits were found, format them correctly
-        if (outfitsData && outfitsData.length > 0) {
-          // Get clothing item IDs from the user's wardrobe
-          const userClothingItemIds = clothingItems.map(item => item.id);
+        // Format outfits for the application
+        const formattedOutfits = validOutfits.map(outfit => ({
+          id: outfit.id,
+          name: outfit.name,
+          items: Array.isArray(outfit.items) ? outfit.items : [],
+          season: Array.isArray(outfit.season) ? outfit.season : ['all'],
+          seasons: Array.isArray(outfit.season) ? outfit.season : ['all'],
+          occasion: outfit.occasion || 'casual',
+          occasions: Array.isArray(outfit.occasions) ? outfit.occasions : ['casual'],
+          favorite: outfit.favorite || false,
+          dateAdded: new Date(outfit.date_added || new Date()),
+          timesWorn: outfit.times_worn || 0,
+          tags: Array.isArray(outfit.tags) ? outfit.tags : []
+        }));
 
-          // Filter outfits to only include those that have items from the user's wardrobe
-          const validOutfits = outfitsData.filter(outfit => {
-            // Make sure outfit.items is an array
-            const outfitItems = Array.isArray(outfit.items) ? outfit.items : [];
-            // Check if at least one item in the outfit exists in the user's wardrobe
-            return outfitItems.some(itemId => userClothingItemIds.includes(itemId));
-          });
-
-          // Format outfits for the application
-          const formattedOutfits = validOutfits.map(outfit => ({
-            id: outfit.id,
-            name: outfit.name,
-            items: Array.isArray(outfit.items) ? outfit.items : [],
-            season: Array.isArray(outfit.season) ? outfit.season : ['all'],
-            seasons: Array.isArray(outfit.season) ? outfit.season : ['all'],
-            occasion: outfit.occasion || 'casual',
-            occasions: Array.isArray(outfit.occasions) ? outfit.occasions : ['casual'],
-            favorite: outfit.favorite || false,
-            dateAdded: new Date(outfit.date_added || new Date()),
-            timesWorn: outfit.times_worn || 0,
-            tags: Array.isArray(outfit.tags) ? outfit.tags : []
-          }));
-
-          setUserOutfits(formattedOutfits);
-        } else {
-          // No outfits found or error occurred
-          setUserOutfits([]);
-        }
-      } catch (err) {
-        console.error('Exception fetching outfits:', err);
-        toast.error('An error occurred while loading your outfits');
-      } finally {
-        setIsLoading(false);
+        console.log("Fetched outfits from Supabase:", formattedOutfits);
+        setUserOutfits(formattedOutfits);
+      } else {
+        // No outfits found or error occurred
+        setUserOutfits([]);
       }
-    };
+    } catch (err) {
+      console.error('Exception fetching outfits:', err);
+      toast.error('An error occurred while loading your outfits');
+    } finally {
+      setIsLoading(false);
+      setIsRefreshing(false);
+    }
+  };
 
+  useEffect(() => {
     fetchUserOutfits();
   }, [user, clothingItems]);
+
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+    fetchUserOutfits();
+  };
 
   return (
     <div className="rounded-xl border border-white/10 overflow-hidden bg-slate-900/50 backdrop-blur-md p-4">
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-xl font-semibold text-white">Outfit Collections</h3>
+        {user && (
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={handleRefresh} 
+            disabled={isRefreshing}
+            className="text-white/70 hover:text-white hover:bg-slate-800"
+          >
+            <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+            <span className="sr-only">Refresh outfits</span>
+          </Button>
+        )}
       </div>
       
       <Tabs defaultValue="my-collection" value={activeTab} onValueChange={setActiveTab}>

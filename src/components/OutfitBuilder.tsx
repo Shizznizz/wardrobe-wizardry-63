@@ -7,8 +7,10 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ClothingItem, Outfit, ClothingSeason, ClothingOccasion } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
-import { Shirt, Plus, CalendarDays, Sun, CloudRain, Trash2, X } from 'lucide-react';
+import { Shirt, Plus, CalendarDays, Sun, CloudRain, Trash2, X, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 
 interface OutfitBuilderProps {
   isOpen: boolean;
@@ -27,6 +29,8 @@ const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }
   const [selectedSeasons, setSelectedSeasons] = useState<ClothingSeason[]>([]);
   const [selectedOccasions, setSelectedOccasions] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState('items');
+  const [isSaving, setIsSaving] = useState(false);
+  const { user } = useAuth();
   
   useEffect(() => {
     if (initialOutfit) {
@@ -50,7 +54,7 @@ const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }
     setActiveTab('items');
   };
   
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!outfitName.trim()) {
       toast.error("Please provide an outfit name");
       return;
@@ -88,6 +92,59 @@ const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }
     // Log the outfit being saved
     console.log("Saving outfit:", newOutfit);
     
+    // If user is authenticated, save to Supabase
+    if (user) {
+      setIsSaving(true);
+      try {
+        const outfitData = {
+          id: newOutfit.id,
+          name: newOutfit.name,
+          user_id: user.id,
+          items: newOutfit.items,
+          season: newOutfit.season,
+          occasion: newOutfit.occasion,
+          occasions: newOutfit.occasions,
+          favorite: newOutfit.favorite,
+          times_worn: newOutfit.timesWorn || 0,
+          date_added: new Date().toISOString()
+        };
+        
+        // Check if the outfit already exists
+        const { data: existingOutfit } = await supabase
+          .from('outfits')
+          .select('id')
+          .eq('id', newOutfit.id)
+          .single();
+        
+        let result;
+        if (existingOutfit) {
+          // Update existing outfit
+          result = await supabase
+            .from('outfits')
+            .update(outfitData)
+            .eq('id', newOutfit.id);
+        } else {
+          // Insert new outfit
+          result = await supabase
+            .from('outfits')
+            .insert([outfitData]);
+        }
+        
+        if (result.error) {
+          console.error("Error saving outfit to Supabase:", result.error);
+          toast.error("Failed to save outfit to database");
+        } else {
+          toast.success("Outfit saved to your collection!");
+        }
+      } catch (error) {
+        console.error("Exception saving outfit:", error);
+        toast.error("An unexpected error occurred");
+      } finally {
+        setIsSaving(false);
+      }
+    }
+    
+    // Call the onSave prop to update local state as well
     onSave(newOutfit);
     resetForm();
   };
@@ -279,12 +336,21 @@ const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }
           </Button>
           <Button 
             onClick={handleSave} 
-            disabled={!isFormValid()}
+            disabled={!isFormValid() || isSaving}
             className="bg-gradient-to-r from-blue-600 to-indigo-600"
             type="button"
           >
-            <Plus className="h-4 w-4 mr-2" />
-            {initialOutfit ? 'Update Outfit' : 'Save Outfit'}
+            {isSaving ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Plus className="h-4 w-4 mr-2" />
+                {initialOutfit ? 'Update Outfit' : 'Save Outfit'}
+              </>
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>
