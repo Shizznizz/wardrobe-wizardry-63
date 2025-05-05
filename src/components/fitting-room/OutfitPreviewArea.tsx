@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
@@ -11,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
+import OutfitImageGrid from '@/components/outfits/OutfitImageGrid';
 
 interface OutfitPreviewAreaProps {
   finalImage: string | null;
@@ -67,6 +67,11 @@ const OutfitPreviewArea = ({
       return () => clearTimeout(timer);
     }
   }, [finalImage, selectedOutfit]);
+  
+  // Helper function to get clothing item by ID
+  const getClothingItemById = (id: string): ClothingItem | undefined => {
+    return clothingItems.find(item => item && item.id === id);
+  };
   
   return (
     <motion.div 
@@ -176,6 +181,35 @@ const OutfitPreviewArea = ({
                         {occasion}
                       </Badge>
                     ))}
+                  </div>
+                  
+                  {/* Display outfit items preview */}
+                  <div className="bg-slate-800/50 rounded-lg p-4 mb-6 relative overflow-hidden">
+                    <h4 className="text-sm font-medium text-white/90 mb-3">Items in this outfit</h4>
+                    {selectedOutfit.items && selectedOutfit.items.length > 0 ? (
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 aspect-video">
+                        {selectedOutfit.items.slice(0, 4).map((itemId, index) => {
+                          const item = getClothingItemById(itemId);
+                          return (
+                            <div key={index} className="border border-white/10 rounded overflow-hidden bg-slate-900">
+                              {item?.imageUrl ? (
+                                <img 
+                                  src={item.imageUrl} 
+                                  alt={item.name} 
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <div className="flex items-center justify-center h-full text-white/40 text-xs p-2 text-center">
+                                  {item?.name || 'Item unavailable'}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div className="text-white/50 text-sm">No items in this outfit</div>
+                    )}
                   </div>
                   
                   {/* Outfit swap functionality */}

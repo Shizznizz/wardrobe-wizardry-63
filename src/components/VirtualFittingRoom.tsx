@@ -1,4 +1,3 @@
-
 import { ClothingItem, Outfit } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
@@ -7,6 +6,7 @@ import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { motion, AnimatePresence } from 'framer-motion';
 import OliviaImageBadge from '@/components/outfits/OliviaImageBadge';
+import OutfitImageGrid from '@/components/outfits/OutfitImageGrid';
 
 interface VirtualFittingRoomProps {
   finalImage: string | null;
@@ -39,6 +39,10 @@ const VirtualFittingRoom = ({
         .map(itemId => clothingItems.find(item => item && item.id === itemId))
         .filter(item => item !== undefined) as ClothingItem[]
     : [];
+  
+  const getClothingItemById = (id: string): ClothingItem | undefined => {
+    return clothingItems.find(item => item && item.id === id);
+  };
   
   const handleDownload = async () => {
     if (!finalImage) return;
@@ -200,7 +204,7 @@ const VirtualFittingRoom = ({
       </AnimatePresence>
       
       {/* Outfit Items Section */}
-      {outfit && outfitItems.length > 0 && (
+      {outfit && outfit.items && outfit.items.length > 0 && (
         <motion.div 
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}

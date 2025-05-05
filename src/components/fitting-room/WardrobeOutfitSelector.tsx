@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, X, ArrowLeft, Filter, Check } from 'lucide-react';
@@ -9,6 +8,7 @@ import { ClothingSeason, ClothingOccasion, Outfit } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import OutfitFilters from '@/components/fitting-room/OutfitFilters';
+import OutfitImageGrid from '@/components/outfits/OutfitImageGrid';
 
 interface WardrobeOutfitSelectorProps {
   outfits: Outfit[];
@@ -83,6 +83,12 @@ const WardrobeOutfitSelector = ({
   
   const toggleFilters = () => {
     setShowFilters(!showFilters);
+  };
+  
+  // Helper function to get clothing item by ID
+  const getClothingItemById = (id: string): any => {
+    // This will be replaced with the actual implementation from parent component
+    return null;
   };
   
   return (
@@ -200,12 +206,21 @@ const WardrobeOutfitSelector = ({
                 className="cursor-pointer relative group"
                 onClick={() => onPreview(outfit)}
               >
-                <div className="aspect-square rounded-lg overflow-hidden border border-white/10 transition-all group-hover:border-purple-500">
-                  <img 
-                    src="/placeholder.svg" 
-                    alt={outfit.name} 
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                  />
+                <div className="aspect-square rounded-lg overflow-hidden border border-white/10 transition-all group-hover:border-purple-500 relative">
+                  {/* Render outfit images grid if there are items */}
+                  {outfit.items && outfit.items.length > 0 ? (
+                    <OutfitImageGrid 
+                      itemIds={outfit.items} 
+                      getClothingItemById={getClothingItemById} 
+                    />
+                  ) : (
+                    <img 
+                      src="/placeholder.svg" 
+                      alt={outfit.name} 
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                    />
+                  )}
+                  
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-3">
                     <h3 className="font-medium text-white text-sm line-clamp-1">{outfit.name}</h3>
                     <div className="flex flex-wrap gap-1 mt-1">
