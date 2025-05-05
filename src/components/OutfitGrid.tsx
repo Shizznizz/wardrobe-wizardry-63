@@ -1,10 +1,12 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Outfit, ClothingItem } from '@/lib/types';
 import { useNavigate } from 'react-router-dom';
 import { OutfitLog } from '@/components/outfits/OutfitLogItem';
 import { toast } from 'sonner';
 import { OutfitCard } from './outfits/OutfitCard';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 
 interface OutfitGridProps {
   outfits: Outfit[];
@@ -14,6 +16,7 @@ interface OutfitGridProps {
   clothingItems: ClothingItem[];
   onOutfitAddedToCalendar?: (log: OutfitLog) => void;
   onSelectOutfit?: (outfit: Outfit) => void;
+  fetchFromSupabase?: boolean;
 }
 
 const OutfitGrid = ({ 
@@ -23,10 +26,46 @@ const OutfitGrid = ({
   onToggleFavorite, 
   clothingItems,
   onOutfitAddedToCalendar,
-  onSelectOutfit 
+  onSelectOutfit,
+  fetchFromSupabase = false
 }: OutfitGridProps) => {
   const navigate = useNavigate();
-  const safeOutfits = Array.isArray(outfits) ? outfits : [];
+  const { user } = useAuth();
+  const [userOutfits, setUserOutfits] = useState<Outfit[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  
+  // Fetch outfits from Supabase if fetchFromSupabase is true
+  useEffect(() => {
+    if (fetchFromSupabase && user) {
+      setIsLoading(true);
+      const fetchOutfits = async () => {
+        try {
+          const { data, error } = await supabase
+            .from('outfits')
+            .select('*')
+            .eq('user_id', user.id);
+          
+          if (error) {
+            console.error('Error fetching outfits:', error);
+            toast.error('Failed to load your outfits');
+          } else {
+            console.log('Fetched outfits:', data);
+            setUserOutfits(Array.isArray(data) ? data : []);
+          }
+        } catch (err) {
+          console.error('Exception fetching outfits:', err);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      
+      fetchOutfits();
+    }
+  }, [fetchFromSupabase, user]);
+
+  // Use outfits from props or from Supabase
+  const displayOutfits = fetchFromSupabase ? userOutfits : outfits;
+  const safeOutfits = Array.isArray(displayOutfits) ? displayOutfits : [];
   const safeClothingItems = Array.isArray(clothingItems) ? clothingItems : [];
   
   // Helper function to check if an outfit contains valid items from the user's wardrobe
@@ -60,6 +99,14 @@ const OutfitGrid = ({
       navigate('/fitting-room');
     }
   };
+  
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-40">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-white"></div>
+      </div>
+    );
+  }
   
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

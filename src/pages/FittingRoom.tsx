@@ -8,7 +8,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Share2, Download, Heart, Info, ArrowUp, Sparkles, 
-  Cloud, Sun, Users, Camera, Upload, Check, RefreshCw
+  Cloud, Sun, Users, Camera, Upload, Check, RefreshCw, X
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -17,6 +17,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { ClothingSeason, ClothingOccasion, WeatherInfo, Outfit } from '@/lib/types';
 import PageHeader from '@/components/shared/PageHeader';
 import OptimizedImage from '@/components/ui/optimized-image';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 
 // Import existing components
 import WelcomeMessage from '@/components/fitting-room/WelcomeMessage';
@@ -36,6 +38,9 @@ import OliviaOutfitPick from '@/components/fitting-room/OliviaOutfitPick';
 
 const FittingRoom = () => {
   const isMobile = useIsMobile();
+  const { user } = useAuth();
+  const [userOutfits, setUserOutfits] = useState<Outfit[]>([]);
+  const [isLoadingOutfits, setIsLoadingOutfits] = useState(true);
 
   const { 
     outfits = [], 
@@ -52,7 +57,36 @@ const FittingRoom = () => {
     handleUserPhotoChange = () => {},
     handleClearUserPhoto = () => {},
     handleTryOnOutfit = () => {}
-  } = useOutfitState(sampleOutfits || [], sampleClothingItems || []);
+  } = useOutfitState(userOutfits || [], clothingItems || []);
+
+  // Fetch user's outfits from Supabase
+  useEffect(() => {
+    const fetchUserOutfits = async () => {
+      if (!user) return;
+      
+      setIsLoadingOutfits(true);
+      try {
+        const { data, error } = await supabase
+          .from('outfits')
+          .select('*')
+          .eq('user_id', user.id);
+        
+        if (error) {
+          console.error('Error fetching outfits:', error);
+          toast.error('Failed to load your outfits');
+        } else {
+          console.log('Fetched outfits:', data);
+          setUserOutfits(Array.isArray(data) ? data : []);
+        }
+      } catch (err) {
+        console.error('Exception fetching outfits:', err);
+      } finally {
+        setIsLoadingOutfits(false);
+      }
+    };
+
+    fetchUserOutfits();
+  }, [user]);
 
   const [photoSide, setPhotoSide] = useState<'left' | 'right'>('left');
   const [showOliviaHint, setShowOliviaHint] = useState(false);
@@ -100,7 +134,7 @@ const FittingRoom = () => {
     setFinalImage,
   } = useShowroom();
 
-  const userOutfits = Array.isArray(outfits) ? outfits : [];
+  const safeOutfits = Array.isArray(userOutfits) ? userOutfits : [];
 
   useEffect(() => {
     const idleTimer = setTimeout(() => {
@@ -270,7 +304,7 @@ const FittingRoom = () => {
     setIsSelectingOutfit(true);
   };
 
-  const filteredOutfits = userOutfits.filter((outfit) => {
+  const filteredOutfits = safeOutfits.filter((outfit) => {
     if (!outfit) return false;
     
     if (selectedSeason && Array.isArray(outfit.seasons)) {
@@ -425,7 +459,7 @@ const FittingRoom = () => {
                             className="absolute top-2 right-2 bg-black/50 border-none text-white/90 hover:bg-black/70 rounded-full p-2 h-auto"
                             onClick={resetSelection}
                           >
-                            <x className="h-4 w-4" />
+                            <X className="h-4 w-4" />
                           </Button>
                           <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs px-3 py-1 rounded-full">
                             Your Photo
@@ -476,7 +510,7 @@ const FittingRoom = () => {
                             className="absolute top-2 right-2 bg-black/50 border-none text-white/90 hover:bg-black/70 rounded-full p-2 h-auto"
                             onClick={resetSelection}
                           >
-                            <x className="h-4 w-4" />
+                            <X className="h-4 w-4" />
                           </Button>
                           <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs px-3 py-1 rounded-full">
                             Olivia
@@ -535,13 +569,13 @@ const FittingRoom = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="p-6">
-                  <Tabs defaultValue="wardrobe" className="w-full">
+                  <Tabs defaultValue="wardrobe" className="w-full" id="outfit-tabs">
                     <TabsList className="grid grid-cols-2 gap-2 mb-6 bg-black/20 p-1 w-full">
                       <TabsTrigger 
                         value="wardrobe" 
                         className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-pink-600 data-[state=active]:text-white"
                       >
-                        Your Wardrobe
+                        Your Outfits
                       </TabsTrigger>
                       <TabsTrigger 
                         value="suggestions"
@@ -598,7 +632,12 @@ const FittingRoom = () => {
                         </div>
                         
                         <div className="grid grid-cols-2 sm:grid-cols-2 gap-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
-                          {safeFilteredOutfits.length > 0 ? (
+                          {isLoadingOutfits ? (
+                            <div className="col-span-2 text-center py-10">
+                              <div className="inline-block w-8 h-8 border-2 border-purple-500 border-t-white rounded-full animate-spin mb-4"></div>
+                              <p className="text-white/70">Loading your outfits...</p>
+                            </div>
+                          ) : safeFilteredOutfits.length > 0 ? (
                             safeFilteredOutfits.map((outfit) => (
                               <div 
                                 key={outfit.id}
@@ -858,7 +897,7 @@ const FittingRoom = () => {
           </motion.section>
         )}
         
-        {/* Step 4: Olivia's Suggestions */}
+        {/* Step A: Olivia's Suggestions */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -884,7 +923,7 @@ const FittingRoom = () => {
           </Card>
         </motion.section>
         
-        {/* Step 5: Saved Looks & Outfit Collections */}
+        {/* Step B: Saved Looks & Outfit Collections */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -906,12 +945,21 @@ const FittingRoom = () => {
                 onSeasonChange={handleSeasonChange}
                 onOccasionChange={handleOccasionChange}
                 onFavoritesToggle={toggleFavorites}
-                totalOutfits={userOutfits.length}
+                totalOutfits={safeOutfits.length}
                 filteredOutfits={safeFilteredOutfits.length}
                 className="shadow-xl shadow-purple-900/10 mb-6"
               />
               
-              {!Array.isArray(safeFilteredOutfits) || safeFilteredOutfits.length === 0 ? (
+              {isLoadingOutfits ? (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="glass-dark border border-white/10 rounded-lg p-6 text-center"
+                >
+                  <div className="inline-block w-8 h-8 border-2 border-purple-500 border-t-white rounded-full animate-spin mb-4"></div>
+                  <p className="text-white/70">Loading your outfits...</p>
+                </motion.div>
+              ) : (!Array.isArray(safeFilteredOutfits) || safeFilteredOutfits.length === 0) ? (
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -978,7 +1026,7 @@ const FittingRoom = () => {
           </Card>
         </motion.section>
         
-        {/* Step 6: Style of the Day */}
+        {/* Step C: Style of the Day */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -991,7 +1039,7 @@ const FittingRoom = () => {
           />
         </motion.section>
           
-        {/* Step 7: Community Picks (Renamed TrendingLooks) */}
+        {/* Step D: Community Picks (Renamed TrendingLooks) */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
