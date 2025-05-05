@@ -1,14 +1,28 @@
 
-import React from 'react';
-import { Heart, Edit, Trash2, ExternalLink, Calendar } from 'lucide-react';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Heart, Trash2, Edit, Calendar, ArrowRight } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Outfit, ClothingItem } from '@/lib/types';
-import { OutfitLog } from './OutfitLogItem';
+import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Outfit, ClothingItem, OutfitLog } from '@/lib/types';
+import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
+import AddToCalendarButton from './AddToCalendarButton';
+import OutfitImageGrid from './OutfitImageGrid';
 
-interface OutfitCardProps {
+export interface OutfitCardProps {
   outfit: Outfit;
   clothingItems: ClothingItem[];
   onEdit: (outfit: Outfit) => void;
@@ -29,150 +43,170 @@ export const OutfitCard = ({
   onOutfitAddedToCalendar,
   onPreviewInFittingRoom
 }: OutfitCardProps) => {
-  if (!outfit) return null;
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [isAddingToCalendar, setIsAddingToCalendar] = useState(false);
 
-  // Get the actual clothing items that make up this outfit
-  const outfitItems = Array.isArray(outfit.items) 
-    ? outfit.items
-        .map(itemId => getClothingItemById(itemId))
-        .filter(item => item !== undefined) as ClothingItem[]
-    : [];
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setDeleteConfirmOpen(true);
+  };
 
-  const maxItems = 4; // Maximum items to show in preview
-  const displayItems = outfitItems.slice(0, maxItems);
-  const additionalItems = outfitItems.length > maxItems ? outfitItems.length - maxItems : 0;
+  const handleConfirmDelete = () => {
+    onDelete(outfit.id);
+    setDeleteConfirmOpen(false);
+    toast.success("Outfit deleted successfully");
+  };
 
-  const handleAddToCalendar = () => {
-    if (onOutfitAddedToCalendar) {
-      const log: OutfitLog = {
-        id: `log-${Date.now()}`,
-        outfitId: outfit.id,
-        date: new Date(),
-        timeOfDay: 'day',
-        user_id: '', // This will be filled in by parent component
-        weather_condition: ''
-      };
-      
-      onOutfitAddedToCalendar(log);
-      toast.success('Added to calendar');
+  const handleToggleFavorite = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onToggleFavorite(outfit.id);
+    toast.success(outfit.favorite ? "Removed from favorites" : "Added to favorites");
+  };
+
+  const handleEditClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onEdit(outfit);
+  };
+
+  const handleFittingRoomClick = () => {
+    if (onPreviewInFittingRoom) {
+      onPreviewInFittingRoom(outfit);
+    } else {
+      toast.info("Previewing in fitting room is not available");
     }
   };
 
+  // Safely access seasons, occasions, and tags
+  const seasons = Array.isArray(outfit.season) ? outfit.season : 
+    (Array.isArray(outfit.seasons) ? outfit.seasons : []);
+  
+  const occasions = Array.isArray(outfit.occasions) ? outfit.occasions : 
+    (outfit.occasion ? [outfit.occasion] : []);
+  
+  const tags = Array.isArray(outfit.tags) ? outfit.tags : [];
+
   return (
-    <Card className="overflow-hidden bg-gradient-to-b from-slate-800/80 to-slate-900/90 rounded-xl border border-white/10 shadow-xl">
-      <div className="relative">
-        {/* Outfit items grid */}
-        <div className="grid grid-cols-2 gap-1">
-          {displayItems.map((item, index) => (
-            <div key={index} className="aspect-square overflow-hidden border border-white/10">
-              {item.imageUrl ? (
-                <img 
-                  src={item.imageUrl} 
-                  alt={item.name} 
-                  className="w-full h-full object-cover"
+    <>
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        whileHover={{ y: -5 }}
+        className="h-full"
+      >
+        <Card className="border-white/10 bg-slate-800/50 backdrop-blur-sm h-full relative overflow-hidden">
+          <CardContent className="p-0">
+            <div className="aspect-square relative overflow-hidden bg-slate-900 rounded-t-md">
+              {/* Outfit image grid */}
+              <OutfitImageGrid 
+                itemIds={Array.isArray(outfit.items) ? outfit.items : []} 
+                getClothingItemById={getClothingItemById}
+                clothingItems={clothingItems}
+              />
+              
+              {/* Favorite button */}
+              <Button
+                size="icon"
+                variant="ghost"
+                className="absolute top-2 right-2 h-8 w-8 rounded-full bg-black/40 backdrop-blur-sm z-10"
+                onClick={handleToggleFavorite}
+              >
+                <Heart 
+                  className={`h-4 w-4 ${outfit.favorite ? "fill-red-500 text-red-500" : "text-white"}`} 
                 />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center bg-gray-800 text-gray-400">
-                  {item.name}
-                </div>
-              )}
-            </div>
-          ))}
-          
-          {/* Empty placeholders for fewer than 4 items */}
-          {Array.from({ length: Math.max(0, maxItems - displayItems.length) }).map((_, index) => (
-            <div key={`empty-${index}`} className="aspect-square bg-slate-800/50 border border-white/5" />
-          ))}
-
-          {/* Show count for additional items */}
-          {additionalItems > 0 && (
-            <div className="absolute bottom-2 right-2 bg-black/70 text-white text-sm px-2 py-1 rounded-md">
-              +{additionalItems} more
-            </div>
-          )}
-        </div>
-
-        {/* Favorite button (top right) */}
-        <button 
-          className="absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center bg-black/40 hover:bg-black/60 transition-colors"
-          onClick={() => onToggleFavorite(outfit.id)}
-        >
-          <Heart className={`h-4 w-4 ${outfit.favorite ? 'fill-red-500 text-red-500' : 'text-white'}`} />
-        </button>
-      </div>
-
-      <div className="p-3">
-        <h3 className="font-medium text-white text-lg mb-1">{outfit.name}</h3>
-        
-        <div className="flex flex-wrap gap-1 mb-3">
-          {Array.isArray(outfit.seasons) && outfit.seasons.map(season => (
-            <Badge 
-              key={season} 
-              variant="outline" 
-              className="text-xs bg-white/5 text-white/90 border-white/10"
-            >
-              {season}
-            </Badge>
-          ))}
-          {Array.isArray(outfit.occasions) && outfit.occasions.map(occasion => (
-            <Badge 
-              key={occasion} 
-              variant="outline" 
-              className="text-xs bg-white/5 text-purple-300 border-purple-500/30"
-            >
-              {occasion}
-            </Badge>
-          ))}
-        </div>
-
-        <div className="flex gap-1 justify-between">
-          <div className="flex gap-1">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="h-8 px-2 bg-slate-700/50 border-slate-600 hover:bg-slate-700 text-white"
-              onClick={() => onEdit(outfit)}
-            >
-              <Edit className="h-3.5 w-3.5 mr-1" />
-              Edit
-            </Button>
-            
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="h-8 px-2 bg-slate-700/50 border-slate-600 hover:bg-slate-700 text-white"
-              onClick={() => onDelete(outfit.id)}
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-            </Button>
-          </div>
-          
-          <div className="flex gap-1">
-            {onOutfitAddedToCalendar && (
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="h-8 px-2 bg-slate-700/50 border-slate-600 hover:bg-slate-700 text-white"
-                onClick={handleAddToCalendar}
-              >
-                <Calendar className="h-3.5 w-3.5" />
               </Button>
-            )}
+            </div>
             
-            {onPreviewInFittingRoom && (
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="h-8 px-2 bg-gradient-to-r from-purple-600/80 to-indigo-600/80 hover:from-purple-600 hover:to-indigo-600 border-purple-500/50 text-white"
-                onClick={() => onPreviewInFittingRoom(outfit)}
-              >
-                <ExternalLink className="h-3.5 w-3.5 mr-1" />
-                Try On
-              </Button>
-            )}
-          </div>
-        </div>
-      </div>
-    </Card>
+            <div className="p-4">
+              <h3 className="font-semibold text-white text-lg mb-2">{outfit.name || 'Unnamed Outfit'}</h3>
+              
+              <div className="flex flex-wrap gap-1.5 mb-3">
+                {seasons.slice(0, 2).map((season) => (
+                  <Badge key={`season-${season}`} variant="outline" className="bg-blue-500/20 border-blue-500/30">
+                    {season}
+                  </Badge>
+                ))}
+                
+                {occasions.slice(0, 2).map((occasion) => (
+                  <Badge key={`occasion-${occasion}`} variant="outline" className="bg-purple-500/20 border-purple-500/30">
+                    {occasion}
+                  </Badge>
+                ))}
+              </div>
+              
+              <div className="text-xs text-gray-400 mb-4 flex items-center gap-2">
+                <span>Added {outfit.dateAdded ? formatDistanceToNow(new Date(outfit.dateAdded), { addSuffix: true }) : 'recently'}</span>
+                <span>•</span>
+                <span>Worn {outfit.timesWorn || 0} times</span>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-2">
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  className="border-white/20 text-white hover:bg-white/10"
+                  onClick={handleFittingRoomClick}
+                >
+                  <ArrowRight className="mr-1 h-3.5 w-3.5" />
+                  Try On
+                </Button>
+                
+                {onOutfitAddedToCalendar && (
+                  <AddToCalendarButton
+                    outfit={outfit}
+                    onOutfitAdded={onOutfitAddedToCalendar}
+                    setIsAddingToCalendar={setIsAddingToCalendar}
+                  />
+                )}
+              </div>
+              
+              <div className="mt-3 flex justify-between border-t border-white/10 pt-3">
+                <Button 
+                  size="sm" 
+                  variant="ghost" 
+                  className="text-white/70 hover:text-white hover:bg-transparent"
+                  onClick={handleEditClick}
+                >
+                  <Edit className="mr-1 h-3.5 w-3.5" />
+                  Edit
+                </Button>
+                
+                <Button 
+                  size="sm" 
+                  variant="ghost" 
+                  className="text-white/70 hover:text-red-400 hover:bg-transparent"
+                  onClick={handleDeleteClick}
+                >
+                  <Trash2 className="mr-1 h-3.5 w-3.5" />
+                  Delete
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+
+      <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+        <AlertDialogContent className="bg-slate-900 border-slate-700 text-white">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete {outfit.name || 'this outfit'}?</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-300">
+              Are you sure you want to delete this outfit? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-white">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              className="bg-red-600 hover:bg-red-700 text-white"
+              onClick={handleConfirmDelete}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 };

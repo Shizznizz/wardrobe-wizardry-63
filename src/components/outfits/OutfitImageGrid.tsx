@@ -1,5 +1,6 @@
 
 import { ClothingItem } from '@/lib/types';
+import OptimizedImage from '@/components/ui/optimized-image';
 
 interface OutfitImageGridProps {
   itemIds: string[];
@@ -8,7 +9,7 @@ interface OutfitImageGridProps {
 }
 
 const OutfitImageGrid = ({ itemIds, getClothingItemById, clothingItems }: OutfitImageGridProps) => {
-  // Make sure itemIds is an array
+  // Make sure itemIds is an array and it exists
   const safeItemIds = Array.isArray(itemIds) ? itemIds : [];
   
   return (
@@ -22,14 +23,12 @@ const OutfitImageGrid = ({ itemIds, getClothingItemById, clothingItems }: Outfit
           >
             <div className="bg-slate-800 rounded-md h-full w-full overflow-hidden flex items-center justify-center">
               {item?.imageUrl ? (
-                <img 
+                <OptimizedImage 
                   src={item.imageUrl} 
-                  alt={item.name} 
+                  alt={item.name || 'Clothing item'} 
                   className="h-full w-full object-cover rounded-md"
-                  onError={(e) => {
-                    console.error("Failed to load outfit image:", item.imageUrl);
-                    (e.target as HTMLImageElement).src = '/placeholder.svg';
-                  }}
+                  showSkeleton={true}
+                  fallbackSrc="/placeholder.svg"
                 />
               ) : (
                 <div className="text-gray-400 text-xs">{item?.name || 'Unknown Item'}</div>
