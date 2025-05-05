@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -400,7 +401,7 @@ const MyWardrobe = () => {
           animate="visible"
           variants={containerVariants}
         >
-          {/* Updated PageHeader with enhanced image and improved mobile layout */}
+          {/* Updated PageHeader with image moved to right side of title/CTAs */}
           <PageHeader
             title="Your Digital Wardrobe"
             subtitle="Elevate your style with our AI-powered organization tools. Rediscover your fashion sense."
@@ -412,6 +413,7 @@ const MyWardrobe = () => {
             animationStyle="slide"
             overlayEffect="glow"
             useCustomMobileLayout={true}
+            imageOnTop={true} // New prop to position image to the right of title/CTAs
           >
             <div className="flex flex-wrap gap-3 mt-4 z-10 relative">
               <UploadModal onUpload={handleUpload}>
@@ -602,3 +604,4 @@ const MyWardrobe = () => {
 };
 
 export default MyWardrobe;
+
