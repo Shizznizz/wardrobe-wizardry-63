@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback, Suspense, lazy, memo, useRef } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -49,6 +50,7 @@ const MixAndMatch = () => {
   const [outfits, setOutfits] = useState<Outfit[]>([]);
   const [savedOutfits, setSavedOutfits] = useState<Outfit[]>([]);
   const [userClothingItems, setUserClothingItems] = useState<ClothingItem[]>([]);
+  const [outfitTabKey, setOutfitTabKey] = useState(0); // Add this to force re-render
 
   // Scroll to weather section
   const scrollToWeatherSection = useCallback(() => {
@@ -289,8 +291,14 @@ const MixAndMatch = () => {
       return;
     }
 
+    console.log("Saving outfit:", outfitToSave);
+
     // Update local state
-    setOutfits(prev => [...prev, outfitToSave]);
+    setOutfits(prev => {
+      const updated = [...prev, outfitToSave];
+      console.log("Updated outfits:", updated);
+      return updated;
+    });
     
     // Save to localStorage - first check if already exists
     const localSavedOutfits = JSON.parse(localStorage.getItem('savedOutfits') || '[]');
@@ -336,7 +344,15 @@ const MixAndMatch = () => {
       }
     }
     
+    // Force tab section to re-render
+    setOutfitTabKey(prev => prev + 1);
+    
     toast.success('Outfit created successfully!');
+    
+    // Scroll to the outfits section to show the newly added outfit
+    setTimeout(() => {
+      scrollToOutfitsSection();
+    }, 500);
   };
 
   // Use memoized handlers for temperature and weather condition
@@ -454,6 +470,7 @@ const MixAndMatch = () => {
             className="mb-8 scroll-mt-24"
           >
             <OutfitTabSection
+              key={outfitTabKey} // Add key to force re-render on updates
               outfits={outfits}
               clothingItems={userClothingItems}
             />

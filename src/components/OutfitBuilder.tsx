@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ClothingItem, Outfit, ClothingSeason, ClothingOccasion } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { Shirt, Plus, CalendarDays, Sun, CloudRain, Trash2, X } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface OutfitBuilderProps {
   isOpen: boolean;
@@ -50,11 +51,32 @@ const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }
   };
   
   const handleSave = () => {
+    if (!outfitName.trim()) {
+      toast.error("Please provide an outfit name");
+      return;
+    }
+    
+    if (selectedItems.length === 0) {
+      toast.error("Please select at least one clothing item");
+      return;
+    }
+    
+    if (selectedSeasons.length === 0) {
+      toast.error("Please select at least one season");
+      return;
+    }
+    
+    if (selectedOccasions.length === 0) {
+      toast.error("Please select at least one occasion");
+      return;
+    }
+    
     const newOutfit: Outfit = {
-      id: initialOutfit?.id || '',
+      id: initialOutfit?.id || String(Date.now()),
       name: outfitName,
       items: selectedItems.map(item => item.id),
       season: selectedSeasons,
+      seasons: selectedSeasons, // Add this to ensure consistency
       occasion: selectedOccasions[0] || 'casual',
       occasions: selectedOccasions,
       favorite: initialOutfit?.favorite || false,
@@ -62,6 +84,9 @@ const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }
       dateAdded: initialOutfit?.dateAdded || new Date(),
       lastWorn: initialOutfit?.lastWorn
     };
+    
+    // Log the outfit being saved
+    console.log("Saving outfit:", newOutfit);
     
     onSave(newOutfit);
     resetForm();
