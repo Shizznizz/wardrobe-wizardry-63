@@ -12,6 +12,7 @@ import HowItWorksSection from '@/components/home/HowItWorksSection';
 import TestimonialsSection from '@/components/home/TestimonialsSection';
 import FinalCta from '@/components/home/FinalCta';
 import TrustBar from '@/components/home/TrustBar';
+import GetOliviasLook from '@/components/home/GetOliviasLook';
 import { Dialog, DialogContent, DialogClose } from '@/components/ui/dialog';
 
 const Home = () => {
@@ -69,6 +70,9 @@ const Home = () => {
 
         {/* Premium Teaser Section with Olivia */}
         <HomepagePremiumTeaser />
+        
+        {/* NEW: Get Olivia's Look Section */}
+        <GetOliviasLook />
 
         {/* How It Works Section */}
         <HowItWorksSection />

@@ -85,4 +85,17 @@
     position: fixed !important;
     width: 100% !important;
   }
+
+  /* Improved z-index stacking for modals and mobile menus */
+  .z-modal {
+    z-index: 999;
+  }
+  
+  .z-mobile-menu {
+    z-index: 1000;
+  }
+  
+  .z-mobile-menu-overlay {
+    z-index: 999;
+  }
 }
