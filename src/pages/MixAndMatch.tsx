@@ -112,7 +112,7 @@ const MixAndMatch = () => {
     setSelectedOutfitId(null);
     setSelectedOutfit(null); // Make sure to also clear the selected outfit object
     setIsCreatingNewOutfit(true); // Explicitly set to creation mode
-    setIsBuilderOpen(true);
+    setIsBuilderOpen(true); // Ensure the builder modal opens
     toast.info("Creating a new outfit");
   }, [setIsCreatingNewOutfit, setSelectedOutfit, setSelectedOutfitId]);
 
@@ -180,7 +180,7 @@ const MixAndMatch = () => {
             favorite: item.favorite || false,
             imageUrl: item.image_url,
             image: item.image_url,
-            timesWorn: item.times_worn || 0,
+            timesWorn: item.timesWorn || 0,
             dateAdded: new Date(item.date_added)
           }));
           

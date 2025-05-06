@@ -24,7 +24,8 @@ const MixMatchActions = ({ onScrollToOutfits }: MixMatchActionsProps) => {
     setSelectedOutfitId(null);
     setSelectedOutfit(null);
     setIsCreatingNewOutfit(true); // Set creation mode to true
-    setIsBuilderOpen(true);
+    // Most importantly, make sure we open the builder modal
+    setIsBuilderOpen(true); 
     toast.info("Creating a new outfit");
   };
 

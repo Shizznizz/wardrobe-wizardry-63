@@ -32,7 +32,7 @@ const CreateOutfitSection = ({ clothingItems, isPremium }: CreateOutfitSectionPr
     setSelectedOutfitId(null); // Clear any selected outfit ID
     setSelectedOutfit(null);   // Clear selected outfit object
     setIsCreatingNewOutfit(true); // Set to create mode 
-    setIsBuilderOpen(true);
+    setIsBuilderOpen(true);    // Ensure the builder modal opens
     toast.info("Creating a new outfit");
   };
   
