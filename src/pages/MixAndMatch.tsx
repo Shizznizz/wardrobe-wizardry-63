@@ -17,6 +17,7 @@ import EnhancedPageHeader from '@/components/outfits/mix-match/EnhancedPageHeade
 import OutfitBuilder from '@/components/OutfitBuilder';
 import { toast } from 'sonner';
 import { Plus } from 'lucide-react';
+import { Shirt } from '@/components/ui/icons';
 
 // Lazily loaded components
 const OliviaRecommendationSection = lazy(() => import('@/components/outfits/mix-match/OliviaRecommendationSection'));
@@ -82,7 +83,7 @@ const MixAndMatch = () => {
     setSelectedOutfitId(null);
     setIsCreatingNewOutfit(true);
     setIsBuilderOpen(true);
-    toast.success("Creating a new outfit");
+    toast.info("Creating a new outfit");
   }, [setIsCreatingNewOutfit]);
 
   // Fetch user profile
@@ -556,6 +557,57 @@ const MixAndMatch = () => {
             <Suspense fallback={<Skeleton className="w-full h-32 rounded-xl bg-slate-800" />}>
               <MemoizedTrendingStylesSection />
             </Suspense>
+          </motion.section>
+          
+          {/* Your Daily Style section - Update button to use handleCreateOutfit */}
+          <motion.section 
+            className="mt-12 mb-12 flex flex-col items-center text-center"
+          >
+            <div className="max-w-2xl mx-auto">
+              <div className="flex justify-center mb-4">
+                <span className="text-pink-400 mb-2">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6 12H18M12 6V18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </span>
+              </div>
+              <h2 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-violet-400 mb-4">
+                Your Daily Style,<br/>Curated by Olivia
+              </h2>
+              <p className="text-white/70 text-xl mb-8">
+                Get AI-powered outfits based on your style, mood, and local weather.
+              </p>
+              
+              <div className="mb-12">
+                <Button
+                  className="bg-gradient-to-r from-pink-500 to-violet-500 text-white hover:opacity-90 px-8 py-6 h-auto text-lg shadow-lg"
+                >
+                  Let Olivia Style Me Today
+                </Button>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <Button
+                  onClick={scrollToOutfitsSection}
+                  variant="outline"
+                  size="lg"
+                  className="border-pink-500/30 text-white hover:bg-white/10"
+                >
+                  <Shirt className="mr-2 h-4 w-4" />
+                  See My Outfits
+                </Button>
+                
+                <Button
+                  onClick={handleCreateOutfit}
+                  variant="outline"
+                  size="lg"
+                  className="border-violet-500/30 text-white hover:bg-white/10"
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add New Outfit
+                </Button>
+              </div>
+            </div>
           </motion.section>
         </main>
 

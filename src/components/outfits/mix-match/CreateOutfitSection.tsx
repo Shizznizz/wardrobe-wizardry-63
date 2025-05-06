@@ -1,13 +1,12 @@
 
 import React from 'react';
-import { Sparkles, Plus, Wand2 } from 'lucide-react';
+import { Sparkles, Wand2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ClothingItem } from '@/lib/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
 import { useOutfitContext } from '@/hooks/useOutfitContext';
+import { toast } from 'sonner';
 
 interface CreateOutfitSectionProps {
   clothingItems: ClothingItem[];
@@ -15,23 +14,12 @@ interface CreateOutfitSectionProps {
 }
 
 const CreateOutfitSection = ({ clothingItems, isPremium }: CreateOutfitSectionProps) => {
-  const navigate = useNavigate();
   const { 
     setIsBuilderOpen, 
     setSelectedOutfitId,
     setIsCreatingNewOutfit,
     setSelectedOutfit
   } = useOutfitContext();
-  
-  const handleCreateOutfit = () => {
-    console.log("CreateOutfitSection: handleCreateOutfit called");
-    // Important: Reset all selection state to ensure we're creating a new outfit
-    setSelectedOutfitId(null);
-    setSelectedOutfit(null);
-    setIsCreatingNewOutfit(true);
-    setIsBuilderOpen(true);
-    toast.info("Opening outfit builder for a new outfit");
-  };
   
   const handleOliviaCreate = () => {
     toast.success("Olivia is creating a custom outfit for you!");
@@ -52,17 +40,7 @@ const CreateOutfitSection = ({ clothingItems, isPremium }: CreateOutfitSectionPr
             </p>
           </div>
           
-          <div className="flex flex-wrap gap-3">
-            <Button 
-              variant="default" 
-              size="lg"
-              onClick={handleCreateOutfit}
-              className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Create Outfit
-            </Button>
-            
+          <div className="flex flex-wrap gap-3">            
             <Button 
               variant="outline" 
               size="lg"
