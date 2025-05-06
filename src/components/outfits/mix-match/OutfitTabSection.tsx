@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -23,20 +22,53 @@ const OutfitTabSection = ({ outfits, clothingItems, isRefreshing = false, onRefr
   const [selectedOutfitId, setSelectedOutfitId] = useState<string | null>(
     outfits.length > 0 ? outfits[0].id : null
   );
+  const [outfitThumbnails, setOutfitThumbnails] = useState<Record<string, string>>({});
 
-  const myOutfits = outfits.filter(outfit => outfit.favorite);
-  const recentOutfits = [...outfits].sort((a, b) => {
+  // Filter outfits that have valid items from user's wardrobe
+  const validOutfits = outfits.filter(outfit => {
+    if (!outfit || !Array.isArray(outfit.items) || outfit.items.length === 0) {
+      return false;
+    }
+    
+    // Check if at least one item in the outfit exists in the user's clothing items
+    return outfit.items.some(itemId => 
+      clothingItems.some(item => item && item.id === itemId)
+    );
+  });
+
+  const myOutfits = validOutfits.filter(outfit => outfit.favorite);
+  const recentOutfits = [...validOutfits].sort((a, b) => {
     const dateA = a.dateAdded ? new Date(a.dateAdded).getTime() : 0;
     const dateB = b.dateAdded ? new Date(b.dateAdded).getTime() : 0;
     return dateB - dateA;
   }).slice(0, 6);
   
-  const selectedOutfit = outfits.find(outfit => outfit.id === selectedOutfitId);
+  const selectedOutfit = validOutfits.find(outfit => outfit.id === selectedOutfitId);
   
   // Get clothing items for the selected outfit
   const selectedOutfitItems = selectedOutfit?.items?.map(itemId => 
     clothingItems.find(item => item.id === itemId)
   ).filter((item): item is ClothingItem => !!item) || [];
+
+  // Generate thumbnails for outfits based on the first valid clothing item in each outfit
+  useEffect(() => {
+    const thumbnails: Record<string, string> = {};
+    
+    validOutfits.forEach(outfit => {
+      // Find the first valid clothing item with an image
+      if (Array.isArray(outfit.items) && outfit.items.length > 0) {
+        for (const itemId of outfit.items) {
+          const item = clothingItems.find(item => item.id === itemId);
+          if (item && (item.image || item.imageUrl)) {
+            thumbnails[outfit.id] = item.image || item.imageUrl || '';
+            break;
+          }
+        }
+      }
+    });
+    
+    setOutfitThumbnails(thumbnails);
+  }, [validOutfits, clothingItems]);
   
   const handleToggleFavorite = (outfitId: string) => {
     toast.success("Added to favorites!");
@@ -65,6 +97,17 @@ const OutfitTabSection = ({ outfits, clothingItems, isRefreshing = false, onRefr
     }
   };
 
+  // Helper function to get outfit thumbnail
+  const getOutfitThumbnail = (outfit: Outfit): string | undefined => {
+    // If the outfit already has a thumbnail property, use it
+    if (outfit.thumbnail) {
+      return outfit.thumbnail;
+    }
+    
+    // Otherwise, get from our generated thumbnails
+    return outfitThumbnails[outfit.id];
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -91,7 +134,7 @@ const OutfitTabSection = ({ outfits, clothingItems, isRefreshing = false, onRefr
         
         <TabsContent value="my-outfits" className="space-y-6">
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3">
-            {outfits.map((outfit) => (
+            {validOutfits.map((outfit) => (
               <Card 
                 key={outfit.id} 
                 className={cn(
@@ -101,9 +144,9 @@ const OutfitTabSection = ({ outfits, clothingItems, isRefreshing = false, onRefr
                 onClick={() => setSelectedOutfitId(outfit.id)}
               >
                 <div className="aspect-square bg-slate-800/50 relative">
-                  {outfit.thumbnail ? (
+                  {getOutfitThumbnail(outfit) ? (
                     <img 
-                      src={outfit.thumbnail} 
+                      src={getOutfitThumbnail(outfit)} 
                       alt={outfit.name}
                       className="w-full h-full object-cover"
                     />
@@ -204,7 +247,7 @@ const OutfitTabSection = ({ outfits, clothingItems, isRefreshing = false, onRefr
             </div>
           )}
           
-          {outfits.length === 0 && (
+          {validOutfits.length === 0 && (
             <div className="text-center py-12">
               <p className="text-white/50 mb-4">You haven't created any outfits yet</p>
               <Button variant="outline" className="border-purple-500/30 text-white hover:bg-white/10">
@@ -226,9 +269,9 @@ const OutfitTabSection = ({ outfits, clothingItems, isRefreshing = false, onRefr
                 }}
               >
                 <div className="aspect-square bg-slate-800/50 relative">
-                  {outfit.thumbnail ? (
+                  {getOutfitThumbnail(outfit) ? (
                     <img 
-                      src={outfit.thumbnail} 
+                      src={getOutfitThumbnail(outfit)} 
                       alt={outfit.name}
                       className="w-full h-full object-cover"
                     />
@@ -268,9 +311,9 @@ const OutfitTabSection = ({ outfits, clothingItems, isRefreshing = false, onRefr
                 }}
               >
                 <div className="aspect-square bg-slate-800/50 relative">
-                  {outfit.thumbnail ? (
+                  {getOutfitThumbnail(outfit) ? (
                     <img 
-                      src={outfit.thumbnail} 
+                      src={getOutfitThumbnail(outfit)} 
                       alt={outfit.name}
                       className="w-full h-full object-cover"
                     />
