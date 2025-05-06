@@ -16,6 +16,7 @@ import EnhancedWeatherSection from '@/components/outfits/mix-match/EnhancedWeath
 import EnhancedPageHeader from '@/components/outfits/mix-match/EnhancedPageHeader';
 import OutfitBuilder from '@/components/OutfitBuilder';
 import { toast } from 'sonner';
+import { Plus } from 'lucide-react';
 
 // Lazily loaded components
 const OliviaRecommendationSection = lazy(() => import('@/components/outfits/mix-match/OliviaRecommendationSection'));
@@ -74,13 +75,14 @@ const MixAndMatch = () => {
     }
   }, []);
 
-  // Handle create outfit - properly reset state for new outfit creation
+  // Simplify to a single createOutfit handler
   const handleCreateOutfit = useCallback(() => {
-    console.log("handleCreateOutfit called - creating new outfit");
+    console.log("Creating a new outfit");
     // Clear selected outfit ID to ensure we're creating a new outfit
     setSelectedOutfitId(null);
     setIsCreatingNewOutfit(true);
     setIsBuilderOpen(true);
+    toast.success("Creating a new outfit");
   }, [setIsCreatingNewOutfit]);
 
   // Fetch user profile
@@ -433,14 +435,14 @@ const MixAndMatch = () => {
           <div className="mt-8 flex justify-center">
             <MixMatchActions 
               onScrollToOutfits={scrollToOutfitsSection}
-              onCreateOutfit={handleCreateOutfit}
             />
           </div>
 
           {/* Weather & Context Section */}
           <motion.section
             ref={weatherSectionRef}
-            {...fadeUp}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, duration: 0.5 }}
             className="mb-8 pt-6 scroll-mt-24"
           >
@@ -457,7 +459,8 @@ const MixAndMatch = () => {
           {/* Olivia's Recommendation Section */}
           <motion.section
             ref={oliviaRecommendationRef}
-            {...fadeUp}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.5 }}
             className="mb-8 scroll-mt-24"
           >
@@ -471,7 +474,8 @@ const MixAndMatch = () => {
           
           {/* Create Outfit Section */}
           <motion.section
-            {...fadeUp}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.5 }}
             className="mb-8"
           >
@@ -479,12 +483,29 @@ const MixAndMatch = () => {
               title={<h3 className="text-xl font-semibold text-white">Create Your Own Outfit</h3>}
               defaultOpen={false}
             >
-              <Suspense fallback={<Skeleton className="w-full h-32 rounded-xl bg-slate-800" />}>
-                <MemoizedCreateOutfitSection 
-                  clothingItems={userClothingItems}
-                  isPremium={false}
-                />
-              </Suspense>
+              <div className="p-6 bg-slate-900/60 rounded-lg border border-slate-700/30">
+                <div className="text-center mb-6">
+                  <h4 className="text-lg font-medium text-white mb-3">Mix and match items from your wardrobe</h4>
+                  <p className="text-slate-300 mb-6">
+                    Select items from your collection to create a personalized outfit
+                  </p>
+                  
+                  <Button
+                    onClick={handleCreateOutfit}
+                    className="bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:opacity-90 px-8 py-6 h-auto text-lg shadow-lg"
+                  >
+                    <Plus className="h-5 w-5 mr-2" />
+                    Create Outfit
+                  </Button>
+                </div>
+                
+                <Suspense fallback={<Skeleton className="w-full h-32 rounded-xl bg-slate-800" />}>
+                  <MemoizedCreateOutfitSection 
+                    clothingItems={userClothingItems}
+                    isPremium={false}
+                  />
+                </Suspense>
+              </div>
             </CollapsibleSection>
           </motion.section>
           

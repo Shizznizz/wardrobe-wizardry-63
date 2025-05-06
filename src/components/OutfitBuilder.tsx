@@ -91,7 +91,7 @@ const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }
       return;
     }
     
-    // Use a crypto.randomUUID for new outfits or the existing ID for edits
+    // Always generate a new UUID for new outfits to avoid ID conflicts
     const outfitId = isCreatingNewOutfit ? crypto.randomUUID() : (initialOutfit?.id || crypto.randomUUID());
     
     const newOutfit: Outfit = {
