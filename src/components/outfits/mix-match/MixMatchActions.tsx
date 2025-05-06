@@ -20,10 +20,13 @@ const MixMatchActions = ({ onScrollToOutfits, onCreateOutfit }: MixMatchActionsP
   } = useOutfitContext();
 
   const handleAddOutfit = () => {
+    console.log("MixMatchActions: handleAddOutfit called");
     if (onCreateOutfit) {
+      console.log("MixMatchActions: Using provided onCreateOutfit callback");
       onCreateOutfit();
     } else {
       // Reset all outfit selection and editing state
+      console.log("MixMatchActions: Using default outfit creation logic");
       setSelectedOutfitId(null);
       setSelectedOutfit(null);
       setIsCreatingNewOutfit(true);

@@ -39,6 +39,7 @@ const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }
   
   // Reset the form and initialize with initialOutfit if provided
   useEffect(() => {
+    console.log("OutfitBuilder effect - isCreatingNewOutfit:", isCreatingNewOutfit, "initialOutfit:", initialOutfit);
     if (initialOutfit && !isCreatingNewOutfit) {
       console.log("Editing existing outfit:", initialOutfit);
       setOutfitName(initialOutfit.name);
@@ -55,6 +56,7 @@ const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }
   }, [initialOutfit, isOpen, clothingItems, isCreatingNewOutfit]);
   
   const resetForm = () => {
+    console.log("Resetting OutfitBuilder form");
     setOutfitName('');
     setSelectedItems([]);
     setSelectedSeasons([]);
@@ -63,6 +65,7 @@ const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }
   };
   
   const handleSave = async () => {
+    console.log("Handling outfit save - isCreatingNewOutfit:", isCreatingNewOutfit);
     if (!outfitName.trim()) {
       toast.error("Please provide an outfit name");
       return;
@@ -387,6 +390,12 @@ const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }
       </DialogContent>
     </Dialog>
   );
+
+  // Helper function to check form validity
+  function isFormValid() {
+    return outfitName.trim() !== '' && selectedItems.length > 0 && 
+           selectedSeasons.length > 0 && selectedOccasions.length > 0;
+  }
 };
 
 export default OutfitBuilder;

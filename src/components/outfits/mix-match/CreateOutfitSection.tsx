@@ -24,6 +24,7 @@ const CreateOutfitSection = ({ clothingItems, isPremium }: CreateOutfitSectionPr
   } = useOutfitContext();
   
   const handleCreateOutfit = () => {
+    console.log("CreateOutfitSection: handleCreateOutfit called");
     // Important: Reset all selection state to ensure we're creating a new outfit
     setSelectedOutfitId(null);
     setSelectedOutfit(null);
