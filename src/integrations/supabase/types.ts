@@ -9,6 +9,69 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      calendar_events: {
+        Row: {
+          activity_tag: string | null
+          created_at: string | null
+          date: string
+          id: string
+          notes: string | null
+          outfit_id: string
+          user_id: string
+        }
+        Insert: {
+          activity_tag?: string | null
+          created_at?: string | null
+          date: string
+          id?: string
+          notes?: string | null
+          outfit_id: string
+          user_id: string
+        }
+        Update: {
+          activity_tag?: string | null
+          created_at?: string | null
+          date?: string
+          id?: string
+          notes?: string | null
+          outfit_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      challenge_entries: {
+        Row: {
+          challenge_id: string
+          created_at: string | null
+          id: string
+          outfit_id: string | null
+          status: string | null
+          updated_at: string | null
+          user_id: string
+          votes: number | null
+        }
+        Insert: {
+          challenge_id: string
+          created_at?: string | null
+          id?: string
+          outfit_id?: string | null
+          status?: string | null
+          updated_at?: string | null
+          user_id: string
+          votes?: number | null
+        }
+        Update: {
+          challenge_id?: string
+          created_at?: string | null
+          id?: string
+          outfit_id?: string | null
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string
+          votes?: number | null
+        }
+        Relationships: []
+      }
       clothing_items: {
         Row: {
           color: string
@@ -53,6 +116,39 @@ export type Database = {
           season?: string[] | null
           times_worn?: number | null
           type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      outfit_feedback: {
+        Row: {
+          id: string
+          item_id: string | null
+          label: string
+          notes: string | null
+          outfit_id: string
+          replacement_item_id: string | null
+          timestamp: string | null
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          item_id?: string | null
+          label: string
+          notes?: string | null
+          outfit_id: string
+          replacement_item_id?: string | null
+          timestamp?: string | null
+          user_id: string
+        }
+        Update: {
+          id?: string
+          item_id?: string | null
+          label?: string
+          notes?: string | null
+          outfit_id?: string
+          replacement_item_id?: string | null
+          timestamp?: string | null
           user_id?: string
         }
         Relationships: []

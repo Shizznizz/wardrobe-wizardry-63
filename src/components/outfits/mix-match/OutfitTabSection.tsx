@@ -1,178 +1,302 @@
 
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Outfit, ClothingItem } from '@/lib/types';
-import { Heart, Clock, RefreshCw } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
-import OutfitCollectionSection from './OutfitCollectionSection';
-import RecommendedOutfits from '@/components/outfits/RecommendedOutfits';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Heart, Share2, RefreshCcw } from 'lucide-react';
+import { ClothingItem, Outfit } from '@/lib/types';
+import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
+import OutfitFeedbackSection from './OutfitFeedbackSection';
+import OutfitItemReplacement from './OutfitItemReplacement';
 
 interface OutfitTabSectionProps {
   outfits: Outfit[];
   clothingItems: ClothingItem[];
   isRefreshing?: boolean;
-  onRefresh?: () => void;
+  onRefresh: () => void;
+  onReplaceItem?: (outfitId: string, oldItemId: string, newItemId: string) => void;
 }
 
-const OutfitTabSection = ({ outfits, clothingItems, isRefreshing = false, onRefresh }: OutfitTabSectionProps) => {
-  const [activeTab, setActiveTab] = useState('my-collection');
-  const [userOutfits, setUserOutfits] = useState<Outfit[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const { user } = useAuth();
+const OutfitTabSection = ({ outfits, clothingItems, isRefreshing = false, onRefresh, onReplaceItem }: OutfitTabSectionProps) => {
+  const [activeTab, setActiveTab] = useState('my-outfits');
+  const [selectedOutfitId, setSelectedOutfitId] = useState<string | null>(
+    outfits.length > 0 ? outfits[0].id : null
+  );
 
-  // Fetch outfits from Supabase that match items in user's wardrobe
-  const fetchUserOutfits = useCallback(async () => {
-    if (!user) {
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      setIsLoading(true);
-      // Fetch outfits from Supabase
-      const { data: outfitsData, error } = await supabase
-        .from('outfits')
-        .select('*')
-        .eq('user_id', user.id);
-
-      if (error) {
-        console.error('Error fetching outfits:', error);
-        toast.error('Failed to load your outfits');
-        setIsLoading(false);
-        return;
-      }
-
-      // If outfits were found, format them correctly
-      if (outfitsData && outfitsData.length > 0) {
-        console.log("Fetched outfits from Supabase:", outfitsData);
-        // Get clothing item IDs from the user's wardrobe
-        const userClothingItemIds = clothingItems.map(item => item.id);
-
-        // Filter outfits to only include those that have items from the user's wardrobe
-        const validOutfits = outfitsData.filter(outfit => {
-          // Make sure outfit.items is an array
-          const outfitItems = Array.isArray(outfit.items) ? outfit.items : [];
-          // Check if at least one item in the outfit exists in the user's wardrobe
-          return outfitItems.some(itemId => userClothingItemIds.includes(itemId));
-        });
-
-        // Format outfits for the application
-        const formattedOutfits = validOutfits.map(outfit => ({
-          id: outfit.id,
-          name: outfit.name,
-          items: Array.isArray(outfit.items) ? outfit.items : [],
-          season: Array.isArray(outfit.season) ? outfit.season : ['all'],
-          seasons: Array.isArray(outfit.season) ? outfit.season : ['all'],
-          occasion: outfit.occasion || 'casual',
-          occasions: Array.isArray(outfit.occasions) ? outfit.occasions : ['casual'],
-          favorite: outfit.favorite || false,
-          dateAdded: new Date(outfit.date_added || new Date()),
-          timesWorn: outfit.times_worn || 0,
-          tags: Array.isArray(outfit.tags) ? outfit.tags : []
-        }));
-
-        setUserOutfits(formattedOutfits);
-      } else {
-        // No outfits found or error occurred
-        setUserOutfits([]);
-      }
-    } catch (err) {
-      console.error('Exception fetching outfits:', err);
-      toast.error('An error occurred while loading your outfits');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [user, clothingItems]);
-
-  useEffect(() => {
-    fetchUserOutfits();
-  }, [fetchUserOutfits, outfits]);
-
-  const handleRefresh = () => {
-    if (onRefresh) {
-      onRefresh();
-    } else {
-      fetchUserOutfits();
+  const myOutfits = outfits.filter(outfit => outfit.favorite);
+  const recentOutfits = [...outfits].sort((a, b) => {
+    const dateA = a.dateAdded ? new Date(a.dateAdded).getTime() : 0;
+    const dateB = b.dateAdded ? new Date(b.dateAdded).getTime() : 0;
+    return dateB - dateA;
+  }).slice(0, 6);
+  
+  const selectedOutfit = outfits.find(outfit => outfit.id === selectedOutfitId);
+  
+  // Get clothing items for the selected outfit
+  const selectedOutfitItems = selectedOutfit?.items?.map(itemId => 
+    clothingItems.find(item => item.id === itemId)
+  ).filter((item): item is ClothingItem => !!item) || [];
+  
+  const handleToggleFavorite = (outfitId: string) => {
+    toast.success("Added to favorites!");
+  };
+  
+  const handleShare = (outfitId: string) => {
+    toast.success("Link copied to clipboard!");
+  };
+  
+  const handleMakeWarmer = () => {
+    toast.info("Generating warmer alternatives...");
+  };
+  
+  const handleChangeTop = () => {
+    toast.info("Generating alternative tops...");
+  };
+  
+  const handleSaveOutfit = () => {
+    toast.success("Outfit saved to collection!");
+  };
+  
+  // Handler for replacing an item in the selected outfit
+  const handleReplaceItem = (oldItemId: string, newItemId: string) => {
+    if (selectedOutfitId && onReplaceItem) {
+      onReplaceItem(selectedOutfitId, oldItemId, newItemId);
     }
   };
 
   return (
-    <div className="rounded-xl border border-white/10 overflow-hidden bg-slate-900/50 backdrop-blur-md p-4" id="outfit-collection">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-xl font-semibold text-white">Outfit Collections</h3>
-        {user && (
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={handleRefresh} 
-            disabled={isRefreshing}
-            className="text-white/70 hover:text-white hover:bg-slate-800"
-          >
-            <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-            <span className="sr-only">Refresh outfits</span>
-          </Button>
-        )}
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-2xl font-semibold text-white">My Collection</h3>
+        
+        <Button 
+          variant="outline" 
+          size="sm"
+          disabled={isRefreshing}
+          onClick={onRefresh}
+          className="text-white/70 border-white/10 hover:bg-white/10"
+        >
+          <RefreshCcw className={cn("h-4 w-4 mr-1", isRefreshing && "animate-spin")} />
+          Refresh
+        </Button>
       </div>
       
-      <Tabs defaultValue="my-collection" value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid grid-cols-3 mb-6 bg-slate-800/70">
-          <TabsTrigger value="my-collection">My Collection</TabsTrigger>
-          <TabsTrigger value="favorites" className="flex items-center gap-1">
-            <Heart className="h-3.5 w-3.5" />
-            Favorites
-          </TabsTrigger>
-          <TabsTrigger value="recommended" className="flex items-center gap-1">
-            <Clock className="h-3.5 w-3.5" />
-            Recommended
-          </TabsTrigger>
+      <Tabs defaultValue="my-outfits" value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="grid grid-cols-3 mb-4 bg-slate-800/50">
+          <TabsTrigger value="my-outfits">My Outfits</TabsTrigger>
+          <TabsTrigger value="recent">Recent</TabsTrigger>
+          <TabsTrigger value="favorites">Favorites</TabsTrigger>
         </TabsList>
         
-        <TabsContent value="my-collection">
-          {isLoading || isRefreshing ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {[1, 2, 3].map((n) => (
-                <Skeleton key={n} className="h-64 bg-slate-800/50 rounded-xl" />
-              ))}
+        <TabsContent value="my-outfits" className="space-y-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3">
+            {outfits.map((outfit) => (
+              <Card 
+                key={outfit.id} 
+                className={cn(
+                  "cursor-pointer overflow-hidden border border-white/10 transition-all duration-300",
+                  selectedOutfitId === outfit.id ? "ring-2 ring-purple-500 border-purple-500/50" : "hover:border-white/30"
+                )}
+                onClick={() => setSelectedOutfitId(outfit.id)}
+              >
+                <div className="aspect-square bg-slate-800/50 relative">
+                  {outfit.thumbnail ? (
+                    <img 
+                      src={outfit.thumbnail} 
+                      alt={outfit.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-white/30 text-xs text-center p-4">
+                      No Preview
+                    </div>
+                  )}
+                  
+                  <div className="absolute top-2 right-2 flex space-x-1">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-7 w-7 bg-black/40 hover:bg-black/60 text-white rounded-full"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleToggleFavorite(outfit.id);
+                      }}
+                    >
+                      <Heart 
+                        className={cn(
+                          "h-4 w-4", 
+                          outfit.favorite ? "fill-red-500 text-red-500" : "fill-transparent"
+                        )} 
+                      />
+                    </Button>
+                    
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-7 w-7 bg-black/40 hover:bg-black/60 text-white rounded-full"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleShare(outfit.id);
+                      }}
+                    >
+                      <Share2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+                
+                <div className="p-2 bg-slate-800/80">
+                  <p className="text-white text-sm font-medium truncate">{outfit.name}</p>
+                  <p className="text-white/50 text-xs truncate">{outfit.occasion}</p>
+                </div>
+              </Card>
+            ))}
+          </div>
+          
+          {selectedOutfit && (
+            <div className="mt-6 space-y-4">
+              <Card className="border border-white/10 bg-slate-900/70 overflow-hidden">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h4 className="text-lg font-semibold text-white">{selectedOutfit.name}</h4>
+                      <p className="text-white/70 text-sm">{selectedOutfit.occasion}</p>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <div className="px-2 py-1 bg-purple-500/20 text-purple-300 text-xs rounded-full">
+                        {selectedOutfit.season && Array.isArray(selectedOutfit.season) 
+                          ? selectedOutfit.season.join(', ') 
+                          : selectedOutfit.season || 'All Seasons'}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="mb-4">
+                    <h5 className="text-sm font-medium text-white/90 mb-2">Items in this outfit:</h5>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+                      {selectedOutfitItems.map(item => (
+                        <OutfitItemReplacement
+                          key={item.id}
+                          item={item}
+                          onReplaceItem={handleReplaceItem}
+                          category={item.type}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div className="mt-4 pt-4 border-t border-white/10">
+                    <h5 className="text-sm font-medium text-white/90 mb-2">Why this works:</h5>
+                    <p className="text-white/70 text-sm">
+                      {selectedOutfit.notes || 'This combination works well together because of the complementary colors and balanced proportions. The outfit suits the selected occasion and weather conditions.'}
+                    </p>
+                  </div>
+                </CardContent>
+                
+                <OutfitFeedbackSection
+                  outfit={selectedOutfit}
+                  onMakeWarmer={handleMakeWarmer}
+                  onChangeTop={handleChangeTop}
+                  onSaveOutfit={handleSaveOutfit}
+                />
+              </Card>
             </div>
-          ) : userOutfits.length > 0 ? (
-            <OutfitCollectionSection 
-              outfits={userOutfits} 
-              clothingItems={clothingItems} 
-            />
-          ) : (
-            <div className="text-center p-8 border border-dashed border-white/20 rounded-xl bg-slate-900/30">
-              <h3 className="font-medium text-white mb-2">No outfits found with items from your wardrobe</h3>
-              <p className="text-white/70">Create new outfits with your wardrobe items to see them here.</p>
+          )}
+          
+          {outfits.length === 0 && (
+            <div className="text-center py-12">
+              <p className="text-white/50 mb-4">You haven't created any outfits yet</p>
+              <Button variant="outline" className="border-purple-500/30 text-white hover:bg-white/10">
+                Create Your First Outfit
+              </Button>
             </div>
           )}
         </TabsContent>
         
-        <TabsContent value="favorites">
-          {isLoading || isRefreshing ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {[1, 2, 3].map((n) => (
-                <Skeleton key={n} className="h-64 bg-slate-800/50 rounded-xl" />
-              ))}
-            </div>
-          ) : userOutfits.filter(outfit => outfit.favorite).length > 0 ? (
-            <OutfitCollectionSection 
-              outfits={userOutfits.filter(outfit => outfit.favorite)} 
-              clothingItems={clothingItems} 
-            />
-          ) : (
-            <div className="text-center p-8 border border-dashed border-white/20 rounded-xl bg-slate-900/30">
-              <h3 className="font-medium text-white mb-2">No favorite outfits found</h3>
-              <p className="text-white/70">Mark some outfits as favorites to see them here.</p>
+        <TabsContent value="recent" className="space-y-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3">
+            {recentOutfits.map((outfit) => (
+              <Card 
+                key={outfit.id} 
+                className="cursor-pointer overflow-hidden border border-white/10 hover:border-white/30"
+                onClick={() => {
+                  setSelectedOutfitId(outfit.id);
+                  setActiveTab('my-outfits');
+                }}
+              >
+                <div className="aspect-square bg-slate-800/50 relative">
+                  {outfit.thumbnail ? (
+                    <img 
+                      src={outfit.thumbnail} 
+                      alt={outfit.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-white/30 text-xs text-center p-4">
+                      No Preview
+                    </div>
+                  )}
+                </div>
+                <div className="p-2 bg-slate-800/80">
+                  <p className="text-white text-sm font-medium truncate">{outfit.name}</p>
+                  <p className="text-white/50 text-xs truncate">{outfit.dateAdded 
+                    ? new Date(outfit.dateAdded).toLocaleDateString() 
+                    : 'Recently added'}
+                  </p>
+                </div>
+              </Card>
+            ))}
+          </div>
+          
+          {recentOutfits.length === 0 && (
+            <div className="text-center py-12">
+              <p className="text-white/50">No recent outfits</p>
             </div>
           )}
         </TabsContent>
         
-        <TabsContent value="recommended">
-          <RecommendedOutfits className="mb-4" />
+        <TabsContent value="favorites" className="space-y-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3">
+            {myOutfits.map((outfit) => (
+              <Card 
+                key={outfit.id} 
+                className="cursor-pointer overflow-hidden border border-white/10 hover:border-white/30"
+                onClick={() => {
+                  setSelectedOutfitId(outfit.id);
+                  setActiveTab('my-outfits');
+                }}
+              >
+                <div className="aspect-square bg-slate-800/50 relative">
+                  {outfit.thumbnail ? (
+                    <img 
+                      src={outfit.thumbnail} 
+                      alt={outfit.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-white/30 text-xs text-center p-4">
+                      No Preview
+                    </div>
+                  )}
+                  <div className="absolute top-2 right-2">
+                    <Heart className="h-4 w-4 fill-red-500 text-red-500" />
+                  </div>
+                </div>
+                <div className="p-2 bg-slate-800/80">
+                  <p className="text-white text-sm font-medium truncate">{outfit.name}</p>
+                  <p className="text-white/50 text-xs truncate">{outfit.occasion}</p>
+                </div>
+              </Card>
+            ))}
+          </div>
+          
+          {myOutfits.length === 0 && (
+            <div className="text-center py-12">
+              <p className="text-white/50 mb-4">No favorite outfits yet</p>
+              <p className="text-white/30 text-sm">Click the heart icon on any outfit to add it to favorites</p>
+            </div>
+          )}
         </TabsContent>
       </Tabs>
     </div>

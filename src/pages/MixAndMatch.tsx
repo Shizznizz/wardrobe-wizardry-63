@@ -18,6 +18,9 @@ import OutfitBuilder from '@/components/OutfitBuilder';
 import { toast } from 'sonner';
 import { Plus } from 'lucide-react';
 import { Shirt } from '@/components/ui/icons';
+import SmartActivitySuggestion from '@/components/outfits/mix-match/SmartActivitySuggestion';
+import WeeklyStyleChallenge from '@/components/outfits/mix-match/WeeklyStyleChallenge';
+import OutfitItemReplacement from '@/components/outfits/mix-match/OutfitItemReplacement';
 
 // Lazily loaded components
 const OliviaRecommendationSection = lazy(() => import('@/components/outfits/mix-match/OliviaRecommendationSection'));
@@ -75,6 +78,31 @@ const MixAndMatch = () => {
       oliviaRecommendationRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }, []);
+
+  // Add a handler to replace specific outfit items
+  const handleReplaceItem = useCallback((outfitId: string, oldItemId: string, newItemId: string) => {
+    setOutfits(prevOutfits => 
+      prevOutfits.map(outfit => {
+        if (outfit.id === outfitId) {
+          const updatedItems = outfit.items?.map(itemId => 
+            itemId === oldItemId ? newItemId : itemId
+          ) || [];
+          return { ...outfit, items: updatedItems };
+        }
+        return outfit;
+      })
+    );
+    toast.success("Item replaced successfully!");
+  }, []);
+
+  // Add handler for activity suggestions
+  const handleActivitySuggestion = useCallback((activity: string) => {
+    setOccasion(activity);
+    setSituation(activity);
+    // Scroll to recommendations after a short delay
+    setTimeout(scrollToRecommendations, 300);
+    toast.success(`Showing outfits for: ${activity}`);
+  }, [scrollToRecommendations]);
 
   // Simplify to a single createOutfit handler
   const handleCreateOutfit = useCallback(() => {
@@ -457,6 +485,19 @@ const MixAndMatch = () => {
             />
           </motion.section>
 
+          {/* Smart Activity Suggestion - NEW SECTION */}
+          <motion.section
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15, duration: 0.5 }}
+            className="mb-6"
+          >
+            <SmartActivitySuggestion 
+              weather={weather || undefined} 
+              onSuggestionSelect={handleActivitySuggestion}
+            />
+          </motion.section>
+
           {/* Olivia's Recommendation Section */}
           <motion.section
             ref={oliviaRecommendationRef}
@@ -471,6 +512,16 @@ const MixAndMatch = () => {
                 situation={situation}
               />
             </Suspense>
+          </motion.section>
+          
+          {/* Weekly Style Challenge - NEW SECTION */}
+          <motion.section
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25, duration: 0.5 }}
+            className="mb-8"
+          >
+            <WeeklyStyleChallenge />
           </motion.section>
           
           {/* Create Outfit Section */}
@@ -512,7 +563,8 @@ const MixAndMatch = () => {
           
           {/* Context Adjustment Section */}
           <motion.section
-            {...fadeUp}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.5 }}
             className="mb-8"
           >
@@ -535,7 +587,8 @@ const MixAndMatch = () => {
           {/* My Collection Section */}
           <motion.section
             ref={outfitTabSectionRef}
-            {...fadeUp}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.5 }}
             className="mb-8 scroll-mt-24"
           >
@@ -545,12 +598,14 @@ const MixAndMatch = () => {
               clothingItems={userClothingItems}
               isRefreshing={isRefreshingOutfits}
               onRefresh={fetchOutfitsFromSupabase}
+              onReplaceItem={handleReplaceItem}
             />
           </motion.section>
           
           {/* Trending Styles Section - Replacing Suggested Outfits Section */}
           <motion.section
-            {...fadeUp}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6, duration: 0.5 }}
             className="mb-10"
           >
