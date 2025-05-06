@@ -105,7 +105,7 @@ const MixAndMatch = () => {
     toast.success(`Showing outfits for: ${activity}`);
   }, [scrollToRecommendations]);
 
-  // Simplify to a single createOutfit handler
+  // Ensure this handler is properly implemented for the "Add New Outfit" button
   const handleCreateOutfit = useCallback(() => {
     console.log("Creating a new outfit");
     // Clear selected outfit ID and object to ensure we're creating a new outfit
@@ -641,7 +641,7 @@ const MixAndMatch = () => {
             </Suspense>
           </motion.section>
           
-          {/* Your Daily Style section - Update button to use handleCreateOutfit */}
+          {/* Your Daily Style section - Update the button to use handleCreateOutfit */}
           <motion.section 
             className="mt-12 mb-12 flex flex-col items-center text-center"
           >
