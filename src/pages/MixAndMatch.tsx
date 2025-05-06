@@ -94,7 +94,21 @@ const MixAndMatch = () => {
       })
     );
     toast.success("Item replaced successfully!");
-  }, []);
+
+    // Log replacement feedback to Supabase
+    if (user) {
+      supabase.from('outfit_feedback').insert({
+        user_id: user.id,
+        outfit_id: outfitId,
+        item_id: oldItemId,
+        replacement_item_id: newItemId,
+        label: 'replacement',
+        timestamp: new Date().toISOString()
+      }).then(({ error }) => {
+        if (error) console.error("Error saving replacement feedback:", error);
+      });
+    }
+  }, [user]);
 
   // Add handler for activity suggestions
   const handleActivitySuggestion = useCallback((activity: string) => {
