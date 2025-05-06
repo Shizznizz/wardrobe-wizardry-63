@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { WeatherInfo, Outfit, ClothingItem, ClothingSeason, PersonalityTag } from '@/lib/types';
@@ -206,8 +205,7 @@ const OliviaRecommendationSection = ({ weather, situation }: OliviaRecommendatio
       occasions: [occasionToMatch],
       occasion: occasionToMatch,
       favorite: false,
-      tags: [occasionToMatch, season, 'Olivia recommendation'],
-      personalityTags: ['minimalist', 'casual'] as PersonalityTag[],
+      personality_tags: [occasionToMatch, season, 'Olivia recommendation'],
       dateAdded: new Date(),
       timesWorn: 0,
       seasons: [seasonValue]
@@ -404,7 +402,7 @@ const OliviaRecommendationSection = ({ weather, situation }: OliviaRecommendatio
                 occasion: recommendedOutfit.occasion || 'casual',
                 occasions: recommendedOutfit.occasions,
                 favorite: recommendedOutfit.favorite,
-                tags: recommendedOutfit.tags,
+                personality_tags: recommendedOutfit.personality_tags,
                 times_worn: 0,
                 date_added: new Date().toISOString()
               });

@@ -12,6 +12,13 @@ interface OutfitPreviewProps {
 const OutfitPreview = ({ outfit, isCompact = false }: OutfitPreviewProps) => {
   const imageUrl = outfit.tags?.find(tag => tag?.startsWith('http'));
   const hasImage = outfit.tags?.includes('image');
+  
+  // Handle both string and array types for season
+  const seasons = Array.isArray(outfit.season) 
+    ? outfit.season
+    : outfit.season 
+      ? [outfit.season] 
+      : outfit.seasons || [];
 
   return (
     <Card className="bg-slate-800/50 overflow-hidden border-slate-700/50 hover:border-slate-600/50 transition-colors">
@@ -36,7 +43,7 @@ const OutfitPreview = ({ outfit, isCompact = false }: OutfitPreviewProps) => {
         <div className="flex flex-col gap-1">
           <h4 className="font-medium text-sm text-white">{outfit.name}</h4>
           <div className="flex flex-wrap gap-1">
-            {outfit.season.map(season => (
+            {seasons.map(season => (
               <Badge 
                 key={season} 
                 variant="secondary" 

@@ -137,8 +137,8 @@ export const sampleOutfits: Outfit[] = [
     timesWorn: 8,
     lastWorn: new Date('2023-10-15'),
     dateAdded: new Date('2023-03-15'),
-    personalityTags: ['casual', 'minimalist'],
-    colorScheme: 'Neutral with blue accent',
+    personality_tags: ['casual', 'minimalist'],
+    color_scheme: 'Neutral with blue accent',
     colors: ['white', 'blue']
   },
   {
@@ -153,8 +153,8 @@ export const sampleOutfits: Outfit[] = [
     timesWorn: 5,
     lastWorn: new Date('2023-10-10'),
     dateAdded: new Date('2023-04-20'),
-    personalityTags: ['classic', 'preppy'],
-    colorScheme: 'Navy and beige',
+    personality_tags: ['classic', 'preppy'],
+    color_scheme: 'Navy and beige',
     colors: ['blue', 'brown', 'white']
   },
   {
@@ -169,8 +169,8 @@ export const sampleOutfits: Outfit[] = [
     timesWorn: 2,
     lastWorn: new Date('2023-09-15'),
     dateAdded: new Date('2023-06-15'),
-    personalityTags: ['elegant', 'bold'],
-    colorScheme: 'Classic black and white',
+    personality_tags: ['elegant', 'bold'],
+    color_scheme: 'Classic black and white',
     colors: ['black', 'white']
   },
   {
@@ -185,8 +185,8 @@ export const sampleOutfits: Outfit[] = [
     timesWorn: 3,
     lastWorn: new Date('2023-08-20'),
     dateAdded: new Date('2023-05-10'),
-    personalityTags: ['trendy', 'sporty'],
-    colorScheme: 'White, gray, with pop accents',
+    personality_tags: ['trendy', 'sporty'],
+    color_scheme: 'White, gray, with pop accents',
     colors: ['white', 'gray']
   },
   {
@@ -201,8 +201,8 @@ export const sampleOutfits: Outfit[] = [
     timesWorn: 6,
     lastWorn: new Date('2023-09-05'),
     dateAdded: new Date('2023-02-28'),
-    personalityTags: ['formal', 'classic'],
-    colorScheme: 'Black and beige sophisticated',
+    personality_tags: ['formal', 'classic'],
+    color_scheme: 'Black and beige sophisticated',
     colors: ['black', 'brown', 'white']
   }
 ];

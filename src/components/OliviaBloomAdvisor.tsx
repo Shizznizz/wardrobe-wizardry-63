@@ -70,9 +70,9 @@ const OliviaBloomAdvisor = ({
       let stylingMessage = "";
       
       // Personalize message based on available data
-      if (weather && outfit.personalityTags && outfit.personalityTags.length > 0) {
-        stylingMessage = `I picked this ${outfit.personalityTags[0]} ${outfit.name.toLowerCase()} look for you because it matches today's ${weather.temperature}°C weather and works perfectly for ${outfit.occasions[0] || 'your day'}.`;
-      } else if (outfit.seasons.includes('summer') && weather && weather.temperature > 20) {
+      if (weather && outfit.personality_tags && outfit.personality_tags.length > 0) {
+        stylingMessage = `I picked this ${outfit.personality_tags[0]} ${outfit.name.toLowerCase()} look for you because it matches today's ${weather.temperature}°C weather and works perfectly for ${outfit.occasions?.[0] || 'your day'}.`;
+      } else if (outfit.seasons?.includes('summer') && weather && weather.temperature > 20) {
         stylingMessage = `This ${outfit.name.toLowerCase()} is perfect for today's warm weather! The light fabrics will keep you comfortable all day.`;
       } else if (outfit.favorite) {
         stylingMessage = `I've chosen one of your favorite outfits today! This ${outfit.name.toLowerCase()} look has always worked well for you.`;

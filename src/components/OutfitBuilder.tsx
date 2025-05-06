@@ -47,8 +47,19 @@ const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }
         .map(itemId => clothingItems.find(item => item.id === itemId))
         .filter(item => item !== undefined) as ClothingItem[];
       setSelectedItems(itemObjects);
-      setSelectedSeasons(initialOutfit.season || []);
-      setSelectedOccasions(initialOutfit.occasions || [initialOutfit.occasion]);
+      
+      // Handle the season value which might be a string or an array
+      if (initialOutfit.season) {
+        if (Array.isArray(initialOutfit.season)) {
+          setSelectedSeasons(initialOutfit.season);
+        } else {
+          setSelectedSeasons([initialOutfit.season]);
+        }
+      } else {
+        setSelectedSeasons([]);
+      }
+      
+      setSelectedOccasions(initialOutfit.occasions || [initialOutfit.occasion as string].filter(Boolean));
     } else {
       console.log("Creating new outfit");
       resetForm();
