@@ -114,6 +114,43 @@ const MixAndMatch = () => {
     toast.info("Creating a new outfit");
   }, [setIsCreatingNewOutfit]);
 
+  // Add handler for editing outfit
+  const handleEditOutfit = useCallback((outfit: Outfit) => {
+    setSelectedOutfitId(outfit.id);
+    setIsCreatingNewOutfit(false);
+    setSelectedOutfit(outfit);
+    setIsBuilderOpen(true);
+    toast.info(`Editing outfit: ${outfit.name}`);
+  }, [setIsCreatingNewOutfit]);
+
+  // Add handler for deleting outfit
+  const handleDeleteOutfit = useCallback((outfitId: string) => {
+    setOutfits(prevOutfits => prevOutfits.filter(outfit => outfit.id !== outfitId));
+    
+    // If it's also in saved outfits, remove it from there too
+    const localSavedOutfits = JSON.parse(localStorage.getItem('savedOutfits') || '[]');
+    const updatedSavedOutfits = localSavedOutfits.filter((outfit: Outfit) => outfit.id !== outfitId);
+    localStorage.setItem('savedOutfits', JSON.stringify(updatedSavedOutfits));
+    setSavedOutfits(updatedSavedOutfits);
+    
+    // If user is logged in, delete from Supabase
+    if (user?.id) {
+      supabase
+        .from('outfits')
+        .delete()
+        .eq('id', outfitId)
+        .eq('user_id', user.id)
+        .then(({ error }) => {
+          if (error) {
+            console.error("Error deleting outfit from Supabase:", error);
+            toast.error("Failed to delete outfit from database");
+          }
+        });
+    }
+    
+    toast.success("Outfit deleted successfully");
+  }, [user?.id]);
+
   // Fetch user profile
   useEffect(() => {
     if (user?.id) {
@@ -235,7 +272,7 @@ const MixAndMatch = () => {
         const formattedOutfits = data.map(outfit => ({
           ...outfit,
           dateAdded: new Date(outfit.date_added),
-          timesWorn: outfit.times_worn,
+          timesWorn: outfit.timesWorn || 0,
           // Make sure the items array exists
           items: outfit.items || []
         }));
@@ -584,7 +621,7 @@ const MixAndMatch = () => {
             </CollapsibleSection>
           </motion.section>
           
-          {/* My Collection Section */}
+          {/* My Collection Section - Updated with edit and delete handlers */}
           <motion.section
             ref={outfitTabSectionRef}
             initial={{ opacity: 0, y: 30 }}
@@ -593,12 +630,14 @@ const MixAndMatch = () => {
             className="mb-8 scroll-mt-24"
           >
             <OutfitTabSection
-              key={outfitTabKey} // Add key to force re-render on updates
+              key={outfitTabKey} // Keep this to force re-render on updates
               outfits={outfits}
               clothingItems={userClothingItems}
               isRefreshing={isRefreshingOutfits}
               onRefresh={fetchOutfitsFromSupabase}
               onReplaceItem={handleReplaceItem}
+              onEditOutfit={handleEditOutfit}
+              onDeleteOutfit={handleDeleteOutfit}
             />
           </motion.section>
           

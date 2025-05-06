@@ -1,13 +1,24 @@
+
 import { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Heart, Share2, RefreshCcw } from 'lucide-react';
+import { Heart, Share2, RefreshCcw, Edit, Trash2 } from 'lucide-react';
 import { ClothingItem, Outfit } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import OutfitFeedbackSection from './OutfitFeedbackSection';
 import OutfitItemReplacement from './OutfitItemReplacement';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface OutfitTabSectionProps {
   outfits: Outfit[];
@@ -15,14 +26,26 @@ interface OutfitTabSectionProps {
   isRefreshing?: boolean;
   onRefresh: () => void;
   onReplaceItem?: (outfitId: string, oldItemId: string, newItemId: string) => void;
+  onEditOutfit?: (outfit: Outfit) => void;
+  onDeleteOutfit?: (outfitId: string) => void;
 }
 
-const OutfitTabSection = ({ outfits, clothingItems, isRefreshing = false, onRefresh, onReplaceItem }: OutfitTabSectionProps) => {
+const OutfitTabSection = ({ 
+  outfits, 
+  clothingItems, 
+  isRefreshing = false, 
+  onRefresh, 
+  onReplaceItem,
+  onEditOutfit,
+  onDeleteOutfit
+}: OutfitTabSectionProps) => {
   const [activeTab, setActiveTab] = useState('my-outfits');
   const [selectedOutfitId, setSelectedOutfitId] = useState<string | null>(
     outfits.length > 0 ? outfits[0].id : null
   );
-  const [outfitThumbnails, setOutfitThumbnails] = useState<Record<string, string>>({});
+  const [outfitThumbnails, setOutfitThumbnails] = useState<Record<string, string[]>>({});
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [outfitToDelete, setOutfitToDelete] = useState<string | null>(null);
 
   // Filter outfits that have valid items from user's wardrobe
   const validOutfits = outfits.filter(outfit => {
@@ -50,19 +73,25 @@ const OutfitTabSection = ({ outfits, clothingItems, isRefreshing = false, onRefr
     clothingItems.find(item => item.id === itemId)
   ).filter((item): item is ClothingItem => !!item) || [];
 
-  // Generate thumbnails for outfits based on the first valid clothing item in each outfit
+  // Generate thumbnails for outfits based on all clothing items in each outfit
   useEffect(() => {
-    const thumbnails: Record<string, string> = {};
+    const thumbnails: Record<string, string[]> = {};
     
     validOutfits.forEach(outfit => {
-      // Find the first valid clothing item with an image
+      // Find all valid clothing items with images for this outfit
       if (Array.isArray(outfit.items) && outfit.items.length > 0) {
+        const outfitImages: string[] = [];
+        
         for (const itemId of outfit.items) {
           const item = clothingItems.find(item => item.id === itemId);
           if (item && (item.image || item.imageUrl)) {
-            thumbnails[outfit.id] = item.image || item.imageUrl || '';
-            break;
+            outfitImages.push(item.image || item.imageUrl || '');
           }
+        }
+        
+        // Store all item images for this outfit
+        if (outfitImages.length > 0) {
+          thumbnails[outfit.id] = outfitImages;
         }
       }
     });
@@ -70,11 +99,17 @@ const OutfitTabSection = ({ outfits, clothingItems, isRefreshing = false, onRefr
     setOutfitThumbnails(thumbnails);
   }, [validOutfits, clothingItems]);
   
-  const handleToggleFavorite = (outfitId: string) => {
+  const handleToggleFavorite = (outfitId: string, e?: React.MouseEvent) => {
+    if (e) {
+      e.stopPropagation();
+    }
     toast.success("Added to favorites!");
   };
   
-  const handleShare = (outfitId: string) => {
+  const handleShare = (outfitId: string, e?: React.MouseEvent) => {
+    if (e) {
+      e.stopPropagation();
+    }
     toast.success("Link copied to clipboard!");
   };
   
@@ -97,15 +132,87 @@ const OutfitTabSection = ({ outfits, clothingItems, isRefreshing = false, onRefr
     }
   };
 
-  // Helper function to get outfit thumbnail
-  const getOutfitThumbnail = (outfit: Outfit): string | undefined => {
-    // If the outfit already has a thumbnail property, use it
-    if (outfit.thumbnail) {
-      return outfit.thumbnail;
+  // Handler for editing an outfit
+  const handleEditOutfit = (outfit: Outfit, e?: React.MouseEvent) => {
+    if (e) {
+      e.stopPropagation();
     }
+    if (onEditOutfit) {
+      onEditOutfit(outfit);
+    }
+  };
+
+  // Handler for deleting an outfit
+  const handleDeleteOutfit = (outfitId: string, e?: React.MouseEvent) => {
+    if (e) {
+      e.stopPropagation();
+    }
+    setOutfitToDelete(outfitId);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDeleteOutfit = () => {
+    if (outfitToDelete && onDeleteOutfit) {
+      onDeleteOutfit(outfitToDelete);
+      toast.success("Outfit deleted successfully");
+      
+      // If the deleted outfit was the selected one, select another outfit
+      if (outfitToDelete === selectedOutfitId) {
+        const remainingOutfits = validOutfits.filter(outfit => outfit.id !== outfitToDelete);
+        setSelectedOutfitId(remainingOutfits.length > 0 ? remainingOutfits[0].id : null);
+      }
+    }
+    setDeleteDialogOpen(false);
+    setOutfitToDelete(null);
+  };
+
+  // Helper function to render outfit items grid
+  const renderOutfitItemsGrid = (outfitId: string, maxItems: number = 4) => {
+    const outfitImages = outfitThumbnails[outfitId] || [];
+    const displayCount = Math.min(outfitImages.length, maxItems);
+    const hasMore = outfitImages.length > maxItems;
     
-    // Otherwise, get from our generated thumbnails
-    return outfitThumbnails[outfit.id];
+    // Empty state if no images
+    if (outfitImages.length === 0) {
+      return (
+        <div className="w-full h-full flex items-center justify-center text-white/30 text-xs text-center p-4">
+          No Preview
+        </div>
+      );
+    }
+
+    return (
+      <div className="relative w-full h-full">
+        <div className={cn(
+          "grid gap-1 h-full w-full",
+          displayCount === 1 ? "grid-cols-1" : "grid-cols-2"
+        )}>
+          {outfitImages.slice(0, displayCount).map((imageUrl, index) => (
+            <div 
+              key={`${outfitId}-item-${index}`} 
+              className={cn(
+                "relative bg-slate-800 overflow-hidden",
+                displayCount === 1 ? "aspect-square" : 
+                  displayCount <= 2 ? "aspect-square" : 
+                    "aspect-square"
+              )}
+            >
+              <img
+                src={imageUrl}
+                alt={`Outfit item ${index + 1}`}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          ))}
+        </div>
+        
+        {hasMore && (
+          <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full">
+            +{outfitImages.length - maxItems} more
+          </div>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -144,27 +251,14 @@ const OutfitTabSection = ({ outfits, clothingItems, isRefreshing = false, onRefr
                 onClick={() => setSelectedOutfitId(outfit.id)}
               >
                 <div className="aspect-square bg-slate-800/50 relative">
-                  {getOutfitThumbnail(outfit) ? (
-                    <img 
-                      src={getOutfitThumbnail(outfit)} 
-                      alt={outfit.name}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-white/30 text-xs text-center p-4">
-                      No Preview
-                    </div>
-                  )}
+                  {renderOutfitItemsGrid(outfit.id, 4)}
                   
                   <div className="absolute top-2 right-2 flex space-x-1">
                     <Button 
                       variant="ghost" 
                       size="icon" 
                       className="h-7 w-7 bg-black/40 hover:bg-black/60 text-white rounded-full"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleToggleFavorite(outfit.id);
-                      }}
+                      onClick={(e) => handleToggleFavorite(outfit.id, e)}
                     >
                       <Heart 
                         className={cn(
@@ -178,10 +272,7 @@ const OutfitTabSection = ({ outfits, clothingItems, isRefreshing = false, onRefr
                       variant="ghost" 
                       size="icon" 
                       className="h-7 w-7 bg-black/40 hover:bg-black/60 text-white rounded-full"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleShare(outfit.id);
-                      }}
+                      onClick={(e) => handleShare(outfit.id, e)}
                     >
                       <Share2 className="h-4 w-4" />
                     </Button>
@@ -191,6 +282,28 @@ const OutfitTabSection = ({ outfits, clothingItems, isRefreshing = false, onRefr
                 <div className="p-2 bg-slate-800/80">
                   <p className="text-white text-sm font-medium truncate">{outfit.name}</p>
                   <p className="text-white/50 text-xs truncate">{outfit.occasion}</p>
+                  
+                  <div className="mt-2 pt-2 border-t border-white/10 flex justify-between">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="h-7 px-2 text-white/70 hover:text-white hover:bg-white/10"
+                      onClick={(e) => handleEditOutfit(outfit, e)}
+                    >
+                      <Edit className="h-3.5 w-3.5 mr-1" />
+                      Edit
+                    </Button>
+                    
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      className="h-7 px-2 text-white/70 hover:text-red-400 hover:bg-white/10"
+                      onClick={(e) => handleDeleteOutfit(outfit.id, e)}
+                    >
+                      <Trash2 className="h-3.5 w-3.5 mr-1" />
+                      Delete
+                    </Button>
+                  </div>
                 </div>
               </Card>
             ))}
@@ -235,6 +348,28 @@ const OutfitTabSection = ({ outfits, clothingItems, isRefreshing = false, onRefr
                       {selectedOutfit.notes || 'This combination works well together because of the complementary colors and balanced proportions. The outfit suits the selected occasion and weather conditions.'}
                     </p>
                   </div>
+                  
+                  <div className="mt-4 pt-4 border-t border-white/10 flex justify-end gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="border-white/20 text-white hover:bg-white/10"
+                      onClick={() => handleEditOutfit(selectedOutfit)}
+                    >
+                      <Edit className="h-4 w-4 mr-1" />
+                      Edit Outfit
+                    </Button>
+                    
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="border-red-500/30 text-red-400 hover:bg-red-950/30 hover:text-red-300"
+                      onClick={() => handleDeleteOutfit(selectedOutfit.id)}
+                    >
+                      <Trash2 className="h-4 w-4 mr-1" />
+                      Delete Outfit
+                    </Button>
+                  </div>
                 </CardContent>
                 
                 <OutfitFeedbackSection
@@ -269,17 +404,7 @@ const OutfitTabSection = ({ outfits, clothingItems, isRefreshing = false, onRefr
                 }}
               >
                 <div className="aspect-square bg-slate-800/50 relative">
-                  {getOutfitThumbnail(outfit) ? (
-                    <img 
-                      src={getOutfitThumbnail(outfit)} 
-                      alt={outfit.name}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-white/30 text-xs text-center p-4">
-                      No Preview
-                    </div>
-                  )}
+                  {renderOutfitItemsGrid(outfit.id, 4)}
                 </div>
                 <div className="p-2 bg-slate-800/80">
                   <p className="text-white text-sm font-medium truncate">{outfit.name}</p>
@@ -311,17 +436,7 @@ const OutfitTabSection = ({ outfits, clothingItems, isRefreshing = false, onRefr
                 }}
               >
                 <div className="aspect-square bg-slate-800/50 relative">
-                  {getOutfitThumbnail(outfit) ? (
-                    <img 
-                      src={getOutfitThumbnail(outfit)} 
-                      alt={outfit.name}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-white/30 text-xs text-center p-4">
-                      No Preview
-                    </div>
-                  )}
+                  {renderOutfitItemsGrid(outfit.id, 4)}
                   <div className="absolute top-2 right-2">
                     <Heart className="h-4 w-4 fill-red-500 text-red-500" />
                   </div>
@@ -342,6 +457,29 @@ const OutfitTabSection = ({ outfits, clothingItems, isRefreshing = false, onRefr
           )}
         </TabsContent>
       </Tabs>
+      
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent className="bg-slate-900 border-white/10 text-white">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this outfit?</AlertDialogTitle>
+            <AlertDialogDescription className="text-white/70">
+              Are you sure you want to delete this outfit? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-transparent border-white/20 text-white hover:bg-white/10">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-red-600 text-white hover:bg-red-700"
+              onClick={confirmDeleteOutfit}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

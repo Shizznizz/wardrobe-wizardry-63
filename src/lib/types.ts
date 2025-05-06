@@ -1,4 +1,3 @@
-
 // src/lib/types.ts
 
 export type ClothingColor =
@@ -243,21 +242,20 @@ export interface Outfit {
   id: string;
   name: string;
   items: string[];
-  season: ClothingSeason[];
+  season?: ClothingSeason[] | ClothingSeason;
   seasons?: ClothingSeason[];
-  occasion: string;
+  occasion?: string;
   occasions?: string[];
   favorite?: boolean;
-  lastWorn?: Date;
-  createdAt?: Date;
-  dateAdded?: Date;
-  notes?: string;
+  dateAdded?: string | Date;
   timesWorn?: number;
-  personalityTags?: PersonalityTag[];
+  lastWorn?: Date;
+  notes?: string;
   tags?: string[];
   colors?: string[];
-  colorScheme?: string;
-  thumbnail?: string; // Add the thumbnail property to fix the errors
+  thumbnail?: string;
+  color_scheme?: string;
+  personality_tags?: string[];
 }
 
 export interface ShopItem extends Omit<ClothingItem, 'price'> {
