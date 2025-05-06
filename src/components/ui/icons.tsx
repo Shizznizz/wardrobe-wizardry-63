@@ -6,19 +6,22 @@ import {
   Sunset,
   Moon,
   PartyPopper,
-  Shirt
+  Shirt as LucideShirt
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 // Create a TrousersIcon that uses the Shirt icon but rotated
 export const TrousersIcon = (props: any) => (
   <div className="rotate-90">
-    <Shirt {...props} />
+    <LucideShirt {...props} />
   </div>
 );
 
 // Export the PartyPopper icon as Party for simpler usage
 export const Party = PartyPopper;
+
+// Export the Shirt from lucide-react
+export const Shirt = LucideShirt;
 
 export const PantsIcon = ({ className, ...props }: React.SVGProps<SVGSVGElement>) => (
   <svg
