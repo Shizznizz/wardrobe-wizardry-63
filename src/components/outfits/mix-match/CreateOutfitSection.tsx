@@ -16,11 +16,16 @@ interface CreateOutfitSectionProps {
 
 const CreateOutfitSection = ({ clothingItems, isPremium }: CreateOutfitSectionProps) => {
   const navigate = useNavigate();
-  const { setIsBuilderOpen, setSelectedOutfitId } = useOutfitContext();
+  const { 
+    setIsBuilderOpen, 
+    setSelectedOutfitId,
+    setIsCreatingNewOutfit
+  } = useOutfitContext();
   
   const handleCreateOutfit = () => {
-    // Clear any selected outfit in the context
+    // Set creation mode flags
     setSelectedOutfitId(null);
+    setIsCreatingNewOutfit(true);
     setIsBuilderOpen(true);
     toast.info("Opening outfit builder...");
   };

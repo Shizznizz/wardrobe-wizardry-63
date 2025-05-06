@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -11,6 +10,7 @@ import { Shirt, Plus, CalendarDays, Sun, CloudRain, Trash2, X, Loader2 } from 'l
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useOutfitContext } from '@/hooks/useOutfitContext';
 
 interface OutfitBuilderProps {
   isOpen: boolean;
@@ -31,10 +31,14 @@ const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }
   const [activeTab, setActiveTab] = useState('items');
   const [isSaving, setIsSaving] = useState(false);
   const { user } = useAuth();
+  const { isCreatingNewOutfit } = useOutfitContext();
+  
+  console.log("OutfitBuilder opened with isCreatingNewOutfit:", isCreatingNewOutfit);
+  console.log("initialOutfit:", initialOutfit);
   
   // Reset the form and initialize with initialOutfit if provided
   useEffect(() => {
-    if (initialOutfit) {
+    if (initialOutfit && !isCreatingNewOutfit) {
       console.log("Editing existing outfit:", initialOutfit);
       setOutfitName(initialOutfit.name);
       const itemObjects = initialOutfit.items
@@ -47,7 +51,7 @@ const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }
       console.log("Creating new outfit");
       resetForm();
     }
-  }, [initialOutfit, isOpen, clothingItems]);
+  }, [initialOutfit, isOpen, clothingItems, isCreatingNewOutfit]);
   
   const resetForm = () => {
     setOutfitName('');
@@ -136,12 +140,14 @@ const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }
       let result;
       if (existingOutfit) {
         // Update existing outfit
+        console.log("Updating existing outfit");
         result = await supabase
           .from('outfits')
           .update(outfitData)
           .eq('id', newOutfit.id);
       } else {
         // Insert new outfit
+        console.log("Creating new outfit");
         result = await supabase
           .from('outfits')
           .insert([outfitData]);
@@ -153,7 +159,7 @@ const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }
         setIsSaving(false);
         return;
       } else {
-        toast.success(initialOutfit ? "Outfit updated successfully!" : "Outfit saved to your collection!");
+        toast.success(initialOutfit && !isCreatingNewOutfit ? "Outfit updated successfully!" : "Outfit saved to your collection!");
         
         // Call the onSave prop to update local state as well
         onSave(newOutfit);
@@ -210,7 +216,7 @@ const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }
       <DialogContent className="sm:max-w-[600px] max-h-[85vh] overflow-y-auto bg-gradient-to-br from-slate-900 to-slate-800 border-purple-500/20 text-white">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-            {initialOutfit ? 'Edit Outfit' : 'Create New Outfit'}
+            {isCreatingNewOutfit || !initialOutfit ? 'Create New Outfit' : 'Edit Outfit'}
           </DialogTitle>
           
           <Button 
@@ -371,7 +377,7 @@ const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }
             ) : (
               <>
                 <Plus className="h-4 w-4 mr-2" />
-                {initialOutfit ? 'Update Outfit' : 'Save Outfit'}
+                {isCreatingNewOutfit || !initialOutfit ? 'Create Outfit' : 'Update Outfit'}
               </>
             )}
           </Button>

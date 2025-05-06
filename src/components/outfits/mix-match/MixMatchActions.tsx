@@ -12,14 +12,19 @@ interface MixMatchActionsProps {
 
 const MixMatchActions = ({ onScrollToOutfits, onCreateOutfit }: MixMatchActionsProps) => {
   const navigate = useNavigate();
-  const { setIsBuilderOpen, setSelectedOutfitId } = useOutfitContext();
+  const { 
+    setIsBuilderOpen, 
+    setSelectedOutfitId, 
+    setIsCreatingNewOutfit 
+  } = useOutfitContext();
 
   const handleAddOutfit = () => {
     if (onCreateOutfit) {
       onCreateOutfit();
     } else {
-      // Ensure we clear any selected outfit
+      // Ensure we're in "create" mode, not "edit" mode
       setSelectedOutfitId(null);
+      setIsCreatingNewOutfit(true);
       setIsBuilderOpen(true);
       toast.info("Opening outfit builder");
     }

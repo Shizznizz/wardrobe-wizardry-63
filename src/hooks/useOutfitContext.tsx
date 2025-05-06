@@ -7,6 +7,8 @@ interface OutfitContextType {
   setIsBuilderOpen: (isOpen: boolean) => void;
   selectedOutfitId: string | null;
   setSelectedOutfitId: (id: string | null) => void;
+  isCreatingNewOutfit: boolean;
+  setIsCreatingNewOutfit: (isCreating: boolean) => void;
 }
 
 const OutfitContext = createContext<OutfitContextType | undefined>(undefined);
@@ -14,13 +16,16 @@ const OutfitContext = createContext<OutfitContextType | undefined>(undefined);
 export const OutfitProvider = ({ children }: { children: ReactNode }) => {
   const [isBuilderOpen, setIsBuilderOpen] = useState(false);
   const [selectedOutfitId, setSelectedOutfitId] = useState<string | null>(null);
+  const [isCreatingNewOutfit, setIsCreatingNewOutfit] = useState(false);
 
   return (
     <OutfitContext.Provider value={{ 
       isBuilderOpen, 
       setIsBuilderOpen,
       selectedOutfitId,
-      setSelectedOutfitId
+      setSelectedOutfitId,
+      isCreatingNewOutfit,
+      setIsCreatingNewOutfit
     }}>
       {children}
     </OutfitContext.Provider>

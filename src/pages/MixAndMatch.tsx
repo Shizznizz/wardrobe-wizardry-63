@@ -51,6 +51,7 @@ const MixAndMatch = () => {
   const [userClothingItems, setUserClothingItems] = useState<ClothingItem[]>([]);
   const [outfitTabKey, setOutfitTabKey] = useState(0); // Add this to force re-render
   const [isRefreshingOutfits, setIsRefreshingOutfits] = useState(false);
+  const { setIsCreatingNewOutfit } = useOutfitContext();
 
   // Scroll to weather section
   const scrollToWeatherSection = useCallback(() => {
@@ -73,12 +74,14 @@ const MixAndMatch = () => {
     }
   }, []);
 
-  // Handle create outfit - FIXED to clear selectedOutfitId
+  // Handle create outfit - properly reset state for new outfit creation
   const handleCreateOutfit = useCallback(() => {
+    console.log("handleCreateOutfit called - creating new outfit");
     // Clear selected outfit ID to ensure we're creating a new outfit
     setSelectedOutfitId(null);
+    setIsCreatingNewOutfit(true);
     setIsBuilderOpen(true);
-  }, []);
+  }, [setIsCreatingNewOutfit]);
 
   // Fetch user profile
   useEffect(() => {
@@ -290,8 +293,7 @@ const MixAndMatch = () => {
       // Check for outfit duplication before saving
       const isDuplicate = outfits.some(existing => existing.id === outfitToSave.id);
       if (isDuplicate) {
-        toast.error('This outfit already exists in your collection.');
-        return;
+        console.log("Outfit already exists, updating instead of creating duplicate");
       }
   
       console.log("Saving outfit:", outfitToSave);
@@ -313,12 +315,29 @@ const MixAndMatch = () => {
             date_added: new Date().toISOString()
           };
           
-          const { data, error } = await supabase
+          // Check if outfit exists already
+          const { data: existingOutfit } = await supabase
             .from('outfits')
-            .insert([outfitData]);
+            .select('id')
+            .eq('id', outfitToSave.id)
+            .maybeSingle();
+          
+          let result;
+          if (existingOutfit) {
+            console.log("Updating existing outfit in Supabase");
+            result = await supabase
+              .from('outfits')
+              .update(outfitData)
+              .eq('id', outfitToSave.id);
+          } else {
+            console.log("Inserting new outfit to Supabase");
+            result = await supabase
+              .from('outfits')
+              .insert([outfitData]);
+          }
             
-          if (error) {
-            console.error("Error saving outfit to Supabase:", error);
+          if (result.error) {
+            console.error("Error saving outfit to Supabase:", result.error);
             toast.error("Failed to save outfit to database");
             return;
           }
@@ -332,21 +351,30 @@ const MixAndMatch = () => {
       }
       
       // Update local state
-      setOutfits(prev => {
-        const updated = [...prev, outfitToSave];
-        console.log("Updated outfits:", updated);
-        return updated;
-      });
-      
-      // Save to localStorage - first check if already exists
-      const localSavedOutfits = JSON.parse(localStorage.getItem('savedOutfits') || '[]');
-      const outfitExists = localSavedOutfits.some((o: Outfit) => o.id === outfitToSave.id);
-      
-      if (!outfitExists) {
-        const updatedOutfits = [...localSavedOutfits, outfitToSave];
-        localStorage.setItem('savedOutfits', JSON.stringify(updatedOutfits));
-        setSavedOutfits(updatedOutfits);
+      if (isDuplicate) {
+        // Update existing outfit
+        setOutfits(prev => prev.map(o => o.id === outfitToSave.id ? outfitToSave : o));
+      } else {
+        // Add new outfit
+        setOutfits(prev => {
+          const updated = [...prev, outfitToSave];
+          console.log("Updated outfits:", updated);
+          return updated;
+        });
+        
+        // Save to localStorage - first check if already exists
+        const localSavedOutfits = JSON.parse(localStorage.getItem('savedOutfits') || '[]');
+        const outfitExists = localSavedOutfits.some((o: Outfit) => o.id === outfitToSave.id);
+        
+        if (!outfitExists) {
+          const updatedOutfits = [...localSavedOutfits, outfitToSave];
+          localStorage.setItem('savedOutfits', JSON.stringify(updatedOutfits));
+          setSavedOutfits(updatedOutfits);
+        }
       }
+      
+      // Reset creation state
+      setIsCreatingNewOutfit(false);
       
       // Close the builder modal
       setIsBuilderOpen(false);
@@ -354,19 +382,14 @@ const MixAndMatch = () => {
       // Force tab section to re-render
       setOutfitTabKey(prev => prev + 1);
       
-      toast.success('Outfit created successfully!');
+      toast.success(isDuplicate ? 'Outfit updated successfully!' : 'Outfit created successfully!');
       
       // Fetch the latest outfits from Supabase
       fetchOutfitsFromSupabase();
       
       // Scroll to the outfits section to show the newly added outfit
       setTimeout(() => {
-        const outfitCollection = document.getElementById('outfit-collection');
-        if (outfitCollection) {
-          outfitCollection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        } else {
-          scrollToOutfitsSection();
-        }
+        scrollToOutfitsSection();
       }, 500);
     } catch (error) {
       console.error("Error saving outfit:", error);
@@ -519,7 +542,10 @@ const MixAndMatch = () => {
         {isBuilderOpen && (
           <OutfitBuilder
             isOpen={isBuilderOpen}
-            onClose={() => setIsBuilderOpen(false)}
+            onClose={() => {
+              setIsBuilderOpen(false);
+              setIsCreatingNewOutfit(false);
+            }}
             onSave={handleSaveOutfit}
             clothingItems={userClothingItems}
             initialOutfit={getSelectedOutfit()}
