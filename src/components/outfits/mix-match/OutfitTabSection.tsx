@@ -9,6 +9,8 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import OutfitFeedbackSection from './OutfitFeedbackSection';
 import OutfitItemReplacement from './OutfitItemReplacement';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -46,6 +48,8 @@ const OutfitTabSection = ({
   const [outfitThumbnails, setOutfitThumbnails] = useState<Record<string, string[]>>({});
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [outfitToDelete, setOutfitToDelete] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const { user } = useAuth();
 
   // Filter outfits that have valid items from user's wardrobe
   const validOutfits = outfits.filter(outfit => {
@@ -151,19 +155,51 @@ const OutfitTabSection = ({
     setDeleteDialogOpen(true);
   };
 
-  const confirmDeleteOutfit = () => {
-    if (outfitToDelete && onDeleteOutfit) {
-      onDeleteOutfit(outfitToDelete);
-      toast.success("Outfit deleted successfully");
+  const confirmDeleteOutfit = async () => {
+    if (!outfitToDelete) {
+      setDeleteDialogOpen(false);
+      return;
+    }
+    
+    setIsDeleting(true);
+    
+    try {
+      // If user is logged in, delete from Supabase first
+      if (user?.id) {
+        const { error } = await supabase
+          .from('outfits')
+          .delete()
+          .eq('id', outfitToDelete);
+          
+        if (error) {
+          console.error("Error deleting outfit from database:", error);
+          toast.error("Failed to delete outfit from database");
+          setIsDeleting(false);
+          setDeleteDialogOpen(false);
+          return;
+        }
+      }
+      
+      // Once database deletion is successful (or user not logged in), update UI
+      if (onDeleteOutfit) {
+        onDeleteOutfit(outfitToDelete);
+      }
       
       // If the deleted outfit was the selected one, select another outfit
       if (outfitToDelete === selectedOutfitId) {
         const remainingOutfits = validOutfits.filter(outfit => outfit.id !== outfitToDelete);
         setSelectedOutfitId(remainingOutfits.length > 0 ? remainingOutfits[0].id : null);
       }
+      
+      toast.success("Outfit deleted successfully");
+    } catch (err) {
+      console.error("Error during outfit deletion:", err);
+      toast.error("An unexpected error occurred while deleting the outfit");
+    } finally {
+      setIsDeleting(false);
+      setDeleteDialogOpen(false);
+      setOutfitToDelete(null);
     }
-    setDeleteDialogOpen(false);
-    setOutfitToDelete(null);
   };
 
   // Helper function to render outfit items grid
@@ -468,14 +504,21 @@ const OutfitTabSection = ({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-transparent border-white/20 text-white hover:bg-white/10">
+            <AlertDialogCancel 
+              className="bg-transparent border-white/20 text-white hover:bg-white/10"
+              disabled={isDeleting}
+            >
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
-              className="bg-red-600 text-white hover:bg-red-700"
+              className={cn(
+                "bg-red-600 text-white hover:bg-red-700",
+                isDeleting && "opacity-70 cursor-not-allowed"
+              )}
               onClick={confirmDeleteOutfit}
+              disabled={isDeleting}
             >
-              Delete
+              {isDeleting ? 'Deleting...' : 'Delete'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

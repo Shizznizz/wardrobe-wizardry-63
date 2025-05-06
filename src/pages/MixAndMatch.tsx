@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback, Suspense, lazy, memo, useRef } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -118,38 +119,24 @@ const MixAndMatch = () => {
   const handleEditOutfit = useCallback((outfit: Outfit) => {
     setSelectedOutfitId(outfit.id);
     setIsCreatingNewOutfit(false);
-    setSelectedOutfit(outfit);
     setIsBuilderOpen(true);
     toast.info(`Editing outfit: ${outfit.name}`);
   }, [setIsCreatingNewOutfit]);
 
   // Add handler for deleting outfit
-  const handleDeleteOutfit = useCallback((outfitId: string) => {
+  const handleDeleteOutfit = useCallback(async (outfitId: string) => {
+    // Update local state immediately for responsive UI
     setOutfits(prevOutfits => prevOutfits.filter(outfit => outfit.id !== outfitId));
     
-    // If it's also in saved outfits, remove it from there too
+    // Also remove from saved outfits in localStorage if present
     const localSavedOutfits = JSON.parse(localStorage.getItem('savedOutfits') || '[]');
     const updatedSavedOutfits = localSavedOutfits.filter((outfit: Outfit) => outfit.id !== outfitId);
     localStorage.setItem('savedOutfits', JSON.stringify(updatedSavedOutfits));
     setSavedOutfits(updatedSavedOutfits);
     
-    // If user is logged in, delete from Supabase
-    if (user?.id) {
-      supabase
-        .from('outfits')
-        .delete()
-        .eq('id', outfitId)
-        .eq('user_id', user.id)
-        .then(({ error }) => {
-          if (error) {
-            console.error("Error deleting outfit from Supabase:", error);
-            toast.error("Failed to delete outfit from database");
-          }
-        });
-    }
-    
-    toast.success("Outfit deleted successfully");
-  }, [user?.id]);
+    // No need to delete from Supabase here as that's now handled by OutfitTabSection
+    // The database deletion logic is now in the confirmDeleteOutfit function in OutfitTabSection
+  }, []);
 
   // Fetch user profile
   useEffect(() => {
