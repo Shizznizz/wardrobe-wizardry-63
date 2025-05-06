@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -88,7 +89,7 @@ const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }
     }
     
     // Use a crypto.randomUUID for new outfits or the existing ID for edits
-    const outfitId = initialOutfit?.id || crypto.randomUUID();
+    const outfitId = isCreatingNewOutfit ? crypto.randomUUID() : (initialOutfit?.id || crypto.randomUUID());
     
     const newOutfit: Outfit = {
       id: outfitId,
@@ -100,12 +101,13 @@ const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }
       occasions: selectedOccasions,
       favorite: initialOutfit?.favorite || false,
       timesWorn: initialOutfit?.timesWorn || 0,
-      dateAdded: initialOutfit?.dateAdded || new Date(),
+      dateAdded: isCreatingNewOutfit ? new Date() : (initialOutfit?.dateAdded || new Date()),
       lastWorn: initialOutfit?.lastWorn
     };
     
     // Log the outfit being saved
     console.log("Saving outfit:", newOutfit);
+    console.log("Is creating new outfit:", isCreatingNewOutfit);
     
     // If user is authenticated, save to Supabase
     setIsSaving(true);
@@ -138,7 +140,7 @@ const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }
       }
       
       let result;
-      if (existingOutfit) {
+      if (existingOutfit && !isCreatingNewOutfit) {
         // Update existing outfit
         console.log("Updating existing outfit");
         result = await supabase
@@ -159,7 +161,7 @@ const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }
         setIsSaving(false);
         return;
       } else {
-        toast.success(initialOutfit && !isCreatingNewOutfit ? "Outfit updated successfully!" : "Outfit saved to your collection!");
+        toast.success(isCreatingNewOutfit ? "Outfit saved to your collection!" : "Outfit updated successfully!");
         
         // Call the onSave prop to update local state as well
         onSave(newOutfit);
@@ -216,7 +218,7 @@ const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }
       <DialogContent className="sm:max-w-[600px] max-h-[85vh] overflow-y-auto bg-gradient-to-br from-slate-900 to-slate-800 border-purple-500/20 text-white">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-            {isCreatingNewOutfit || !initialOutfit ? 'Create New Outfit' : 'Edit Outfit'}
+            {isCreatingNewOutfit ? 'Create New Outfit' : 'Edit Outfit'}
           </DialogTitle>
           
           <Button 
@@ -377,7 +379,7 @@ const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }
             ) : (
               <>
                 <Plus className="h-4 w-4 mr-2" />
-                {isCreatingNewOutfit || !initialOutfit ? 'Create Outfit' : 'Update Outfit'}
+                {isCreatingNewOutfit ? 'Create Outfit' : 'Update Outfit'}
               </>
             )}
           </Button>

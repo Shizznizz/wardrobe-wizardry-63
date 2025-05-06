@@ -19,15 +19,17 @@ const CreateOutfitSection = ({ clothingItems, isPremium }: CreateOutfitSectionPr
   const { 
     setIsBuilderOpen, 
     setSelectedOutfitId,
-    setIsCreatingNewOutfit
+    setIsCreatingNewOutfit,
+    setSelectedOutfit
   } = useOutfitContext();
   
   const handleCreateOutfit = () => {
-    // Set creation mode flags
+    // Important: Reset all selection state to ensure we're creating a new outfit
     setSelectedOutfitId(null);
+    setSelectedOutfit(null);
     setIsCreatingNewOutfit(true);
     setIsBuilderOpen(true);
-    toast.info("Opening outfit builder...");
+    toast.info("Opening outfit builder for a new outfit");
   };
   
   const handleOliviaCreate = () => {

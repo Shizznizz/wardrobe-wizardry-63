@@ -15,18 +15,20 @@ const MixMatchActions = ({ onScrollToOutfits, onCreateOutfit }: MixMatchActionsP
   const { 
     setIsBuilderOpen, 
     setSelectedOutfitId, 
-    setIsCreatingNewOutfit 
+    setIsCreatingNewOutfit,
+    setSelectedOutfit
   } = useOutfitContext();
 
   const handleAddOutfit = () => {
     if (onCreateOutfit) {
       onCreateOutfit();
     } else {
-      // Ensure we're in "create" mode, not "edit" mode
+      // Reset all outfit selection and editing state
       setSelectedOutfitId(null);
+      setSelectedOutfit(null);
       setIsCreatingNewOutfit(true);
       setIsBuilderOpen(true);
-      toast.info("Opening outfit builder");
+      toast.info("Creating a new outfit");
     }
   };
 
