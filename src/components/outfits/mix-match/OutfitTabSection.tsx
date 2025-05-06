@@ -180,18 +180,18 @@ const OutfitTabSection = ({
         }
       }
       
-      // Once database deletion is successful (or user not logged in), update UI
+      // Update local UI state - call the onDeleteOutfit prop AFTER successful DB deletion
       if (onDeleteOutfit) {
         onDeleteOutfit(outfitToDelete);
+        
+        // If the deleted outfit was the selected one, select another outfit
+        if (outfitToDelete === selectedOutfitId) {
+          const remainingOutfits = validOutfits.filter(outfit => outfit.id !== outfitToDelete);
+          setSelectedOutfitId(remainingOutfits.length > 0 ? remainingOutfits[0].id : null);
+        }
+        
+        toast.success("Outfit deleted successfully");
       }
-      
-      // If the deleted outfit was the selected one, select another outfit
-      if (outfitToDelete === selectedOutfitId) {
-        const remainingOutfits = validOutfits.filter(outfit => outfit.id !== outfitToDelete);
-        setSelectedOutfitId(remainingOutfits.length > 0 ? remainingOutfits[0].id : null);
-      }
-      
-      toast.success("Outfit deleted successfully");
     } catch (err) {
       console.error("Error during outfit deletion:", err);
       toast.error("An unexpected error occurred while deleting the outfit");
@@ -515,7 +515,12 @@ const OutfitTabSection = ({
                 "bg-red-600 text-white hover:bg-red-700",
                 isDeleting && "opacity-70 cursor-not-allowed"
               )}
-              onClick={confirmDeleteOutfit}
+              onClick={(e) => {
+                // Prevent the default action (which would close the dialog)
+                e.preventDefault();
+                // Call our custom action
+                confirmDeleteOutfit();
+              }}
               disabled={isDeleting}
             >
               {isDeleting ? 'Deleting...' : 'Delete'}

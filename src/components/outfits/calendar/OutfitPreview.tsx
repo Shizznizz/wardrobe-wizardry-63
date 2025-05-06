@@ -13,12 +13,19 @@ const OutfitPreview = ({ outfit, isCompact = false }: OutfitPreviewProps) => {
   const imageUrl = outfit.tags?.find(tag => tag?.startsWith('http'));
   const hasImage = outfit.tags?.includes('image');
   
-  // Handle both string and array types for season
-  const seasons = Array.isArray(outfit.season) 
-    ? outfit.season
-    : outfit.season 
-      ? [outfit.season] 
-      : outfit.seasons || [];
+  // Helper function to convert season to array
+  const getSeasonsArray = () => {
+    if (Array.isArray(outfit.season)) {
+      return outfit.season;
+    } else if (outfit.season) {
+      return [outfit.season];
+    } else {
+      return outfit.seasons || [];
+    }
+  };
+  
+  // Get seasons as an array, regardless of source format
+  const seasons = getSeasonsArray();
 
   return (
     <Card className="bg-slate-800/50 overflow-hidden border-slate-700/50 hover:border-slate-600/50 transition-colors">
