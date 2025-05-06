@@ -257,6 +257,7 @@ export interface Outfit {
   tags?: string[];
   colors?: string[];
   colorScheme?: string;
+  thumbnail?: string; // Add the thumbnail property to fix the errors
 }
 
 export interface ShopItem extends Omit<ClothingItem, 'price'> {
