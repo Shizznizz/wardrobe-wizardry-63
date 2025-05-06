@@ -211,6 +211,7 @@ const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }
     return true;
   });
   
+  // Define isFormValid function once
   const isFormValid = () => {
     return outfitName.trim() !== '' && selectedItems.length > 0 && 
            selectedSeasons.length > 0 && selectedOccasions.length > 0;
@@ -390,12 +391,6 @@ const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }
       </DialogContent>
     </Dialog>
   );
-
-  // Helper function to check form validity
-  function isFormValid() {
-    return outfitName.trim() !== '' && selectedItems.length > 0 && 
-           selectedSeasons.length > 0 && selectedOccasions.length > 0;
-  }
 };
 
 export default OutfitBuilder;
