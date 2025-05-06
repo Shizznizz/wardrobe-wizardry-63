@@ -20,10 +20,10 @@ const MixMatchActions = ({ onScrollToOutfits }: MixMatchActionsProps) => {
 
   const handleAddOutfit = () => {
     console.log("Opening outfit builder to create a new outfit");
-    // Reset all outfit selection and editing state
+    // Reset all outfit selection and editing state to ensure we're creating, not editing
     setSelectedOutfitId(null);
     setSelectedOutfit(null);
-    setIsCreatingNewOutfit(true);
+    setIsCreatingNewOutfit(true); // Set creation mode to true
     setIsBuilderOpen(true);
     toast.info("Creating a new outfit");
   };

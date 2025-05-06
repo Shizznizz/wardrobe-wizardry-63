@@ -29,9 +29,9 @@ const CreateOutfitSection = ({ clothingItems, isPremium }: CreateOutfitSectionPr
   const handleCreateOutfit = () => {
     console.log("Opening outfit builder to create a new outfit");
     // Reset all outfit selection and editing state
-    setSelectedOutfitId(null);
-    setSelectedOutfit(null);
-    setIsCreatingNewOutfit(true);
+    setSelectedOutfitId(null); // Clear any selected outfit ID
+    setSelectedOutfit(null);   // Clear selected outfit object
+    setIsCreatingNewOutfit(true); // Set to create mode 
     setIsBuilderOpen(true);
     toast.info("Creating a new outfit");
   };

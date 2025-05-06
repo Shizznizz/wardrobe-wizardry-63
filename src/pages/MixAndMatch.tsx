@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback, Suspense, lazy, memo, useRef } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -49,6 +48,7 @@ const MixAndMatch = () => {
   const [weatherCondition, setWeatherCondition] = useState<string>('clear');
   const [isLoading, setIsLoading] = useState(true);
   const [selectedOutfitId, setSelectedOutfitId] = useState<string | null>(null);
+  const [selectedOutfit, setSelectedOutfit] = useState<Outfit | null>(null);
   const { user } = useAuth();
   const [profile, setProfile] = useState<{ first_name: string | null } | null>(null);
   const [isBuilderOpen, setIsBuilderOpen] = useState(false);
@@ -108,12 +108,13 @@ const MixAndMatch = () => {
   // Simplify to a single createOutfit handler
   const handleCreateOutfit = useCallback(() => {
     console.log("Creating a new outfit");
-    // Clear selected outfit ID to ensure we're creating a new outfit
+    // Clear selected outfit ID and object to ensure we're creating a new outfit
     setSelectedOutfitId(null);
-    setIsCreatingNewOutfit(true);
+    setSelectedOutfit(null); // Make sure to also clear the selected outfit object
+    setIsCreatingNewOutfit(true); // Explicitly set to creation mode
     setIsBuilderOpen(true);
     toast.info("Creating a new outfit");
-  }, [setIsCreatingNewOutfit]);
+  }, [setIsCreatingNewOutfit, setSelectedOutfit, setSelectedOutfitId]);
 
   // Add handler for editing outfit
   const handleEditOutfit = useCallback((outfit: Outfit) => {
@@ -702,7 +703,7 @@ const MixAndMatch = () => {
             }}
             onSave={handleSaveOutfit}
             clothingItems={userClothingItems}
-            initialOutfit={getSelectedOutfit()}
+            initialOutfit={isCreatingNewOutfit ? null : getSelectedOutfit()}
           />
         )}
       </div>
