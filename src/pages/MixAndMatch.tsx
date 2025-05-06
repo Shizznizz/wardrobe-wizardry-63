@@ -57,7 +57,7 @@ const MixAndMatch = () => {
   const [userClothingItems, setUserClothingItems] = useState<ClothingItem[]>([]);
   const [outfitTabKey, setOutfitTabKey] = useState(0); // Add this to force re-render
   const [isRefreshingOutfits, setIsRefreshingOutfits] = useState(false);
-  const { setIsCreatingNewOutfit } = useOutfitContext();
+  const { setIsCreatingNewOutfit, isCreatingNewOutfit } = useOutfitContext();
 
   // Scroll to weather section
   const scrollToWeatherSection = useCallback(() => {
