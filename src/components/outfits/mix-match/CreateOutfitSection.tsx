@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Sparkles, Wand2 } from 'lucide-react';
+import { Sparkles, Wand2, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ClothingItem } from '@/lib/types';
 import { Card, CardContent } from '@/components/ui/card';
@@ -25,6 +25,16 @@ const CreateOutfitSection = ({ clothingItems, isPremium }: CreateOutfitSectionPr
     toast.success("Olivia is creating a custom outfit for you!");
     // In a real app, this would trigger the AI to generate an outfit
   };
+
+  const handleCreateOutfit = () => {
+    console.log("Opening outfit builder to create a new outfit");
+    // Reset all outfit selection and editing state
+    setSelectedOutfitId(null);
+    setSelectedOutfit(null);
+    setIsCreatingNewOutfit(true);
+    setIsBuilderOpen(true);
+    toast.info("Creating a new outfit");
+  };
   
   return (
     <Card className="overflow-hidden border border-white/10 bg-gradient-to-br from-purple-900/30 to-indigo-900/30 backdrop-blur-md">
@@ -40,7 +50,17 @@ const CreateOutfitSection = ({ clothingItems, isPremium }: CreateOutfitSectionPr
             </p>
           </div>
           
-          <div className="flex flex-wrap gap-3">            
+          <div className="flex flex-wrap gap-3">  
+            <Button 
+              variant="outline" 
+              size="lg"
+              onClick={handleCreateOutfit}
+              className="border-purple-500/30 text-white hover:bg-white/10"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Create New Outfit
+            </Button>          
+            
             <Button 
               variant="outline" 
               size="lg"
