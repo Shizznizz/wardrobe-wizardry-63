@@ -1,3 +1,4 @@
+
 import { ClothingItem, Outfit } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
@@ -123,6 +124,7 @@ const VirtualFittingRoom = ({
       <div className={`neo-blur border border-white/10 rounded-lg p-3 sm:p-4 h-full ${className}`}>
         <div className="relative h-full flex flex-col">
           <OliviaImageBadge isVisible={isOliviaImage} />
+          
           <div className="flex-grow relative overflow-hidden rounded-lg">
             <AnimatePresence>
               <motion.img 
@@ -136,6 +138,7 @@ const VirtualFittingRoom = ({
                 transition={{ duration: 0.3 }}
               />
             </AnimatePresence>
+            
             <motion.div 
               className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm"
               initial={{ opacity: 0 }}
@@ -174,6 +177,7 @@ const VirtualFittingRoom = ({
           className="relative"
         >
           <OliviaImageBadge isVisible={isOliviaImage} />
+          
           <img 
             src={finalImage} 
             alt="Fitting room preview" 

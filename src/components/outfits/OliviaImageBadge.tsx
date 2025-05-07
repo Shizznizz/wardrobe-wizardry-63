@@ -1,25 +1,20 @@
 
+import React from 'react';
 import { User } from 'lucide-react';
-import { motion } from 'framer-motion';
 
 interface OliviaImageBadgeProps {
   isVisible: boolean;
-  large?: boolean; // Added large prop as optional
+  large?: boolean;
 }
 
 const OliviaImageBadge = ({ isVisible, large = false }: OliviaImageBadgeProps) => {
   if (!isVisible) return null;
   
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: -10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
-      className={`absolute top-3 left-3 bg-gradient-to-r from-purple-600/80 to-pink-600/80 backdrop-blur-sm py-1 px-3 rounded-full flex items-center gap-1.5 z-10 border border-white/20 shadow-md ${large ? 'py-1.5 px-4' : ''}`}
-    >
-      <User className={`${large ? 'h-4 w-4' : 'h-3 w-3'} text-white`} />
-      <span className={`${large ? 'text-sm' : 'text-xs'} font-medium text-white`}>Olivia's Image</span>
-    </motion.div>
+    <div className={`absolute top-2 left-2 bg-purple-600/80 rounded-full py-0.5 px-2 text-xs text-white flex items-center z-10 ${large ? 'py-1 px-3 text-sm' : ''}`}>
+      <User className={`${large ? 'h-4 w-4' : 'h-3 w-3'} mr-1`} />
+      Olivia's Image
+    </div>
   );
 };
 

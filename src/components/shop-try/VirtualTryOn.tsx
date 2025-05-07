@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Container } from '@/components/ui/container';
@@ -25,6 +24,7 @@ import VirtualFittingRoom from '@/components/VirtualFittingRoom';
 import FeedbackLoop from '@/components/shop-try/FeedbackLoop';
 import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
+import OliviaImageBadge from '@/components/outfits/OliviaImageBadge';
 
 interface VirtualTryOnProps {
   id?: string;
@@ -180,7 +180,7 @@ const VirtualTryOn = ({
                                 className="border-white/20 hover:bg-white/10 text-white"
                                 onClick={onShowOliviaImageGallery}
                               >
-                                <Sparkles className="h-4 w-4 mr-2" />
+                                <User className="h-4 w-4 mr-2" />
                                 Use Olivia
                               </Button>
                             </div>
@@ -201,11 +201,7 @@ const VirtualTryOn = ({
                               <X className="h-4 w-4" />
                             </Button>
                             
-                            {isUsingOliviaImage && (
-                              <div className="absolute bottom-2 left-2 bg-black/60 text-white text-xs px-2 py-1 rounded">
-                                Olivia
-                              </div>
-                            )}
+                            <OliviaImageBadge isVisible={isUsingOliviaImage} />
                           </div>
                         )}
                       </div>
