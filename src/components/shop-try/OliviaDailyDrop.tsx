@@ -59,7 +59,7 @@ const OliviaDailyDrop = ({
       <Container>
         <motion.div
           className="text-center mb-12"
-          initial={{ opacity: c0, y: 20 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}

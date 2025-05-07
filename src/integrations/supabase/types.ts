@@ -120,6 +120,36 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_drop_clicks: {
+        Row: {
+          clicked_at: string
+          converted: boolean | null
+          country_code: string | null
+          device_type: string | null
+          id: string
+          item_id: string
+          user_id: string | null
+        }
+        Insert: {
+          clicked_at?: string
+          converted?: boolean | null
+          country_code?: string | null
+          device_type?: string | null
+          id?: string
+          item_id: string
+          user_id?: string | null
+        }
+        Update: {
+          clicked_at?: string
+          converted?: boolean | null
+          country_code?: string | null
+          device_type?: string | null
+          id?: string
+          item_id?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       outfit_feedback: {
         Row: {
           id: string
@@ -332,6 +362,78 @@ export type Database = {
           reminder_enabled?: boolean | null
           seasonal_preferences?: Json | null
           updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      vto_testers: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      wardrobe_items: {
+        Row: {
+          created_at: string
+          favorite: boolean | null
+          id: string
+          item_data: Json
+          last_viewed_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          favorite?: boolean | null
+          id?: string
+          item_data: Json
+          last_viewed_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          favorite?: boolean | null
+          id?: string
+          item_data?: Json
+          last_viewed_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      wishlist: {
+        Row: {
+          created_at: string
+          id: string
+          item_id: string
+          notes: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          item_id: string
+          notes?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          item_id?: string
+          notes?: string | null
           user_id?: string
         }
         Relationships: []

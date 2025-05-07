@@ -9,7 +9,7 @@ import {
   Eye, 
   ShoppingBag, 
   Sparkles, 
-  Lightning, 
+  Zap, 
   Smile, 
   Star, 
   Palette, 
@@ -51,11 +51,18 @@ const ShopByMood = ({
     { id: 'elegant', name: 'Elegant', icon: <Star className="h-4 w-4" /> },
     { id: 'colorful', name: 'Colorful', icon: <Palette className="h-4 w-4" /> },
     { id: 'cozy', name: 'Cozy', icon: <Cloud className="h-4 w-4" /> },
-    { id: 'bold', name: 'Bold', icon: <Lightning className="h-4 w-4" /> }
+    { id: 'bold', name: 'Bold', icon: <Zap className="h-4 w-4" /> }
   ];
   
+  // Extended ClothingItem type for our mock data
+  type ExtendedClothingItem = ClothingItem & {
+    stylingTip?: string;
+    moods?: string[];
+    affiliateUrl?: string;
+  };
+  
   // Mock clothing items
-  const clothingItems: ClothingItem[] = [
+  const clothingItems: ExtendedClothingItem[] = [
     {
       id: 'item-1',
       name: 'Sleek Denim Jacket',
@@ -66,19 +73,21 @@ const ShopByMood = ({
       imageUrl: '/lovable-uploads/1d4e81c7-dcef-4208-ba9f-77c0544f9e12.png',
       stylingTip: 'Perfect for layering over a simple tee or dress',
       moods: ['casual', 'bold'],
-      affiliate: true
+      season: ['all'],
+      occasion: 'casual'
     },
     {
       id: 'item-2',
       name: 'Floral Summer Dress',
       type: 'dress',
-      color: 'multi',
+      color: 'purple',
       brand: 'BloomWear',
       price: 65.95,
       imageUrl: '/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png',
       stylingTip: 'Add a denim jacket for cool evenings',
       moods: ['colorful', 'casual'],
-      affiliate: true
+      season: ['summer'],
+      occasion: 'casual'
     },
     {
       id: 'item-3',
@@ -90,19 +99,21 @@ const ShopByMood = ({
       imageUrl: '/lovable-uploads/c0be3b58-4cc0-4277-8c62-da17547e44ff.png',
       stylingTip: 'Pair with subtle jewelry to let the dress shine',
       moods: ['elegant'],
-      affiliate: true
+      season: ['all'],
+      occasion: 'formal'
     },
     {
       id: 'item-4',
       name: 'Cozy Knit Sweater',
       type: 'sweater',
-      color: 'cream',
+      color: 'beige',
       brand: 'WarmEssentials',
       price: 55.00,
       imageUrl: '/lovable-uploads/60ffb487-6be9-4d8d-b767-ade57592238d.png',
       stylingTip: 'Great with slim jeans and ankle boots',
       moods: ['cozy', 'casual'],
-      affiliate: true
+      season: ['winter', 'autumn'],
+      occasion: 'casual'
     }
   ];
   
@@ -197,7 +208,7 @@ const ShopByMood = ({
                   </Button>
                 </div>
                 
-                {item.affiliate && (
+                {item.affiliateUrl && (
                   <div className="absolute top-2 left-2 bg-gradient-to-r from-pink-500 to-purple-500 text-white text-xs px-2 py-0.5 rounded">
                     Affiliate
                   </div>
@@ -234,10 +245,12 @@ const ShopByMood = ({
                   </div>
                 </div>
                 
-                <p className="text-xs text-white/60 mt-2 line-clamp-1 italic">
-                  <Sparkles className="h-3 w-3 inline-block mr-1" />
-                  {item.stylingTip}
-                </p>
+                {item.stylingTip && (
+                  <p className="text-xs text-white/60 mt-2 line-clamp-1 italic">
+                    <Sparkles className="h-3 w-3 inline-block mr-1" />
+                    {item.stylingTip}
+                  </p>
+                )}
               </CardContent>
             </Card>
           ))}
@@ -267,17 +280,19 @@ const ShopByMood = ({
                   </div>
                   
                   <DialogDescription className="text-white/80">
-                    <div className="flex items-start space-x-2 mb-4">
-                      <Sparkles className="h-4 w-4 text-purple-400 mt-1 flex-shrink-0" />
-                      <p>
-                        <span className="font-semibold text-purple-300">Olivia's Tip: </span>
-                        {expandedItem.stylingTip}
-                      </p>
-                    </div>
+                    {(expandedItem as ExtendedClothingItem).stylingTip && (
+                      <div className="flex items-start space-x-2 mb-4">
+                        <Sparkles className="h-4 w-4 text-purple-400 mt-1 flex-shrink-0" />
+                        <p>
+                          <span className="font-semibold text-purple-300">Olivia's Tip: </span>
+                          {(expandedItem as ExtendedClothingItem).stylingTip}
+                        </p>
+                      </div>
+                    )}
                     
-                    {expandedItem.moods && (
+                    {(expandedItem as ExtendedClothingItem).moods && (
                       <div className="flex flex-wrap gap-2 mb-4">
-                        {expandedItem.moods.map(mood => (
+                        {(expandedItem as ExtendedClothingItem).moods?.map(mood => (
                           <span key={mood} className="bg-purple-900/50 text-purple-200 rounded-full px-3 py-1 text-xs">
                             {mood}
                           </span>
