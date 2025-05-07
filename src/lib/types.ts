@@ -19,9 +19,7 @@ export type ClothingColor =
   | 'burgundy'
   | 'coral'
   | 'rose'
-  | 'multicolor'
-  | 'gold'  // Adding gold color
-  | 'light blue'; // Adding light blue color
+  | 'multicolor';
 
 export type ClothingSeason = 'spring' | 'summer' | 'autumn' | 'winter' | 'all';
 
@@ -91,9 +89,8 @@ export type ClothingType =
   | 'sleepwear'
   | 'activewear'
   | 'other'
-  | 'shoes'
+  | 'shoes'         // Adding the missing types causing errors
   | 'accessories'
-  | 'accessory'  // Adding accessory type
   | 'top';
 
 export type ClothingCategory = 
@@ -130,14 +127,17 @@ export type ClothingMaterial =
   | 'other';
 
 export interface WeatherInfo {
-  temperature: number;
-  condition: string;
+  temperature?: number;
+  condition?: string;
+  city?: string;
+  country?: string;
+  iconCode?: string;
   icon?: string;
-  city: string;
-  country: string;
-  windSpeed?: number;
-  humidity?: number;
+  high?: number;
+  low?: number;
   feelsLike?: number;
+  humidity?: number;
+  windSpeed?: number;
 }
 
 export type TimeOfDay = 'morning' | 'afternoon' | 'evening' | 'night';
