@@ -1,4 +1,3 @@
-
 // src/lib/types.ts
 
 export type ClothingColor =
@@ -127,17 +126,14 @@ export type ClothingMaterial =
   | 'other';
 
 export interface WeatherInfo {
-  temperature?: number;
-  condition?: string;
-  city?: string;
-  country?: string;
-  iconCode?: string;
+  temperature: number;
+  condition: string;
   icon?: string;
-  high?: number;
-  low?: number;
-  feelsLike?: number;
-  humidity?: number;
+  city: string;
+  country: string;
   windSpeed?: number;
+  humidity?: number;
+  feelsLike?: number;
 }
 
 export type TimeOfDay = 'morning' | 'afternoon' | 'evening' | 'night';
