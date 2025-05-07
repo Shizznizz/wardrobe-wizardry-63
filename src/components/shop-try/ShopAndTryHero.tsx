@@ -115,8 +115,11 @@ const ShopAndTryHero = ({ onStartStyling }: ShopAndTryHeroProps) => {
                   onClick={onStartStyling}
                 >
                   <Sparkles className="mr-2 h-5 w-5" />
-                  Start Styling with Olivia
+                  Explore Styles with Olivia
                 </Button>
+                <p className="text-white/70 text-sm mt-4">
+                  Upload a photo or try outfits with Olivia — get inspired by trending fashion.
+                </p>
               </motion.div>
             </motion.div>
           </motion.div>

@@ -1,13 +1,15 @@
 
 import React from 'react';
+import { motion } from 'framer-motion';
 import { Container } from '@/components/ui/container';
-import { Globe, ChevronDown } from 'lucide-react';
 import { 
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select';
 
 interface ShopTryFooterProps {
   userCountry: string;
@@ -15,6 +17,7 @@ interface ShopTryFooterProps {
 }
 
 const ShopTryFooter = ({ userCountry, onCountryChange }: ShopTryFooterProps) => {
+  // List of countries for the selector
   const countries = [
     'United States',
     'Canada',
@@ -22,50 +25,66 @@ const ShopTryFooter = ({ userCountry, onCountryChange }: ShopTryFooterProps) => 
     'Australia',
     'Germany',
     'France',
-    'Japan',
-    'South Korea',
+    'Spain',
     'Italy',
-    'Spain'
+    'Japan',
+    'South Korea'
   ];
 
   return (
-    <footer className="py-12 border-t border-white/10">
+    <footer className="py-12 border-t border-white/10 bg-slate-950">
       <Container>
-        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="text-center md:text-left">
-            <p className="text-white/60 text-sm">
-              We may earn a small commission when you buy through links on this page.
-            </p>
-            <p className="text-white/40 text-xs mt-2">
-              © 2025 Olivia Bloom. All rights reserved.
-            </p>
-          </div>
+        <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <h3 className="text-lg font-semibold mb-2">Shop & Try</h3>
+            <p className="text-white/60 text-sm">Your virtual fashion assistant</p>
+          </motion.div>
           
-          <div className="flex items-center">
-            <div className="text-sm text-white/60 mr-3">Show items available in:</div>
-            
-            <DropdownMenu>
-              <DropdownMenuTrigger className="inline-flex items-center justify-between rounded-md border border-white/20 bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-800 focus:outline-none">
-                <Globe className="mr-2 h-4 w-4 text-white/70" />
-                {userCountry}
-                <ChevronDown className="ml-2 h-4 w-4 text-white/70" />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="bg-slate-900 border border-white/10">
-                {countries.map((country) => (
-                  <DropdownMenuItem
-                    key={country}
-                    className={`text-white/80 hover:bg-slate-800 hover:text-white cursor-pointer ${
-                      country === userCountry ? 'bg-purple-900/50 text-white' : ''
-                    }`}
-                    onClick={() => onCountryChange(country)}
-                  >
-                    {country}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="w-full max-w-xs"
+          >
+            <p className="text-sm text-white/60 mb-2">Show products available in:</p>
+            <Select value={userCountry} onValueChange={onCountryChange}>
+              <SelectTrigger className="bg-slate-900 border-white/10 text-white">
+                <SelectValue placeholder="Select a country" />
+              </SelectTrigger>
+              <SelectContent className="bg-slate-900 border-white/10">
+                <SelectGroup>
+                  {countries.map(country => (
+                    <SelectItem key={country} value={country} className="text-white hover:bg-slate-800">
+                      {country}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </motion.div>
         </div>
+        
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          <div className="border-t border-white/10 pt-6 text-sm text-white/40 text-center">
+            <p className="mb-2">
+              Affiliate Disclosure: Some links on this page are affiliate links. We may earn a commission if you make a purchase through these links.
+            </p>
+            <p>
+              © {new Date().getFullYear()} Virtual Fashion Assistant. All rights reserved.
+            </p>
+          </div>
+        </motion.div>
       </Container>
     </footer>
   );

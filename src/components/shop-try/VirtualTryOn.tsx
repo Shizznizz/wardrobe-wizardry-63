@@ -1,30 +1,25 @@
+
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Container } from '@/components/ui/container';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { 
-  Upload, 
-  Image, 
-  Shirt, 
-  X, 
-  RefreshCw, 
-  Wand2, 
-  User, 
-  Sparkles, 
-  Heart, 
-  Lock, 
-  Download,
-  CheckCircle2
-} from 'lucide-react';
+import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Outfit, ClothingItem } from '@/lib/types';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { ClothingItem, Outfit } from '@/lib/types';
+import { 
+  Upload,
+  Camera, 
+  X, 
+  Image as ImageIcon, 
+  Loader2, 
+  FileWarning,
+  AlertTriangle,
+  User,
+  Sparkles,
+} from 'lucide-react';
 import VirtualFittingRoom from '@/components/VirtualFittingRoom';
-import FeedbackLoop from '@/components/shop-try/FeedbackLoop';
-import { Switch } from '@/components/ui/switch';
+import UserPhotoDisplay from '@/components/fitting-room/UserPhotoDisplay';
 import { toast } from 'sonner';
-import OliviaImageBadge from '@/components/outfits/OliviaImageBadge';
 
 interface VirtualTryOnProps {
   id?: string;
@@ -39,7 +34,6 @@ interface VirtualTryOnProps {
   isPremiumUser: boolean;
   oliviaMood: 'happy' | 'thinking' | 'neutral';
   stylingTip: string | null;
-  earlyTester: boolean;
   onUserPhotoUpload: (file: File) => void;
   onClothingPhotoUpload: (file: File) => void;
   onClearUserPhoto: () => void;
@@ -50,6 +44,7 @@ interface VirtualTryOnProps {
   onAddItem: (item: ClothingItem) => void;
   onShowPremiumPopup: () => void;
   onAddToEarlyTesters: (email: string) => void;
+  earlyTester: boolean;
   setShowFeedback: (show: boolean) => void;
   showFeedback: boolean;
 }
@@ -67,7 +62,6 @@ const VirtualTryOn = ({
   isPremiumUser,
   oliviaMood,
   stylingTip,
-  earlyTester,
   onUserPhotoUpload,
   onClothingPhotoUpload,
   onClearUserPhoto,
@@ -78,321 +72,323 @@ const VirtualTryOn = ({
   onAddItem,
   onShowPremiumPopup,
   onAddToEarlyTesters,
+  earlyTester,
   setShowFeedback,
   showFeedback
 }: VirtualTryOnProps) => {
-  const [activeTab, setActiveTab] = useState('photo');
-  const [emailInput, setEmailInput] = useState('');
-  const isMobile = useIsMobile();
+  const [activeTab, setActiveTab] = useState<string>(userPhoto ? 'clothing' : 'photo');
+  const [email, setEmail] = useState('');
   
-  const handleUserPhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      onUserPhotoUpload(e.target.files[0]);
-    }
-  };
-  
-  const handleClothingPhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      onClothingPhotoUpload(e.target.files[0]);
-    }
-  };
-
-  const handleEarlyTesterSignup = () => {
-    if (!emailInput || !emailInput.includes('@')) {
-      toast.error('Please enter a valid email address');
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>, type: 'user' | 'clothing') => {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+    
+    const file = files[0];
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please upload an image file');
       return;
     }
     
-    onAddToEarlyTesters(emailInput);
-    setEmailInput('');
+    if (type === 'user') {
+      onUserPhotoUpload(file);
+      setActiveTab('clothing');
+    } else {
+      onClothingPhotoUpload(file);
+    }
+    
+    // Reset input value so the same file can be uploaded again if needed
+    event.target.value = '';
   };
-
+  
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+  
+  const handleDrop = (e: React.DragEvent, type: 'user' | 'clothing') => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const file = e.dataTransfer.files[0];
+      if (!file.type.startsWith('image/')) {
+        toast.error('Please upload an image file');
+        return;
+      }
+      
+      if (type === 'user') {
+        onUserPhotoUpload(file);
+        setActiveTab('clothing');
+      } else {
+        onClothingPhotoUpload(file);
+      }
+    }
+  };
+  
+  const getOliviaEmoji = () => {
+    switch (oliviaMood) {
+      case 'happy': return '😊';
+      case 'thinking': return '🤔';
+      default: return '👋';
+    }
+  };
+  
   return (
-    <section className="py-16 relative scroll-mt-24" id={id}>
+    <section className="py-16 relative" id={id}>
       <div className="absolute inset-0 bg-gradient-to-b from-slate-950/50 via-purple-950/30 to-slate-950/50 pointer-events-none"></div>
       
       <Container>
         <motion.div
-          className="text-center mb-12 relative"
+          className="text-center mb-12"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
         >
-          <div className="absolute -top-2 right-0 md:right-1/3 bg-gradient-to-r from-pink-500 to-purple-500 text-white text-xs md:text-sm px-3 py-1 rounded-full font-medium shadow-lg rotate-3 transform">
-            Coming Soon
+          <div className="inline-flex items-center mb-3 bg-gradient-to-r from-purple-600/30 to-pink-600/30 px-4 py-1 rounded-full">
+            <span className="text-sm font-medium text-white mr-2">Coming Soon</span>
+            <Sparkles className="h-4 w-4 text-pink-300" />
           </div>
           
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Virtual Try-On</h2>
           <p className="text-white/70 max-w-2xl mx-auto">
-            Upload your photo and try on clothes before you buy them
+            See how clothes look on you before you buy them
           </p>
         </motion.div>
         
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="mb-12"
-        >
-          <Card className="border-white/10 bg-gradient-to-br from-slate-900/80 to-purple-900/50 backdrop-blur-sm overflow-hidden">
-            <CardContent className="p-6">
-              <div className="flex flex-col md:flex-row gap-6">
-                <div className="w-full md:w-1/2">
-                  <h2 className="text-xl font-bold text-white mb-4">Virtual Try-On</h2>
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+          {/* Left side - Upload interface */}
+          <div className="md:col-span-5">
+            <div className="space-y-6">
+              {userPhoto ? (
+                <UserPhotoDisplay 
+                  userPhoto={userPhoto}
+                  isUsingOliviaImage={isUsingOliviaImage}
+                  onResetPhoto={onClearUserPhoto}
+                />
+              ) : (
+                <Tabs 
+                  value={activeTab} 
+                  onValueChange={setActiveTab} 
+                  className="w-full"
+                >
+                  <TabsList className="grid grid-cols-2 mb-4 bg-slate-900/70">
+                    <TabsTrigger value="photo">Your Photo</TabsTrigger>
+                    <TabsTrigger value="olivia">Use Olivia</TabsTrigger>
+                  </TabsList>
                   
-                  <Tabs defaultValue="photo" className="w-full" onValueChange={setActiveTab}>
-                    <TabsList className="bg-slate-800/50 border border-white/10 w-full">
-                      <TabsTrigger value="photo" className="flex-1 data-[state=active]:bg-indigo-600">
-                        <User className="h-4 w-4 mr-2" />
-                        Your Photo
-                      </TabsTrigger>
-                      <TabsTrigger value="clothing" className="flex-1 data-[state=active]:bg-indigo-600">
-                        <Shirt className="h-4 w-4 mr-2" />
-                        Clothing
-                      </TabsTrigger>
-                    </TabsList>
-                    
-                    <TabsContent value="photo" className="mt-4">
-                      <div className="border-2 border-dashed border-white/20 rounded-lg p-6 text-center">
-                        {!userPhoto ? (
-                          <div className="py-6">
-                            <Image className="h-12 w-12 mx-auto text-white/40 mb-4" />
-                            <p className="text-white/70 mb-6">Upload a photo to see how clothes look on you</p>
-                            
-                            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                              <label className="cursor-pointer">
-                                <input
-                                  type="file"
-                                  className="hidden"
-                                  accept="image/*"
-                                  onChange={handleUserPhotoUpload}
-                                />
-                                <div className="flex items-center justify-center rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:opacity-90 text-white px-4 py-2 text-sm">
-                                  <Upload className="h-4 w-4 mr-2" />
-                                  Upload Photo
-                                </div>
-                              </label>
-                              
-                              <Button 
-                                variant="outline"
-                                className="border-white/20 hover:bg-white/10 text-white"
-                                onClick={onShowOliviaImageGallery}
-                              >
-                                <User className="h-4 w-4 mr-2" />
-                                Use Olivia
-                              </Button>
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="relative">
-                            <img 
-                              src={userPhoto} 
-                              alt="Uploaded" 
-                              className="w-full max-h-[400px] object-contain rounded-lg"
-                            />
-                            <Button 
-                              variant="outline" 
-                              size="icon" 
-                              className="absolute top-2 right-2 h-8 w-8 rounded-full bg-black/60 border-white/10 text-white hover:bg-black/80"
-                              onClick={onClearUserPhoto}
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                            
-                            <OliviaImageBadge isVisible={isUsingOliviaImage} />
-                          </div>
-                        )}
-                      </div>
-                    </TabsContent>
-                    
-                    <TabsContent value="clothing" className="mt-4">
-                      <div className="border-2 border-dashed border-white/20 rounded-lg p-6 text-center">
-                        {!clothingPhoto ? (
-                          <div className="py-6">
-                            <Shirt className="h-12 w-12 mx-auto text-white/40 mb-4" />
-                            <p className="text-white/70 mb-6">Upload a clothing item to try it on</p>
-                            
-                            <label className="cursor-pointer inline-block">
-                              <input
-                                type="file"
-                                className="hidden"
-                                accept="image/*"
-                                onChange={handleClothingPhotoUpload}
-                              />
-                              <div className="flex items-center justify-center rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 text-white px-4 py-2 text-sm">
-                                <Upload className="h-4 w-4 mr-2" />
-                                Upload Clothing
-                              </div>
-                            </label>
-                          </div>
-                        ) : (
-                          <div className="relative">
-                            <img 
-                              src={clothingPhoto} 
-                              alt="Clothing" 
-                              className="w-full max-h-[400px] object-contain rounded-lg"
-                            />
-                            <Button 
-                              variant="outline" 
-                              size="icon" 
-                              className="absolute top-2 right-2 h-8 w-8 rounded-full bg-black/60 border-white/10 text-white hover:bg-black/80"
-                              onClick={() => onClothingPhotoUpload(new File([], ""))}
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        )}
-                      </div>
-                    </TabsContent>
-                  </Tabs>
-                  
-                  <div className="mt-6 flex flex-col sm:flex-row gap-3">
-                    <Button 
-                      className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 text-white"
-                      disabled={!userPhoto || !clothingPhoto || isProcessing}
-                      onClick={onTryOn}
+                  <TabsContent value="photo">
+                    <Card 
+                      className="border-white/10 bg-black/50 backdrop-blur-sm rounded-lg overflow-hidden"
+                      onDragOver={handleDragOver}
+                      onDrop={(e) => handleDrop(e, 'user')}
                     >
-                      {isProcessing ? (
-                        <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                      ) : (
-                        <Wand2 className="h-4 w-4 mr-2" />
-                      )}
-                      {isProcessing ? 'Processing...' : 'Try It On'}
-                    </Button>
-                    
-                    <Button 
-                      variant="outline"
-                      className="border-white/20 hover:bg-white/10 text-white"
-                      onClick={onClearPhotos}
-                    >
-                      Clear All
-                    </Button>
-                  </div>
+                      <div className="p-6 flex flex-col items-center justify-center min-h-[300px]">
+                        <div className="w-16 h-16 rounded-full bg-purple-900/30 flex items-center justify-center mb-4">
+                          <Upload className="h-7 w-7 text-purple-400" />
+                        </div>
+                        <h3 className="text-lg font-medium mb-2">Upload your photo</h3>
+                        <p className="text-sm text-white/60 text-center mb-6 max-w-xs">
+                          Drag and drop or click below to upload your photo
+                        </p>
+                        <div>
+                          <label htmlFor="user-photo-upload">
+                            <Button 
+                              type="button" 
+                              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 text-white"
+                            >
+                              <ImageIcon className="h-4 w-4 mr-2" />
+                              Choose File
+                            </Button>
+                            <input 
+                              id="user-photo-upload" 
+                              type="file" 
+                              accept="image/*" 
+                              className="hidden" 
+                              onChange={(e) => handleFileUpload(e, 'user')} 
+                            />
+                          </label>
+                        </div>
+                      </div>
+                    </Card>
+                  </TabsContent>
                   
-                  {generationError && (
-                    <div className="mt-4 p-3 bg-red-900/30 border border-red-500/30 rounded-md text-sm text-red-200">
-                      <p>Error generating image: {generationError}</p>
+                  <TabsContent value="olivia">
+                    <Card className="border-white/10 bg-black/50 backdrop-blur-sm rounded-lg overflow-hidden">
+                      <div className="p-6 text-center">
+                        <div className="w-20 h-20 rounded-full mx-auto bg-gradient-to-tr from-purple-600 to-pink-500 p-1 mb-4">
+                          <img 
+                            src="/lovable-uploads/c937b60e-901e-48ae-b01d-28d901a11503.png" 
+                            alt="Olivia" 
+                            className="w-full h-full object-cover rounded-full"
+                          />
+                        </div>
+                        <h3 className="text-lg font-medium mb-2">Use Olivia as your model</h3>
+                        <p className="text-sm text-white/60 mb-4">
+                          See how outfits look on our virtual model
+                        </p>
+                        <Button 
+                          onClick={onShowOliviaImageGallery} 
+                          className="bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 text-white"
+                        >
+                          <User className="h-4 w-4 mr-2" />
+                          Choose Olivia Image
+                        </Button>
+                      </div>
+                    </Card>
+                  </TabsContent>
+                </Tabs>
+              )}
+              
+              {userPhoto && !clothingPhoto && (
+                <Card 
+                  className="border-white/10 bg-black/50 backdrop-blur-sm rounded-lg overflow-hidden"
+                  onDragOver={handleDragOver}
+                  onDrop={(e) => handleDrop(e, 'clothing')}
+                >
+                  <div className="p-6 flex flex-col items-center justify-center min-h-[260px]">
+                    <div className="w-14 h-14 rounded-full bg-pink-900/30 flex items-center justify-center mb-4">
+                      <ImageIcon className="h-6 w-6 text-pink-400" />
                     </div>
-                  )}
-                  
-                  {/* Early testers toggle section */}
-                  <div className="mt-6 pt-4 border-t border-white/10">
-                    <div className="flex items-center space-x-2 mb-3">
-                      <Switch id="early-tester" checked={earlyTester} disabled={earlyTester} />
-                      <label
-                        htmlFor="early-tester"
-                        className="text-sm font-medium text-white/80 leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      >
-                        Add me to the early testers list
+                    <h3 className="text-lg font-medium mb-2">Upload clothing item</h3>
+                    <p className="text-sm text-white/60 text-center mb-6 max-w-xs">
+                      Upload a clothing item to see how it looks on your photo
+                    </p>
+                    <div>
+                      <label htmlFor="clothing-upload">
+                        <Button 
+                          type="button" 
+                          className="bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 text-white"
+                        >
+                          <ImageIcon className="h-4 w-4 mr-2" />
+                          Choose Clothing
+                        </Button>
+                        <input 
+                          id="clothing-upload" 
+                          type="file" 
+                          accept="image/*" 
+                          className="hidden" 
+                          onChange={(e) => handleFileUpload(e, 'clothing')} 
+                        />
                       </label>
                     </div>
-                    
-                    {!earlyTester && (
-                      <div className="flex items-center mt-3">
-                        <input 
-                          type="email" 
-                          placeholder="Your email" 
-                          className="bg-slate-800/50 border border-white/10 rounded-l-md px-3 py-1.5 text-sm flex-grow focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500"
-                          value={emailInput}
-                          onChange={(e) => setEmailInput(e.target.value)}
-                        />
-                        <Button 
-                          variant="default" 
-                          size="sm"
-                          className="rounded-l-none bg-purple-600 hover:bg-purple-700"
-                          onClick={handleEarlyTesterSignup}
-                        >
-                          Sign Up
-                        </Button>
-                      </div>
-                    )}
-                    
-                    {earlyTester && (
-                      <div className="text-sm flex items-center text-green-300">
-                        <CheckCircle2 className="h-4 w-4 mr-1" />
-                        You're on the list! We'll notify you when VTO launches.
-                      </div>
-                    )}
                   </div>
-                </div>
-                
-                <div className="w-full md:w-1/2">
-                  <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-bold text-white">Preview</h2>
+                </Card>
+              )}
+              
+              {userPhoto && clothingPhoto && (
+                <Card className="border-white/10 bg-black/50 backdrop-blur-sm rounded-lg overflow-hidden">
+                  <div className="p-6">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-lg font-medium">Selected Clothing</h3>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        onClick={() => {
+                          onClothingPhotoUpload(null as any);
+                        }} 
+                        className="text-white/70 hover:text-white"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
                     
-                    {finalImage && (
-                      <div className="flex items-center gap-2">
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="text-white/70 hover:text-white"
-                          onClick={onSaveLook}
-                        >
-                          <Heart className="h-4 w-4 mr-1" />
-                          Save
-                        </Button>
-                        
-                        {!isPremiumUser && (
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            className="text-white/70 hover:text-white"
-                            onClick={onShowPremiumPopup}
-                          >
-                            <Lock className="h-4 w-4 mr-1" />
-                            Premium
-                          </Button>
+                    <div className="relative rounded-lg overflow-hidden aspect-square">
+                      <img 
+                        src={clothingPhoto} 
+                        alt="Selected clothing" 
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    
+                    <div className="mt-4 flex justify-center">
+                      <Button 
+                        onClick={onTryOn} 
+                        disabled={isProcessing}
+                        className="bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 text-white"
+                      >
+                        {isProcessing ? (
+                          <>
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            Processing...
+                          </>
+                        ) : (
+                          <>
+                            <Camera className="h-4 w-4 mr-2" />
+                            Try It On
+                          </>
                         )}
-                      </div>
-                    )}
+                      </Button>
+                    </div>
                   </div>
-                  
-                  <VirtualFittingRoom 
-                    finalImage={finalImage}
-                    outfit={mockOutfit}
-                    clothingItems={selectedItems}
-                    isProcessing={isProcessing}
-                    userPhoto={userPhoto}
-                    clothingPhoto={clothingPhoto}
-                    className="h-full"
-                    onSaveLook={onSaveLook}
-                    isOliviaImage={isUsingOliviaImage}
-                  />
-                  
-                  <motion.div 
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: stylingTip && finalImage ? 1 : 0, y: stylingTip && finalImage ? 0 : 20 }}
-                    transition={{ type: "spring" }}
-                    className="mt-4 p-3 bg-gradient-to-r from-purple-900/40 to-indigo-900/40 rounded-lg border border-purple-500/20"
-                  >
-                    <div className="flex gap-3">
-                      <div className="w-8 h-8 shrink-0 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
-                        <span className="text-white text-xs">OB</span>
-                      </div>
-                      <div>
-                        <p className="text-white/90 text-sm">{stylingTip}</p>
+                </Card>
+              )}
+              
+              {generationError && (
+                <Card className="border-red-600/30 bg-black/50 backdrop-blur-sm rounded-lg overflow-hidden">
+                  <div className="p-4 flex items-start">
+                    <FileWarning className="h-5 w-5 text-red-500 mr-3 mt-1 flex-shrink-0" />
+                    <div>
+                      <h4 className="font-medium text-red-400 mb-1">Error generating try-on</h4>
+                      <p className="text-sm text-white/70">{generationError}</p>
+                    </div>
+                  </div>
+                </Card>
+              )}
+            </div>
+          </div>
+          
+          {/* Right side - Results display */}
+          <div className="md:col-span-7">
+            <Card className="border-white/10 bg-black/50 backdrop-blur-sm rounded-lg overflow-hidden h-full relative">
+              {/* Semi-transparent overlay */}
+              <div className="absolute inset-0 bg-black/20 backdrop-blur-[1px] z-10"></div>
+              
+              <div className="p-3 sm:p-4 h-full relative">
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 text-center">
+                  {stylingTip && finalImage ? (
+                    <div className="bg-white/10 backdrop-blur-md p-4 rounded-lg max-w-sm border border-white/20 shadow-xl">
+                      <div className="flex items-start">
+                        <div className="flex-shrink-0 mr-3">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-purple-600 to-pink-500 flex items-center justify-center">
+                            <span className="text-xl">{getOliviaEmoji()}</span>
+                          </div>
+                        </div>
+                        <div className="text-left">
+                          <p className="text-sm font-medium text-white mb-1">Olivia's Tip:</p>
+                          <p className="text-sm text-white/80">{stylingTip}</p>
+                        </div>
                       </div>
                     </div>
-                  </motion.div>
+                  ) : (
+                    <div className="space-y-4">
+                      <div className="flex flex-col items-center">
+                        <AlertTriangle className="h-12 w-12 text-pink-500/70 mb-2" />
+                        <h3 className="text-xl font-bold">Coming Soon!</h3>
+                      </div>
+                      <p className="text-white/70 max-w-sm">
+                        Our AI-powered virtual try-on feature is currently in development.
+                        Stay tuned for the official release!
+                      </p>
+                    </div>
+                  )}
                 </div>
+                
+                <VirtualFittingRoom
+                  finalImage={finalImage}
+                  outfit={mockOutfit}
+                  clothingItems={selectedItems}
+                  isProcessing={isProcessing}
+                  userPhoto={userPhoto}
+                  clothingPhoto={clothingPhoto}
+                  className="relative z-0"
+                  onSaveLook={onSaveLook}
+                  isOliviaImage={isUsingOliviaImage}
+                />
               </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-        
-        {showFeedback && finalImage && (
-          <FeedbackLoop 
-            visible={showFeedback}
-            outfitName={clothingPhoto ? 'this look' : 'Custom Look'}
-            onClose={() => setShowFeedback(false)}
-            onFeedbackSubmit={() => {}}
-            onSave={onSaveLook}
-            isPremium={isPremiumUser}
-            onUpgradeToPremium={onShowPremiumPopup}
-          />
-        )}
+            </Card>
+          </div>
+        </div>
       </Container>
     </section>
   );
