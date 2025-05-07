@@ -80,6 +80,8 @@
   /* Mobile menu fixes */
   .overflow-hidden-strict {
     overflow: hidden !important;
+    position: relative !important;
+    height: 100% !important;
   }
 
   /* Improved z-index stacking */
@@ -101,5 +103,19 @@
   
   .z-[10000] {
     z-index: 10000;
+  }
+  
+  /* Mobile menu scroll area fixes */
+  .mobile-menu-container {
+    height: 100vh;
+    max-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .mobile-menu-content {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 }

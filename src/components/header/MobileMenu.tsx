@@ -25,12 +25,15 @@ export const MobileMenu = ({
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
+      document.body.classList.add('overflow-hidden-strict');
     } else {
       document.body.style.overflow = '';
+      document.body.classList.remove('overflow-hidden-strict');
     }
     
     return () => {
       document.body.style.overflow = '';
+      document.body.classList.remove('overflow-hidden-strict');
     };
   }, [isOpen]);
   
@@ -47,12 +50,13 @@ export const MobileMenu = ({
       
       {/* Menu panel */}
       <div 
-        className="fixed inset-y-0 right-0 w-[85%] max-w-sm bg-gradient-to-b from-purple-950 to-slate-950 border-l border-white/10 flex flex-col shadow-lg z-[10000]"
+        className="fixed inset-y-0 right-0 w-[85%] max-w-sm bg-gradient-to-b from-purple-950 to-slate-950 border-l border-white/10 flex flex-col shadow-lg z-[10000] h-full"
         role="dialog"
         aria-modal="true"
         aria-label="Mobile navigation menu"
+        style={{ height: '100%', maxHeight: '100vh', display: 'flex', flexDirection: 'column' }}
       >
-        <div className="sticky top-0 px-4 py-4 bg-gradient-to-b from-purple-950 to-purple-950/95 border-b border-white/10 flex justify-end">
+        <div className="sticky top-0 px-4 py-4 bg-gradient-to-b from-purple-950 to-purple-950/95 border-b border-white/10 flex justify-end z-10">
           <Button
             variant="ghost"
             size="icon"
@@ -64,42 +68,44 @@ export const MobileMenu = ({
           </Button>
         </div>
         
-        <ScrollArea className="flex-1 px-4 py-4 overflow-y-auto">
-          <nav className="space-y-2 mb-8">
-            {navItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                onClick={onClose}
-                className={cn(
-                  "block py-4 px-5 rounded-lg text-lg font-medium transition-colors",
-                  currentPath === item.path
-                    ? "bg-white/10 text-white"
-                    : "text-white/80 hover:bg-white/5 hover:text-white"
-                )}
-              >
-                {item.name}
-              </Link>
-            ))}
-          </nav>
-          
-          {/* Only show sign out if user is authenticated */}
-          {navItems.some(item => item.name !== 'Login') && (
-            <div className="pt-4 border-t border-white/10">
-              <Button
-                variant="ghost"
-                className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-900/20 py-3 px-5 text-base"
-                onClick={() => {
-                  onSignOut();
-                  onClose();
-                }}
-              >
-                <LogOut className="mr-3 h-5 w-5" />
-                Sign Out
-              </Button>
-            </div>
-          )}
-        </ScrollArea>
+        <div className="flex-1 overflow-hidden h-full">
+          <ScrollArea className="h-full px-4 py-4">
+            <nav className="space-y-2 mb-8">
+              {navItems.map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  onClick={onClose}
+                  className={cn(
+                    "block py-4 px-5 rounded-lg text-lg font-medium transition-colors",
+                    currentPath === item.path
+                      ? "bg-white/10 text-white"
+                      : "text-white/80 hover:bg-white/5 hover:text-white"
+                  )}
+                >
+                  {item.name}
+                </Link>
+              ))}
+            </nav>
+            
+            {/* Only show sign out if user is authenticated */}
+            {navItems.some(item => item.name !== 'Login') && (
+              <div className="pt-4 border-t border-white/10">
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-900/20 py-3 px-5 text-base"
+                  onClick={() => {
+                    onSignOut();
+                    onClose();
+                  }}
+                >
+                  <LogOut className="mr-3 h-5 w-5" />
+                  Sign Out
+                </Button>
+              </div>
+            )}
+          </ScrollArea>
+        </div>
       </div>
     </div>
   );
