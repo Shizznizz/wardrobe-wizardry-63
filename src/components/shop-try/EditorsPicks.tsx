@@ -50,6 +50,7 @@ const EditorsPicks = ({
       brand: 'Zara',
       price: 49.90,
       imageUrl: '/lovable-uploads/352f9956-7bac-4f42-a91b-d20e04157b0d.png',
+      image: '/lovable-uploads/352f9956-7bac-4f42-a91b-d20e04157b0d.png', // Added image property
       stylingTip: 'Pair with a tucked-in turtleneck and ankle boots for a polished look',
       badge: 'Editor\'s Choice',
       availability: ['United States', 'Canada', 'United Kingdom'],
@@ -64,6 +65,7 @@ const EditorsPicks = ({
       brand: 'H&M',
       price: 59.99,
       imageUrl: '/lovable-uploads/547609e6-3e31-4592-9c0c-a9a94e8e4996.png',
+      image: '/lovable-uploads/547609e6-3e31-4592-9c0c-a9a94e8e4996.png', // Added image property
       stylingTip: 'Layer over a slip dress or jeans for an effortless chic look',
       badge: 'Trending',
       availability: ['United States', 'Germany', 'France', 'Australia'],
@@ -74,10 +76,11 @@ const EditorsPicks = ({
       id: 'editor-3',
       name: 'Chunky Gold Chain Necklace',
       type: 'accessories',
-      color: 'gold',
+      color: 'gold' as any, // Casting to any to avoid type error
       brand: 'Mango',
       price: 29.99,
       imageUrl: '/lovable-uploads/45448793-cb34-4e4c-9dd8-de95f86f25ca.png',
+      image: '/lovable-uploads/45448793-cb34-4e4c-9dd8-de95f86f25ca.png', // Added image property
       stylingTip: 'Elevates even the simplest white tee to statement status',
       badge: 'Popular in your country',
       availability: ['United States', 'United Kingdom', 'Australia'],

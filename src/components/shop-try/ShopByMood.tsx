@@ -1,23 +1,11 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Container } from '@/components/ui/container';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { 
-  Heart, 
-  Eye, 
-  ShoppingBag, 
-  Sparkles, 
-  Zap, 
-  Smile, 
-  Star, 
-  Palette, 
-  Cloud 
-} from 'lucide-react';
-import { ClothingItem } from '@/lib/types';
 import { Card, CardContent } from '@/components/ui/card';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { ShoppingBag, Heart, ArrowRight, Sparkles, Shirt } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { ClothingItem } from '@/lib/types';
 import { toast } from 'sonner';
 
 interface ShopByMoodProps {
@@ -28,7 +16,12 @@ interface ShopByMoodProps {
   onUpgradeToPremium: () => void;
   activeMood: string | null;
   onMoodSelect: (mood: string | null) => void;
-  onSaveToWishlist: (itemId: string) => void;
+  onSaveToWishlist: (id: string) => void;
+}
+
+interface ExtendedClothingItem extends ClothingItem {
+  stylingTip?: string;
+  moods?: string[];
 }
 
 const ShopByMood = ({
@@ -41,97 +34,79 @@ const ShopByMood = ({
   onMoodSelect,
   onSaveToWishlist
 }: ShopByMoodProps) => {
-  const [expandedItem, setExpandedItem] = useState<ClothingItem | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-  const isMobile = useIsMobile();
-  
-  // Mock mood categories
-  const moodCategories = [
-    { id: 'casual', name: 'Casual', icon: <Smile className="h-4 w-4" /> },
-    { id: 'elegant', name: 'Elegant', icon: <Star className="h-4 w-4" /> },
-    { id: 'colorful', name: 'Colorful', icon: <Palette className="h-4 w-4" /> },
-    { id: 'cozy', name: 'Cozy', icon: <Cloud className="h-4 w-4" /> },
-    { id: 'bold', name: 'Bold', icon: <Zap className="h-4 w-4" /> }
+  const [loading, setLoading] = useState(false);
+
+  const moods = [
+    'Casual', 'Elegant', 'Bold', 'Romantic', 'Professional', 'Cozy'
   ];
   
-  // Extended ClothingItem type for our mock data
-  type ExtendedClothingItem = ClothingItem & {
-    stylingTip?: string;
-    moods?: string[];
-    affiliateUrl?: string;
-  };
-  
-  // Mock clothing items
-  const clothingItems: ExtendedClothingItem[] = [
+  // Mock trending items with mood tags
+  const trendingItems: ExtendedClothingItem[] = [
     {
-      id: 'item-1',
-      name: 'Sleek Denim Jacket',
+      id: 'trend-1',
+      name: 'Oversized Denim Jacket',
       type: 'jacket',
       color: 'blue',
-      brand: 'StyleCo',
+      brand: 'Urban Outfitters',
       price: 89.99,
-      imageUrl: '/lovable-uploads/1d4e81c7-dcef-4208-ba9f-77c0544f9e12.png',
-      stylingTip: 'Perfect for layering over a simple tee or dress',
-      moods: ['casual', 'bold'],
+      imageUrl: '/lovable-uploads/c0be3b58-4cc0-4277-8c62-da17547e44ff.png',
+      image: '/lovable-uploads/c0be3b58-4cc0-4277-8c62-da17547e44ff.png', // Added image property
+      stylingTip: 'Perfect oversized fit for layering over any outfit',
+      moods: ['Casual', 'Bold'],
       season: ['all'],
       occasion: 'casual'
     },
     {
-      id: 'item-2',
-      name: 'Floral Summer Dress',
+      id: 'trend-2',
+      name: 'Floral Maxi Dress',
       type: 'dress',
       color: 'purple',
-      brand: 'BloomWear',
-      price: 65.95,
-      imageUrl: '/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png',
-      stylingTip: 'Add a denim jacket for cool evenings',
-      moods: ['colorful', 'casual'],
+      brand: 'Free People',
+      price: 128.00,
+      imageUrl: '/lovable-uploads/60ffb487-6be9-4d8d-b767-ade57592238d.png',
+      image: '/lovable-uploads/60ffb487-6be9-4d8d-b767-ade57592238d.png', // Added image property
+      stylingTip: 'Cinch with a belt to define your waist',
+      moods: ['Romantic', 'Elegant'],
       season: ['summer'],
       occasion: 'casual'
     },
     {
-      id: 'item-3',
-      name: 'Elegant Evening Gown',
+      id: 'trend-3',
+      name: 'Little Black Dress',
       type: 'dress',
       color: 'black',
-      brand: 'LuxeNight',
-      price: 159.99,
-      imageUrl: '/lovable-uploads/c0be3b58-4cc0-4277-8c62-da17547e44ff.png',
-      stylingTip: 'Pair with subtle jewelry to let the dress shine',
-      moods: ['elegant'],
+      brand: 'Zara',
+      price: 49.90,
+      imageUrl: '/lovable-uploads/4e16d86c-652b-4717-958f-b48ce5663c9b.png',
+      image: '/lovable-uploads/4e16d86c-652b-4717-958f-b48ce5663c9b.png', // Added image property
+      stylingTip: 'The ultimate versatile piece for any occasion',
+      moods: ['Elegant', 'Professional'],
       season: ['all'],
       occasion: 'formal'
     },
     {
-      id: 'item-4',
-      name: 'Cozy Knit Sweater',
+      id: 'trend-4',
+      name: 'Chunky Knit Sweater',
       type: 'sweater',
       color: 'beige',
-      brand: 'WarmEssentials',
-      price: 55.00,
-      imageUrl: '/lovable-uploads/60ffb487-6be9-4d8d-b767-ade57592238d.png',
-      stylingTip: 'Great with slim jeans and ankle boots',
-      moods: ['cozy', 'casual'],
-      season: ['winter', 'autumn'],
+      brand: 'Madewell',
+      price: 98.00,
+      imageUrl: '/lovable-uploads/2551cee7-6f38-4c04-b656-16c188b19ace.png',
+      image: '/lovable-uploads/2551cee7-6f38-4c04-b656-16c188b19ace.png', // Added image property
+      stylingTip: 'Size up for that cozy, oversized look',
+      moods: ['Cozy', 'Casual'],
+      season: ['autumn', 'winter'],
       occasion: 'casual'
     }
   ];
   
+  // Filter items based on selected mood
   const filteredItems = activeMood 
-    ? clothingItems.filter(item => item.moods?.includes(activeMood)) 
-    : clothingItems;
-
-  const handleTryItem = (item: ClothingItem) => {
-    setLoading(true);
-    
-    setTimeout(() => {
-      onTryItem(item);
-      setLoading(false);
-    }, 300);
-  };
+    ? trendingItems.filter(item => item.moods?.includes(activeMood))
+    : trendingItems;
 
   return (
-    <section className="py-16 relative scroll-mt-24" id={id}>
+    <section className="py-16 relative" id={id}>
       <div className="absolute inset-0 bg-gradient-to-b from-slate-950/50 via-purple-950/30 to-slate-950/50 pointer-events-none"></div>
       
       <Container>
@@ -142,214 +117,141 @@ const ShopByMood = ({
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Shop By Mood</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Shop by Mood</h2>
           <p className="text-white/70 max-w-2xl mx-auto">
-            Find the perfect outfit that matches how you feel today
+            Express yourself through fashion. Select your mood and find the perfect outfit
           </p>
+          
+          <div className="mt-6 flex justify-center gap-4">
+            {moods.map((mood) => (
+              <Badge
+                key={mood}
+                className={`cursor-pointer text-sm font-medium px-3 py-1.5 rounded-full transition-colors duration-200
+                  ${activeMood === mood ? 'bg-purple-500 text-white hover:bg-purple-400' : 'bg-slate-800 text-white/70 hover:bg-slate-700 hover:text-white'}
+                `}
+                onClick={() => onMoodSelect(activeMood === mood ? null : mood)}
+              >
+                {mood}
+              </Badge>
+            ))}
+          </div>
         </motion.div>
         
-        {/* Mood categories */}
-        <div className="flex flex-wrap items-center justify-center gap-3 mb-8">
-          <Button
-            variant={activeMood === null ? "fashion-primary" : "fashion-secondary"}
-            className="rounded-full px-4"
-            onClick={() => onMoodSelect(null)}
-          >
-            All
-          </Button>
-          
-          {moodCategories.map((mood) => (
-            <Button
-              key={mood.id}
-              variant={activeMood === mood.id ? "fashion-primary" : "fashion-secondary"}
-              className="rounded-full px-4"
-              onClick={() => onMoodSelect(mood.id)}
-            >
-              <span className="mr-2">{mood.icon}</span>
-              {mood.name}
-            </Button>
-          ))}
-        </div>
-        
-        {/* Clothing items grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {filteredItems.map((item) => (
-            <Card 
-              key={item.id}
-              className="bg-slate-900/50 border-white/10 hover:border-purple-400/30 overflow-hidden group"
-            >
-              <div className="aspect-[3/4] relative overflow-hidden">
-                <img 
-                  src={item.imageUrl} 
-                  alt={item.name}
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                />
-                
-                {/* Hover overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-between p-4">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="bg-black/50 border-white/20 text-white hover:bg-black/70"
-                    onClick={() => setExpandedItem(item)}
-                  >
-                    <Eye className="h-4 w-4 mr-1" />
-                    Details
-                  </Button>
-                  
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="bg-black/50 border-white/20 text-white hover:bg-black/70"
-                    onClick={() => handleTryItem(item)}
-                  >
-                    <Sparkles className="h-4 w-4 mr-1" />
-                    Try On
-                  </Button>
-                </div>
-                
-                {item.affiliateUrl && (
-                  <div className="absolute top-2 left-2 bg-gradient-to-r from-pink-500 to-purple-500 text-white text-xs px-2 py-0.5 rounded">
-                    Affiliate
+        {loading ? (
+          <div className="flex justify-center my-12">
+            <div className="w-12 h-12 rounded-full border-4 border-purple-600 border-t-transparent animate-spin"></div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {filteredItems.map((item) => (
+              <motion.div
+                key={item.id}
+                className="h-full"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5 }}
+              >
+                <Card className="h-full bg-gradient-to-br from-slate-900/80 to-purple-950/20 border-white/10 hover:border-purple-400/30 overflow-hidden">
+                  <div className="relative">
+                    <div className="aspect-[3/4] overflow-hidden">
+                      <img 
+                        src={item.imageUrl} 
+                        alt={item.name}
+                        className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                      />
+                    </div>
                   </div>
-                )}
-              </div>
-              
-              <CardContent className="p-4">
-                <h3 className="font-semibold text-white mb-1 line-clamp-1">{item.name}</h3>
-                <div className="flex justify-between items-center">
-                  <p className="text-lg font-bold text-white">${item.price}</p>
                   
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className="h-8 w-8 rounded-full border-white/10"
-                      onClick={() => onSaveToWishlist(item.id)}
-                    >
-                      <Heart className="h-4 w-4 text-pink-400" />
-                    </Button>
+                  <CardContent className="p-5">
+                    <div className="mb-3">
+                      <h3 className="font-semibold text-lg text-white">{item.name}</h3>
+                      <div className="flex justify-between items-baseline">
+                        <p className="text-white/60 text-sm">{item.brand}</p>
+                        <p className="text-lg font-bold text-white">${item.price}</p>
+                      </div>
+                    </div>
                     
-                    <Button
-                      variant="default"
-                      size="sm"
-                      className="bg-purple-600 hover:bg-purple-700"
-                      onClick={() => {
-                        window.open('https://example.com/affiliate', '_blank');
-                        toast.success('Opening shop page in new tab');
-                      }}
-                    >
-                      <ShoppingBag className="h-4 w-4 mr-1" />
-                      Shop
-                    </Button>
-                  </div>
-                </div>
-                
-                {item.stylingTip && (
-                  <p className="text-xs text-white/60 mt-2 line-clamp-1 italic">
-                    <Sparkles className="h-3 w-3 inline-block mr-1" />
-                    {item.stylingTip}
-                  </p>
-                )}
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-        
-        {/* Item details modal */}
-        <Dialog open={!!expandedItem} onOpenChange={(open) => !open && setExpandedItem(null)}>
-          <DialogContent className="bg-gradient-to-br from-slate-900 to-purple-950/90 text-white border-white/10 max-w-2xl">
-            {expandedItem && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <img 
-                    src={expandedItem.imageUrl} 
-                    alt={expandedItem.name}
-                    className="w-full rounded-lg"
-                  />
-                </div>
-                
-                <div className="space-y-4">
-                  <DialogTitle className="text-xl font-bold text-white">
-                    {expandedItem.name}
-                  </DialogTitle>
-                  
-                  <div>
-                    <p className="text-xl font-bold text-white">${expandedItem.price}</p>
-                    <p className="text-sm text-white/60">{expandedItem.brand}</p>
-                  </div>
-                  
-                  <DialogDescription className="text-white/80">
-                    {(expandedItem as ExtendedClothingItem).stylingTip && (
-                      <div className="flex items-start space-x-2 mb-4">
+                    {item.stylingTip && (
+                      <div className="flex items-start space-x-2 mb-4 bg-white/5 p-2 rounded">
                         <Sparkles className="h-4 w-4 text-purple-400 mt-1 flex-shrink-0" />
-                        <p>
-                          <span className="font-semibold text-purple-300">Olivia's Tip: </span>
-                          {(expandedItem as ExtendedClothingItem).stylingTip}
+                        <p className="text-sm text-white/70">
+                          {item.stylingTip}
                         </p>
                       </div>
                     )}
                     
-                    {(expandedItem as ExtendedClothingItem).moods && (
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        {(expandedItem as ExtendedClothingItem).moods?.map(mood => (
-                          <span key={mood} className="bg-purple-900/50 text-purple-200 rounded-full px-3 py-1 text-xs">
-                            {mood}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                    
-                    <div className="mt-6 space-y-3">
-                      <Button
-                        className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90"
+                    <div className="mt-4 grid grid-cols-2 gap-3">
+                      <Button 
+                        variant="outline"
+                        className="border-white/20 hover:bg-white/10 text-white"
+                        onClick={() => onTryItem(item)}
+                      >
+                        <Shirt className="h-4 w-4 mr-2" />
+                        Try It
+                      </Button>
+                      
+                      <Button 
+                        className="bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 text-white"
                         onClick={() => {
-                          window.open('https://example.com/affiliate', '_blank');
+                          window.open('https://example.com/shop', '_blank');
                           toast.success('Opening shop page in new tab');
                         }}
                       >
                         <ShoppingBag className="h-4 w-4 mr-2" />
-                        Shop Now
-                      </Button>
-                      
-                      <Button
-                        variant="outline"
-                        className="w-full border-white/20 hover:bg-white/10 text-white"
-                        onClick={() => handleTryItem(expandedItem)}
-                      >
-                        <Sparkles className="h-4 w-4 mr-2" />
-                        Try on with Olivia
-                      </Button>
-                      
-                      <Button
-                        variant="outline"
-                        className="w-full border-white/20 hover:bg-white/10 text-white"
-                        onClick={() => {
-                          onSaveToWishlist(expandedItem.id);
-                          setExpandedItem(null);
-                        }}
-                      >
-                        <Heart className="h-4 w-4 mr-2" />
-                        Save to Wishlist
-                      </Button>
-                      
-                      <Button
-                        variant="outline"
-                        className="w-full border-white/20 hover:bg-white/10 text-white"
-                        onClick={() => {
-                          onStylistSuggestion(expandedItem);
-                          toast.success("Looking for wardrobe matches...");
-                        }}
-                      >
-                        See if it matches my wardrobe
+                        Shop
                       </Button>
                     </div>
-                  </DialogDescription>
-                </div>
-              </div>
-            )}
-          </DialogContent>
-        </Dialog>
+                    
+                    <Button 
+                      variant="ghost"
+                      className="w-full mt-3 text-white/70 hover:text-white"
+                      onClick={() => onSaveToWishlist(item.id)}
+                    >
+                      <Heart className="h-4 w-4 mr-2" />
+                      Save to Wishlist
+                    </Button>
+                    
+                    {isPremiumUser && (
+                      <Button 
+                        variant="link"
+                        className="w-full mt-1 text-purple-400 hover:text-purple-300"
+                        onClick={() => onStylistSuggestion(item)}
+                      >
+                        Ask Olivia for styling suggestion
+                      </Button>
+                    )}
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        )}
+        
+        {!isPremiumUser && (
+          <div className="text-center mt-8">
+            <Button 
+              variant="secondary" 
+              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 text-white"
+              onClick={onUpgradeToPremium}
+            >
+              Unlock Premium Features
+            </Button>
+          </div>
+        )}
+        
+        <div className="text-center mt-8">
+          <Button 
+            variant="link" 
+            className="text-purple-400 hover:text-purple-300 inline-flex items-center"
+            onClick={() => {
+              toast.info("Loading more trending items...");
+            }}
+          >
+            See more trending items
+            <ArrowRight className="ml-1 h-4 w-4" />
+          </Button>
+        </div>
       </Container>
     </section>
   );
