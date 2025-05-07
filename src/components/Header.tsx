@@ -137,7 +137,7 @@ const Header = () => {
               aria-expanded={isMenuOpen}
               aria-controls="mobile-menu"
             >
-              <Menu className="h-5 w-5" />
+              <Menu className="h-6 w-6" />
             </Button>
           )}
         </div>

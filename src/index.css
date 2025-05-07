@@ -77,6 +77,11 @@
     width: 100% !important;
   }
 
+  /* Mobile menu fixes */
+  .overflow-hidden-strict {
+    overflow: hidden !important;
+  }
+
   /* Improved z-index stacking */
   .z-50 {
     z-index: 50;
@@ -89,5 +94,12 @@
   .z-[1001] {
     z-index: 1001;
   }
-}
 
+  .z-[9999] {
+    z-index: 9999;
+  }
+  
+  .z-[10000] {
+    z-index: 10000;
+  }
+}
