@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Container } from '@/components/ui/container';
@@ -151,8 +150,8 @@ const StyleAlchemy = ({
       const mockRecommendedItem: ClothingItem = {
         id: 'weather-rec-1',
         name: weather.temperature < 15 ? 'Cozy Oversized Sweater' : 'Lightweight Cotton Blouse',
-        type: 'top',
-        color: weather.temperature < 15 ? 'cream' : 'light blue',
+        type: weather.temperature < 15 ? 'sweater' : 'blouse',
+        color: weather.temperature < 15 ? 'cream' : 'blue',
         season: weather.temperature < 15 ? ['autumn', 'winter'] : ['spring', 'summer'],
         image: '',
         imageUrl: weather.temperature < 15 
@@ -176,7 +175,7 @@ const StyleAlchemy = ({
         {
           id: 'wardrobe-1',
           name: 'High-Waisted Blue Jeans',
-          type: 'pants',
+          type: 'jeans',
           color: 'blue',
           season: ['all'],
           image: '',
@@ -187,7 +186,7 @@ const StyleAlchemy = ({
         {
           id: 'wardrobe-2',
           name: 'White Sneakers',
-          type: 'shoes',
+          type: 'sneakers',
           color: 'white',
           season: ['spring', 'summer', 'autumn'],
           image: '',
@@ -198,7 +197,7 @@ const StyleAlchemy = ({
         {
           id: 'wardrobe-3',
           name: 'Gold Hoop Earrings',
-          type: 'accessory',
+          type: 'jewelry',
           color: 'gold',
           season: ['all'],
           image: '',
