@@ -42,7 +42,9 @@ const ColorSelector: React.FC<ColorSelectorProps> = ({ selected, options, onChan
       coral: 'bg-coral-500',
       burgundy: 'bg-red-900',
       multicolor: 'bg-gradient-to-r from-purple-500 via-pink-500 to-red-500',
-      rose: 'bg-rose-400'
+      rose: 'bg-rose-400',
+      gold: 'bg-amber-500',
+      'light blue': 'bg-sky-300'
     };
     
     return colorMap[color] || 'bg-gray-500';
