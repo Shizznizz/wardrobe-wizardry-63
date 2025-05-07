@@ -9,7 +9,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { UserMenu } from './header/UserMenu';
 import { MobileMenu } from './header/MobileMenu';
 import { DesktopNavigation } from './header/DesktopNavigation';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from 'sonner';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -57,8 +57,11 @@ const Header = () => {
   };
 
   const toggleMenu = (e: React.MouseEvent) => {
+    // Prevent default to stop any navigation
     e.preventDefault();
+    // Stop propagation to prevent other click handlers from firing
     e.stopPropagation();
+    // Toggle the menu state
     setIsMenuOpen(prevState => !prevState);
     console.log("Toggle menu clicked. New state:", !isMenuOpen);
   };

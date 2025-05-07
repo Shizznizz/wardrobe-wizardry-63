@@ -34,7 +34,7 @@ export const MobileMenu = ({
     };
   }, [isOpen]);
   
-  // If not open, return null but don't render anything
+  // If not open, return null but don't render the menu
   if (!isOpen) return null;
   
   return (
