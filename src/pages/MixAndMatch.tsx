@@ -172,16 +172,29 @@ const MixAndMatch = () => {
   // Fetch user's clothing items from Supabase
   useEffect(() => {
     const fetchUserClothingItems = async () => {
-      if (!user?.id) return;
+      if (!user?.id) {
+        // If no user, set sample clothing items
+        setUserClothingItems(sampleClothingItems);
+        return;
+      }
       
       try {
+        setIsLoading(true);
+        console.log("Fetching clothing items for user:", user.id);
         const { data, error } = await supabase
           .from('clothing_items')
           .select('*')
           .eq('user_id', user.id);
           
-        if (error) throw error;
+        if (error) {
+          console.error('Error fetching user clothing items:', error);
+          toast.error('Failed to load your wardrobe items');
+          // Fallback to sample data on error
+          setUserClothingItems(sampleClothingItems);
+          return;
+        }
         
+        console.log("Received clothing items:", data?.length || 0);
         if (data && data.length > 0) {
           const formattedItems: ClothingItem[] = data.map(item => ({
             id: item.id,
@@ -200,13 +213,17 @@ const MixAndMatch = () => {
           
           setUserClothingItems(formattedItems);
         } else {
+          console.log("No clothing items found, using sample data");
           // If the user has no clothing items yet, use sample data
           setUserClothingItems(sampleClothingItems);
         }
       } catch (error) {
-        console.error('Error fetching user clothing items:', error);
+        console.error('Exception fetching user clothing items:', error);
+        toast.error('Failed to load your wardrobe items');
         // Fallback to sample data on error
         setUserClothingItems(sampleClothingItems);
+      } finally {
+        setIsLoading(false);
       }
     };
     

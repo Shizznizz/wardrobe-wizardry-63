@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { MapPin, RefreshCw, Briefcase, Dumbbell, Sun, ChevronUp, ChevronDown, Calendar } from 'lucide-react';
@@ -73,13 +72,16 @@ const EnhancedWeatherSection = ({
 
   // Handle weather refresh
   const handleRefreshWeather = () => {
+    console.log("Weather refresh requested");
     setWeatherKey(prev => prev + 1);
+    setShouldAutoLoad(true);
     toast.success('Refreshing weather data...');
   };
 
   // Handle location save
   const handleSaveLocation = async () => {
     if (country && city) {
+      console.log(`Saving location preference: ${city}, ${country}`);
       const success = await saveLocationPreference();
       if (success) {
         handleRefreshWeather();
@@ -90,17 +92,19 @@ const EnhancedWeatherSection = ({
     }
   };
 
-  // Handle weather update from widget
+  // Handle weather update from widget with improved debugging
   const handleLocalWeatherUpdate = (weather: WeatherInfo) => {
     console.log("Weather update received:", weather);
     setWeatherData(weather);
     onWeatherUpdate(weather);
     
     if (weather.temperature) {
+      console.log(`Setting temperature to ${weather.temperature}`);
       onTemperatureChange(weather.temperature);
     }
     
     if (weather.condition) {
+      console.log(`Setting condition to ${weather.condition.toLowerCase()}`);
       onWeatherConditionChange(weather.condition.toLowerCase());
     }
   };

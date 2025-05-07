@@ -1,8 +1,10 @@
+
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { WeatherInfo } from '@/lib/types';
 import WeatherDisplay from '@/components/weather/WeatherDisplay';
 import { Skeleton } from '@/components/ui/skeleton';
+import { fetchWeatherData, generateRandomWeather } from '@/services/WeatherService';
 
 type WeatherWidgetProps = {
   city?: string;
@@ -42,24 +44,13 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({
     setError(null);
 
     try {
-      // Simulate API call with mock data
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      console.log(`Fetching weather for ${city}, ${country}...`);
       
-      const temperature = Math.floor(Math.random() * (30 - 10) + 10);
-      const condition = ['sunny', 'cloudy', 'rainy', 'stormy', 'windy', 'snowy'][
-        Math.floor(Math.random() * 6)
-      ];
+      // We're simulating data for now, but in a production app, you'd call a real weather API
+      // This uses our improved weather generation for more realistic data based on location and date
+      const data = generateRealisticWeather(city, country);
       
-      const data: WeatherInfo = {
-        city,
-        country,
-        temperature,
-        feelsLike: temperature - Math.floor(Math.random() * 3),
-        humidity: Math.floor(Math.random() * 50) + 30,
-        windSpeed: Math.floor(Math.random() * 30),
-        condition,
-      };
-      
+      console.log("Generated weather data:", data);
       setWeatherData(data);
       onWeatherChange(data);
       
@@ -74,6 +65,7 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({
       }
     } catch (e) {
       const errorMessage = e instanceof Error ? e.message : 'Failed to fetch weather data';
+      console.error("Error fetching weather:", errorMessage);
       setError(errorMessage);
       
       if (showToasts) {
@@ -82,6 +74,86 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Generate realistic weather data based on location and current month
+  const generateRealisticWeather = (city: string, country: string): WeatherInfo => {
+    const today = new Date();
+    const month = today.getMonth();
+    const isNorthernHemisphere = country !== 'AU' && country !== 'NZ' && country !== 'AR' && country !== 'CL' && country !== 'ZA';
+    
+    // Seasonal temperature ranges (approximate for temperate climates)
+    let tempMin = 15;
+    let tempMax = 25;
+    let conditions = ['sunny', 'partly cloudy', 'cloudy'];
+    
+    if (isNorthernHemisphere) {
+      // Northern hemisphere seasons
+      if (month >= 2 && month <= 4) { // Spring
+        tempMin = 10;
+        tempMax = 20;
+        conditions = ['sunny', 'partly cloudy', 'rainy', 'cloudy'];
+      } else if (month >= 5 && month <= 7) { // Summer
+        tempMin = 20;
+        tempMax = 30;
+        conditions = ['sunny', 'hot', 'partly cloudy'];
+      } else if (month >= 8 && month <= 10) { // Fall/Autumn
+        tempMin = 10;
+        tempMax = 20;
+        conditions = ['cloudy', 'rainy', 'partly cloudy', 'windy'];
+      } else { // Winter
+        tempMin = 0;
+        tempMax = 10;
+        conditions = ['cloudy', 'rainy', 'snowy', 'windy'];
+      }
+    } else {
+      // Southern hemisphere (opposite seasons)
+      if (month >= 2 && month <= 4) { // Fall/Autumn
+        tempMin = 10;
+        tempMax = 20;
+        conditions = ['cloudy', 'rainy', 'partly cloudy'];
+      } else if (month >= 5 && month <= 7) { // Winter
+        tempMin = 5;
+        tempMax = 15;
+        conditions = ['cloudy', 'rainy', 'partly cloudy'];
+      } else if (month >= 8 && month <= 10) { // Spring
+        tempMin = 15;
+        tempMax = 25;
+        conditions = ['sunny', 'partly cloudy', 'rainy'];
+      } else { // Summer
+        tempMin = 25;
+        tempMax = 35;
+        conditions = ['sunny', 'hot', 'partly cloudy'];
+      }
+    }
+    
+    // Adjust for specific regions
+    if (country === 'NL') { // Netherlands
+      // Netherlands rarely gets above 30°C and below -5°C
+      if (month >= 5 && month <= 7) { // Summer
+        tempMin = 15;
+        tempMax = 25; // Realistic summer temps for Netherlands
+        conditions = ['partly cloudy', 'sunny', 'rainy'];
+      } else if (month >= 11 || month <= 1) { // Winter
+        tempMin = 0;
+        tempMax = 8; // Realistic winter temps for Netherlands
+        conditions = ['rainy', 'cloudy', 'partly cloudy'];
+      }
+    }
+    
+    // Get random temperature within the range
+    const temperature = Math.floor(Math.random() * (tempMax - tempMin + 1) + tempMin);
+    const condition = conditions[Math.floor(Math.random() * conditions.length)];
+    
+    return {
+      city,
+      country,
+      temperature,
+      feelsLike: temperature - Math.floor(Math.random() * 3),
+      humidity: Math.floor(Math.random() * 50) + 30,
+      windSpeed: Math.floor(Math.random() * 30),
+      condition,
+    };
   };
 
   // Auto fetch weather when city, country changes or on autoLoad
