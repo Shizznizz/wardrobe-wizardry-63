@@ -1,4 +1,3 @@
-
 // src/lib/types.ts
 
 export type ClothingColor =
@@ -19,7 +18,9 @@ export type ClothingColor =
   | 'burgundy'
   | 'coral'
   | 'rose'
-  | 'multicolor';
+  | 'multicolor'
+  | 'gold'
+  | 'light blue';
 
 export type ClothingSeason = 'spring' | 'summer' | 'autumn' | 'winter' | 'all';
 
@@ -89,9 +90,10 @@ export type ClothingType =
   | 'sleepwear'
   | 'activewear'
   | 'other'
-  | 'shoes'         // Adding the missing types causing errors
+  | 'shoes'
   | 'accessories'
-  | 'top';
+  | 'top'
+  | 'accessory';
 
 export type ClothingCategory = 
   | 'top'
