@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Container } from '@/components/ui/container';
@@ -58,7 +59,7 @@ const StyleAlchemy = ({
 
   useEffect(() => {
     if (userLocation) {
-      fetchWeatherData();
+      fetchWeatherInfo();
     }
   }, [userLocation]);
 
@@ -105,19 +106,21 @@ const StyleAlchemy = ({
     }
   };
 
-  const fetchWeatherData = async () => {
+  const fetchWeatherInfo = async () => {
     if (!userLocation) return;
     
     setLoading(true);
     try {
-      const weather = await fetchWeatherData(userLocation.city, userLocation.country);
-      setWeatherInfo(weather);
-      
-      // Generate outfit recommendation based on weather
-      generateOutfitRecommendation(weather);
-      
-      // Generate style note based on weather
-      generateStyleNote(weather);
+      if (userLocation.city && userLocation.country) {
+        const weather = await fetchWeatherData(userLocation.city, userLocation.country);
+        setWeatherInfo(weather);
+        
+        // Generate outfit recommendation based on weather
+        generateOutfitRecommendation(weather);
+        
+        // Generate style note based on weather
+        generateStyleNote(weather);
+      }
     } catch (error) {
       console.error('Error fetching weather data:', error);
       toast.error('Could not fetch weather data. Using default recommendations.');
@@ -129,7 +132,7 @@ const StyleAlchemy = ({
 
   const handleRefreshWeather = () => {
     setRefreshing(true);
-    fetchWeatherData();
+    fetchWeatherInfo();
   };
 
   const generateOutfitRecommendation = (weather: WeatherInfo) => {
