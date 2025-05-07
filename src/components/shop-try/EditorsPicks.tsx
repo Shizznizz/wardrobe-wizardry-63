@@ -1,260 +1,208 @@
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, ExternalLink, Shirt } from 'lucide-react';
-import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
-import { useAuth } from '@/hooks/useAuth';
 
-interface AffiliateProduct {
-  id: string;
-  image: string;
-  title: string;
-  brand: string;
-  affiliateUrl: string;
-  tryOnEnabled: boolean;
-  moodTags: string[];
-  price?: string;
-  clicks?: number;
-}
+import React from 'react';
+import { motion } from 'framer-motion';
+import { Container } from '@/components/ui/container';
+import { Button } from '@/components/ui/button';
+import { ClothingItem } from '@/lib/types';
+import { Card, CardContent } from '@/components/ui/card';
+import { 
+  Heart, 
+  Eye, 
+  ShoppingBag, 
+  Sparkles, 
+  MessageSquare, 
+  Globe
+} from 'lucide-react';
+import { toast } from 'sonner';
 
 interface EditorsPicksProps {
   isPremiumUser: boolean;
-  onTryItem: (imageUrl: string) => void;
+  onTryItem: (item: ClothingItem) => void;
   onUpgradeToPremium: () => void;
+  userCountry: string | null;
+  onSaveToWardrobe: (item: ClothingItem) => void;
 }
 
-const EditorsPicks = ({ isPremiumUser, onTryItem, onUpgradeToPremium }: EditorsPicksProps) => {
-  const [products, setProducts] = useState<AffiliateProduct[]>([]);
-  const [loading, setLoading] = useState(true);
+const EditorsPicks = ({
+  isPremiumUser,
+  onTryItem,
+  onUpgradeToPremium,
+  userCountry,
+  onSaveToWardrobe
+}: EditorsPicksProps) => {
+  // Mock editor's picks
+  const editorsPicks: ClothingItem[] = [
+    {
+      id: 'editors-1',
+      name: 'Cashmere Blend Cardigan',
+      type: 'cardigan',
+      color: 'beige',
+      brand: 'LuxeComfort',
+      price: 129.99,
+      imageUrl: '/lovable-uploads/86bf74b8-b311-4e3c-bfd6-53819add3df8.png',
+      stylingTip: 'Elegant everyday essential that pairs with anything',
+      availability: ['United States', 'Canada', 'UK'],
+      badge: 'Popular in your country'
+    },
+    {
+      id: 'editors-2',
+      name: 'Structured Blazer',
+      type: 'blazer',
+      color: 'black',
+      brand: 'WorkChic',
+      price: 89.95,
+      imageUrl: '/lovable-uploads/7bf89910-ba2c-43e0-a523-899d90c3022e.png',
+      stylingTip: 'From office to dinner date with simple accessory changes',
+      availability: ['United States', 'Canada', 'Germany', 'France'],
+      badge: 'Editor\'s Choice'
+    },
+    {
+      id: 'editors-3',
+      name: 'Wide-Leg Trousers',
+      type: 'pants',
+      color: 'navy',
+      brand: 'ModernBasics',
+      price: 75.00,
+      imageUrl: '/lovable-uploads/28e5664c-3c8a-4b7e-9c99-065ad489583f.png',
+      stylingTip: 'Elongate your silhouette with these flattering trousers',
+      availability: ['United States', 'UK', 'Australia'],
+      badge: 'New This Week'
+    }
+  ];
   
-  // Add this to override premium status for Daniel
-  const { user } = useAuth();
-  const isDanielDeurlooEmail = user?.email === 'danieldeurloo@hotmail.com';
-  const effectivePremiumUser = isDanielDeurlooEmail ? false : isPremiumUser;
-
-  useEffect(() => {
-    // For now, use sample data
-    // In a real implementation, fetch from Supabase
-    setProducts([
-      {
-        id: 'affiliate-1',
-        image: 'https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&q=80&w=300&h=400',
-        title: 'Oversized Blazer',
-        brand: 'Zara',
-        affiliateUrl: 'https://www.zara.com',
-        tryOnEnabled: true,
-        moodTags: ['Power Boss', 'Minimal'],
-        price: '$79.90'
-      },
-      {
-        id: 'affiliate-2',
-        image: 'https://images.unsplash.com/photo-1560343776-97e7d202ff0e?auto=format&fit=crop&q=80&w=300&h=400',
-        title: 'Ribbed Crop Top',
-        brand: 'H&M',
-        affiliateUrl: 'https://www.hm.com',
-        tryOnEnabled: true,
-        moodTags: ['Y2K Rewind', 'Festival'],
-        price: '$19.99'
-      },
-      {
-        id: 'affiliate-3',
-        image: 'https://images.unsplash.com/photo-1618932260643-eee4a2f652a6?auto=format&fit=crop&q=80&w=300&h=400',
-        title: 'Satin Midi Dress',
-        brand: 'ASOS',
-        affiliateUrl: 'https://www.asos.com',
-        tryOnEnabled: true,
-        moodTags: ['Date Night', 'Romantic'],
-        price: '$45.00'
-      },
-      {
-        id: 'affiliate-4',
-        image: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&q=80&w=300&h=400',
-        title: 'Cargo Pants',
-        brand: 'Urban Outfitters',
-        affiliateUrl: 'https://www.urbanoutfitters.com',
-        tryOnEnabled: true,
-        moodTags: ['Streetstyle', 'Festival'],
-        price: '$69.00'
-      }
-    ]);
-    setLoading(false);
-    
-    // In a real implementation, fetch from Supabase like this:
-    /*
-    const fetchProducts = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('affiliate_products')
-          .select('*')
-          .order('created_at', { ascending: false });
-          
-        if (error) throw error;
-        setProducts(data || []);
-      } catch (error) {
-        console.error('Error fetching affiliate products:', error);
-        toast.error('Failed to load product recommendations');
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    fetchProducts();
-    */
-  }, []);
-
-  const trackClick = async (productId: string) => {
-    // In a real implementation, track clicks in Supabase
-    console.log(`Tracking click for product: ${productId}`);
-    
-    /*
-    try {
-      await supabase
-        .from('affiliate_products')
-        .update({ clicks: supabase.sql`clicks + 1` })
-        .eq('id', productId);
-    } catch (error) {
-      console.error('Failed to track click:', error);
-    }
-    */
-  };
-
-  const handleTryOn = (product: AffiliateProduct) => {
-    if (!effectivePremiumUser) {
-      onUpgradeToPremium();
-      return;
-    }
-    
-    if (product.tryOnEnabled) {
-      onTryItem(product.image);
-      toast.success(`Preparing to try on ${product.title}...`);
-    }
-  };
-
-  const handleShopNow = (product: AffiliateProduct) => {
-    trackClick(product.id);
-    window.open(product.affiliateUrl, '_blank');
-  };
+  // Filter items by country if we have user country data
+  const availableItems = userCountry
+    ? editorsPicks.filter(item => !item.availability || item.availability.includes(userCountry))
+    : editorsPicks;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="relative mb-16"
-    >
-      <div className="flex items-center mb-6">
-        <div className="h-px flex-grow bg-gradient-to-r from-transparent via-purple-500/30 to-transparent"></div>
-        <h2 className="px-4 text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-          Editor's Picks – Shop & Try via Olivia
-        </h2>
-        <div className="h-px flex-grow bg-gradient-to-r from-purple-500/30 via-transparent to-transparent"></div>
-      </div>
+    <section className="py-16 relative">
+      <div className="absolute inset-0 bg-gradient-to-b from-slate-950/50 via-purple-950/30 to-slate-950/50 pointer-events-none"></div>
       
-      {loading ? (
-        <div className="flex justify-center p-10">
-          <div className="w-10 h-10 border-t-2 border-b-2 border-purple-500 rounded-full animate-spin"></div>
-        </div>
-      ) : (
-        <>
-          <div className="overflow-x-auto pb-6 no-scrollbar">
-            <div className="flex gap-6 px-4">
-              {products.map((product) => (
-                <motion.div
-                  key={product.id}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.3 }}
-                  className="flex-shrink-0 w-64"
-                >
-                  <Card className="border-0 shadow-soft bg-gradient-to-br from-slate-800/80 to-slate-900/80 border border-white/10 backdrop-blur-lg overflow-hidden h-full">
-                    <div className="relative aspect-[3/4] overflow-hidden">
-                      <img 
-                        src={product.image} 
-                        alt={product.title}
-                        className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                      />
-                      
-                      {!effectivePremiumUser && product.tryOnEnabled && (
-                        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center z-10 opacity-0 hover:opacity-100 transition-opacity">
-                          <Button 
-                            size="sm"
-                            onClick={() => onUpgradeToPremium()}
-                            className="bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90"
-                          >
-                            Unlock Try-On
-                          </Button>
-                        </div>
-                      )}
-                      
-                      <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-sm text-white text-xs px-2 py-0.5 rounded-full">
-                        {product.brand}
-                      </div>
-                      
-                      {product.price && (
-                        <div className="absolute top-2 right-2 bg-purple-600/80 backdrop-blur-sm text-white text-xs font-medium px-2 py-0.5 rounded-full">
-                          {product.price}
-                        </div>
-                      )}
-                    </div>
-                    
-                    <CardContent className="p-4 space-y-3">
-                      <h3 className="font-medium text-white truncate">{product.title}</h3>
-                      
-                      <div className="flex flex-wrap gap-1 mb-2">
-                        {product.moodTags.map((tag, index) => (
-                          <span key={index} className="text-xs bg-slate-700 text-slate-200 px-1.5 py-0.5 rounded-sm">
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                      
-                      <div className="flex gap-2">
-                        {product.tryOnEnabled && (
-                          <Button 
-                            size="sm"
-                            className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:opacity-90 flex-1"
-                            onClick={() => handleTryOn(product)}
-                          >
-                            <Shirt className="h-3.5 w-3.5 mr-1.5" />
-                            Try on Olivia
-                          </Button>
-                        )}
-                        
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button 
-                                size="sm"
-                                variant="outline"
-                                className="border-white/20 hover:bg-white/10"
-                                onClick={() => handleShopNow(product)}
-                              >
-                                <ExternalLink className="h-3.5 w-3.5 mr-1.5" />
-                                Shop Now
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent side="bottom">
-                              <p className="text-xs">Opens in a new tab</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-          </div>
+      <Container>
+        <motion.div
+          className="text-center mb-12"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+        >
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Editor's Picks</h2>
+          <p className="text-white/70 max-w-2xl mx-auto">
+            Curated selection of pieces our fashion experts are loving right now
+          </p>
           
-          <div className="text-xs text-slate-400 text-center mt-2">
-            <p>Affiliate Disclosure: We may earn a commission for purchases made through these links.</p>
-          </div>
-        </>
-      )}
-    </motion.div>
+          {userCountry && (
+            <div className="inline-flex items-center mt-2 bg-purple-900/30 px-3 py-1 rounded-full text-sm text-purple-200">
+              <Globe className="h-4 w-4 mr-1.5" />
+              Showing items available in {userCountry}
+            </div>
+          )}
+        </motion.div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {availableItems.map((item) => (
+            <motion.div
+              key={item.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+            >
+              <Card className="bg-slate-900/50 border-white/10 hover:border-purple-400/30 overflow-hidden group h-full flex flex-col">
+                <div className="relative">
+                  <div className="aspect-[3/4] overflow-hidden">
+                    <img 
+                      src={item.imageUrl} 
+                      alt={item.name}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                  </div>
+                  
+                  {/* Badge */}
+                  {item.badge && (
+                    <div className="absolute top-2 left-2 bg-gradient-to-r from-pink-500 to-purple-500 text-white text-xs px-2 py-0.5 rounded">
+                      {item.badge}
+                    </div>
+                  )}
+                  
+                  {/* Hover action buttons */}
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Button
+                      variant="outline"
+                      className="bg-black/50 border-white/20 text-white hover:bg-black/70 mx-1"
+                      onClick={() => onTryItem(item)}
+                    >
+                      <Sparkles className="h-4 w-4 mr-1" />
+                      Try On
+                    </Button>
+                    
+                    <Button
+                      variant="outline"
+                      className="bg-black/50 border-white/20 text-white hover:bg-black/70 mx-1"
+                      onClick={() => {
+                        toast.success("Opening style advice...");
+                      }}
+                    >
+                      <MessageSquare className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+                
+                <CardContent className="p-4 flex-grow flex flex-col">
+                  <div className="flex-grow">
+                    <h3 className="font-semibold text-white mb-1">{item.name}</h3>
+                    <p className="text-sm text-white/60">{item.brand}</p>
+                    <p className="text-lg font-bold text-white mt-1">${item.price}</p>
+                  </div>
+                  
+                  <div className="mt-3 pt-3 border-t border-white/10 flex justify-between items-center">
+                    <p className="text-xs text-white/60 italic line-clamp-1">
+                      <Sparkles className="h-3 w-3 inline-block mr-1" />
+                      {item.stylingTip}
+                    </p>
+                    
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="h-8 w-8 rounded-full border-white/10"
+                      onClick={() => onSaveToWardrobe(item)}
+                    >
+                      <Heart className="h-4 w-4 text-pink-400" />
+                    </Button>
+                  </div>
+                  
+                  <div className="mt-3 grid grid-cols-2 gap-2">
+                    <Button
+                      variant="default"
+                      size="sm"
+                      className="bg-purple-600 hover:bg-purple-700 w-full"
+                      onClick={() => {
+                        window.open('https://example.com/affiliate', '_blank');
+                        toast.success('Opening shop page in new tab');
+                      }}
+                    >
+                      <ShoppingBag className="h-4 w-4 mr-1" />
+                      Shop
+                    </Button>
+                    
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="border-white/20 hover:bg-white/10 text-white w-full"
+                      onClick={() => onTryItem(item)}
+                    >
+                      <Sparkles className="h-4 w-4 mr-1" />
+                      Try Now
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+      </Container>
+    </section>
   );
 };
 

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -12,17 +11,16 @@ import { useAuth } from '@/hooks/useAuth';
 import PageHeader from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/button';
 
-import PremiumTryOnHero from '@/components/shop-try/PremiumTryOnHero';
-import WeatherBasedTips from '@/components/shop-try/WeatherBasedTips';
-import UploadPanel from '@/components/shop-try/UploadPanel';
-import FeedbackLoop from '@/components/shop-try/FeedbackLoop';
-import { FeedbackData } from '@/components/shop-try/FeedbackData';
-import UnifiedProductsCarousel from '@/components/shop-try/UnifiedProductsCarousel';
-import WishlistAndHistory from '@/components/shop-try/WishlistAndHistory';
+// Import components for our redesigned page
+import ShopAndTryHero from '@/components/shop-try/ShopAndTryHero';
+import StyleItYourWay from '@/components/shop-try/StyleItYourWay';
+import StyleAlchemy from '@/components/shop-try/StyleAlchemy';
+import VirtualTryOn from '@/components/shop-try/VirtualTryOn';
+import ShopByMood from '@/components/shop-try/ShopByMood';
+import EditorsPicks from '@/components/shop-try/EditorsPicks';
+import OliviaDailyDrop from '@/components/shop-try/OliviaDailyDrop';
+import ShopTryFooter from '@/components/shop-try/ShopTryFooter';
 import FloatingOliviaWidget from '@/components/shop-try/FloatingOliviaWidget';
-import PrettyLittleThingPicks from '@/components/shop-try/PrettyLittleThingPicks';
-import OliviaDailyRecommendation from '@/components/shop-try/OliviaDailyRecommendation';
-import SheinAffiliatePicks from '@/components/shop-try/SheinAffiliatePicks';
 
 const ShopAndTry = () => {
   const { isAuthenticated } = useAuth();
@@ -42,11 +40,24 @@ const ShopAndTry = () => {
   const [showFeedback, setShowFeedback] = useState(false);
   const [customLocation, setCustomLocation] = useState<{ city: string; country: string } | null>(null);
   const [activeMood, setActiveMood] = useState<string | null>(null);
-
+  const [earlyTester, setEarlyTester] = useState(false);
+  const [userCountry, setUserCountry] = useState<string | null>(null);
+  
   const isMobile = useIsMobile();
 
   useEffect(() => {
     setIsPremiumUser(isAuthenticated);
+    
+    // Detect user's country by IP (mock implementation)
+    const detectUserCountry = async () => {
+      try {
+        setUserCountry('United States');
+      } catch (error) {
+        console.error('Error detecting country:', error);
+      }
+    };
+    
+    detectUserCountry();
   }, [isAuthenticated]);
 
   const mockOutfit: Outfit = {
@@ -230,7 +241,7 @@ const ShopAndTry = () => {
     toast.success('Look saved to your wardrobe!');
   };
 
-  const handleFeedbackSubmit = (feedback: FeedbackData) => {
+  const handleFeedbackSubmit = (feedback: any) => {
     console.log('Feedback submitted:', feedback);
     
     if (feedback.favorite) {
@@ -273,11 +284,90 @@ const ShopAndTry = () => {
     toast.success("Editor's pick selected! Ready to try on.");
   };
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.05 }
+  const handleScrollToTryOn = () => {
+    document.getElementById('virtual-try-on')?.scrollIntoView({ 
+      behavior: 'smooth',
+      block: 'start'
+    });
+  };
+
+  const handleAddToEarlyTesters = async (email: string) => {
+    if (!email) return;
+    
+    try {
+      // Store email in vto_testers table
+      const { error } = await supabase
+        .from('vto_testers')
+        .insert({ email });
+      
+      if (error) throw error;
+      setEarlyTester(true);
+      toast.success("You've been added to our early testers list!");
+    } catch (err) {
+      console.error("Error adding to early testers:", err);
+      toast.error("Couldn't add you to early testers. Please try again.");
+    }
+  };
+
+  const handleSaveToWishlist = async (itemId: string) => {
+    if (!isAuthenticated) {
+      setShowSubscriptionPopup(true);
+      return;
+    }
+    
+    try {
+      const { error } = await supabase
+        .from('wishlist')
+        .insert({ 
+          user_id: supabase.auth.getUser().then(data => data.data.user?.id),
+          item_id: itemId,
+          created_at: new Date()
+        });
+      
+      if (error) throw error;
+      toast.success("Item saved to your wishlist!");
+    } catch (err) {
+      console.error("Error saving to wishlist:", err);
+      toast.error("Couldn't save to wishlist. Please try again.");
+    }
+  };
+  
+  const handleSaveToWardrobe = async (item: ClothingItem) => {
+    if (!isAuthenticated) {
+      setShowSubscriptionPopup(true);
+      return;
+    }
+    
+    try {
+      const { error } = await supabase
+        .from('wardrobe_items')
+        .insert({ 
+          user_id: supabase.auth.getUser().then(data => data.data.user?.id),
+          item_data: item,
+          created_at: new Date()
+        });
+      
+      if (error) throw error;
+      toast.success("Item saved to your wardrobe!");
+    } catch (err) {
+      console.error("Error saving to wardrobe:", err);
+      toast.error("Couldn't save to wardrobe. Please try again.");
+    }
+  };
+
+  const trackDailyDropClick = async (itemId: string) => {
+    try {
+      const { error } = await supabase
+        .from('daily_drop_clicks')
+        .insert({ 
+          user_id: isAuthenticated ? supabase.auth.getUser().then(data => data.data.user?.id) : null,
+          item_id: itemId,
+          clicked_at: new Date()
+        });
+      
+      if (error) console.error("Error tracking click:", error);
+    } catch (err) {
+      console.error("Error tracking daily drop click:", err);
     }
   };
 
@@ -285,127 +375,118 @@ const ShopAndTry = () => {
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white overflow-x-hidden">
       <Header />
       
-      <main className="container mx-auto px-4 pt-20 pb-20 max-w-6xl">
-        <PageHeader
-          title="Shop & Try Fashion"
-          subtitle="Try trending fashion pieces with Olivia — you'll love the fit!"
-          imageVariant="portrait"
-          imagePosition="left"
-          className="mb-6"
-          showSparkles={true}
-        >
-          <Button 
-            className="bg-gradient-to-r from-pink-500 to-purple-500 hover:opacity-90 shadow-lg shadow-pink-500/20 hover:shadow-pink-500/30 transition-all duration-300 mt-4"
-            size="lg"
-            onClick={() => document.getElementById('upload-section')?.scrollIntoView({ behavior: 'smooth' })}
-          >
-            Start Styling with Olivia
-          </Button>
-        </PageHeader>
+      <main className="pt-20 pb-20">
+        {/* SECTION 1: HERO HEADER */}
+        <ShopAndTryHero onStartStyling={handleScrollToTryOn} />
         
-        <motion.div 
-          className="space-y-12 md:space-y-16"
-          initial="hidden"
-          animate="visible"
-          variants={containerVariants}
-        >
-          <section id="hero-section">
-            <PremiumTryOnHero
-              isPremiumUser={isPremiumUser || isAuthenticated}
-              onStartStyling={() => document.getElementById('upload-section')?.scrollIntoView({ behavior: 'smooth' })}
-              onShowPremiumPopup={handleShowPremiumPopup}
-            />
-          </section>
-
-          <OliviaDailyRecommendation
-            isPremiumUser={isPremiumUser || isAuthenticated}
-            onTryItem={handleTryOnTrendingItem}
-            onUpgradeToPremium={handleShowPremiumPopup}
-            customLocation={customLocation}
-          />
-
-          <div id="upload-section" className="scroll-mt-24">
-            <WeatherBasedTips 
-              userPhoto={userPhoto}
-              isUsingOliviaImage={isUsingOliviaImage}
-              customLocation={customLocation}
-              onShowStyleOptions={handleShowStylingOptions}
-            />
-            
-            <UploadPanel 
-              userPhoto={userPhoto}
-              clothingPhoto={clothingPhoto}
-              isProcessing={isProcessing}
-              isUsingOliviaImage={isUsingOliviaImage}
-              finalImage={finalImage}
-              mockOutfit={finalImage ? mockOutfit : null}
-              selectedItems={selectedItems}
-              generationError={generationError}
-              isPremiumUser={isPremiumUser || isAuthenticated}
-              oliviaMood={oliviaMood}
-              stylingTip={stylingTip}
-              onUserPhotoUpload={handleUserPhotoUpload}
-              onClothingPhotoUpload={handleClothingPhotoUpload}
-              onClearUserPhoto={() => {
-                setUserPhoto(null);
-                setIsUsingOliviaImage(false);
-              }}
-              onClearPhotos={clearPhotos}
-              onTryOn={handleTryOn}
-              onShowOliviaImageGallery={() => setShowOliviaImageGallery(true)}
-              onSaveLook={handleSaveLook}
-              onAddItem={handleAddItem}
-              onShowPremiumPopup={handleShowPremiumPopup}
-            />
-            
-            {showFeedback && finalImage && (
-              <FeedbackLoop 
-                visible={showFeedback}
-                outfitName={clothingPhoto ? 'this look' : 'Custom Look'}
-                onClose={() => setShowFeedback(false)}
-                onFeedbackSubmit={handleFeedbackSubmit}
-                onSave={handleSaveLook}
-                isPremium={isPremiumUser || isAuthenticated}
-                onUpgradeToPremium={handleShowPremiumPopup}
-              />
-            )}
-          </div>
-          
-          <section id="products-section" className="scroll-mt-24">
-            <UnifiedProductsCarousel 
-              isPremiumUser={isPremiumUser || isAuthenticated}
-              onTryItem={handleTryOnTrendingItem}
-              onStylistSuggestion={(item) => toast.info(`Olivia suggests pairing with ${item.name}`)}
-              onUpgradeToPremium={handleShowPremiumPopup}
-              activeMood={activeMood}
-              onMoodSelect={handleSetActiveMood}
-            />
-          </section>
-          
-          <PrettyLittleThingPicks
-            isPremiumUser={isPremiumUser || isAuthenticated}
-            onTryItem={handleTryOnTrendingItem}
-            onUpgradeToPremium={handleShowPremiumPopup}
-          />
-          
-          <SheinAffiliatePicks
-            isPremiumUser={isPremiumUser || isAuthenticated}
-            onTryItem={handleTryOnTrendingItem}
-            onUpgradeToPremium={handleShowPremiumPopup}
-          />
-          
-          <WishlistAndHistory 
-            isPremiumUser={isPremiumUser || isAuthenticated}
-            onTryItem={handleTryOnTrendingItem}
-            onUpgradeToPremium={handleShowPremiumPopup}
-          />
-          
-          <FloatingOliviaWidget
-            isPremiumUser={isPremiumUser || isAuthenticated}
-            onUpgradeToPremium={handleShowPremiumPopup}
-            onOpenChat={handleOpenChat}
-          />
-        </motion.div>
+        {/* SECTION 2: STYLE IT YOUR WAY */}
+        <StyleItYourWay 
+          onTryBeforeBuy={handleScrollToTryOn}
+          onAIStyling={() => document.getElementById('shop-by-mood')?.scrollIntoView({ behavior: 'smooth' })}
+          onYourStyle={() => !userPhoto ? setShowOliviaImageGallery(true) : handleScrollToTryOn()}
+        />
+        
+        {/* SECTION 3: STYLE ALCHEMY (WEATHER-BASED RECOMMENDATIONS) */}
+        <StyleAlchemy 
+          userPhoto={userPhoto}
+          isUsingOliviaImage={isUsingOliviaImage}
+          customLocation={customLocation}
+          onShowStyleOptions={handleShowStylingOptions}
+          isPremiumUser={isPremiumUser || isAuthenticated}
+          onCombineWithWardrobe={() => {
+            if (!isPremiumUser && !isAuthenticated) {
+              setShowSubscriptionPopup(true);
+            } else {
+              toast.info("Opening wardrobe selector...");
+              // This would connect to wardrobe in a real implementation
+            }
+          }}
+        />
+        
+        {/* SECTION 4: VIRTUAL TRY-ON */}
+        <VirtualTryOn 
+          id="virtual-try-on"
+          userPhoto={userPhoto}
+          clothingPhoto={clothingPhoto}
+          isProcessing={isProcessing}
+          isUsingOliviaImage={isUsingOliviaImage}
+          finalImage={finalImage}
+          mockOutfit={finalImage ? mockOutfit : null}
+          selectedItems={selectedItems}
+          generationError={generationError}
+          isPremiumUser={isPremiumUser || isAuthenticated}
+          oliviaMood={oliviaMood}
+          stylingTip={stylingTip}
+          onUserPhotoUpload={handleUserPhotoUpload}
+          onClothingPhotoUpload={handleClothingPhotoUpload}
+          onClearUserPhoto={() => {
+            setUserPhoto(null);
+            setIsUsingOliviaImage(false);
+          }}
+          onClearPhotos={clearPhotos}
+          onTryOn={handleTryOn}
+          onShowOliviaImageGallery={() => setShowOliviaImageGallery(true)}
+          onSaveLook={handleSaveLook}
+          onAddItem={handleAddItem}
+          onShowPremiumPopup={handleShowPremiumPopup}
+          onAddToEarlyTesters={handleAddToEarlyTesters}
+          earlyTester={earlyTester}
+          setShowFeedback={setShowFeedback}
+          showFeedback={showFeedback}
+        />
+        
+        {/* SECTION 5: SHOP BY MOOD (CATEGORY-BASED ITEMS) */}
+        <ShopByMood 
+          id="shop-by-mood"
+          isPremiumUser={isPremiumUser || isAuthenticated}
+          onTryItem={handleTryOnTrendingItem}
+          onStylistSuggestion={(item) => toast.info(`Olivia suggests pairing with ${item.name}`)}
+          onUpgradeToPremium={handleShowPremiumPopup}
+          activeMood={activeMood}
+          onMoodSelect={handleSetActiveMood}
+          onSaveToWishlist={handleSaveToWishlist}
+        />
+        
+        {/* SECTION 6: EDITOR'S PICKS / BASED ON YOUR VIBE / WISHLIST */}
+        <EditorsPicks
+          isPremiumUser={isPremiumUser || isAuthenticated}
+          onTryItem={handleTryOnTrendingItem}
+          onUpgradeToPremium={handleShowPremiumPopup}
+          userCountry={userCountry}
+          onSaveToWardrobe={handleSaveToWardrobe}
+        />
+        
+        {/* BONUS SECTION: DAILY FEATURE / STYLING CHALLENGE */}
+        <OliviaDailyDrop
+          isPremiumUser={isPremiumUser || isAuthenticated}
+          onSeeHowToWear={(itemId) => {
+            trackDailyDropClick(itemId);
+            if (isPremiumUser || isAuthenticated) {
+              toast.success("Let me show you how to style this...");
+              // Mock AI logic - would be more sophisticated in real implementation
+              setTimeout(() => {
+                toast.info("This pairs perfectly with items in your wardrobe!");
+              }, 1000);
+            } else {
+              setShowSubscriptionPopup(true);
+            }
+          }}
+        />
+        
+        {/* Footer with affiliate disclaimer and country filter */}
+        <ShopTryFooter 
+          userCountry={userCountry || 'United States'} 
+          onCountryChange={(country) => {
+            setUserCountry(country);
+            toast.success(`Now showing products available in ${country}`);
+          }}
+        />
+        
+        <FloatingOliviaWidget
+          isPremiumUser={isPremiumUser || isAuthenticated}
+          onUpgradeToPremium={handleShowPremiumPopup}
+          onOpenChat={handleOpenChat}
+        />
       </main>
       
       <OliviaImageGallery 
