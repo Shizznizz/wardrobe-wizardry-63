@@ -64,15 +64,6 @@
     }
   }
   
-  /* Prevent interaction when mobile menu is open */
-  body.overflow-hidden {
-    overflow: hidden !important;
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    touch-action: none;
-  }
-
   /* Ensure buttons are clearly indicated as interactive */
   button, 
   [role="button"] {
@@ -86,16 +77,17 @@
     width: 100% !important;
   }
 
-  /* Improved z-index stacking for modals and mobile menus */
-  .z-modal {
-    z-index: 999;
+  /* Improved z-index stacking */
+  .z-50 {
+    z-index: 50;
   }
   
-  .z-mobile-menu {
+  .z-[1000] {
     z-index: 1000;
   }
   
-  .z-mobile-menu-overlay {
-    z-index: 999;
+  .z-[1001] {
+    z-index: 1001;
   }
 }
+

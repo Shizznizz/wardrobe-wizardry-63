@@ -24,36 +24,35 @@ export const MobileMenu = ({
   // Lock body scroll when menu is open
   useEffect(() => {
     if (isOpen) {
-      document.body.classList.add('overflow-hidden');
+      document.body.style.overflow = 'hidden';
     } else {
-      document.body.classList.remove('overflow-hidden');
+      document.body.style.overflow = '';
     }
     
     return () => {
-      document.body.classList.remove('overflow-hidden');
+      document.body.style.overflow = '';
     };
   }, [isOpen]);
   
-  // If not open, return null but don't render the menu
   if (!isOpen) return null;
   
   return (
-    <>
-      {/* Overlay - clicking this will close the menu */}
+    <div className="fixed inset-0 z-[1000] flex">
+      {/* Backdrop overlay */}
       <div 
-        className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50" 
-        onClick={onClose} 
+        className="fixed inset-0 bg-black/80 backdrop-blur-sm" 
+        onClick={onClose}
         aria-hidden="true"
       />
       
-      {/* Menu */}
+      {/* Menu panel */}
       <div 
-        className="fixed top-0 right-0 bottom-0 w-[75%] max-w-sm bg-gradient-to-b from-purple-950 to-slate-950 z-50 border-l border-white/10 flex flex-col shadow-lg"
+        className="fixed inset-y-0 right-0 w-[75%] max-w-sm bg-gradient-to-b from-purple-950 to-slate-950 border-l border-white/10 flex flex-col shadow-lg z-[1001]"
         role="dialog"
         aria-modal="true"
         aria-label="Mobile navigation menu"
       >
-        <div className="sticky top-0 px-4 py-3 bg-gradient-to-b from-purple-950 to-purple-950/95 z-10 border-b border-white/10">
+        <div className="sticky top-0 px-4 py-3 bg-gradient-to-b from-purple-950 to-purple-950/95 border-b border-white/10">
           <Button
             variant="ghost"
             size="icon"
@@ -73,7 +72,7 @@ export const MobileMenu = ({
                 to={item.path}
                 onClick={onClose}
                 className={cn(
-                  "block py-3.5 px-4 rounded-lg text-lg transition-colors touch-target-large",
+                  "block py-3.5 px-4 rounded-lg text-lg transition-colors",
                   currentPath === item.path
                     ? "bg-white/10 text-white font-medium"
                     : "text-white/70 hover:bg-white/5 hover:text-white"
@@ -89,7 +88,7 @@ export const MobileMenu = ({
             <div className="pt-4 border-t border-white/10">
               <Button
                 variant="ghost"
-                className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-900/20 py-3 touch-target-large"
+                className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-900/20 py-3"
                 onClick={() => {
                   onSignOut();
                   onClose();
@@ -102,6 +101,6 @@ export const MobileMenu = ({
           )}
         </ScrollArea>
       </div>
-    </>
+    </div>
   );
 };

@@ -50,18 +50,14 @@ const Header = () => {
     try {
       await signOut();
       navigate("/");
-      setIsMenuOpen(false);
+      toast.success("Successfully signed out");
     } catch (error) {
       console.error("Error signing out:", error);
+      toast.error("Failed to sign out");
     }
   };
 
-  const toggleMenu = (e: React.MouseEvent) => {
-    // Prevent default to stop any navigation
-    e.preventDefault();
-    // Stop propagation to prevent other click handlers from firing
-    e.stopPropagation();
-    // Toggle the menu state
+  const toggleMenu = () => {
     setIsMenuOpen(prevState => !prevState);
     console.log("Toggle menu clicked. New state:", !isMenuOpen);
   };
@@ -102,7 +98,7 @@ const Header = () => {
   return (
     <header 
       className={cn(
-        "fixed top-0 left-0 right-0 transition-all duration-500 py-2 sm:py-4 z-50",
+        "fixed top-0 left-0 right-0 transition-all duration-500 py-2 sm:py-4 z-40",
         isScrolled 
           ? "bg-purple-900/95 shadow-lg border-b border-white/10" 
           : "bg-[rgba(50,0,80,0.5)] backdrop-blur-md border-transparent text-white"
@@ -133,7 +129,7 @@ const Header = () => {
               variant="ghost"
               size="icon"
               className={cn(
-                "ml-2 transition-colors touch-target-large",
+                "ml-2 transition-colors",
                 isScrolled ? "text-white hover:text-white/80" : "text-white hover:bg-white/10"
               )}
               onClick={toggleMenu}
