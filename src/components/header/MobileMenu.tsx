@@ -34,12 +34,12 @@ export const MobileMenu = ({
     };
   }, [isOpen]);
   
-  // If not open, don't render anything to improve performance
+  // If not open, return null but don't render anything
   if (!isOpen) return null;
   
   return (
     <>
-      {/* Overlay */}
+      {/* Overlay - clicking this will close the menu */}
       <div 
         className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50" 
         onClick={onClose} 

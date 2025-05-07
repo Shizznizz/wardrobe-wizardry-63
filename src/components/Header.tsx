@@ -9,6 +9,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { UserMenu } from './header/UserMenu';
 import { MobileMenu } from './header/MobileMenu';
 import { DesktopNavigation } from './header/DesktopNavigation';
+import { toast } from '@/components/ui/use-toast';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -55,7 +56,9 @@ const Header = () => {
     }
   };
 
-  const toggleMenu = () => {
+  const toggleMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     setIsMenuOpen(prevState => !prevState);
     console.log("Toggle menu clicked. New state:", !isMenuOpen);
   };

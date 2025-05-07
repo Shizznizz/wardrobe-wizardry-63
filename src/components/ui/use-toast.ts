@@ -1,4 +1,12 @@
 
-import { useToast, toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
-export { useToast, toast };
+// Re-export for consistent usage throughout the app
+export { toast };
+
+// You can also export a custom hook if needed
+export const useToast = () => {
+  return {
+    toast
+  };
+};
