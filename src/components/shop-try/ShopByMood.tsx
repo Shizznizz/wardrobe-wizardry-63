@@ -13,7 +13,7 @@ import {
   ThumbsUp,
   Tag
 } from 'lucide-react';
-import { ClothingItem } from '@/lib/types';
+import { ClothingItem, ClothingType } from '@/lib/types';
 import { toast } from 'sonner';
 
 interface ShopByMoodProps {
@@ -51,10 +51,11 @@ const ShopByMood = ({
     {
       id: 'casual-1',
       name: 'Relaxed Fit T-Shirt',
-      type: 'top',
+      type: 'top' as ClothingType,
       color: 'white',
       brand: 'Mango',
       imageUrl: '/lovable-uploads/f1154816-6766-4478-ba89-6342580bc85b.png',
+      image: '/lovable-uploads/f1154816-6766-4478-ba89-6342580bc85b.png',
       price: 24.90,
       mood: 'casual',
       stylistNote: 'Perfect for running errands or weekend brunch',
@@ -64,10 +65,11 @@ const ShopByMood = ({
     {
       id: 'casual-2',
       name: 'High-Waisted Jeans',
-      type: 'bottom',
+      type: 'pants' as ClothingType,
       color: 'blue',
       brand: 'Zara',
       imageUrl: '/lovable-uploads/7bf89910-ba2c-43e0-a523-899d90c3022e.png',
+      image: '/lovable-uploads/7bf89910-ba2c-43e0-a523-899d90c3022e.png',
       price: 49.90,
       mood: 'casual',
       stylistNote: 'These jeans go with everything in your wardrobe',
@@ -77,10 +79,11 @@ const ShopByMood = ({
     {
       id: 'romantic-1',
       name: 'Floral Midi Dress',
-      type: 'dress',
+      type: 'dress' as ClothingType,
       color: 'pink',
       brand: 'H&M',
       imageUrl: '/lovable-uploads/1d4e81c7-dcef-4208-ba9f-77c0544f9e12.png',
+      image: '/lovable-uploads/1d4e81c7-dcef-4208-ba9f-77c0544f9e12.png',
       price: 69.99,
       mood: 'romantic',
       stylistNote: 'Perfect for date nights or special occasions',
@@ -90,10 +93,11 @@ const ShopByMood = ({
     {
       id: 'formal-1',
       name: 'Tailored Blazer',
-      type: 'outerwear',
+      type: 'jacket' as ClothingType,
       color: 'black',
       brand: 'Massimo Dutti',
       imageUrl: '/lovable-uploads/547609e6-3e31-4592-9c0c-a9a94e8e4996.png',
+      image: '/lovable-uploads/547609e6-3e31-4592-9c0c-a9a94e8e4996.png',
       price: 129.00,
       mood: 'formal',
       stylistNote: 'A versatile piece for work or evening events',
@@ -103,10 +107,11 @@ const ShopByMood = ({
     {
       id: 'cozy-1',
       name: 'Oversized Knit Sweater',
-      type: 'top',
+      type: 'top' as ClothingType,
       color: 'beige',
       brand: 'COS',
       imageUrl: '/lovable-uploads/e4bf2134-0936-46f8-8d70-adcc220e50be.png',
+      image: '/lovable-uploads/e4bf2134-0936-46f8-8d70-adcc220e50be.png',
       price: 89.00,
       mood: 'cozy',
       stylistNote: 'Looks great with leggings or skinny jeans',

@@ -40,8 +40,9 @@ const ShopTryFooter = ({ userCountry, onCountryChange }: ShopTryFooterProps) => 
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
+            className="text-center md:text-left"
           >
-            <h3 className="text-lg font-semibold mb-2">Shop & Try</h3>
+            <h3 className="text-lg font-semibold mb-2 text-gradient-primary">Shop & Try</h3>
             <p className="text-white/60 text-sm">Your virtual fashion assistant</p>
           </motion.div>
           

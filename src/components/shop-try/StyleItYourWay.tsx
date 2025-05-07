@@ -24,7 +24,7 @@ const StyleItYourWay = ({ onTryBeforeBuy, onAIStyling, onYourStyle }: StyleItYou
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Style It Your Way</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gradient-primary">Style It Your Way</h2>
           <p className="text-white/70 max-w-2xl mx-auto">
             Discover the perfect outfit with personalized recommendations
           </p>
@@ -32,7 +32,7 @@ const StyleItYourWay = ({ onTryBeforeBuy, onAIStyling, onYourStyle }: StyleItYou
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
           <motion.div 
-            className="bg-gradient-to-br from-purple-900/30 to-slate-900/80 backdrop-blur-sm rounded-2xl border border-white/10 p-6 h-full flex flex-col"
+            className="bg-gradient-to-br from-purple-900/30 to-slate-900/80 backdrop-blur-sm rounded-2xl border border-white/10 p-6 h-full flex flex-col glass"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -59,7 +59,7 @@ const StyleItYourWay = ({ onTryBeforeBuy, onAIStyling, onYourStyle }: StyleItYou
           </motion.div>
           
           <motion.div 
-            className="bg-gradient-to-br from-purple-900/30 to-slate-900/80 backdrop-blur-sm rounded-2xl border border-white/10 p-6 h-full flex flex-col"
+            className="bg-gradient-to-br from-purple-900/30 to-slate-900/80 backdrop-blur-sm rounded-2xl border border-white/10 p-6 h-full flex flex-col glass"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -86,7 +86,7 @@ const StyleItYourWay = ({ onTryBeforeBuy, onAIStyling, onYourStyle }: StyleItYou
           </motion.div>
           
           <motion.div 
-            className="bg-gradient-to-br from-purple-900/30 to-slate-900/80 backdrop-blur-sm rounded-2xl border border-white/10 p-6 h-full flex flex-col"
+            className="bg-gradient-to-br from-purple-900/30 to-slate-900/80 backdrop-blur-sm rounded-2xl border border-white/10 p-6 h-full flex flex-col glass"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}

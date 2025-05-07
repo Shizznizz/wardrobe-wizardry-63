@@ -84,6 +84,24 @@
     height: 100% !important;
   }
 
+  /* Glass effect for cards */
+  .glass {
+    @apply bg-white/5 backdrop-blur-lg border border-white/10 shadow-lg;
+  }
+
+  /* Text gradient utilities */
+  .text-gradient {
+    @apply bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent;
+  }
+
+  .text-gradient-primary {
+    @apply bg-gradient-to-r from-purple-400 to-pink-300 bg-clip-text text-transparent;
+  }
+
+  .card-gradient {
+    @apply bg-gradient-to-br from-purple-900/30 to-slate-900/80;
+  }
+
   /* Improved z-index stacking */
   .z-50 {
     z-index: 50;
