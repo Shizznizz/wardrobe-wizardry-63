@@ -320,49 +320,82 @@ export type Database = {
       }
       user_preferences: {
         Row: {
+          body_type: string | null
           climate_preferences: string[] | null
           created_at: string | null
           favorite_colors: string[] | null
           favorite_styles: string[] | null
           id: string
           message_count: number | null
+          notify_new_outfits: boolean | null
+          notify_weather_changes: boolean | null
           occasions_preferences: string[] | null
+          personality_tags: string[] | null
           preferred_city: string | null
           preferred_country: string | null
+          pronouns: string | null
           reminder_enabled: boolean | null
+          reminder_time: string | null
           seasonal_preferences: Json | null
+          temperature_unit: string | null
           updated_at: string | null
+          use_only_wardrobe: boolean | null
+          use_trends_global: boolean | null
+          use_trends_local: boolean | null
           user_id: string
+          weekly_email_updates: boolean | null
         }
         Insert: {
+          body_type?: string | null
           climate_preferences?: string[] | null
           created_at?: string | null
           favorite_colors?: string[] | null
           favorite_styles?: string[] | null
           id?: string
           message_count?: number | null
+          notify_new_outfits?: boolean | null
+          notify_weather_changes?: boolean | null
           occasions_preferences?: string[] | null
+          personality_tags?: string[] | null
           preferred_city?: string | null
           preferred_country?: string | null
+          pronouns?: string | null
           reminder_enabled?: boolean | null
+          reminder_time?: string | null
           seasonal_preferences?: Json | null
+          temperature_unit?: string | null
           updated_at?: string | null
+          use_only_wardrobe?: boolean | null
+          use_trends_global?: boolean | null
+          use_trends_local?: boolean | null
           user_id: string
+          weekly_email_updates?: boolean | null
         }
         Update: {
+          body_type?: string | null
           climate_preferences?: string[] | null
           created_at?: string | null
           favorite_colors?: string[] | null
           favorite_styles?: string[] | null
           id?: string
           message_count?: number | null
+          notify_new_outfits?: boolean | null
+          notify_weather_changes?: boolean | null
           occasions_preferences?: string[] | null
+          personality_tags?: string[] | null
           preferred_city?: string | null
           preferred_country?: string | null
+          pronouns?: string | null
           reminder_enabled?: boolean | null
+          reminder_time?: string | null
           seasonal_preferences?: Json | null
+          temperature_unit?: string | null
           updated_at?: string | null
+          use_only_wardrobe?: boolean | null
+          use_trends_global?: boolean | null
+          use_trends_local?: boolean | null
           user_id?: string
+          weekly_email_updates?: boolean | null
         }
         Relationships: []
       }
