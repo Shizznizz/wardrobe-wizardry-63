@@ -9,6 +9,7 @@ import StylePlanner from '@/pages/StylePlanner';
 import FittingRoom from '@/pages/FittingRoom';
 import ShopAndTry from '@/pages/ShopAndTry';
 import Settings from '@/pages/Settings';
+import Profile from '@/pages/Profile';
 // Additional pages
 import Auth from '@/pages/Auth';
 import Quizzes from '@/pages/Quizzes';
@@ -36,6 +37,7 @@ function App() {
               <Route path="/fitting-room" element={<PageLayout><FittingRoom /></PageLayout>} />
               <Route path="/shop-and-try" element={<PageLayout><ShopAndTry /></PageLayout>} />
               <Route path="/settings" element={<PageLayout><Settings /></PageLayout>} />
+              <Route path="/profile" element={<PageLayout><Profile /></PageLayout>} />
               {/* Add the Quizzes route */}
               <Route path="/quizzes" element={<PageLayout><Quizzes /></PageLayout>} />
               {/* Add PageLayout to Auth page as well to ensure footer appears there too */}

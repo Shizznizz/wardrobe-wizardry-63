@@ -1,6 +1,6 @@
 
 import { Link, useNavigate } from 'react-router-dom';
-import { LogOut, User } from 'lucide-react';
+import { LogOut, User, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
@@ -57,7 +57,7 @@ export const UserMenu = ({ isScrolled = false }: UserMenuProps) => {
           variant="ghost" 
           size="icon" 
           className={cn(
-            "ml-2 rounded-full transition-all duration-300 z-[50]", // Lower z-index for avatar
+            "ml-2 rounded-full transition-all duration-300 z-[50]",
             isScrolled 
               ? "text-white hover:bg-white/10" 
               : "text-white hover:bg-white/10"
@@ -69,6 +69,9 @@ export const UserMenu = ({ isScrolled = false }: UserMenuProps) => {
       <DropdownMenuContent align="end" className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border border-gray-200 dark:border-gray-700 shadow-lg">
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
+        <DropdownMenuItem asChild className="hover:bg-accent/5 hover:text-accent cursor-pointer">
+          <Link to="/profile">My Profile</Link>
+        </DropdownMenuItem>
         <DropdownMenuItem asChild className="hover:bg-accent/5 hover:text-accent cursor-pointer">
           <Link to="/settings">Settings</Link>
         </DropdownMenuItem>
