@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Container } from '@/components/ui/container';
@@ -9,7 +8,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { RefreshCw, Cloud, CloudDrizzle, CloudFog, CloudRain, CloudSnow, Sparkles, Sun, SunDim, Wind, Droplet } from 'lucide-react';
 import { toast } from 'sonner';
 import { ClothingItem, WeatherInfo } from '@/lib/types';
-import { fetchWeatherData } from '@/services/WeatherService';
+import { fetchWeatherData as fetchWeatherAPI } from '@/services/WeatherService';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
@@ -32,7 +31,7 @@ const StyleAlchemy = ({
   isPremiumUser,
   onCombineWithWardrobe
 }: StyleAlchemyProps) => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const isMobile = useIsMobile();
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -70,10 +69,11 @@ const StyleAlchemy = ({
     }
 
     try {
-      if (isAuthenticated) {
+      if (isAuthenticated && user) {
         const { data, error } = await supabase
           .from('user_preferences')
           .select('preferred_city, preferred_country')
+          .eq('user_id', user.id)
           .single();
         
         if (error) throw error;
@@ -112,7 +112,7 @@ const StyleAlchemy = ({
     setLoading(true);
     try {
       if (userLocation.city && userLocation.country) {
-        const weather = await fetchWeatherData(userLocation.city, userLocation.country);
+        const weather = await fetchWeatherAPI(userLocation.city, userLocation.country);
         setWeatherInfo(weather);
         
         // Generate outfit recommendation based on weather
@@ -219,7 +219,7 @@ const StyleAlchemy = ({
     return <Sun className="h-8 w-8" />;
   };
 
-  const handleOpenWardrobeModal = () => {
+  const handleOpenWardrobeModal = async () => {
     if (!isPremiumUser && !isAuthenticated) {
       toast.error('Please log in to access this feature', {
         description: 'Create an account or log in to combine with your wardrobe'
@@ -227,20 +227,30 @@ const StyleAlchemy = ({
       return;
     }
     
-    fetchUserWardrobe();
+    await fetchUserWardrobe();
     setShowWardrobeModal(true);
   };
 
   const fetchUserWardrobe = async () => {
+    if (!user) return;
+    
     try {
       const { data, error } = await supabase
         .from('wardrobe_items')
-        .select('item_data')
+        .select('*')
+        .eq('user_id', user.id)
         .limit(20);
       
       if (error) throw error;
       
-      const items = data?.map(item => item.item_data as ClothingItem) || [];
+      const items: ClothingItem[] = data?.map(item => {
+        const itemData = item.item_data as ClothingItem;
+        return {
+          ...itemData,
+          id: itemData.id || item.id
+        };
+      }) || [];
+      
       setUserWardrobe(items);
     } catch (error) {
       console.error('Error fetching wardrobe items:', error);
@@ -249,6 +259,11 @@ const StyleAlchemy = ({
   };
 
   const handleSaveOutfit = async () => {
+    if (!user) {
+      toast.error('Please log in to save outfits');
+      return;
+    }
+    
     if (selectedItems.length === 0) {
       toast.warning('Select at least one item from your wardrobe');
       return;
@@ -261,7 +276,7 @@ const StyleAlchemy = ({
         .insert({
           name: `${outfitRecommendation.name} with my wardrobe`,
           items: [...selectedItems, outfitRecommendation.id],
-          user_id: (await supabase.auth.getUser()).data.user?.id,
+          user_id: user.id,
           tags: outfitRecommendation.tags,
           occasion: 'casual',
           favorite: true

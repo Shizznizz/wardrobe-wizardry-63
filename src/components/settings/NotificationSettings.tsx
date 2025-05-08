@@ -1,108 +1,195 @@
 
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Switch } from "@/components/ui/switch"
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Label } from "@/components/ui/label"
-import { Bell, MessageSquare, Sparkles } from 'lucide-react';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Input } from '@/components/ui/input';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { Loader2 } from 'lucide-react';
 
-interface NotificationSettingsProps {
-  onSave?: () => void;
-}
+const NotificationSettings = () => {
+  const { user } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [preferences, setPreferences] = useState({
+    reminderEnabled: false,
+    reminderTime: '08:00',
+  });
 
-const NotificationSettings = ({ onSave }: NotificationSettingsProps) => {
-  const [outfitReminders, setOutfitReminders] = useState(true);
-  const [weatherAlerts, setWeatherAlerts] = useState(true);
-  const [feedbackRequests, setFeedbackRequests] = useState(false);
-  const [styleMessages, setStyleMessages] = useState(true);
-  
-  const handleSave = () => {
-    // In a real app, we'd save these to the backend/database
-    localStorage.setItem('notifications', JSON.stringify({
-      outfitReminders,
-      weatherAlerts,
-      feedbackRequests,
-      styleMessages
-    }));
+  useEffect(() => {
+    if (user) {
+      fetchUserPreferences();
+    } else {
+      setLoading(false);
+    }
+  }, [user]);
+
+  const fetchUserPreferences = async () => {
+    if (!user) return;
     
-    if (onSave) onSave();
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('user_preferences')
+        .select('reminder_enabled, reminder_time')
+        .eq('user_id', user.id)
+        .single();
+      
+      if (error && error.code !== 'PGRST116') {
+        throw error;
+      }
+      
+      if (data) {
+        setPreferences({
+          reminderEnabled: data.reminder_enabled || false,
+          reminderTime: data.reminder_time || '08:00',
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching preferences:', error);
+      toast.error('Could not load your notification preferences');
+    } finally {
+      setLoading(false);
+    }
   };
-  
+
+  const handleSavePreferences = async () => {
+    if (!user) return;
+    
+    setSaving(true);
+    try {
+      const { data: existingPrefs, error: checkError } = await supabase
+        .from('user_preferences')
+        .select('id')
+        .eq('user_id', user.id)
+        .single();
+      
+      let upsertError;
+      
+      if (existingPrefs) {
+        // Update existing preferences
+        const { error } = await supabase
+          .from('user_preferences')
+          .update({
+            reminder_enabled: preferences.reminderEnabled,
+            reminder_time: preferences.reminderTime,
+          })
+          .eq('user_id', user.id);
+        
+        upsertError = error;
+      } else {
+        // Insert new preferences
+        const { error } = await supabase
+          .from('user_preferences')
+          .insert({
+            user_id: user.id,
+            reminder_enabled: preferences.reminderEnabled,
+            reminder_time: preferences.reminderTime,
+          });
+        
+        upsertError = error;
+      }
+      
+      if (upsertError) throw upsertError;
+      
+      toast.success('Notification preferences saved');
+    } catch (error) {
+      console.error('Error saving preferences:', error);
+      toast.error('Could not save your notification preferences');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <Card className="bg-slate-800/30 border-white/10">
+        <CardContent className="pt-6">
+          <div className="flex justify-center">
+            <Loader2 className="h-6 w-6 animate-spin text-purple-400" />
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
-    <motion.div 
-      className="glass-dark rounded-xl border border-white/10 p-4 sm:p-6 space-y-6"
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.1, duration: 0.3 }}
-    >
-      <h2 className="text-xl font-medium bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-purple-400 flex items-center">
-        <Bell className="mr-2 h-5 w-5 text-pink-400" />
-        Notifications
-      </h2>
-      
-      <div className="space-y-4">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 pb-3 border-b border-white/5">
-          <div className="space-y-0.5">
-            <Label className="text-white">Daily Outfit Reminders</Label>
-            <p className="text-xs text-white/70">Get notifications for daily outfit suggestions</p>
-          </div>
-          <Switch 
-            checked={outfitReminders} 
-            onCheckedChange={setOutfitReminders} 
-            className="data-[state=checked]:bg-gradient-to-r from-pink-500 to-purple-500" 
-          />
-        </div>
-        
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 pb-3 border-b border-white/5">
-          <div className="space-y-0.5">
-            <Label className="text-white">Weather Change Alerts</Label>
-            <p className="text-xs text-white/70">Get notified when weather affects your outfit</p>
-          </div>
-          <Switch 
-            checked={weatherAlerts} 
-            onCheckedChange={setWeatherAlerts} 
-            className="data-[state=checked]:bg-gradient-to-r from-pink-500 to-purple-500"
-          />
-        </div>
-        
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 pb-3 border-b border-white/5">
-          <div className="space-y-0.5">
-            <Label className="text-white">Style Feedback Requests</Label>
-            <p className="text-xs text-white/70">Occasional requests for feedback on outfits</p>
-          </div>
-          <Switch 
-            checked={feedbackRequests} 
-            onCheckedChange={setFeedbackRequests} 
-            className="data-[state=checked]:bg-gradient-to-r from-pink-500 to-purple-500" 
-          />
-        </div>
-        
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-          <div className="space-y-0.5">
-            <div className="flex items-center">
-              <Label className="text-white">Olivia's Style Messages</Label>
-              <MessageSquare className="ml-1 h-3 w-3 text-pink-400" />
+    <Card className="bg-slate-800/30 border-white/10">
+      <CardHeader>
+        <CardTitle>Notifications</CardTitle>
+        <CardDescription>
+          Control how and when you receive notifications
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label htmlFor="outfit-reminders">Daily Outfit Reminders</Label>
+              <p className="text-sm text-white/60">
+                Get a notification to plan your outfit for the day
+              </p>
             </div>
-            <p className="text-xs text-white/70">Tips and updates from your personal stylist</p>
+            <Switch
+              id="outfit-reminders"
+              checked={preferences.reminderEnabled}
+              onCheckedChange={(checked) => 
+                setPreferences({...preferences, reminderEnabled: checked})
+              }
+            />
           </div>
-          <Switch 
-            checked={styleMessages} 
-            onCheckedChange={setStyleMessages}
-            className="data-[state=checked]:bg-gradient-to-r from-pink-500 to-purple-500"
-          />
+          
+          {preferences.reminderEnabled && (
+            <div className="space-y-2">
+              <Label htmlFor="reminder-time">Reminder Time</Label>
+              <Input
+                id="reminder-time"
+                type="time"
+                value={preferences.reminderTime}
+                onChange={(e) => setPreferences({...preferences, reminderTime: e.target.value})}
+                className="bg-slate-950/50 border-white/10 w-32"
+              />
+              <p className="text-xs text-white/50">
+                This is the time when you'll receive your daily outfit reminder
+              </p>
+            </div>
+          )}
+          
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label htmlFor="feature-updates">Feature Updates</Label>
+              <p className="text-sm text-white/60">
+                Receive notifications about new app features
+              </p>
+            </div>
+            <Switch id="feature-updates" />
+          </div>
+          
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label htmlFor="style-trends">Style Trends</Label>
+              <p className="text-sm text-white/60">
+                Updates on seasonal style trends from Olivia
+              </p>
+            </div>
+            <Switch id="style-trends" defaultChecked />
+          </div>
         </div>
-      </div>
-      
-      <div className="pt-4 flex justify-end">
+      </CardContent>
+      <CardFooter>
         <Button 
-          onClick={handleSave}
-          className="bg-gradient-to-r from-[#ff4ecb] to-[#a97eff] text-white hover:scale-[1.03] transition-transform rounded-xl shadow-md shadow-purple-900/20 flex items-center gap-2"
+          onClick={handleSavePreferences} 
+          disabled={saving}
+          className="bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90"
         >
-          <Sparkles className="h-4 w-4" />
-          Save Notification Preferences
+          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+          Save Changes
         </Button>
-      </div>
-    </motion.div>
+      </CardFooter>
+    </Card>
   );
 };
 
