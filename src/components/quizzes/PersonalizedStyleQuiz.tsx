@@ -221,17 +221,26 @@ const PersonalizedStyleQuiz = ({ onComplete, onClose, standalone = false }: Pers
       },
       outfitReminders: false,
       reminderTime: '08:00',
+      // Default settings for the new profile fields
+      useTrendsGlobal: true,
+      useTrendsLocal: true,
+      useOnlyWardrobe: false,
+      temperatureUnit: 'C',
+      weeklyEmailUpdates: false,
+      notifyNewOutfits: true,
+      notifyWeatherChanges: true,
+      pronouns: 'not-specified'
     };
     
     // Save preferences if user is logged in
     if (user) {
       try {
-        const { success, error } = await saveUserPreferences(user.id, preferences);
+        const success = await saveUserPreferences(user.id, preferences);
         
         if (success) {
           toast.success("Your style profile has been saved!");
         } else {
-          console.error("Error saving preferences:", error);
+          console.error("Error saving preferences");
           toast.error("Failed to save your preferences");
         }
       } catch (err) {

@@ -9,10 +9,18 @@ interface ProfileFooterProps {
 }
 
 const ProfileFooter = ({ isSaving, onSave }: ProfileFooterProps) => {
+  const handleSave = async () => {
+    try {
+      await onSave();
+    } catch (error) {
+      console.error('Error saving profile:', error);
+    }
+  };
+
   return (
     <div className="flex justify-end mt-8 pb-4">
       <Button
-        onClick={onSave}
+        onClick={handleSave}
         disabled={isSaving}
         className="bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 text-white"
       >

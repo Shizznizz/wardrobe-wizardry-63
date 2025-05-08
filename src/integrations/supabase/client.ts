@@ -40,6 +40,14 @@ export const saveUserPreferences = async (userId: string, preferences: UserPrefe
       climate_preferences: preferences.climatePreferences,
       preferred_city: preferences.weatherLocation?.city,
       preferred_country: preferences.weatherLocation?.country,
+      use_trends_global: preferences.useTrendsGlobal,
+      use_trends_local: preferences.useTrendsLocal,
+      use_only_wardrobe: preferences.useOnlyWardrobe,
+      temperature_unit: preferences.temperatureUnit,
+      weekly_email_updates: preferences.weeklyEmailUpdates,
+      notify_new_outfits: preferences.notifyNewOutfits,
+      notify_weather_changes: preferences.notifyWeatherChanges,
+      pronouns: preferences.pronouns
     };
     
     if (existingPrefs) {
@@ -58,6 +66,24 @@ export const saveUserPreferences = async (userId: string, preferences: UserPrefe
     if (result.error) {
       console.error('Error saving user preferences:', result.error);
       return { success: false, error: result.error };
+    }
+    
+    // Also save profile information (name, pronouns) in profiles table if provided
+    if (preferences.firstName || preferences.lastName || preferences.pronouns) {
+      const profileData: any = {};
+      if (preferences.firstName) profileData.first_name = preferences.firstName;
+      if (preferences.lastName) profileData.last_name = preferences.lastName;
+      if (preferences.pronouns) profileData.pronouns = preferences.pronouns;
+      
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update(profileData)
+        .eq('id', userId);
+      
+      if (profileError) {
+        console.error('Error updating profile:', profileError);
+        // Continue anyway since main preferences were saved
+      }
     }
     
     return { success: true };
