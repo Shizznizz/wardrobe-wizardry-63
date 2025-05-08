@@ -48,11 +48,12 @@ const Settings = () => {
   return (
     <>
       <Container className="py-10">
-        <PageHeader 
-          title="Settings" 
-          description="Manage your account, preferences, and wardrobe settings."
-          className="mb-8"
-        />
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold">Settings</h1>
+          <p className="text-muted-foreground mt-1">
+            Manage your account, preferences, and wardrobe settings.
+          </p>
+        </div>
         
         <Tabs defaultValue="profile" className="space-y-6">
           <TabsList className="bg-slate-800/50 border border-white/10">
