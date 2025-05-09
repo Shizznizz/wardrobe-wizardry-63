@@ -45,7 +45,7 @@ const Home = () => {
       <Header />
       
       <main className="pt-8 overflow-hidden">
-        {/* Hero Section - Using the Enhanced Component with the new Olivia image */}
+        {/* Hero Section - Using the Enhanced Component with the updated Olivia image */}
         <EnhancedHeroSection 
           title="The Future of Fashion"
           subtitle="Trusted by 10,000+ style-conscious women"
@@ -56,16 +56,15 @@ const Home = () => {
             </div>
           }
           image={{
-            src: "/lovable-uploads/e41d700a-84eb-4544-9ffc-b68b82f30f7e.png", // Using the new Olivia image
+            src: "/lovable-uploads/04184386-fa3b-471b-84bb-d29436d8ab7f.png", // Updated Olivia image
             alt: "Olivia Bloom, AI Fashion Stylist",
-            variant: "standing" // Changed to standing for full-body image
+            variant: "standing"
           }}
           buttons={[
             {
-              label: "Start Your Style Journey",
+              label: "Start Your Style Journey →",
               onClick: handleStartJourney,
               variant: "primary",
-              icon: <ArrowRight className="h-5 w-5" />
             },
             {
               label: "Take a Style Quiz",
@@ -75,7 +74,7 @@ const Home = () => {
           ]}
           extraContent={
             <motion.div 
-              className="flex items-center gap-2 text-white/80 mt-6" // Increased margin-top for better spacing
+              className="flex items-center gap-2 text-white/80 mt-6 justify-center md:justify-start" 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6, duration: 0.5 }}
@@ -85,7 +84,7 @@ const Home = () => {
             </motion.div>
           }
           hasSparkleEffect={true}
-          layoutPosition="left" // Text on left, image on right
+          layoutPosition="right" // Text on left, image on right
         />
         
         {/* Trust Bar */}
@@ -104,7 +103,7 @@ const Home = () => {
             
             <div className="mt-16 text-center">
               <Button 
-                className="bg-gradient-to-r from-[#EC6FF1] to-[#9C68FF] text-white hover:opacity-90 transition-opacity font-semibold py-6 px-10 rounded-xl shadow-md h-auto text-lg flex items-center gap-2 mx-auto min-h-[44px]"
+                className="bg-gradient-to-r from-[#EC6FF1] to-[#FF8AF0] text-white hover:opacity-90 transition-opacity font-semibold py-6 px-10 rounded-xl shadow-md h-auto text-lg flex items-center gap-2 mx-auto min-h-[44px]"
                 onClick={handleMeetOlivia}
               >
                 Meet Olivia Now
@@ -130,7 +129,7 @@ const Home = () => {
         <FinalCta onGetStarted={() => navigate('/auth')} />
       </main>
       
-      {/* Olivia Introduction Dialog - Styled as per specifications */}
+      {/* Olivia Introduction Dialog */}
       <Dialog open={showOliviaDialog} onOpenChange={setShowOliviaDialog}>
         <DialogContent 
           className="sm:max-w-[480px] w-[90%] mx-auto bg-[#2A004F] border-none rounded-3xl p-6 md:p-8 shadow-lg"
@@ -185,7 +184,7 @@ const Home = () => {
             <div className="flex flex-col sm:flex-row gap-4 mt-6 w-full">
               {/* Primary CTA button */}
               <Button 
-                className="w-full py-4 text-white rounded-xl font-semibold bg-gradient-to-r from-[#EC6FF1] to-[#9C68FF] hover:opacity-90 transition-opacity min-h-[44px]"
+                className="w-full py-4 text-white rounded-xl font-semibold bg-gradient-to-r from-[#EC6FF1] to-[#FF8AF0] hover:opacity-90 transition-opacity min-h-[44px]"
                 onClick={handleStartOnboarding}
                 aria-label="Start onboarding tour"
               >

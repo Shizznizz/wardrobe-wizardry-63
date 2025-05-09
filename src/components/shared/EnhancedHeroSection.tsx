@@ -150,7 +150,7 @@ const EnhancedHeroSection = ({
             </motion.p>
             
             {description && (
-              <motion.div variants={itemVariants} className="text-white/70 text-base sm:text-lg max-w-xl mx-auto md:mx-0">
+              <motion.div variants={itemVariants} className="text-white/70 text-base sm:text-lg max-w-xl mx-auto md:mx-0 leading-relaxed">
                 {description}
               </motion.div>
             )}
@@ -158,7 +158,7 @@ const EnhancedHeroSection = ({
             {(buttons && buttons.length > 0) && (
               <motion.div 
                 variants={itemVariants}
-                className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start pt-6" // Increased padding-top for more space
+                className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start pt-8" 
               >
                 {buttons.map((button, index) => (
                   <Button
@@ -167,8 +167,8 @@ const EnhancedHeroSection = ({
                     className={cn(
                       "text-white font-semibold py-3 px-6 rounded-xl shadow-md min-h-[44px]",
                       button.variant === 'secondary' ? 
-                        "bg-gradient-to-r from-[#EC6FF1] to-[#9C68FF] opacity-80 hover:opacity-100" : // Both buttons use the same gradient now
-                        "bg-gradient-to-r from-[#EC6FF1] to-[#9C68FF] hover:opacity-90 transition-opacity",
+                        "bg-gradient-to-r from-[#6C5DD3] to-[#8E8BFE] hover:opacity-90 transition-opacity" :
+                        "bg-gradient-to-r from-[#EC6FF1] to-[#FF8AF0] hover:opacity-90 transition-opacity",
                       button.className
                     )}
                     size="lg"
@@ -183,7 +183,7 @@ const EnhancedHeroSection = ({
             {mainActionLabel && (
               <motion.div variants={itemVariants} className="pt-6">
                 <Button 
-                  className="bg-gradient-to-r from-[#EC6FF1] to-[#9C68FF] text-white hover:opacity-90 transition-opacity font-semibold py-6 px-8 rounded-xl shadow-md h-auto text-lg min-h-[44px]"
+                  className="bg-gradient-to-r from-[#EC6FF1] to-[#FF8AF0] text-white hover:opacity-90 transition-opacity font-semibold py-6 px-8 rounded-xl shadow-md h-auto text-lg min-h-[44px]"
                   onClick={onMainAction}
                 >
                   {mainActionLabel}
@@ -227,7 +227,7 @@ const EnhancedHeroSection = ({
                 alt={image.alt || "Olivia AI Fashion Assistant"}
                 className={cn(
                   "drop-shadow-lg animate-float",
-                  image.variant === 'portrait' ? "max-h-[350px] w-auto" : "max-h-[550px] lg:max-h-[650px] w-auto" // Increased height for standing variant
+                  image.variant === 'portrait' ? "max-h-[350px] w-auto" : "max-h-[550px] lg:max-h-[650px] w-auto" 
                 )}
               />
               
