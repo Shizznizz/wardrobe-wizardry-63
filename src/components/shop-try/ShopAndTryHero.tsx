@@ -80,8 +80,8 @@ const ShopAndTryHero = ({ onStartStyling }: ShopAndTryHeroProps) => {
               {/* Image container with purple glow like in MyWardrobe */}
               <div className="relative z-10 overflow-hidden rounded-2xl border-2 border-white/10 shadow-xl">
                 <OptimizedImage 
-                  src="/lovable-uploads/55456a21-85a8-4623-bd7d-6eeb8ff3f36a.png" 
-                  alt="Fashion model in purple dress" 
+                  src="/lovable-uploads/6d16aa51-bd78-4fb4-a783-8d27a089e19f.png" 
+                  alt="Fashion model in pink top and white pants" 
                   className="w-full h-auto object-cover"
                   priority={true}
                   quality="high"
