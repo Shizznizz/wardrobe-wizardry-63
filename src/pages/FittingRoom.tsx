@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useShowroom } from '@/hooks/useShowroom';
 import { sampleClothingItems, sampleOutfits } from '@/lib/wardrobeData';
 import Header from '@/components/Header';
@@ -20,6 +21,7 @@ import { useAuth } from '@/hooks/useAuth';
 import ImageUploader from '@/components/wardrobe/ImageUploader';
 import OliviaImageGallery from '@/components/outfits/OliviaImageGallery';
 import { useOutfitContext } from '@/hooks/useOutfitContext';
+import HeroSection from '@/components/shared/HeroSection';
 
 // Import existing components
 import WelcomeMessage from '@/components/fitting-room/WelcomeMessage';
