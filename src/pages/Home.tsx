@@ -45,29 +45,47 @@ const Home = () => {
       <Header />
       
       <main className="pt-8 overflow-hidden">
-        {/* Enhanced Hero Section */}
+        {/* Hero Section - Using the Enhanced Component with the old Olivia image */}
         <EnhancedHeroSection 
           title="The Future of Fashion"
-          subtitle="Your AI-powered personal stylist and wardrobe assistant"
-          description="Olivia helps you discover your unique style, organize your wardrobe, and create stunning outfits for any occasion."
+          subtitle="Trusted by 10,000+ style-conscious women"
+          description={
+            <div className="space-y-4">
+              <p>Say goodbye to style stress. Olivia curates outfits that match your vibe, wardrobe, and the weather.</p>
+              <p>With Olivia, your AI stylist, you'll get personalized outfit ideas that feel just right — every single day.</p>
+            </div>
+          }
           image={{
-            src: "/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png",
+            src: "/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png", // Using the old Olivia image
             alt: "Olivia Bloom, AI Fashion Stylist",
             variant: "portrait"
           }}
           buttons={[
             {
-              label: "Start Your Journey",
+              label: "Start Your Style Journey",
               onClick: handleStartJourney,
-              variant: "primary"
+              variant: "primary",
+              icon: <ArrowRight className="h-5 w-5" />
             },
             {
-              label: "Take Style Quiz",
+              label: "Take a Style Quiz",
               onClick: handleTakeStyleQuiz,
               variant: "secondary"
             }
           ]}
+          extraContent={
+            <motion.div 
+              className="flex items-center gap-2 text-white/80 mt-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6, duration: 0.5 }}
+            >
+              <Sparkles className="h-4 w-4 text-coral-400" />
+              <p>Olivia styles your day in seconds. Let's go!</p>
+            </motion.div>
+          }
           hasSparkleEffect={true}
+          layoutPosition="left"
         />
         
         {/* Trust Bar */}
@@ -99,7 +117,7 @@ const Home = () => {
         {/* Premium Teaser Section with Olivia */}
         <HomepagePremiumTeaser />
         
-        {/* NEW: Get Olivia's Look Section */}
+        {/* Get Olivia's Look Section */}
         <GetOliviasLook />
 
         {/* How It Works Section */}
