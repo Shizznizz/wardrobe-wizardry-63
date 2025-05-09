@@ -25,7 +25,10 @@ const ShopAndTryHero = ({ onStartStyling }: ShopAndTryHeroProps) => {
   };
 
   const imageVariants = {
-    hidden: { opacity: 0, scale: 0.9 },
+    hidden: { 
+      opacity: 0, 
+      scale: 0.9
+    },
     visible: { 
       opacity: 1, 
       scale: 1,
@@ -39,6 +42,7 @@ const ShopAndTryHero = ({ onStartStyling }: ShopAndTryHeroProps) => {
     },
     hover: {
       scale: 1.03,
+      y: -5,
       transition: { duration: 0.5 }
     }
   };
@@ -50,7 +54,7 @@ const ShopAndTryHero = ({ onStartStyling }: ShopAndTryHeroProps) => {
       
       <Container>
         <div className="flex flex-col md:flex-row items-center gap-8 md:gap-16">
-          {/* Left side - Model Image */}
+          {/* Left side - Model Image with enhanced styling from My Wardrobe */}
           <motion.div 
             className="w-full md:w-1/3 lg:w-2/5"
             initial="hidden"
@@ -73,11 +77,11 @@ const ShopAndTryHero = ({ onStartStyling }: ShopAndTryHeroProps) => {
                 }}
               ></motion.div>
               
-              {/* Image container */}
+              {/* Image container with purple glow like in MyWardrobe */}
               <div className="relative z-10 overflow-hidden rounded-2xl border-2 border-white/10 shadow-xl">
                 <OptimizedImage 
-                  src="/lovable-uploads/518b004e-6837-4c6f-a4cc-5186fab760e3.png" 
-                  alt="Fashion model in pink top and white pants" 
+                  src="/lovable-uploads/55456a21-85a8-4623-bd7d-6eeb8ff3f36a.png" 
+                  alt="Fashion model in purple dress" 
                   className="w-full h-auto object-cover"
                   priority={true}
                   quality="high"
