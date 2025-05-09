@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -142,16 +141,14 @@ const ShopAndTry = () => {
     toast.success("You've been added to our early testers group!");
   };
 
-  // Fix the function type to match the component's expected props
-  const handleTryOnTrendingItem = (itemId: string) => {
-    const item = selectedItems.find(i => i.id === itemId);
+  // Fix the function parameter to match component props
+  const handleTryOnTrendingItem = (item: ClothingItem) => {
     if (item) {
       setClothingPhoto(`/path/to/${item.imageUrl || ''}`);
       toast.info(`Selected ${item.name} for try-on!`);
-      return item;
+    } else {
+      toast.info("Selected item for try-on!");
     }
-    toast.info("Selected item for try-on!");
-    return null;
   };
 
   const handleSetActiveMood = (mood: string) => {
@@ -159,9 +156,8 @@ const ShopAndTry = () => {
     toast.info(`Showing styles for ${mood} mood`);
   };
 
-  // Fix function to match expected type in component props
-  const handleSaveToWishlist = (itemId: string) => {
-    const item = selectedItems.find(i => i.id === itemId);
+  // Fix function to match expected component props
+  const handleSaveToWishlist = (item: ClothingItem) => {
     if (item) {
       toast.success(`${item.name} added to wishlist!`);
     } else {

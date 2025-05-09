@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -154,12 +153,11 @@ const MixAndMatch = () => {
         {showRecommendation && (
           <div id="olivia-recommendation">
             <OliviaRecommendationSection 
-              items={items}
-              outfits={outfits}
-              weatherInfo={{
+              weather={{
                 temperature,
                 condition: weatherCondition
               }}
+              situation={situation}
             />
           </div>
         )}

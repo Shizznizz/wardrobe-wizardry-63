@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
@@ -164,17 +163,11 @@ const MyWardrobe = () => {
 
   // Convert our applyFilters function to match the expected WardrobeFilters interface
   const handleFilterChange = (filters: WardrobeFilters) => {
-    // Extract values from filters object
-    let categoryArray: string[] = [];
-    let colorArray: string[] = [];
-    let occasionArray: string[] = [];
-    let seasonArray: string[] = [];
-    let query = '';
-
-    if (filters.category) categoryArray = [filters.category];
-    if (filters.color) colorArray = [filters.color];
-    if (filters.occasion) occasionArray = [filters.occasion];
-    if (filters.searchQuery) query = filters.searchQuery;
+    const categoryArray = filters.category ? [filters.category] : [];
+    const colorArray = filters.color ? [filters.color] : [];
+    const seasonArray = filters.season ? [filters.season] : [];
+    const occasionArray = filters.occasion ? [filters.occasion] : [];
+    const query = filters.searchQuery || '';
     
     // Call our existing function with extracted values
     applyFilters(categoryArray, colorArray, seasonArray, occasionArray, query);
@@ -269,8 +262,9 @@ const MyWardrobe = () => {
         )}
       </div>
       
+      {/* Updated UploadModal component with correct prop */}
       <UploadModal 
-        onAddItem={handleAddItem}
+        onUpload={handleAddItem}
         buttonText="Add Item"
       >
         {/* UploadModal children */}
