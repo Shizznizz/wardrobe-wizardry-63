@@ -107,7 +107,7 @@ const EnhancedHeroSection = ({
   return (
     <motion.section
       className={cn(
-        "relative py-12 md:py-16 lg:py-20 px-4 sm:px-6 overflow-hidden",
+        "relative py-12 md:py-16 lg:py-20 px-4 sm:px-6 overflow-hidden hero-section",
         className
       )}
       initial="hidden"
@@ -125,14 +125,15 @@ const EnhancedHeroSection = ({
         <div className="absolute right-10 bottom-1/4 w-20 h-20 rounded-full border border-purple-300/20"></div>
       </div>
 
-      <div className="mx-auto lg:max-w-[70vw]">
-        <div className={`flex flex-col ${layoutPosition === 'left' ? 'lg:flex-row-reverse' : 'lg:flex-row'} items-center justify-center gap-8 md:gap-6 lg:gap-10`}>
-          {/* Text content - always stacks above image on mobile */}
-          <div className={`w-full lg:w-1/2 text-center lg:text-left ${layoutPosition === 'left' ? 'lg:pl-0' : 'lg:pr-0'} space-y-6`}>
+      {/* Responsive container */}
+      <div className="mx-auto lg:max-w-[70vw] md:max-w-[90vw]">
+        <div className={`flex flex-col-reverse sm:flex-col ${layoutPosition === 'left' ? 'md:flex-row-reverse' : 'md:flex-row'} items-center justify-center gap-6 md:gap-8 lg:gap-10`}>
+          {/* Text content - on mobile goes below image */}
+          <div className={`w-full md:w-1/2 text-center md:text-left ${layoutPosition === 'left' ? 'md:pl-0' : 'md:pr-0'} space-y-5 sm:space-y-6`}>
             <motion.div variants={itemVariants} className="relative">
               {hasSparkleEffect && (
                 <motion.div 
-                  className="absolute -top-6 left-1/2 lg:left-0 transform -translate-x-1/2 lg:translate-x-0"
+                  className="absolute -top-6 left-1/2 md:left-0 transform -translate-x-1/2 md:translate-x-0"
                   variants={sparkleVariants}
                   initial="initial"
                   animate="animate"
@@ -150,7 +151,7 @@ const EnhancedHeroSection = ({
             </motion.p>
             
             {description && (
-              <motion.div variants={itemVariants} className="text-white/70 text-base sm:text-lg max-w-xl mx-auto lg:mx-0 leading-relaxed mb-6">
+              <motion.div variants={itemVariants} className="text-white/70 text-base sm:text-lg max-w-xl mx-auto md:mx-0 leading-relaxed mb-6">
                 {description}
               </motion.div>
             )}
@@ -158,7 +159,7 @@ const EnhancedHeroSection = ({
             {(buttons && buttons.length > 0) && (
               <motion.div 
                 variants={itemVariants}
-                className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start pt-4" 
+                className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center md:justify-start pt-4 hero-buttons" 
               >
                 {buttons.map((button, index) => (
                   <Button
@@ -204,9 +205,9 @@ const EnhancedHeroSection = ({
             )}
           </div>
 
-          {/* Image container */}
+          {/* Image container - on mobile goes above text */}
           <motion.div 
-            className={`w-full lg:w-1/2 flex justify-center ${layoutPosition === 'left' ? 'lg:justify-start' : 'lg:justify-end'} h-full`}
+            className={`w-full md:w-1/2 flex justify-center ${layoutPosition === 'left' ? 'md:justify-start' : 'md:justify-end'} h-full hero-image mb-8 sm:mb-0`}
             variants={imageVariants}
           >
             <motion.div 
@@ -228,8 +229,8 @@ const EnhancedHeroSection = ({
                 className={cn(
                   "drop-shadow-lg animate-float object-contain",
                   image.variant === 'portrait' 
-                    ? "max-h-[300px] md:max-h-[400px] lg:max-h-[450px] w-auto" 
-                    : "max-h-[350px] md:max-h-[450px] lg:max-h-[500px] w-auto"
+                    ? "max-h-[250px] sm:max-h-[280px] md:max-h-[350px] lg:max-h-[450px] w-auto" 
+                    : "max-h-[300px] sm:max-h-[320px] md:max-h-[400px] lg:max-h-[500px] w-auto"
                 )}
               />
               
@@ -239,6 +240,32 @@ const EnhancedHeroSection = ({
           </motion.div>
         </div>
       </div>
+
+      {/* Add responsive styles */}
+      <style jsx>{`
+        @media (max-width: 767px) {
+          .hero-section {
+            padding-top: 24px;
+            padding-bottom: 24px;
+          }
+          
+          .hero-image {
+            margin-bottom: 24px;
+          }
+          
+          .hero-buttons {
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+          }
+        }
+        
+        @media (min-width: 768px) {
+          .hero-section .flex {
+            flex-direction: ${layoutPosition === 'left' ? 'row-reverse' : 'row'};
+          }
+        }
+      `}</style>
     </motion.section>
   );
 };
