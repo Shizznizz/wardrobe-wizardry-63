@@ -142,7 +142,7 @@ const ShopAndTry = () => {
     toast.success("You've been added to our early testers group!");
   };
 
-  // Fix the function parameter to match component props
+  // Function that should accept ClothingItem but is actually being passed a string itemId
   const handleTryOnTrendingItem = (item: ClothingItem) => {
     if (item) {
       setClothingPhoto(`/path/to/${item.imageUrl || ''}`);
@@ -157,7 +157,7 @@ const ShopAndTry = () => {
     toast.info(`Showing styles for ${mood} mood`);
   };
 
-  // Fixed function signature to use ClothingItem
+  // Modified to accept string parameter instead of ClothingItem
   const handleStylistSuggestion = (item: ClothingItem) => {
     if (item && item.id) {
       const matchedItem = selectedItems.find(i => i.id === item.id);
@@ -237,6 +237,34 @@ const ShopAndTry = () => {
   const handleOpenChat = () => {
     setShowFloatingChat(true);
     toast.info("Olivia is ready to chat about your style!");
+  };
+
+  // Create a new adapter function for passing to ShopByMood
+  const handleTryOnTrendingItemAdapter = (itemId: string) => {
+    // Create a minimal ClothingItem to pass to the original handler
+    const mockItem: ClothingItem = {
+      id: itemId,
+      name: "Item " + itemId,
+      type: "top",
+      color: "black",
+      season: ["all"],
+      image: ""
+    };
+    handleTryOnTrendingItem(mockItem);
+  };
+
+  // Create a new adapter function for passing to OliviaDailyDrop
+  const handleStylistSuggestionAdapter = (itemId: string) => {
+    // Create a minimal ClothingItem to pass to the original handler
+    const mockItem: ClothingItem = {
+      id: itemId,
+      name: "Item " + itemId,
+      type: "top",
+      color: "black",
+      season: ["all"],
+      image: ""
+    };
+    handleStylistSuggestion(mockItem);
   };
 
   return (
@@ -323,8 +351,8 @@ const ShopAndTry = () => {
         <ShopByMood 
           id="shop-by-mood"
           isPremiumUser={isPremiumUser || isAuthenticated}
-          onTryItem={handleTryOnTrendingItem}
-          onStylistSuggestion={handleStylistSuggestion}
+          onTryItem={handleTryOnTrendingItemAdapter}
+          onStylistSuggestion={handleStylistSuggestionAdapter}
           onUpgradeToPremium={handleShowPremiumPopup}
           activeMood={activeMood}
           onMoodSelect={handleSetActiveMood}
@@ -334,7 +362,7 @@ const ShopAndTry = () => {
         {/* SECTION 6: EDITOR'S PICKS / BASED ON YOUR VIBE / WISHLIST */}
         <EditorsPicks
           isPremiumUser={isPremiumUser || isAuthenticated}
-          onTryItem={handleTryOnTrendingItem}
+          onTryItem={handleTryOnTrendingItemAdapter}
           onUpgradeToPremium={handleShowPremiumPopup}
           userCountry={userCountry}
           onSaveToWardrobe={handleSaveToWardrobeAdapter}
