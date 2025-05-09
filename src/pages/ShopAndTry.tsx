@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -239,7 +240,8 @@ const ShopAndTry = () => {
     toast.info("Olivia is ready to chat about your style!");
   };
 
-  // Create a new adapter function for passing to ShopByMood
+  // Create adapter functions to resolve type mismatches
+  // Convert string itemId to ClothingItem for components expecting ClothingItem
   const handleTryOnTrendingItemAdapter = (itemId: string) => {
     // Create a minimal ClothingItem to pass to the original handler
     const mockItem: ClothingItem = {
@@ -253,7 +255,7 @@ const ShopAndTry = () => {
     handleTryOnTrendingItem(mockItem);
   };
 
-  // Create a new adapter function for passing to OliviaDailyDrop
+  // Convert string itemId to ClothingItem for components expecting ClothingItem
   const handleStylistSuggestionAdapter = (itemId: string) => {
     // Create a minimal ClothingItem to pass to the original handler
     const mockItem: ClothingItem = {
@@ -265,6 +267,15 @@ const ShopAndTry = () => {
       image: ""
     };
     handleStylistSuggestion(mockItem);
+  };
+
+  // New adapter function to convert ClothingItem to string for components expecting string
+  const handleSaveToWishlistAdapter = (item: ClothingItem) => {
+    if (item && item.id) {
+      handleSaveToWishlist(item);
+    } else {
+      toast.error("Invalid item");
+    }
   };
 
   return (
@@ -351,18 +362,18 @@ const ShopAndTry = () => {
         <ShopByMood 
           id="shop-by-mood"
           isPremiumUser={isPremiumUser || isAuthenticated}
-          onTryItem={handleTryOnTrendingItemAdapter}
-          onStylistSuggestion={handleStylistSuggestionAdapter}
+          onTryItem={(item) => handleTryOnTrendingItem(item)}
+          onStylistSuggestion={(item) => handleStylistSuggestion(item)}
           onUpgradeToPremium={handleShowPremiumPopup}
           activeMood={activeMood}
           onMoodSelect={handleSetActiveMood}
-          onSaveToWishlist={handleSaveToWishlist}
+          onSaveToWishlist={handleSaveToWishlistAdapter}
         />
         
         {/* SECTION 6: EDITOR'S PICKS / BASED ON YOUR VIBE / WISHLIST */}
         <EditorsPicks
           isPremiumUser={isPremiumUser || isAuthenticated}
-          onTryItem={handleTryOnTrendingItemAdapter}
+          onTryItem={(item) => handleTryOnTrendingItem(item)}
           onUpgradeToPremium={handleShowPremiumPopup}
           userCountry={userCountry}
           onSaveToWardrobe={handleSaveToWardrobeAdapter}
