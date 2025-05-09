@@ -1,7 +1,8 @@
+
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
-import { ClothingItem } from '@/lib/types';
+import { ClothingItem, Outfit } from '@/lib/types';
 import { sampleClothingItems, sampleOutfits } from '@/lib/wardrobeData';
 
 import DailyOutfitSection from '@/components/outfits/mix-match/DailyOutfitSection';
@@ -15,10 +16,15 @@ import HeroSection from '@/components/shared/HeroSection';
 
 const MixAndMatch = () => {
   const [items, setItems] = useState<ClothingItem[]>([]);
+  const [outfits, setOutfits] = useState<Outfit[]>([]);
+  const [currentOutfit, setCurrentOutfit] = useState<Outfit | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showRecommendation, setShowRecommendation] = useState(false);
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const [profile, setProfile] = useState<{ first_name: string | null } | null>(null);
+  const [temperature, setTemperature] = useState(72); // Default temperature
+  const [weatherCondition, setWeatherCondition] = useState('clear'); // Default condition
+  const [situation, setSituation] = useState('casual'); // Default situation
   
   useEffect(() => {
     if (user?.id) {
@@ -46,9 +52,27 @@ const MixAndMatch = () => {
           setItems(sampleClothingItems);
           localStorage.setItem('wardrobeItems', JSON.stringify(sampleClothingItems));
         }
+        
+        const savedOutfits = localStorage.getItem('wardrobeOutfits');
+        if (savedOutfits) {
+          setOutfits(JSON.parse(savedOutfits));
+          if (JSON.parse(savedOutfits).length > 0) {
+            setCurrentOutfit(JSON.parse(savedOutfits)[0]);
+          }
+        } else {
+          setOutfits(sampleOutfits);
+          if (sampleOutfits.length > 0) {
+            setCurrentOutfit(sampleOutfits[0]);
+          }
+          localStorage.setItem('wardrobeOutfits', JSON.stringify(sampleOutfits));
+        }
       } catch (error) {
         console.error("Failed to load wardrobe data:", error);
         setItems(sampleClothingItems);
+        setOutfits(sampleOutfits);
+        if (sampleOutfits.length > 0) {
+          setCurrentOutfit(sampleOutfits[0]);
+        }
       } finally {
         setIsLoading(false);
       }
@@ -68,6 +92,20 @@ const MixAndMatch = () => {
         recommendationSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     }, 500);
+  };
+
+  // Add handler functions for weather section
+  const handleWeatherUpdate = (weatherInfo: any) => {
+    if (weatherInfo.temperature) {
+      setTemperature(weatherInfo.temperature);
+    }
+    if (weatherInfo.condition) {
+      setWeatherCondition(weatherInfo.condition.toLowerCase());
+    }
+  };
+
+  const handleSituationChange = (newSituation: string) => {
+    setSituation(newSituation);
   };
   
   return (
@@ -90,20 +128,44 @@ const MixAndMatch = () => {
       />
       
       <div className="container mx-auto px-4 space-y-10 pt-6 pb-20">
-        <EnhancedWeatherSection />
+        <EnhancedWeatherSection 
+          onWeatherUpdate={handleWeatherUpdate}
+          onSituationChange={handleSituationChange}
+          onTemperatureChange={setTemperature}
+          onWeatherConditionChange={setWeatherCondition}
+          temperature={temperature}
+          weatherCondition={weatherCondition}
+        />
         
-        <DailyOutfitSection clothingItems={items} />
+        <DailyOutfitSection 
+          clothingItems={items} 
+          currentOutfit={currentOutfit} 
+        />
         
-        <SuggestedOutfitsSection clothingItems={items} />
+        <SuggestedOutfitsSection 
+          clothingItems={items} 
+          outfits={outfits}
+          weather={{
+            temperature,
+            condition: weatherCondition
+          }}
+        />
         
         {showRecommendation && (
           <OliviaRecommendationSection 
-            id="olivia-recommendation"
-            clothingItems={items} 
+            clothingItems={items}
+            outfits={outfits}
+            weather={{
+              temperature,
+              condition: weatherCondition
+            }}
           />
         )}
         
-        <CreateOutfitSection clothingItems={items} />
+        <CreateOutfitSection 
+          clothingItems={items}
+          isPremium={isAuthenticated}
+        />
       </div>
     </div>
   );

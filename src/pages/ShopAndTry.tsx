@@ -75,14 +75,20 @@ const ShopAndTry = () => {
     // Implementation would go here in a real app
   };
   
-  const handleUserPhotoUpload = (photo: string) => {
-    setUserPhoto(photo);
+  // Update the handler to accept a File instead of a string
+  const handleUserPhotoUpload = (file: File) => {
+    // Convert File to string URL for display
+    const photoUrl = URL.createObjectURL(file);
+    setUserPhoto(photoUrl);
     setFinalImage(null);
     toast.success("Photo uploaded successfully!");
   };
 
-  const handleClothingPhotoUpload = (photo: string) => {
-    setClothingPhoto(photo);
+  // Update the handler to accept a File instead of a string
+  const handleClothingPhotoUpload = (file: File) => {
+    // Convert File to string URL for display
+    const photoUrl = URL.createObjectURL(file);
+    setClothingPhoto(photoUrl);
     setFinalImage(null);
     toast.success("Clothing item uploaded!");
   };
@@ -136,10 +142,12 @@ const ShopAndTry = () => {
     toast.success("You've been added to our early testers group!");
   };
 
-  const handleTryOnTrendingItem = (item: ClothingItem) => {
+  // Update to match the expected function signature that returns a string
+  const handleTryOnTrendingItem = (itemId: string) => {
+    const item = selectedItems.find(i => i.id === itemId) || { name: "Selected item", imageUrl: "" }; 
     setClothingPhoto(`/path/to/${item.imageUrl}`);
     toast.info(`Selected ${item.name} for try-on!`);
-    return item.imageUrl;
+    return item.imageUrl || "";
   };
 
   const handleSetActiveMood = (mood: string) => {
@@ -147,7 +155,9 @@ const ShopAndTry = () => {
     toast.info(`Showing styles for ${mood} mood`);
   };
 
-  const handleSaveToWishlist = (item: ClothingItem) => {
+  // Update to accept string ID instead of ClothingItem
+  const handleSaveToWishlist = (itemId: string) => {
+    const item = selectedItems.find(i => i.id === itemId) || { name: "Selected item" };
     toast.success(`${item.name} added to wishlist!`);
   };
 
@@ -249,7 +259,10 @@ const ShopAndTry = () => {
           id="shop-by-mood"
           isPremiumUser={isPremiumUser || isAuthenticated}
           onTryItem={handleTryOnTrendingItem}
-          onStylistSuggestion={(item) => toast.info(`Olivia suggests pairing with ${item.name}`)}
+          onStylistSuggestion={(itemId) => {
+            const item = selectedItems.find(i => i.id === itemId) || { name: "Selected item" };
+            toast.info(`Olivia suggests pairing with ${item.name}`);
+          }}
           onUpgradeToPremium={handleShowPremiumPopup}
           activeMood={activeMood}
           onMoodSelect={handleSetActiveMood}

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
@@ -26,6 +27,8 @@ const MyWardrobe = () => {
   const [selectedOccasions, setSelectedOccasions] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [showInsights, setShowInsights] = useState(false);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [showCompactView, setShowCompactView] = useState(false);
   
   useEffect(() => {
     const loadItems = () => {
@@ -80,6 +83,24 @@ const MyWardrobe = () => {
   const handleToggleInsights = () => {
     setShowInsights(!showInsights);
   };
+
+  const handleToggleFavorite = (id: string) => {
+    const updatedItems = items.map(item => {
+      if (item.id === id) {
+        return {...item, favorite: !item.favorite};
+      }
+      return item;
+    });
+    setItems(updatedItems);
+    setFilteredItems(updatedItems);
+    localStorage.setItem('wardrobeItems', JSON.stringify(updatedItems));
+    toast.success("Favorite status updated");
+  };
+
+  const handleMatchItem = (item: ClothingItem) => {
+    toast.success(`Finding matches for ${item.name}...`);
+    // Implement actual matching logic here
+  };
   
   const applyFilters = (
     categories: string[],
@@ -101,25 +122,29 @@ const MyWardrobe = () => {
       filtered = filtered.filter(item => categories.includes(item.category));
     }
     
-    // Apply color filter
+    // Apply color filter - fix for color/colors mismatch
     if (colors.length > 0) {
-      filtered = filtered.filter(item => 
-        item.colors && item.colors.some(color => colors.includes(color))
-      );
+      filtered = filtered.filter(item => colors.includes(item.color));
     }
     
-    // Apply season filter
+    // Apply season filter - fix for season/seasons mismatch
     if (seasons.length > 0) {
-      filtered = filtered.filter(item => 
-        item.seasons && item.seasons.some(season => seasons.includes(season))
-      );
+      filtered = filtered.filter(item => {
+        if (Array.isArray(item.season)) {
+          return item.season.some(s => seasons.includes(s));
+        }
+        return false;
+      });
     }
     
     // Apply occasion filter
     if (occasions.length > 0) {
-      filtered = filtered.filter(item => 
-        item.occasions && item.occasions.some(occasion => occasions.includes(occasion))
-      );
+      filtered = filtered.filter(item => {
+        if (item.occasions) {
+          return item.occasions.some(occasion => occasions.includes(occasion));
+        }
+        return false;
+      });
     }
     
     // Apply search query
@@ -128,7 +153,7 @@ const MyWardrobe = () => {
       filtered = filtered.filter(item => 
         item.name.toLowerCase().includes(lowerCaseQuery) || 
         item.brand?.toLowerCase().includes(lowerCaseQuery) ||
-        item.category.toLowerCase().includes(lowerCaseQuery)
+        item.category?.toLowerCase().includes(lowerCaseQuery)
       );
     }
     
@@ -173,9 +198,10 @@ const MyWardrobe = () => {
       {/* Rest of wardrobe content */}
       <div className="container mx-auto px-4 pt-6">
         <WardrobeControls 
-          onUploadNew={handleUploadNew}
-          onToggleFilters={handleToggleFilters}
-          onToggleInsights={handleToggleInsights}
+          viewMode={viewMode}
+          showCompactView={showCompactView}
+          onViewModeChange={setViewMode}
+          onCompactViewChange={setShowCompactView}
         />
         
         <motion.div 
@@ -186,8 +212,8 @@ const MyWardrobe = () => {
         >
           {showFilters && (
             <EnhancedWardrobeFilters
-              applyFilters={applyFilters}
-              clearAllFilters={clearAllFilters}
+              onFilterChange={applyFilters}
+              onClearFilters={clearAllFilters}
               selectedCategories={selectedCategories}
               selectedColors={selectedColors}
               selectedSeasons={selectedSeasons}
@@ -220,13 +246,17 @@ const MyWardrobe = () => {
           <WardrobeGrid 
             items={filterApplied ? filteredItems : items} 
             onDeleteItem={handleDeleteItem}
+            onToggleFavorite={handleToggleFavorite}
+            onMatchItem={handleMatchItem}
+            viewMode={viewMode}
+            compactView={showCompactView}
           />
         )}
       </div>
       
       <UploadModal 
-        isOpen={showUploadModal}
-        onClose={() => setShowUploadModal(false)}
+        open={showUploadModal}
+        onOpenChange={setShowUploadModal}
         onAddItem={handleAddItem}
       />
     </div>
