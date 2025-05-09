@@ -14,10 +14,12 @@ import FinalCta from '@/components/home/FinalCta';
 import TrustBar from '@/components/home/TrustBar';
 import GetOliviasLook from '@/components/home/GetOliviasLook';
 import { Dialog, DialogContent, DialogClose } from '@/components/ui/dialog';
+import OnboardingFlow from '@/components/onboarding/OnboardingFlow';
 
 const Home = () => {
   const navigate = useNavigate();
   const [showOliviaDialog, setShowOliviaDialog] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   
   const handleStartJourney = () => {
     navigate('/my-wardrobe');
@@ -29,6 +31,11 @@ const Home = () => {
   
   const handleMeetOlivia = () => {
     setShowOliviaDialog(true);
+  };
+
+  const handleStartOnboarding = () => {
+    setShowOliviaDialog(false);
+    setShowOnboarding(true);
   };
   
   return (
@@ -113,10 +120,18 @@ const Home = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 mt-4">
+              {/* New onboarding CTA button */}
+              <Button 
+                className="bg-gradient-to-r from-[#ff4ecb] to-[#a97eff] text-white hover:opacity-90 py-2 px-6 rounded-lg h-auto"
+                onClick={handleStartOnboarding}
+              >
+                Let me show you what you can do here!
+              </Button>
+              
               <DialogClose asChild>
                 <Button 
-                  className="bg-gradient-to-r from-[#ff4ecb] to-[#a97eff] text-white hover:opacity-90 py-2 px-6 rounded-lg h-auto"
                   onClick={() => navigate('/my-wardrobe')}
+                  className="bg-gradient-to-r from-[#ff4ecb] to-[#a97eff] text-white hover:opacity-90 py-2 px-6 rounded-lg h-auto"
                 >
                   Let's Get Started
                 </Button>
@@ -134,6 +149,12 @@ const Home = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Olivia Onboarding Flow */}
+      <OnboardingFlow 
+        isOpen={showOnboarding} 
+        onClose={() => setShowOnboarding(false)} 
+      />
     </div>
   );
 };
