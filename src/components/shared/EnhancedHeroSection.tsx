@@ -129,10 +129,10 @@ const EnhancedHeroSection = ({
       <div className="mx-auto lg:max-w-[70vw] md:max-w-[90vw]">
         {/* Mobile Layout - Shows first on small screens, then gets hidden on md and above */}
         <div className="flex flex-col items-center text-center md:hidden max-w-[640px] mx-auto">
-          {/* 1. Headline */}
+          {/* 1. Headline - Updated to text-5xl */}
           <motion.h1 
             variants={itemVariants}
-            className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-coral-400 to-purple-400 leading-tight mb-4"
+            className="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-coral-400 to-purple-400 leading-tight mb-2"
           >
             {title}
           </motion.h1>
@@ -149,10 +149,10 @@ const EnhancedHeroSection = ({
             />
           </motion.div>
           
-          {/* 3. Subheadline and Description */}
+          {/* 3. Subheadline - Updated to text-base and text-neutral-400 */}
           <motion.p 
             variants={itemVariants} 
-            className="text-lg font-medium text-white/80 mb-2"
+            className="text-base font-medium text-neutral-400 mb-1"
           >
             {subtitle}
           </motion.p>
@@ -160,7 +160,7 @@ const EnhancedHeroSection = ({
           {description && (
             <motion.div 
               variants={itemVariants} 
-              className="text-white/70 text-base mb-6"
+              className="text-sm text-white/70 leading-relaxed mb-6 max-w-[90%] mx-auto"
             >
               {description}
             </motion.div>
@@ -177,7 +177,7 @@ const EnhancedHeroSection = ({
                   key={index}
                   onClick={button.onClick}
                   className={cn(
-                    "text-white font-semibold py-3 px-6 rounded-xl shadow-md min-h-[44px] w-full",
+                    "text-white font-semibold py-3 px-6 rounded-xl shadow-md min-h-[44px] w-full text-base",
                     button.variant === 'secondary' ? 
                       "bg-gradient-to-r from-[#6C5DD3] to-[#8E8BFE] hover:opacity-90 transition-opacity" :
                       "bg-gradient-to-r from-[#EC6FF1] to-[#FF8AF0] hover:opacity-90 transition-opacity",
