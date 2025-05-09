@@ -45,7 +45,7 @@ const Home = () => {
       <Header />
       
       <main className="pt-8 overflow-hidden">
-        {/* Hero Section - Using the Enhanced Component with the old Olivia image */}
+        {/* Hero Section - Using the Enhanced Component with the new Olivia image */}
         <EnhancedHeroSection 
           title="The Future of Fashion"
           subtitle="Trusted by 10,000+ style-conscious women"
@@ -56,9 +56,9 @@ const Home = () => {
             </div>
           }
           image={{
-            src: "/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png", // Using the old Olivia image
+            src: "/lovable-uploads/e41d700a-84eb-4544-9ffc-b68b82f30f7e.png", // Using the new Olivia image
             alt: "Olivia Bloom, AI Fashion Stylist",
-            variant: "portrait"
+            variant: "standing" // Changed to standing for full-body image
           }}
           buttons={[
             {
@@ -75,7 +75,7 @@ const Home = () => {
           ]}
           extraContent={
             <motion.div 
-              className="flex items-center gap-2 text-white/80 mt-4"
+              className="flex items-center gap-2 text-white/80 mt-6" // Increased margin-top for better spacing
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6, duration: 0.5 }}
@@ -85,7 +85,7 @@ const Home = () => {
             </motion.div>
           }
           hasSparkleEffect={true}
-          layoutPosition="left"
+          layoutPosition="left" // Text on left, image on right
         />
         
         {/* Trust Bar */}

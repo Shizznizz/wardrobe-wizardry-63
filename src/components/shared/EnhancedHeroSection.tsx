@@ -126,9 +126,9 @@ const EnhancedHeroSection = ({
       </div>
 
       <div className="container mx-auto max-w-7xl">
-        <div className={`flex flex-col ${layoutPosition === 'left' ? 'md:flex-row-reverse' : 'md:flex-row'} items-center gap-8 md:gap-12`}>
+        <div className={`flex flex-col ${layoutPosition === 'left' ? 'md:flex-row-reverse' : 'md:flex-row'} items-center gap-8 md:gap-12 lg:gap-16`}>
           {/* Text content - always stacks above image on mobile */}
-          <div className={`w-full md:w-1/2 text-center md:text-left ${layoutPosition === 'left' ? 'md:pr-8' : 'md:pl-8'} space-y-6`}>
+          <div className={`w-full md:w-1/2 text-center md:text-left ${layoutPosition === 'left' ? 'md:pr-8' : 'md:pl-8'} space-y-6 md:space-y-8`}>
             <motion.div variants={itemVariants} className="relative">
               {hasSparkleEffect && (
                 <motion.div 
@@ -140,7 +140,7 @@ const EnhancedHeroSection = ({
                   <Sparkles className="w-5 h-5 text-coral-400" />
                 </motion.div>
               )}
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-coral-400 to-purple-400 leading-tight">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-coral-400 to-purple-400 leading-tight">
                 {title}
               </h1>
             </motion.div>
@@ -158,16 +158,17 @@ const EnhancedHeroSection = ({
             {(buttons && buttons.length > 0) && (
               <motion.div 
                 variants={itemVariants}
-                className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start pt-4"
+                className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start pt-6" // Increased padding-top for more space
               >
                 {buttons.map((button, index) => (
                   <Button
                     key={index}
                     onClick={button.onClick}
                     className={cn(
-                      button.variant === 'secondary' ? "bg-white text-[#2A004F] hover:bg-white/90" : "bg-gradient-to-r from-[#EC6FF1] to-[#9C68FF]",
-                      "text-white hover:opacity-90 transition-opacity font-semibold py-3 px-6 rounded-xl shadow-md",
-                      "min-h-[44px]", // Ensure minimum tap target size
+                      "text-white font-semibold py-3 px-6 rounded-xl shadow-md min-h-[44px]",
+                      button.variant === 'secondary' ? 
+                        "bg-gradient-to-r from-[#EC6FF1] to-[#9C68FF] opacity-80 hover:opacity-100" : // Both buttons use the same gradient now
+                        "bg-gradient-to-r from-[#EC6FF1] to-[#9C68FF] hover:opacity-90 transition-opacity",
                       button.className
                     )}
                     size="lg"
@@ -180,7 +181,7 @@ const EnhancedHeroSection = ({
             )}
             
             {mainActionLabel && (
-              <motion.div variants={itemVariants} className="pt-4">
+              <motion.div variants={itemVariants} className="pt-6">
                 <Button 
                   className="bg-gradient-to-r from-[#EC6FF1] to-[#9C68FF] text-white hover:opacity-90 transition-opacity font-semibold py-6 px-8 rounded-xl shadow-md h-auto text-lg min-h-[44px]"
                   onClick={onMainAction}
@@ -205,7 +206,7 @@ const EnhancedHeroSection = ({
 
           {/* Image container */}
           <motion.div 
-            className={`w-full md:w-1/2 flex justify-center`}
+            className={`w-full md:w-1/2 flex justify-center md:justify-${layoutPosition === 'left' ? 'start' : 'end'}`}
             variants={imageVariants}
           >
             <motion.div 
@@ -226,7 +227,7 @@ const EnhancedHeroSection = ({
                 alt={image.alt || "Olivia AI Fashion Assistant"}
                 className={cn(
                   "drop-shadow-lg animate-float",
-                  image.variant === 'portrait' ? "max-h-[350px] w-auto" : "max-h-[400px] w-auto"
+                  image.variant === 'portrait' ? "max-h-[350px] w-auto" : "max-h-[550px] lg:max-h-[650px] w-auto" // Increased height for standing variant
                 )}
               />
               
