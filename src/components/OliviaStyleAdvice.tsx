@@ -12,7 +12,7 @@ interface StyleAdviceProps {
 
 interface AdviceItem {
   id: number;
-  icon: JSX.Element;
+  icon: React.ReactNode; // Changed from JSX.Element to React.ReactNode
   title: string;
   content: string;
   color: string;
