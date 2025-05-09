@@ -165,7 +165,9 @@ const MyWardrobe = () => {
   const handleFilterChange = (filters: WardrobeFilters) => {
     const categoryArray = filters.category ? [filters.category] : [];
     const colorArray = filters.color ? [filters.color] : [];
-    const seasonArray = filters.season ? [filters.season] : [];
+    // Fix: Use filters.occasion for seasons as a workaround since we don't have a seasons property
+    // We'll use selectedSeasons state for storing seasons
+    const seasonArray = selectedSeasons; // Keep using the existing state
     const occasionArray = filters.occasion ? [filters.occasion] : [];
     const query = filters.searchQuery || '';
     

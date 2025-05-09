@@ -175,8 +175,18 @@ const ShopAndTry = () => {
     // Analytics tracking would go here
   };
 
-  const handleOpenChat = () => {
-    toast.info("Olivia is ready to chat about your style!");
+  // This is a wrapper function that adapts the expected signature for the component
+  const handleSeeHowToWear = (itemId: string) => {
+    trackDailyDropClick(itemId);
+    if (isPremiumUser || isAuthenticated) {
+      toast.success("Let me show you how to style this...");
+      // Mock AI logic - would be more sophisticated in real implementation
+      setTimeout(() => {
+        toast.info("This pairs perfectly with items in your wardrobe!");
+      }, 1000);
+    } else {
+      setShowSubscriptionPopup(true);
+    }
   };
 
   return (
@@ -264,10 +274,11 @@ const ShopAndTry = () => {
           id="shop-by-mood"
           isPremiumUser={isPremiumUser || isAuthenticated}
           onTryItem={handleTryOnTrendingItem}
-          onStylistSuggestion={(itemId) => {
-            const item = selectedItems.find(i => i.id === itemId);
-            if (item) {
-              toast.info(`Olivia suggests pairing with ${item.name}`);
+          onStylistSuggestion={(itemId: string) => {
+            // Find item by id from selectedItems array
+            const matchedItem = selectedItems.find(i => i.id === itemId);
+            if (matchedItem) {
+              toast.info(`Olivia suggests pairing with ${matchedItem.name}`);
             } else {
               toast.info("Olivia has a styling suggestion for you");
             }
@@ -290,18 +301,7 @@ const ShopAndTry = () => {
         {/* BONUS SECTION: DAILY FEATURE / STYLING CHALLENGE */}
         <OliviaDailyDrop
           isPremiumUser={isPremiumUser || isAuthenticated}
-          onSeeHowToWear={(itemId) => {
-            trackDailyDropClick(itemId);
-            if (isPremiumUser || isAuthenticated) {
-              toast.success("Let me show you how to style this...");
-              // Mock AI logic - would be more sophisticated in real implementation
-              setTimeout(() => {
-                toast.info("This pairs perfectly with items in your wardrobe!");
-              }, 1000);
-            } else {
-              setShowSubscriptionPopup(true);
-            }
-          }}
+          onSeeHowToWear={handleSeeHowToWear}
         />
         
         {/* Footer with affiliate disclaimer and country filter */}

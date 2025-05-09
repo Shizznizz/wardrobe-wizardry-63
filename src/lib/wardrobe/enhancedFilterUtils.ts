@@ -1,4 +1,3 @@
-
 import { ClothingItem, ClothingType, ClothingColor, ClothingOccasion, ClothingSeason } from '@/lib/types';
 import { differenceInDays, differenceInMonths } from 'date-fns';
 
@@ -7,6 +6,8 @@ export interface WardrobeFilters {
   category: ClothingType | null;
   color: ClothingColor | null;
   occasion: ClothingOccasion | null;
+  season?: ClothingSeason | null; // Add season property
+  seasons?: ClothingSeason[] | null; // Add seasons array property for multiple selections
   timeFrame: 'all' | 'recent' | '3months' | '6months';
   favorite: boolean | null;
   weatherAppropriate: boolean | null;
