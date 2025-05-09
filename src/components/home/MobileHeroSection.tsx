@@ -14,6 +14,15 @@ export interface MobileHeroSectionProps {
   onStartJourney: () => void;
   onTakeStyleQuiz: () => void;
   extraContent?: React.ReactNode;
+  buttons?: Array<{
+    label: string;
+    onClick?: () => void;
+    variant?: 'primary' | 'secondary';
+    icon?: React.ReactNode;
+    className?: string;
+  }>;
+  mainActionLabel?: string;
+  onMainAction?: () => void;
 }
 
 const MobileHeroSection = ({
@@ -25,6 +34,9 @@ const MobileHeroSection = ({
   onStartJourney,
   onTakeStyleQuiz,
   extraContent,
+  buttons,
+  mainActionLabel,
+  onMainAction,
 }: MobileHeroSectionProps) => {
   
   const itemVariants = {
@@ -39,6 +51,20 @@ const MobileHeroSection = ({
       }
     }
   };
+
+  // Use provided buttons or defaults
+  const heroButtons = buttons || [
+    {
+      label: "Start Your Style Journey →",
+      onClick: onStartJourney,
+      variant: 'primary',
+    },
+    {
+      label: "Take a Style Quiz",
+      onClick: onTakeStyleQuiz,
+      variant: 'secondary',
+    }
+  ];
 
   return (
     <div className="flex flex-col items-center text-center md:hidden max-w-[640px] mx-auto">
@@ -96,21 +122,34 @@ const MobileHeroSection = ({
         variants={itemVariants}
         className="flex flex-col gap-3 w-full" 
       >
-        <Button
-          onClick={onStartJourney}
-          className="bg-gradient-to-r from-[#EC6FF1] to-[#FF8AF0] hover:opacity-90 transition-opacity text-white font-semibold py-3 px-6 rounded-xl shadow-md min-h-[44px] w-full text-base"
-          size="lg"
-        >
-          Start Your Style Journey →
-        </Button>
+        {heroButtons.map((button, index) => (
+          <Button
+            key={index}
+            onClick={button.onClick}
+            className={cn(
+              "hover:opacity-90 transition-opacity text-white font-semibold py-3 px-6 rounded-xl shadow-md min-h-[44px] w-full text-base",
+              button.variant === 'secondary' 
+                ? "bg-gradient-to-r from-[#6C5DD3] to-[#8E8BFE]" 
+                : "bg-gradient-to-r from-[#EC6FF1] to-[#FF8AF0]",
+              button.className
+            )}
+            size="lg"
+          >
+            {button.icon && <span className="mr-2">{button.icon}</span>}
+            {button.label}
+          </Button>
+        ))}
         
-        <Button
-          onClick={onTakeStyleQuiz}
-          className="bg-gradient-to-r from-[#6C5DD3] to-[#8E8BFE] hover:opacity-90 transition-opacity text-white font-semibold py-3 px-6 rounded-xl shadow-md min-h-[44px] w-full text-base"
-          size="lg"
-        >
-          Take a Style Quiz
-        </Button>
+        {/* Additional action button if provided */}
+        {mainActionLabel && onMainAction && (
+          <Button
+            onClick={onMainAction}
+            className="bg-gradient-to-r from-[#EC6FF1] to-[#FF8AF0] hover:opacity-90 transition-opacity text-white font-semibold py-3 px-6 rounded-xl shadow-md min-h-[44px] w-full text-base mt-4"
+            size="lg"
+          >
+            {mainActionLabel}
+          </Button>
+        )}
       </motion.div>
       
       {/* Extra Content (if provided) */}

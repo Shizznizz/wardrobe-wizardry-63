@@ -15,6 +15,16 @@ export interface HeroSectionProps {
   onStartJourney: () => void;
   onTakeStyleQuiz: () => void;
   hasSparkleEffect?: boolean;
+  mainActionLabel?: string;
+  onMainAction?: () => void;
+  className?: string;
+  buttons?: Array<{
+    label: string;
+    onClick?: () => void;
+    variant?: 'primary' | 'secondary';
+    icon?: React.ReactNode;
+    className?: string;
+  }>;
 }
 
 const HeroSection = ({
@@ -27,6 +37,10 @@ const HeroSection = ({
   onStartJourney,
   onTakeStyleQuiz,
   hasSparkleEffect = false,
+  mainActionLabel,
+  onMainAction,
+  className,
+  buttons,
 }: HeroSectionProps) => {
   
   const containerVariants = {
@@ -39,6 +53,20 @@ const HeroSection = ({
     }
   };
   
+  // Create default buttons if none provided
+  const heroButtons = buttons || [
+    {
+      label: "Start Your Style Journey →",
+      onClick: onStartJourney,
+      variant: 'primary',
+    },
+    {
+      label: "Take a Style Quiz",
+      onClick: onTakeStyleQuiz,
+      variant: 'secondary',
+    }
+  ];
+  
   const extraContent = (
     <div className="flex items-center gap-2 text-white/80 mt-6 justify-center md:justify-start">
       <Sparkles className="h-4 w-4 text-coral-400" />
@@ -48,7 +76,7 @@ const HeroSection = ({
 
   return (
     <motion.section
-      className="relative py-12 md:py-16 lg:py-20 px-4 sm:px-6 overflow-hidden hero-section"
+      className={`relative py-12 md:py-16 lg:py-20 px-4 sm:px-6 overflow-hidden hero-section ${className || ''}`}
       initial="hidden"
       animate="visible"
       variants={containerVariants}
@@ -76,6 +104,9 @@ const HeroSection = ({
           onStartJourney={onStartJourney}
           onTakeStyleQuiz={onTakeStyleQuiz}
           extraContent={extraContent}
+          buttons={heroButtons}
+          mainActionLabel={mainActionLabel}
+          onMainAction={onMainAction}
         />
         
         {/* Desktop/Tablet Hero Section */}
@@ -90,6 +121,9 @@ const HeroSection = ({
           onTakeStyleQuiz={onTakeStyleQuiz}
           extraContent={extraContent}
           hasSparkleEffect={hasSparkleEffect}
+          buttons={heroButtons}
+          mainActionLabel={mainActionLabel}
+          onMainAction={onMainAction}
         />
       </div>
     </motion.section>
