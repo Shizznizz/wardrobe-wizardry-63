@@ -126,7 +126,7 @@ const EnhancedHeroSection = ({
       </div>
 
       <div className="container mx-auto max-w-7xl">
-        <div className={`flex flex-col ${layoutPosition === 'left' ? 'md:flex-row-reverse' : 'md:flex-row'} items-center gap-8 md:gap-12 lg:gap-16`}>
+        <div className={`flex flex-col ${layoutPosition === 'left' ? 'md:flex-row-reverse' : 'md:flex-row'} items-center justify-center gap-8 md:gap-12 lg:gap-16`}>
           {/* Text content - always stacks above image on mobile */}
           <div className={`w-full md:w-1/2 text-center md:text-left ${layoutPosition === 'left' ? 'md:pr-8' : 'md:pl-8'} space-y-6 md:space-y-8`}>
             <motion.div variants={itemVariants} className="relative">

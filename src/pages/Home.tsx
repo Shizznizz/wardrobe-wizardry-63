@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Sparkles, Star, ArrowRight, Crown, Shirt, Check, X } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -45,7 +44,7 @@ const Home = () => {
       <Header />
       
       <main className="pt-8 overflow-hidden">
-        {/* Hero Section - Using the Enhanced Component with the updated Olivia image */}
+        {/* Hero Section with new uploaded image */}
         <EnhancedHeroSection 
           title="The Future of Fashion"
           subtitle="Trusted by 10,000+ style-conscious women"
@@ -56,9 +55,9 @@ const Home = () => {
             </div>
           }
           image={{
-            src: "/lovable-uploads/04184386-fa3b-471b-84bb-d29436d8ab7f.png", // Updated Olivia image
+            src: "/lovable-uploads/e1aaa230-1623-42c4-ab9f-eb7c5f103ebe.png",
             alt: "Olivia Bloom, AI Fashion Stylist",
-            variant: "standing"
+            variant: "portrait"
           }}
           buttons={[
             {
