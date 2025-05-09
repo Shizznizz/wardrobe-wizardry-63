@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ClipboardList, Sparkles } from 'lucide-react';
 import PersonalizedStyleQuiz from '@/components/quizzes/PersonalizedStyleQuiz';
 import OliviaMoodMatcher from '@/components/quizzes/OliviaMoodMatcher';
-import PageHeader from '@/components/shared/PageHeader';
+import HeroSection from '@/components/shared/HeroSection';
 
 const Quizzes = () => {
   const [activeTab, setActiveTab] = useState('personalized');
@@ -23,20 +23,32 @@ const Quizzes = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white">
-      <main className="container mx-auto px-4">
-        {!showQuiz ? (
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="max-w-4xl mx-auto"
-          >
-            <PageHeader
-              title="Discover Your Unique Style"
-              subtitle="Take one of my quizzes to get personalized styling recommendations just for you."
-              showAvatar={true}
-            />
-            
+      {!showQuiz ? (
+        <>
+          <HeroSection
+            title="Discover Your Unique Style"
+            subtitle="Take one of my quizzes to get personalized styling recommendations just for you."
+            image={{
+              src: "/lovable-uploads/e1aaa230-1623-42c4-ab9f-eb7c5f103ebe.png",
+              alt: "Olivia your AI Fashion Assistant"
+            }}
+            buttons={[
+              {
+                label: "Find Your Style",
+                onClick: () => handleStartQuiz('personalized'),
+                variant: "secondary",
+                className: "bg-black text-white hover:bg-gray-800"
+              },
+              {
+                label: "Mood Matcher",
+                onClick: () => handleStartQuiz('mood'),
+                variant: "secondary",
+                className: "bg-gray-700 text-white hover:bg-gray-600"
+              }
+            ]}
+          />
+          
+          <main className="container mx-auto px-4 py-10">
             <Tabs 
               defaultValue="personalized" 
               value={activeTab}
@@ -120,22 +132,22 @@ const Quizzes = () => {
                 </TabsContent>
               </div>
             </Tabs>
-          </motion.div>
-        ) : (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.3 }}
-          >
-            {showQuiz === 'personalized' ? (
-              <PersonalizedStyleQuiz onClose={handleCloseQuiz} />
-            ) : (
-              <OliviaMoodMatcher onClose={handleCloseQuiz} />
-            )}
-          </motion.div>
-        )}
-      </main>
+          </main>
+        </>
+      ) : (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.95 }}
+          transition={{ duration: 0.3 }}
+        >
+          {showQuiz === 'personalized' ? (
+            <PersonalizedStyleQuiz onClose={handleCloseQuiz} />
+          ) : (
+            <OliviaMoodMatcher onClose={handleCloseQuiz} />
+          )}
+        </motion.div>
+      )}
     </div>
   );
 };

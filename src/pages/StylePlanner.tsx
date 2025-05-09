@@ -1,10 +1,9 @@
+
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion } from 'framer-motion';
-import Header from '@/components/Header';
 import OutfitCalendar from '@/components/outfits/OutfitCalendar';
 import { sampleClothingItems, sampleOutfits } from '@/lib/wardrobeData';
 import { toast } from 'sonner';
-import { Card, CardContent } from '@/components/ui/card';
 import { useIsMobile } from '@/hooks/use-mobile';
 import EnhancedLocationSelector from '@/components/weather/EnhancedLocationSelector';
 import { useLocationStorage } from '@/hooks/useLocationStorage';
@@ -12,7 +11,7 @@ import { format } from 'date-fns';
 import ScrollToTop from '@/components/ScrollToTop';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
-import PageHeader from '@/components/shared/PageHeader';
+import HeroSection from '@/components/shared/HeroSection';
 import { Button } from '@/components/ui/button';
 
 const StylePlanner = () => {
@@ -93,61 +92,46 @@ const StylePlanner = () => {
     }
   };
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.05 }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        type: 'spring',
-        stiffness: 100,
-        damping: 10
-      }
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white overflow-x-hidden max-w-[100vw]">
       <ScrollToTop />
       
+      <HeroSection
+        title="Your Style Planner & Insights"
+        subtitle="Let's look at your fashion evolution and unlock your ideal style — with Olivia's guidance."
+        image={{
+          src: "/lovable-uploads/e1aaa230-1623-42c4-ab9f-eb7c5f103ebe.png",
+          alt: "Olivia your AI Fashion Assistant"
+        }}
+        buttons={[
+          {
+            label: "Show Me My Style Timeline",
+            onClick: scrollToCalendar,
+            variant: "primary",
+            className: "bg-gradient-to-r from-purple-500 to-indigo-500 hover:opacity-90 shadow-md shadow-purple-500/20 hover:shadow-purple-500/30 transition-all duration-300"
+          }
+        ]}
+      >
+        {profile?.first_name && (
+          <p className="text-white/80 mb-4">
+            Hi {profile.first_name}, here's your outfit planner!
+          </p>
+        )}
+      </HeroSection>
+      
       <main className="w-full px-4 sm:px-6 md:px-8 max-w-7xl mx-auto overflow-hidden">
         <motion.div 
           className="space-y-8 md:space-y-10"
-          initial="hidden"
-          animate="visible"
-          variants={containerVariants}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
         >
-          <PageHeader
-            title="Your Style Planner & Insights"
-            subtitle="Let's look at your fashion evolution and unlock your ideal style — with Olivia's guidance."
-            showAvatar={false}
-            imageVariant="pink-suit"
-            imagePosition="right"
-            showSparkles={true}
+          <motion.div 
+            className="w-full max-w-md mx-auto"
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.2 }}
           >
-            {profile?.first_name && (
-              <p className="text-white/80 mb-4">
-                Hi {profile.first_name}, here's your outfit planner!
-              </p>
-            )}
-            <Button 
-              className="bg-gradient-to-r from-purple-500 to-indigo-500 hover:opacity-90 shadow-md shadow-purple-500/20 hover:shadow-purple-500/30 transition-all duration-300 mb-2"
-              size="lg"
-              onClick={scrollToCalendar}
-            >
-              Show Me My Style Timeline
-            </Button>
-          </PageHeader>
-          
-          <motion.div variants={itemVariants} className="w-full max-w-md mx-auto">
             {/* Add soft arc background to location selector */}
             <div className="relative">
               <div className="absolute inset-0 -z-10 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-2xl blur-md"></div>
@@ -162,7 +146,9 @@ const StylePlanner = () => {
           
           {!isLoading && (
             <motion.div 
-              variants={itemVariants} 
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.4 }}
               className="w-full overflow-hidden rounded-2xl shadow-xl"
               ref={calendarRef}
             >

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useShowroom } from '@/hooks/useShowroom';
 import { sampleClothingItems, sampleOutfits } from '@/lib/wardrobeData';
@@ -18,6 +17,9 @@ import PageHeader from '@/components/shared/PageHeader';
 import OptimizedImage from '@/components/ui/optimized-image';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import ImageUploader from '@/components/wardrobe/ImageUploader';
+import OliviaImageGallery from '@/components/outfits/OliviaImageGallery';
+import { useOutfitContext } from '@/hooks/useOutfitContext';
 
 // Import existing components
 import WelcomeMessage from '@/components/fitting-room/WelcomeMessage';
@@ -123,7 +125,7 @@ const FittingRoom = () => {
     selectedOutfit = null,
     userPhoto = null,
     finalImage = null,
-    isProcessingTryOn = false,
+    isProcessingTryOn,
     
     handleSelectOliviaImage = () => {},
     handleSelectOutfit = () => {},
@@ -390,13 +392,14 @@ const FittingRoom = () => {
       
       <main className="container mx-auto px-4 pt-20 pb-32 max-w-[1600px] relative">
         {/* Step 1: Hero Section */}
-        <PageHeader
+        <HeroSection
           title="Try On Your Wardrobe"
           subtitle="Upload your photo or use Olivia to try pieces from your closet."
-          halfBodyImage="/lovable-uploads/e8fc1e11-c29c-400b-8e33-2577a311b453.png"
-          imagePosition="right"
-          animationStyle="float"
-          overlayEffect="glow"
+          image={{
+            src: "/lovable-uploads/e1aaa230-1623-42c4-ab9f-eb7c5f103ebe.png",
+            alt: "Olivia your AI Fashion Assistant",
+            variant: "standing"
+          }}
         />
         
         <div className="mt-4 flex justify-end">

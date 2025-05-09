@@ -38,6 +38,7 @@ const Home = () => {
     setShowOnboarding(true);
   };
   
+  // Home page already has the enhanced hero section via the HeroSection component
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#12002f] to-[#1b013c] text-white">
       <Header />
