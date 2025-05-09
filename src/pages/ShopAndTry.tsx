@@ -75,7 +75,7 @@ const ShopAndTry = () => {
     // Implementation would go here in a real app
   };
   
-  // Update the handler to accept a File instead of a string
+  // Fix types for file handlers
   const handleUserPhotoUpload = (file: File) => {
     // Convert File to string URL for display
     const photoUrl = URL.createObjectURL(file);
@@ -84,7 +84,7 @@ const ShopAndTry = () => {
     toast.success("Photo uploaded successfully!");
   };
 
-  // Update the handler to accept a File instead of a string
+  // Fix types for file handlers
   const handleClothingPhotoUpload = (file: File) => {
     // Convert File to string URL for display
     const photoUrl = URL.createObjectURL(file);
@@ -142,12 +142,16 @@ const ShopAndTry = () => {
     toast.success("You've been added to our early testers group!");
   };
 
-  // Update to match the expected function signature that returns a string
+  // Fix the function type to match the component's expected props
   const handleTryOnTrendingItem = (itemId: string) => {
-    const item = selectedItems.find(i => i.id === itemId) || { name: "Selected item", imageUrl: "" }; 
-    setClothingPhoto(`/path/to/${item.imageUrl}`);
-    toast.info(`Selected ${item.name} for try-on!`);
-    return item.imageUrl || "";
+    const item = selectedItems.find(i => i.id === itemId);
+    if (item) {
+      setClothingPhoto(`/path/to/${item.imageUrl || ''}`);
+      toast.info(`Selected ${item.name} for try-on!`);
+      return item;
+    }
+    toast.info("Selected item for try-on!");
+    return null;
   };
 
   const handleSetActiveMood = (mood: string) => {
@@ -155,12 +159,17 @@ const ShopAndTry = () => {
     toast.info(`Showing styles for ${mood} mood`);
   };
 
-  // Update to accept string ID instead of ClothingItem
+  // Fix function to match expected type in component props
   const handleSaveToWishlist = (itemId: string) => {
-    const item = selectedItems.find(i => i.id === itemId) || { name: "Selected item" };
-    toast.success(`${item.name} added to wishlist!`);
+    const item = selectedItems.find(i => i.id === itemId);
+    if (item) {
+      toast.success(`${item.name} added to wishlist!`);
+    } else {
+      toast.success("Item added to wishlist!");
+    }
   };
 
+  // Fix type mismatch
   const handleSaveToWardrobe = (item: ClothingItem) => {
     toast.success(`${item.name} added to wardrobe!`);
   };
@@ -260,8 +269,12 @@ const ShopAndTry = () => {
           isPremiumUser={isPremiumUser || isAuthenticated}
           onTryItem={handleTryOnTrendingItem}
           onStylistSuggestion={(itemId) => {
-            const item = selectedItems.find(i => i.id === itemId) || { name: "Selected item" };
-            toast.info(`Olivia suggests pairing with ${item.name}`);
+            const item = selectedItems.find(i => i.id === itemId);
+            if (item) {
+              toast.info(`Olivia suggests pairing with ${item.name}`);
+            } else {
+              toast.info("Olivia has a styling suggestion for you");
+            }
           }}
           onUpgradeToPremium={handleShowPremiumPopup}
           activeMood={activeMood}

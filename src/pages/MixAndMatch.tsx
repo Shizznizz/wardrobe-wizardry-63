@@ -152,14 +152,16 @@ const MixAndMatch = () => {
         />
         
         {showRecommendation && (
-          <OliviaRecommendationSection 
-            clothingItems={items}
-            outfits={outfits}
-            weather={{
-              temperature,
-              condition: weatherCondition
-            }}
-          />
+          <div id="olivia-recommendation">
+            <OliviaRecommendationSection 
+              items={items}
+              outfits={outfits}
+              weatherInfo={{
+                temperature,
+                condition: weatherCondition
+              }}
+            />
+          </div>
         )}
         
         <CreateOutfitSection 

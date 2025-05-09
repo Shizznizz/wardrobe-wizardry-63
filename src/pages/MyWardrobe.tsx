@@ -13,6 +13,7 @@ import UploadModal from '@/components/UploadModal';
 import EnhancedWardrobeFilters from '@/components/wardrobe/EnhancedWardrobeFilters';
 import WardrobeInsights from '@/components/wardrobe/WardrobeInsights';
 import HeroSection from '@/components/shared/HeroSection';
+import { WardrobeFilters } from '@/lib/wardrobe/enhancedFilterUtils';
 
 const MyWardrobe = () => {
   const [items, setItems] = useState<ClothingItem[]>([]);
@@ -119,7 +120,7 @@ const MyWardrobe = () => {
     
     // Apply category filter
     if (categories.length > 0) {
-      filtered = filtered.filter(item => categories.includes(item.category));
+      filtered = filtered.filter(item => categories.includes(item.category || ''));
     }
     
     // Apply color filter - fix for color/colors mismatch
@@ -159,6 +160,24 @@ const MyWardrobe = () => {
     
     setFilterApplied(categories.length > 0 || colors.length > 0 || seasons.length > 0 || occasions.length > 0 || !!query);
     setFilteredItems(filtered);
+  };
+
+  // Convert our applyFilters function to match the expected WardrobeFilters interface
+  const handleFilterChange = (filters: WardrobeFilters) => {
+    // Extract values from filters object
+    let categoryArray: string[] = [];
+    let colorArray: string[] = [];
+    let occasionArray: string[] = [];
+    let seasonArray: string[] = [];
+    let query = '';
+
+    if (filters.category) categoryArray = [filters.category];
+    if (filters.color) colorArray = [filters.color];
+    if (filters.occasion) occasionArray = [filters.occasion];
+    if (filters.searchQuery) query = filters.searchQuery;
+    
+    // Call our existing function with extracted values
+    applyFilters(categoryArray, colorArray, seasonArray, occasionArray, query);
   };
   
   const clearAllFilters = () => {
@@ -212,13 +231,9 @@ const MyWardrobe = () => {
         >
           {showFilters && (
             <EnhancedWardrobeFilters
-              onFilterChange={applyFilters}
-              onClearFilters={clearAllFilters}
-              selectedCategories={selectedCategories}
-              selectedColors={selectedColors}
-              selectedSeasons={selectedSeasons}
-              selectedOccasions={selectedOccasions}
-              searchQuery={searchQuery}
+              onFilterChange={handleFilterChange}
+              totalItems={items.length}
+              filteredCount={filteredItems.length}
             />
           )}
         </motion.div>
@@ -255,10 +270,11 @@ const MyWardrobe = () => {
       </div>
       
       <UploadModal 
-        open={showUploadModal}
-        onOpenChange={setShowUploadModal}
         onAddItem={handleAddItem}
-      />
+        buttonText="Add Item"
+      >
+        {/* UploadModal children */}
+      </UploadModal>
     </div>
   );
 };
