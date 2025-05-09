@@ -1,7 +1,7 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, Star, ArrowRight, Crown, Shirt, Check } from 'lucide-react';
+import { Sparkles, Star, ArrowRight, Crown, Shirt, Check, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import { Button } from '@/components/ui/button';
@@ -15,11 +15,13 @@ import TrustBar from '@/components/home/TrustBar';
 import GetOliviasLook from '@/components/home/GetOliviasLook';
 import { Dialog, DialogContent, DialogClose } from '@/components/ui/dialog';
 import OnboardingFlow from '@/components/onboarding/OnboardingFlow';
+import { useOnboardingState } from '@/hooks/useOnboardingState';
 
 const Home = () => {
   const navigate = useNavigate();
   const [showOliviaDialog, setShowOliviaDialog] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const { hasSeenOnboarding } = useOnboardingState();
   
   const handleStartJourney = () => {
     navigate('/my-wardrobe');
@@ -91,58 +93,76 @@ const Home = () => {
         <FinalCta onGetStarted={() => navigate('/auth')} />
       </main>
       
-      {/* Olivia Introduction Dialog */}
+      {/* Olivia Introduction Dialog - Styled as per specifications */}
       <Dialog open={showOliviaDialog} onOpenChange={setShowOliviaDialog}>
-        <DialogContent className="sm:max-w-lg bg-gradient-to-r from-[#12002f] to-[#1b013c] border border-white/10">
-          <div className="flex flex-col items-center text-center p-4">
-            <div className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border-2 border-[#ff4ecb] mb-6 relative">
+        <DialogContent 
+          className="sm:max-w-[480px] w-[90%] mx-auto bg-[#2A004F] border-none rounded-3xl p-6 md:p-8 shadow-lg"
+          onEscapeKeyDown={() => setShowOliviaDialog(false)}
+          aria-labelledby="olivia-modal-title"
+          aria-describedby="olivia-modal-description"
+        >
+          <div className="flex flex-col items-center text-center">
+            {/* Close button - accessible and positioned at top-right */}
+            <DialogClose asChild>
+              <Button 
+                className="absolute top-4 right-4 rounded-full w-8 h-8 p-0 bg-white/10 hover:bg-white/20 transition-colors"
+                aria-label="Close dialog"
+              >
+                <X className="h-4 w-4 text-white" />
+              </Button>
+            </DialogClose>
+            
+            {/* Olivia's avatar - circular and centered */}
+            <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-[#EC6FF1]/50 mb-4 relative shadow-lg">
               <img 
                 src="/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png" 
                 alt="Olivia Bloom"
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#ff4ecb]/20 to-transparent"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-[#EC6FF1]/20 to-transparent"></div>
             </div>
             
-            <h2 className="text-2xl md:text-3xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-[#ff4ecb] to-[#a97eff]">
+            {/* Heading - styled with accent color */}
+            <h1 
+              id="olivia-modal-title"
+              className="text-2xl sm:text-[28px] font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-[#EC6FF1] to-[#9C68FF]"
+            >
               Meet Olivia Bloom
-            </h2>
+            </h1>
             
-            <p className="text-white/90 mb-6 max-w-md">
-              Hi there! I'm Olivia Bloom, your personal AI fashion stylist and style confidante. 
-              I'm here to transform your wardrobe experience and make getting dressed the easiest 
-              part of your day. 
-            </p>
+            {/* Body text - responsive sizing and proper line height */}
+            <div id="olivia-modal-description" className="space-y-4 text-sm sm:text-base text-white leading-relaxed max-w-md">
+              <p>
+                Hi there! I'm Olivia Bloom, your personal AI fashion stylist and style confidante. 
+                I'm here to transform your wardrobe experience and make getting dressed the easiest 
+                part of your day.
+              </p>
+              
+              <p>
+                Whether you're looking for weather-appropriate outfits, want to discover your unique 
+                style, or need help mixing and matching pieces you already own — I've got you covered!
+              </p>
+            </div>
             
-            <p className="text-white/90 mb-6 max-w-md">
-              Whether you're looking for weather-appropriate outfits, want to discover your unique 
-              style, or need help mixing and matching pieces you already own — I've got you covered!
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 mt-4">
-              {/* New onboarding CTA button */}
+            {/* CTA buttons - responsive and accessible */}
+            <div className="flex flex-col sm:flex-row gap-4 mt-6 w-full">
+              {/* Primary CTA button */}
               <Button 
-                className="bg-gradient-to-r from-[#ff4ecb] to-[#a97eff] text-white hover:opacity-90 py-2 px-6 rounded-lg h-auto"
+                className="w-full py-4 text-white rounded-xl font-semibold bg-gradient-to-r from-[#EC6FF1] to-[#9C68FF] hover:opacity-90 transition-opacity min-h-[44px]"
                 onClick={handleStartOnboarding}
+                aria-label="Start onboarding tour"
               >
                 Let me show you what you can do here!
               </Button>
               
+              {/* Secondary CTA button */}
               <DialogClose asChild>
                 <Button 
                   onClick={() => navigate('/my-wardrobe')}
-                  className="bg-gradient-to-r from-[#ff4ecb] to-[#a97eff] text-white hover:opacity-90 py-2 px-6 rounded-lg h-auto"
+                  className="w-full py-4 bg-white text-[#2A004F] hover:bg-white/90 rounded-xl font-semibold min-h-[44px]"
+                  aria-label="Start using the app"
                 >
                   Let's Get Started
-                </Button>
-              </DialogClose>
-              
-              <DialogClose asChild>
-                <Button 
-                  variant="outline"
-                  className="border-white/20 text-white hover:bg-white/10 py-2 px-6 rounded-lg h-auto"
-                >
-                  Close
                 </Button>
               </DialogClose>
             </div>
