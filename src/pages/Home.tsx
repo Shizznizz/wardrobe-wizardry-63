@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import HomepagePremiumTeaser from '@/components/HomepagePremiumTeaser';
-import EnhancedHeroSection from '@/components/home/EnhancedHeroSection';
+import EnhancedHeroSection from '@/components/shared/EnhancedHeroSection';
 import FeatureCards from '@/components/home/FeatureCards';
 import HowItWorksSection from '@/components/home/HowItWorksSection';
 import TestimonialsSection from '@/components/home/TestimonialsSection';
@@ -47,8 +47,27 @@ const Home = () => {
       <main className="pt-8 overflow-hidden">
         {/* Enhanced Hero Section */}
         <EnhancedHeroSection 
-          onStartJourney={handleStartJourney}
-          onTakeStyleQuiz={handleTakeStyleQuiz}
+          title="The Future of Fashion"
+          subtitle="Your AI-powered personal stylist and wardrobe assistant"
+          description="Olivia helps you discover your unique style, organize your wardrobe, and create stunning outfits for any occasion."
+          image={{
+            src: "/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png",
+            alt: "Olivia Bloom, AI Fashion Stylist",
+            variant: "portrait"
+          }}
+          buttons={[
+            {
+              label: "Start Your Journey",
+              onClick: handleStartJourney,
+              variant: "primary"
+            },
+            {
+              label: "Take Style Quiz",
+              onClick: handleTakeStyleQuiz,
+              variant: "secondary"
+            }
+          ]}
+          hasSparkleEffect={true}
         />
         
         {/* Trust Bar */}
@@ -67,7 +86,7 @@ const Home = () => {
             
             <div className="mt-16 text-center">
               <Button 
-                className="bg-gradient-to-r from-[#ff4ecb] to-[#a97eff] text-white hover:scale-[1.03] transition-transform font-bold py-6 px-10 rounded-xl shadow-md h-auto text-lg flex items-center gap-2 mx-auto"
+                className="bg-gradient-to-r from-[#EC6FF1] to-[#9C68FF] text-white hover:opacity-90 transition-opacity font-semibold py-6 px-10 rounded-xl shadow-md h-auto text-lg flex items-center gap-2 mx-auto min-h-[44px]"
                 onClick={handleMeetOlivia}
               >
                 Meet Olivia Now
