@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -43,6 +44,7 @@ const ShopAndTry = () => {
   const [earlyTester, setEarlyTester] = useState(false);
   const [userCountry, setUserCountry] = useState<string | null>(null);
   const [mockOutfit, setMockOutfit] = useState<Outfit | null>(null);
+  const [showFloatingChat, setShowFloatingChat] = useState(false);
   
   const isMobile = useIsMobile();
 
@@ -156,7 +158,21 @@ const ShopAndTry = () => {
     toast.info(`Showing styles for ${mood} mood`);
   };
 
-  // Fix function to match expected component props
+  // Fixed function signature to use ClothingItem
+  const handleStylistSuggestion = (item: ClothingItem) => {
+    if (item && item.id) {
+      const matchedItem = selectedItems.find(i => i.id === item.id);
+      if (matchedItem) {
+        toast.info(`Olivia suggests pairing with ${matchedItem.name}`);
+      } else {
+        toast.info("Olivia has a styling suggestion for you");
+      }
+    } else {
+      toast.info("Olivia has a styling suggestion for you");
+    }
+  };
+
+  // Fix type mismatch
   const handleSaveToWishlist = (item: ClothingItem) => {
     if (item) {
       toast.success(`${item.name} added to wishlist!`);
@@ -165,7 +181,7 @@ const ShopAndTry = () => {
     }
   };
 
-  // Fix type mismatch
+  // Fix type signature for onSaveToWardrobe
   const handleSaveToWardrobe = (item: ClothingItem) => {
     toast.success(`${item.name} added to wardrobe!`);
   };
@@ -176,17 +192,25 @@ const ShopAndTry = () => {
   };
 
   // This is a wrapper function that adapts the expected signature for the component
-  const handleSeeHowToWear = (itemId: string) => {
-    trackDailyDropClick(itemId);
-    if (isPremiumUser || isAuthenticated) {
-      toast.success("Let me show you how to style this...");
-      // Mock AI logic - would be more sophisticated in real implementation
-      setTimeout(() => {
-        toast.info("This pairs perfectly with items in your wardrobe!");
-      }, 1000);
-    } else {
-      setShowSubscriptionPopup(true);
+  const handleSeeHowToWear = (item: ClothingItem) => {
+    if (item && item.id) {
+      trackDailyDropClick(item.id);
+      if (isPremiumUser || isAuthenticated) {
+        toast.success("Let me show you how to style this...");
+        // Mock AI logic - would be more sophisticated in real implementation
+        setTimeout(() => {
+          toast.info("This pairs perfectly with items in your wardrobe!");
+        }, 1000);
+      } else {
+        setShowSubscriptionPopup(true);
+      }
     }
+  };
+  
+  // Define the missing handleOpenChat function
+  const handleOpenChat = () => {
+    setShowFloatingChat(true);
+    toast.info("Olivia is ready to chat about your style!");
   };
 
   return (
@@ -274,15 +298,7 @@ const ShopAndTry = () => {
           id="shop-by-mood"
           isPremiumUser={isPremiumUser || isAuthenticated}
           onTryItem={handleTryOnTrendingItem}
-          onStylistSuggestion={(itemId: string) => {
-            // Find item by id from selectedItems array
-            const matchedItem = selectedItems.find(i => i.id === itemId);
-            if (matchedItem) {
-              toast.info(`Olivia suggests pairing with ${matchedItem.name}`);
-            } else {
-              toast.info("Olivia has a styling suggestion for you");
-            }
-          }}
+          onStylistSuggestion={handleStylistSuggestion}
           onUpgradeToPremium={handleShowPremiumPopup}
           activeMood={activeMood}
           onMoodSelect={handleSetActiveMood}
