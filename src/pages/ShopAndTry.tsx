@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -191,7 +190,7 @@ const ShopAndTry = () => {
     // Analytics tracking would go here
   };
 
-  // This is a wrapper function that adapts the expected signature for the component
+  // Original function expecting a ClothingItem
   const handleSeeHowToWear = (item: ClothingItem) => {
     if (item && item.id) {
       trackDailyDropClick(item.id);
@@ -207,7 +206,34 @@ const ShopAndTry = () => {
     }
   };
   
-  // Define the missing handleOpenChat function
+  // Adapter function for EditorsPicks component that expects itemId as string
+  const handleSaveToWardrobeAdapter = (itemId: string) => {
+    // Create a minimal ClothingItem with just the id and name to pass to the original handler
+    const mockItem: ClothingItem = {
+      id: itemId,
+      name: "Item " + itemId,
+      type: "top",
+      color: "black",
+      season: ["all"],
+      image: ""
+    };
+    handleSaveToWardrobe(mockItem);
+  };
+  
+  // Adapter function for OliviaDailyDrop component that expects itemId as string
+  const handleSeeHowToWearAdapter = (itemId: string) => {
+    // Create a minimal ClothingItem with just the id and name to pass to the original handler
+    const mockItem: ClothingItem = {
+      id: itemId,
+      name: "Item " + itemId,
+      type: "top",
+      color: "black",
+      season: ["all"],
+      image: ""
+    };
+    handleSeeHowToWear(mockItem);
+  };
+  
   const handleOpenChat = () => {
     setShowFloatingChat(true);
     toast.info("Olivia is ready to chat about your style!");
@@ -311,13 +337,13 @@ const ShopAndTry = () => {
           onTryItem={handleTryOnTrendingItem}
           onUpgradeToPremium={handleShowPremiumPopup}
           userCountry={userCountry}
-          onSaveToWardrobe={handleSaveToWardrobe}
+          onSaveToWardrobe={handleSaveToWardrobeAdapter}
         />
         
         {/* BONUS SECTION: DAILY FEATURE / STYLING CHALLENGE */}
         <OliviaDailyDrop
           isPremiumUser={isPremiumUser || isAuthenticated}
-          onSeeHowToWear={handleSeeHowToWear}
+          onSeeHowToWear={handleSeeHowToWearAdapter}
         />
         
         {/* Footer with affiliate disclaimer and country filter */}
