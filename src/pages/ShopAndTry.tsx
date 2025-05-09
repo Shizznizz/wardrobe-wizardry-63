@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -42,6 +43,7 @@ const ShopAndTry = () => {
   const [activeMood, setActiveMood] = useState<string | null>(null);
   const [earlyTester, setEarlyTester] = useState(false);
   const [userCountry, setUserCountry] = useState<string | null>(null);
+  const [mockOutfit, setMockOutfit] = useState<Outfit | null>(null);
   
   const isMobile = useIsMobile();
 
@@ -65,6 +67,101 @@ const ShopAndTry = () => {
       behavior: 'smooth',
       block: 'start'
     });
+  };
+
+  // Define missing handler functions
+  const handleShowStylingOptions = () => {
+    toast.info("Opening styling options...");
+    // Implementation would go here in a real app
+  };
+  
+  const handleUserPhotoUpload = (photo: string) => {
+    setUserPhoto(photo);
+    setFinalImage(null);
+    toast.success("Photo uploaded successfully!");
+  };
+
+  const handleClothingPhotoUpload = (photo: string) => {
+    setClothingPhoto(photo);
+    setFinalImage(null);
+    toast.success("Clothing item uploaded!");
+  };
+
+  const clearPhotos = () => {
+    setUserPhoto(null);
+    setClothingPhoto(null);
+    setFinalImage(null);
+    setSelectedItems([]);
+    setStylingTip(null);
+    toast.success('Photos cleared');
+  };
+
+  const handleTryOn = () => {
+    if (!userPhoto) {
+      toast.error("Please upload a photo first");
+      return;
+    }
+    
+    setIsProcessing(true);
+    
+    // Simulate processing
+    setTimeout(() => {
+      setFinalImage(userPhoto);
+      setIsProcessing(false);
+      setOliviaMood('happy');
+      setStylingTip("This style looks great on you!");
+      toast.success("Try-on complete!");
+    }, 1500);
+  };
+
+  const handleSaveLook = () => {
+    if (!finalImage) {
+      toast.error("Create a look first!");
+      return;
+    }
+    toast.success("Look saved to your collection!");
+  };
+
+  const handleAddItem = (item: ClothingItem) => {
+    setSelectedItems(prev => [...prev, item]);
+    toast.success(`${item.name} added to your selection!`);
+  };
+
+  const handleShowPremiumPopup = () => {
+    setShowSubscriptionPopup(true);
+  };
+
+  const handleAddToEarlyTesters = () => {
+    setEarlyTester(true);
+    toast.success("You've been added to our early testers group!");
+  };
+
+  const handleTryOnTrendingItem = (item: ClothingItem) => {
+    setClothingPhoto(`/path/to/${item.imageUrl}`);
+    toast.info(`Selected ${item.name} for try-on!`);
+    return item.imageUrl;
+  };
+
+  const handleSetActiveMood = (mood: string) => {
+    setActiveMood(mood);
+    toast.info(`Showing styles for ${mood} mood`);
+  };
+
+  const handleSaveToWishlist = (item: ClothingItem) => {
+    toast.success(`${item.name} added to wishlist!`);
+  };
+
+  const handleSaveToWardrobe = (item: ClothingItem) => {
+    toast.success(`${item.name} added to wardrobe!`);
+  };
+
+  const trackDailyDropClick = (itemId: string) => {
+    console.log(`Clicked on daily drop item ${itemId}`);
+    // Analytics tracking would go here
+  };
+
+  const handleOpenChat = () => {
+    toast.info("Olivia is ready to chat about your style!");
   };
 
   return (
@@ -123,7 +220,7 @@ const ShopAndTry = () => {
           isProcessing={isProcessing}
           isUsingOliviaImage={isUsingOliviaImage}
           finalImage={finalImage}
-          mockOutfit={finalImage ? mockOutfit : null}
+          mockOutfit={mockOutfit}
           selectedItems={selectedItems}
           generationError={generationError}
           isPremiumUser={isPremiumUser || isAuthenticated}
