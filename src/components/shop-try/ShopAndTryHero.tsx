@@ -23,6 +23,25 @@ const ShopAndTryHero = ({ onStartStyling }: ShopAndTryHeroProps) => {
     visible: { opacity: 1, y: 0 }
   };
 
+  const imageVariants = {
+    hidden: { opacity: 0, scale: 0.9 },
+    visible: { 
+      opacity: 1, 
+      scale: 1,
+      transition: { 
+        type: "spring", 
+        stiffness: 60, 
+        damping: 13, 
+        duration: 1.2,
+        delay: 0.2
+      }
+    },
+    hover: {
+      scale: 1.03,
+      transition: { duration: 0.5 }
+    }
+  };
+
   return (
     <section className="py-12 md:py-20 relative overflow-hidden">
       {/* Background gradient */}
@@ -30,30 +49,46 @@ const ShopAndTryHero = ({ onStartStyling }: ShopAndTryHeroProps) => {
       
       <Container>
         <div className="flex flex-col md:flex-row items-center gap-8 md:gap-16">
-          {/* Left side - Olivia Avatar */}
+          {/* Left side - New Model Image */}
           <motion.div 
-            className="w-full md:w-1/3"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
+            className="w-full md:w-1/3 lg:w-2/5"
+            initial="hidden"
+            animate="visible"
+            whileHover="hover"
+            variants={imageVariants}
           >
             <div className="relative">
-              <div className="rounded-full bg-gradient-to-tr from-purple-600 to-pink-400 p-1.5 shadow-lg shadow-purple-600/30">
+              {/* Glowing effect behind image */}
+              <div className="absolute inset-0 bg-gradient-to-tr from-purple-500/20 to-pink-500/20 rounded-2xl blur-xl"></div>
+              <div className="relative z-10 overflow-hidden rounded-2xl border-2 border-white/10 shadow-xl shadow-purple-500/20">
                 <img 
-                  src="/lovable-uploads/c937b60e-901e-48ae-b01d-28d901a11503.png" 
-                  alt="Olivia" 
-                  className="rounded-full w-full aspect-square object-cover"
+                  src="/lovable-uploads/a266200d-e173-4252-9570-bbd700c01d89.png" 
+                  alt="Fashion model in pink top and white pants" 
+                  className="w-full h-auto object-cover"
                 />
+                {/* Subtle overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-purple-800/30 to-transparent"></div>
               </div>
-              <div className="absolute -top-2 -right-2 bg-gradient-to-tr from-pink-500 to-pink-400 rounded-full p-1.5 shadow-lg">
-                <Sparkles className="h-6 w-6 text-white" />
-              </div>
+              <motion.div 
+                className="absolute -top-2 -right-2 bg-pink-500 rounded-full p-1.5 shadow-lg z-20"
+                animate={{ 
+                  scale: [1, 1.1, 1],
+                  rotate: [0, 5, 0, -5, 0]
+                }}
+                transition={{ 
+                  duration: 3, 
+                  repeat: Infinity,
+                  repeatType: "loop" 
+                }}
+              >
+                <Sparkles className="h-5 w-5 text-white" />
+              </motion.div>
             </div>
           </motion.div>
           
           {/* Right side - Content */}
           <motion.div 
-            className="w-full md:w-2/3 space-y-6"
+            className="w-full md:w-2/3 lg:w-3/5 space-y-6"
             variants={containerVariants}
             initial="hidden"
             animate="visible"
