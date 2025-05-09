@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Container } from '@/components/ui/container';
 import { Button } from '@/components/ui/button';
 import { Sparkles, ShoppingBag, Shirt, Wand2 } from 'lucide-react';
+import OptimizedImage from '@/components/ui/optimized-image';
 
 interface ShopAndTryHeroProps {
   onStartStyling: () => void;
@@ -49,7 +50,7 @@ const ShopAndTryHero = ({ onStartStyling }: ShopAndTryHeroProps) => {
       
       <Container>
         <div className="flex flex-col md:flex-row items-center gap-8 md:gap-16">
-          {/* Left side - New Model Image */}
+          {/* Left side - Model Image */}
           <motion.div 
             className="w-full md:w-1/3 lg:w-2/5"
             initial="hidden"
@@ -58,17 +59,34 @@ const ShopAndTryHero = ({ onStartStyling }: ShopAndTryHeroProps) => {
             variants={imageVariants}
           >
             <div className="relative">
-              {/* Glowing effect behind image */}
-              <div className="absolute inset-0 bg-gradient-to-tr from-purple-500/20 to-pink-500/20 rounded-2xl blur-xl"></div>
-              <div className="relative z-10 overflow-hidden rounded-2xl border-2 border-white/10 shadow-xl shadow-purple-500/20">
-                <img 
-                  src="/lovable-uploads/a266200d-e173-4252-9570-bbd700c01d89.png" 
+              {/* Animated glow effect behind image */}
+              <motion.div 
+                className="absolute inset-0 bg-gradient-to-tr from-purple-500/30 to-pink-500/30 rounded-2xl blur-xl"
+                animate={{ 
+                  opacity: [0.5, 0.7, 0.5],
+                  scale: [1, 1.02, 1]
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  repeatType: "reverse"
+                }}
+              ></motion.div>
+              
+              {/* Image container */}
+              <div className="relative z-10 overflow-hidden rounded-2xl border-2 border-white/10 shadow-xl">
+                <OptimizedImage 
+                  src="/lovable-uploads/518b004e-6837-4c6f-a4cc-5186fab760e3.png" 
                   alt="Fashion model in pink top and white pants" 
                   className="w-full h-auto object-cover"
+                  priority={true}
+                  quality="high"
                 />
                 {/* Subtle overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-purple-800/30 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-purple-900/40 to-transparent"></div>
               </div>
+              
+              {/* Animated sparkle icon */}
               <motion.div 
                 className="absolute -top-2 -right-2 bg-pink-500 rounded-full p-1.5 shadow-lg z-20"
                 animate={{ 
@@ -107,7 +125,7 @@ const ShopAndTryHero = ({ onStartStyling }: ShopAndTryHeroProps) => {
               {/* Three-step guide */}
               <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="bg-white/5 rounded-xl p-5 backdrop-blur-md border border-white/10">
-                  <div className="bg-gradient-to-tr from-purple-600 to-pink-500 w-12 h-12 rounded-lg flex items-center justify-center mb-3 shadow-md">
+                  <div className="bg-gradient-to-tr from-purple-600 to-pink-500 w-12 h-12 rounded-lg flex items-center justify-center mb-3 shadow-md relative">
                     <Shirt className="h-6 w-6 text-white" />
                     <div className="absolute -top-2 -right-2 bg-white rounded-full w-6 h-6 flex items-center justify-center text-purple-900 font-bold shadow-md">
                       1
@@ -118,7 +136,7 @@ const ShopAndTryHero = ({ onStartStyling }: ShopAndTryHeroProps) => {
                 </div>
                 
                 <div className="bg-white/5 rounded-xl p-5 backdrop-blur-md border border-white/10">
-                  <div className="bg-gradient-to-tr from-purple-600 to-pink-500 w-12 h-12 rounded-lg flex items-center justify-center mb-3 shadow-md">
+                  <div className="bg-gradient-to-tr from-purple-600 to-pink-500 w-12 h-12 rounded-lg flex items-center justify-center mb-3 shadow-md relative">
                     <Wand2 className="h-6 w-6 text-white" />
                     <div className="absolute -top-2 -right-2 bg-white rounded-full w-6 h-6 flex items-center justify-center text-purple-900 font-bold shadow-md">
                       2
@@ -129,7 +147,7 @@ const ShopAndTryHero = ({ onStartStyling }: ShopAndTryHeroProps) => {
                 </div>
                 
                 <div className="bg-white/5 rounded-xl p-5 backdrop-blur-md border border-white/10">
-                  <div className="bg-gradient-to-tr from-purple-600 to-pink-500 w-12 h-12 rounded-lg flex items-center justify-center mb-3 shadow-md">
+                  <div className="bg-gradient-to-tr from-purple-600 to-pink-500 w-12 h-12 rounded-lg flex items-center justify-center mb-3 shadow-md relative">
                     <ShoppingBag className="h-6 w-6 text-white" />
                     <div className="absolute -top-2 -right-2 bg-white rounded-full w-6 h-6 flex items-center justify-center text-purple-900 font-bold shadow-md">
                       3
