@@ -127,13 +127,86 @@ const EnhancedHeroSection = ({
 
       {/* Responsive container */}
       <div className="mx-auto lg:max-w-[70vw] md:max-w-[90vw]">
-        <div className={`flex flex-col-reverse sm:flex-col ${layoutPosition === 'left' ? 'md:flex-row-reverse' : 'md:flex-row'} items-center justify-center gap-6 md:gap-8 lg:gap-10`}>
-          {/* Text content - on mobile goes below image */}
-          <div className={`w-full md:w-1/2 text-center md:text-left ${layoutPosition === 'left' ? 'md:pl-0' : 'md:pr-0'} space-y-5 sm:space-y-6`}>
+        {/* Mobile Layout - Shows first on small screens, then gets hidden on md and above */}
+        <div className="flex flex-col items-center text-center md:hidden max-w-[640px] mx-auto">
+          {/* 1. Headline */}
+          <motion.h1 
+            variants={itemVariants}
+            className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-coral-400 to-purple-400 leading-tight mb-4"
+          >
+            {title}
+          </motion.h1>
+          
+          {/* 2. Olivia Image */}
+          <motion.div 
+            className="w-full flex justify-center mb-6"
+            variants={imageVariants}
+          >
+            <img 
+              src={image.src} 
+              alt={image.alt || "Olivia AI Fashion Assistant"}
+              className="max-h-[300px] w-full object-contain drop-shadow-lg" 
+            />
+          </motion.div>
+          
+          {/* 3. Subheadline and Description */}
+          <motion.p 
+            variants={itemVariants} 
+            className="text-lg font-medium text-white/80 mb-2"
+          >
+            {subtitle}
+          </motion.p>
+          
+          {description && (
+            <motion.div 
+              variants={itemVariants} 
+              className="text-white/70 text-base mb-6"
+            >
+              {description}
+            </motion.div>
+          )}
+          
+          {/* 4. CTA Buttons */}
+          {(buttons && buttons.length > 0) && (
+            <motion.div 
+              variants={itemVariants}
+              className="flex flex-col gap-3 w-full" 
+            >
+              {buttons.map((button, index) => (
+                <Button
+                  key={index}
+                  onClick={button.onClick}
+                  className={cn(
+                    "text-white font-semibold py-3 px-6 rounded-xl shadow-md min-h-[44px] w-full",
+                    button.variant === 'secondary' ? 
+                      "bg-gradient-to-r from-[#6C5DD3] to-[#8E8BFE] hover:opacity-90 transition-opacity" :
+                      "bg-gradient-to-r from-[#EC6FF1] to-[#FF8AF0] hover:opacity-90 transition-opacity",
+                    button.className
+                  )}
+                  size="lg"
+                >
+                  {button.icon && <span className="mr-2">{button.icon}</span>}
+                  {button.label}
+                </Button>
+              ))}
+            </motion.div>
+          )}
+          
+          {extraContent && (
+            <motion.div variants={itemVariants} className="mt-4">
+              {extraContent}
+            </motion.div>
+          )}
+        </div>
+
+        {/* Desktop/Tablet Layout - Hidden on small screens, shows on md and above */}
+        <div className={`hidden md:flex md:flex-row ${layoutPosition === 'left' ? 'md:flex-row-reverse' : ''} items-center justify-between gap-10`}>
+          {/* Text content */}
+          <div className={`w-1/2 text-left space-y-6`}>
             <motion.div variants={itemVariants} className="relative">
               {hasSparkleEffect && (
                 <motion.div 
-                  className="absolute -top-6 left-1/2 md:left-0 transform -translate-x-1/2 md:translate-x-0"
+                  className="absolute -top-6 left-0"
                   variants={sparkleVariants}
                   initial="initial"
                   animate="animate"
@@ -151,7 +224,7 @@ const EnhancedHeroSection = ({
             </motion.p>
             
             {description && (
-              <motion.div variants={itemVariants} className="text-white/70 text-base sm:text-lg max-w-xl mx-auto md:mx-0 leading-relaxed mb-6">
+              <motion.div variants={itemVariants} className="text-white/70 text-base sm:text-lg max-w-xl leading-relaxed mb-6">
                 {description}
               </motion.div>
             )}
@@ -159,7 +232,7 @@ const EnhancedHeroSection = ({
             {(buttons && buttons.length > 0) && (
               <motion.div 
                 variants={itemVariants}
-                className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center md:justify-start pt-4 hero-buttons" 
+                className="flex flex-row gap-4 justify-start pt-4" 
               >
                 {buttons.map((button, index) => (
                   <Button
@@ -205,9 +278,9 @@ const EnhancedHeroSection = ({
             )}
           </div>
 
-          {/* Image container - on mobile goes above text */}
+          {/* Image container */}
           <motion.div 
-            className={`w-full md:w-1/2 flex justify-center ${layoutPosition === 'left' ? 'md:justify-start' : 'md:justify-end'} h-full hero-image mb-8 sm:mb-0`}
+            className={`w-1/2 flex ${layoutPosition === 'left' ? 'justify-start' : 'justify-end'} h-full`}
             variants={imageVariants}
           >
             <motion.div 
@@ -229,8 +302,8 @@ const EnhancedHeroSection = ({
                 className={cn(
                   "drop-shadow-lg animate-float object-contain",
                   image.variant === 'portrait' 
-                    ? "max-h-[250px] sm:max-h-[280px] md:max-h-[350px] lg:max-h-[450px] w-auto" 
-                    : "max-h-[300px] sm:max-h-[320px] md:max-h-[400px] lg:max-h-[500px] w-auto"
+                    ? "max-h-[350px] lg:max-h-[450px] w-auto" 
+                    : "max-h-[400px] lg:max-h-[500px] w-auto"
                 )}
               />
               
@@ -240,32 +313,6 @@ const EnhancedHeroSection = ({
           </motion.div>
         </div>
       </div>
-
-      {/* Add responsive styles */}
-      <style jsx>{`
-        @media (max-width: 767px) {
-          .hero-section {
-            padding-top: 24px;
-            padding-bottom: 24px;
-          }
-          
-          .hero-image {
-            margin-bottom: 24px;
-          }
-          
-          .hero-buttons {
-            flex-direction: column;
-            gap: 12px;
-            width: 100%;
-          }
-        }
-        
-        @media (min-width: 768px) {
-          .hero-section .flex {
-            flex-direction: ${layoutPosition === 'left' ? 'row-reverse' : 'row'};
-          }
-        }
-      `}</style>
     </motion.section>
   );
 };

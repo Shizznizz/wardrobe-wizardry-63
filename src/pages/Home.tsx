@@ -45,7 +45,7 @@ const Home = () => {
       <Header />
       
       <main className="pt-8 overflow-hidden">
-        {/* Hero Section with new uploaded image */}
+        {/* Hero Section with optimized mobile layout */}
         <EnhancedHeroSection 
           title="The Future of Fashion"
           subtitle="Trusted by 10,000+ style-conscious women"
