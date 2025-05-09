@@ -73,19 +73,19 @@ const MobileHeroSection = ({
         />
       </motion.div>
       
-      {/* 3. Subheadline */}
+      {/* 3. Subheadline - MADE SMALLER */}
       <motion.p 
         variants={itemVariants} 
-        className="text-base font-medium text-neutral-400 mb-1"
+        className="text-xs font-medium text-neutral-400 mb-1"
       >
         {subtitle}
       </motion.p>
       
-      {/* 4. Description */}
+      {/* 4. Description - MADE BIGGER */}
       {description && (
         <motion.div 
           variants={itemVariants} 
-          className="text-sm text-white/70 leading-relaxed mb-6 max-w-[90%] mx-auto"
+          className="text-base text-white/70 leading-relaxed mb-6 max-w-[90%] mx-auto"
         >
           {description}
         </motion.div>
