@@ -125,14 +125,14 @@ const EnhancedHeroSection = ({
         <div className="absolute right-10 bottom-1/4 w-20 h-20 rounded-full border border-purple-300/20"></div>
       </div>
 
-      <div className="container mx-auto max-w-7xl">
-        <div className={`flex flex-col ${layoutPosition === 'left' ? 'md:flex-row-reverse' : 'md:flex-row'} items-center justify-center gap-8 md:gap-12 lg:gap-16`}>
+      <div className="mx-auto lg:max-w-[70vw]">
+        <div className={`flex flex-col ${layoutPosition === 'left' ? 'lg:flex-row-reverse' : 'lg:flex-row'} items-center justify-center gap-8 md:gap-6 lg:gap-10`}>
           {/* Text content - always stacks above image on mobile */}
-          <div className={`w-full md:w-1/2 text-center md:text-left ${layoutPosition === 'left' ? 'md:pr-8' : 'md:pl-8'} space-y-6 md:space-y-8`}>
+          <div className={`w-full lg:w-1/2 text-center lg:text-left ${layoutPosition === 'left' ? 'lg:pl-0' : 'lg:pr-0'} space-y-6`}>
             <motion.div variants={itemVariants} className="relative">
               {hasSparkleEffect && (
                 <motion.div 
-                  className="absolute -top-6 left-1/2 md:left-0 transform -translate-x-1/2 md:translate-x-0"
+                  className="absolute -top-6 left-1/2 lg:left-0 transform -translate-x-1/2 lg:translate-x-0"
                   variants={sparkleVariants}
                   initial="initial"
                   animate="animate"
@@ -150,7 +150,7 @@ const EnhancedHeroSection = ({
             </motion.p>
             
             {description && (
-              <motion.div variants={itemVariants} className="text-white/70 text-base sm:text-lg max-w-xl mx-auto md:mx-0 leading-relaxed">
+              <motion.div variants={itemVariants} className="text-white/70 text-base sm:text-lg max-w-xl mx-auto lg:mx-0 leading-relaxed mb-6">
                 {description}
               </motion.div>
             )}
@@ -158,7 +158,7 @@ const EnhancedHeroSection = ({
             {(buttons && buttons.length > 0) && (
               <motion.div 
                 variants={itemVariants}
-                className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start pt-8" 
+                className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start pt-4" 
               >
                 {buttons.map((button, index) => (
                   <Button
@@ -206,11 +206,11 @@ const EnhancedHeroSection = ({
 
           {/* Image container */}
           <motion.div 
-            className={`w-full md:w-1/2 flex justify-center md:justify-${layoutPosition === 'left' ? 'start' : 'end'}`}
+            className={`w-full lg:w-1/2 flex justify-center ${layoutPosition === 'left' ? 'lg:justify-start' : 'lg:justify-end'} h-full`}
             variants={imageVariants}
           >
             <motion.div 
-              className="relative"
+              className="relative h-full"
               whileHover="hover"
               variants={imageVariants}
             >
@@ -226,8 +226,10 @@ const EnhancedHeroSection = ({
                 src={image.src} 
                 alt={image.alt || "Olivia AI Fashion Assistant"}
                 className={cn(
-                  "drop-shadow-lg animate-float",
-                  image.variant === 'portrait' ? "max-h-[350px] w-auto" : "max-h-[550px] lg:max-h-[650px] w-auto" 
+                  "drop-shadow-lg animate-float object-contain",
+                  image.variant === 'portrait' 
+                    ? "max-h-[300px] md:max-h-[400px] lg:max-h-[450px] w-auto" 
+                    : "max-h-[350px] md:max-h-[450px] lg:max-h-[500px] w-auto"
                 )}
               />
               
