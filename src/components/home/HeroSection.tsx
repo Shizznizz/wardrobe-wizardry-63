@@ -1,113 +1,98 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
+import MobileHeroSection from './MobileHeroSection';
+import DesktopHeroSection from './DesktopHeroSection';
 
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+export interface HeroSectionProps {
+  title: string;
+  subtitle: string;
+  description: React.ReactNode;
+  imageSrc: string;
+  imageAlt?: string;
+  layoutPosition?: 'left' | 'right';
+  onStartJourney: () => void;
+  onTakeStyleQuiz: () => void;
+  hasSparkleEffect?: boolean;
+}
 
-const HeroSection: React.FC = () => {
-  const navigate = useNavigate();
+const HeroSection = ({
+  title,
+  subtitle,
+  description,
+  imageSrc,
+  imageAlt = "Olivia AI Fashion Assistant",
+  layoutPosition = 'right',
+  onStartJourney,
+  onTakeStyleQuiz,
+  hasSparkleEffect = false,
+}: HeroSectionProps) => {
   
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2
+      }
+    }
+  };
+  
+  const extraContent = (
+    <div className="flex items-center gap-2 text-white/80 mt-6 justify-center md:justify-start">
+      <Sparkles className="h-4 w-4 text-coral-400" />
+      <p>Olivia styles your day in seconds. Let's go!</p>
+    </div>
+  );
+
   return (
-    <section className="py-20 md:py-24 lg:py-28 bg-gradient-to-b from-[#1d0034] to-[#2c0055] text-center">
-      <motion.div 
-        className="container mx-auto px-4 flex flex-col items-center"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7 }}
-      >
-        <motion.h1 
-          className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-6 tracking-wider leading-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-purple-100 to-pink-100"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          style={{ letterSpacing: '1.5px', lineHeight: '1.2' }}
-        >
-          <span className="block">The Future</span>
-          <span className="bg-gradient-to-r from-pink-400 to-purple-400 text-transparent bg-clip-text">of Fashion</span>
-        </motion.h1>
+    <motion.section
+      className="relative py-12 md:py-16 lg:py-20 px-4 sm:px-6 overflow-hidden hero-section"
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+    >
+      {/* Enhanced background elements */}
+      <div className="absolute inset-0 overflow-hidden -z-10">
+        <div className="absolute top-1/3 left-1/4 w-64 h-64 rounded-full bg-purple-500/10 blur-3xl"></div>
+        <div className="absolute top-1/2 right-1/4 w-72 h-72 rounded-full bg-coral-500/10 blur-3xl"></div>
         
-        {/* Social proof line */}
-        <motion.p
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="text-white/80 mb-8 text-base md:text-lg"
-        >
-          Trusted by 10,000+ style-conscious women.
-        </motion.p>
+        {/* Additional futuristic elements */}
+        <div className="absolute bottom-0 left-0 w-full h-1/3 bg-gradient-to-t from-purple-900/10 to-transparent"></div>
+        <div className="absolute -left-20 top-1/4 w-40 h-40 rounded-full border border-coral-300/20"></div>
+        <div className="absolute right-10 bottom-1/4 w-20 h-20 rounded-full border border-purple-300/20"></div>
+      </div>
+
+      {/* Responsive container */}
+      <div className="mx-auto lg:max-w-[70vw] md:max-w-[90vw]">
+        {/* Mobile Hero Section */}
+        <MobileHeroSection
+          title={title}
+          subtitle={subtitle}
+          description={description}
+          imageSrc={imageSrc}
+          imageAlt={imageAlt}
+          onStartJourney={onStartJourney}
+          onTakeStyleQuiz={onTakeStyleQuiz}
+          extraContent={extraContent}
+        />
         
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="mb-8 relative group"
-          whileHover={{ scale: 1.03 }}
-        >
-          {/* Animated glow effect */}
-          <div className="absolute inset-0 bg-gradient-to-r from-pink-500/30 to-purple-500/30 rounded-full blur-xl group-hover:blur-2xl group-hover:opacity-80 transition-all duration-700"></div>
-          <Avatar className="w-28 h-28 md:w-32 md:h-32 border-2 border-[#ff66cc] shadow-lg shadow-pink-500/20 transition-all duration-300 group-hover:shadow-xl group-hover:shadow-pink-500/40">
-            <AvatarImage src="/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png" alt="Olivia" />
-            <AvatarFallback className="bg-purple-800">OB</AvatarFallback>
-          </Avatar>
-        </motion.div>
-        
-        <motion.h3 
-          className="text-lg md:text-xl lg:text-2xl font-semibold text-[#ffb3ec] mb-5"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          style={{ lineHeight: '1.5' }}
-        >
-          Say goodbye to style stress. Olivia curates outfits that match your vibe, wardrobe, and the weather.
-        </motion.h3>
-        
-        <motion.p 
-          className="text-[#e0d8f9] max-w-md md:max-w-lg mb-8 text-base"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          style={{ lineHeight: '1.5' }}
-        >
-          With Olivia, your AI stylist, you'll get personalized outfit ideas that feel just right — every single day.
-        </motion.p>
-        
-        <motion.div 
-          className="flex flex-col sm:flex-row gap-4 justify-center"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.5 }}
-        >
-          <Button 
-            onClick={() => navigate('/my-wardrobe')}
-            className="bg-gradient-to-r from-[#ff66cc] to-[#ff3366] hover:opacity-90 text-white px-6 py-6 rounded-lg font-semibold group"
-          >
-            Start Your Style Journey
-            <ArrowRight className="ml-2 h-5 w-5 duration-300 group-hover:translate-x-1" />
-          </Button>
-          
-          <Button 
-            onClick={() => navigate('/quizzes')}
-            variant="outline" 
-            className="bg-black border-black text-white hover:bg-black/80 px-6 py-6 rounded-lg font-semibold"
-          >
-            Take a Style Quiz
-          </Button>
-        </motion.div>
-        
-        {/* Secondary line with emoji */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.8 }}
-          className="text-white/70 text-sm mt-6"
-        >
-          ✨ Olivia styles your day in seconds. Let's go!
-        </motion.p>
-      </motion.div>
-    </section>
+        {/* Desktop/Tablet Hero Section */}
+        <DesktopHeroSection
+          title={title}
+          subtitle={subtitle}
+          description={description}
+          imageSrc={imageSrc}
+          imageAlt={imageAlt}
+          layoutPosition={layoutPosition}
+          onStartJourney={onStartJourney}
+          onTakeStyleQuiz={onTakeStyleQuiz}
+          extraContent={extraContent}
+          hasSparkleEffect={hasSparkleEffect}
+        />
+      </div>
+    </motion.section>
   );
 };
 

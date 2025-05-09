@@ -1,0 +1,126 @@
+
+import React from 'react';
+import { motion } from 'framer-motion';
+import { Sparkles } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+
+export interface MobileHeroSectionProps {
+  title: string;
+  subtitle: string;
+  description: React.ReactNode;
+  imageSrc: string;
+  imageAlt?: string;
+  onStartJourney: () => void;
+  onTakeStyleQuiz: () => void;
+  extraContent?: React.ReactNode;
+}
+
+const MobileHeroSection = ({
+  title,
+  subtitle,
+  description,
+  imageSrc,
+  imageAlt = "Olivia AI Fashion Assistant",
+  onStartJourney,
+  onTakeStyleQuiz,
+  extraContent,
+}: MobileHeroSectionProps) => {
+  
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        type: 'spring',
+        stiffness: 100,
+        damping: 10
+      }
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center text-center md:hidden max-w-[640px] mx-auto">
+      {/* 1. Headline - Mobile optimized */}
+      <motion.h1 
+        variants={itemVariants}
+        className="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-coral-400 to-purple-400 leading-tight mb-2"
+      >
+        {title}
+      </motion.h1>
+      
+      {/* 2. Olivia Image */}
+      <motion.div 
+        className="w-full flex justify-center mb-6"
+        variants={{
+          hidden: { opacity: 0, scale: 0.95 },
+          visible: {
+            opacity: 1,
+            scale: 1,
+            transition: {
+              delay: 0.3,
+              duration: 0.8,
+              ease: "easeOut"
+            }
+          }
+        }}
+      >
+        <img 
+          src={imageSrc} 
+          alt={imageAlt}
+          className="max-h-[300px] w-full object-contain drop-shadow-lg" 
+        />
+      </motion.div>
+      
+      {/* 3. Subheadline */}
+      <motion.p 
+        variants={itemVariants} 
+        className="text-base font-medium text-neutral-400 mb-1"
+      >
+        {subtitle}
+      </motion.p>
+      
+      {/* 4. Description */}
+      {description && (
+        <motion.div 
+          variants={itemVariants} 
+          className="text-sm text-white/70 leading-relaxed mb-6 max-w-[90%] mx-auto"
+        >
+          {description}
+        </motion.div>
+      )}
+      
+      {/* 5. CTA Buttons */}
+      <motion.div 
+        variants={itemVariants}
+        className="flex flex-col gap-3 w-full" 
+      >
+        <Button
+          onClick={onStartJourney}
+          className="bg-gradient-to-r from-[#EC6FF1] to-[#FF8AF0] hover:opacity-90 transition-opacity text-white font-semibold py-3 px-6 rounded-xl shadow-md min-h-[44px] w-full text-base"
+          size="lg"
+        >
+          Start Your Style Journey →
+        </Button>
+        
+        <Button
+          onClick={onTakeStyleQuiz}
+          className="bg-gradient-to-r from-[#6C5DD3] to-[#8E8BFE] hover:opacity-90 transition-opacity text-white font-semibold py-3 px-6 rounded-xl shadow-md min-h-[44px] w-full text-base"
+          size="lg"
+        >
+          Take a Style Quiz
+        </Button>
+      </motion.div>
+      
+      {/* Extra Content (if provided) */}
+      {extraContent && (
+        <motion.div variants={itemVariants} className="mt-4">
+          {extraContent}
+        </motion.div>
+      )}
+    </div>
+  );
+};
+
+export default MobileHeroSection;
