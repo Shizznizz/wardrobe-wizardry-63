@@ -399,6 +399,39 @@ export type Database = {
         }
         Relationships: []
       }
+      user_quiz_results: {
+        Row: {
+          created_at: string | null
+          id: string
+          quiz_id: string
+          quiz_name: string
+          result_label: string
+          result_value: Json
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          quiz_id: string
+          quiz_name: string
+          result_label: string
+          result_value: Json
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          quiz_id?: string
+          quiz_name?: string
+          result_label?: string
+          result_value?: Json
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       vto_testers: {
         Row: {
           created_at: string

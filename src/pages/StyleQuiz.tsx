@@ -1,13 +1,14 @@
 
 import { useEffect } from 'react';
 import { motion } from 'framer-motion';
-import FindYourStyleQuiz from '@/components/FindYourStyleQuiz';
 import { UserPreferences } from '@/lib/types';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import PageHeader from '@/components/shared/PageHeader';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import QuizModal from '@/components/quizzes/QuizModal';
+import FindYourStyleQuiz from '@/components/quizzes/FindYourStyleQuiz';
 
 const StyleQuizPage = () => {
   const navigate = useNavigate();
@@ -107,6 +108,8 @@ const StyleQuizPage = () => {
     }
   };
   
+  const quizData = FindYourStyleQuiz();
+  
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white">
       <main className="container mx-auto px-4">
@@ -117,14 +120,16 @@ const StyleQuizPage = () => {
         />
         
         <motion.div 
-          className="max-w-4xl mx-auto"
+          className="max-w-4xl mx-auto mt-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <FindYourStyleQuiz 
-            onComplete={handleQuizComplete} 
-            standalone={true}
+          <QuizModal
+            quiz={quizData}
+            isOpen={true}
+            onClose={() => navigate('/quizzes')}
+            onComplete={handleQuizComplete}
           />
         </motion.div>
       </main>

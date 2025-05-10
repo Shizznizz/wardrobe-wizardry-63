@@ -2,36 +2,68 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import EnhancedHeroSection from '@/components/shared/EnhancedHeroSection';
-import StyleDiscoveryQuiz from '@/components/StyleDiscoveryQuiz';
-import FindYourStyleQuiz from '@/components/FindYourStyleQuiz';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Check, ChevronRight, Star } from 'lucide-react';
-import OptimizedImage from '@/components/ui/optimized-image';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
+import QuizModal from '@/components/quizzes/QuizModal';
+import FindYourStyleQuiz from '@/components/quizzes/FindYourStyleQuiz';
+import LifestyleLensQuiz from '@/components/quizzes/LifestyleLensQuiz';
+import VibeCheckQuiz from '@/components/quizzes/VibeCheckQuiz';
+import FashionTimeMachineQuiz from '@/components/quizzes/FashionTimeMachineQuiz';
+import { useQuizResults } from '@/services/QuizService';
 
-// Define the quiz types
 interface Quiz {
   id: string;
   title: string;
   description: string;
   icon: React.ReactNode;
   color: string;
-  component?: React.ReactNode;
+  getQuizData: () => any;
 }
 
 const Quizzes = () => {
   const [activeQuiz, setActiveQuiz] = useState<string | null>(null);
   const [completedQuizzes, setCompletedQuizzes] = useState<string[]>([]);
   const [hoveredQuiz, setHoveredQuiz] = useState<string | null>(null);
+  const [modalQuizId, setModalQuizId] = useState<string | null>(null);
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
+  const { getCompletedQuizIds } = useQuizResults();
   
-  // Load completed quizzes from localStorage on component mount
+  // Load completed quizzes from localStorage and Supabase
   useEffect(() => {
-    const savedCompletedQuizzes = localStorage.getItem('completedQuizzes');
-    if (savedCompletedQuizzes) {
-      setCompletedQuizzes(JSON.parse(savedCompletedQuizzes));
-    }
-  }, []);
+    const loadCompletedQuizzes = async () => {
+      // First try to load from localStorage for immediate display
+      const savedCompletedQuizzes = localStorage.getItem('completedQuizzes');
+      if (savedCompletedQuizzes) {
+        setCompletedQuizzes(JSON.parse(savedCompletedQuizzes));
+      }
+      
+      // Then, if user is authenticated, get the completed quizzes from Supabase
+      if (user) {
+        try {
+          const completedQuizIds = await getCompletedQuizIds();
+          if (completedQuizIds.length > 0) {
+            const allCompletedQuizzes = [
+              ...new Set([
+                ...(savedCompletedQuizzes ? JSON.parse(savedCompletedQuizzes) : []),
+                ...completedQuizIds
+              ])
+            ];
+            setCompletedQuizzes(allCompletedQuizzes);
+            localStorage.setItem('completedQuizzes', JSON.stringify(allCompletedQuizzes));
+          }
+        } catch (error) {
+          console.error("Error loading completed quizzes:", error);
+        }
+      }
+    };
+    
+    loadCompletedQuizzes();
+  }, [user, getCompletedQuizIds]);
   
   // Helper to mark a quiz as completed
   const markQuizCompleted = (quizId: string) => {
@@ -48,46 +80,48 @@ const Quizzes = () => {
       description: 'Discover fashion styles that complement your unique personality and preferences.',
       icon: <Star className="h-6 w-6" />,
       color: 'from-purple-500/20 to-indigo-500/20 hover:from-purple-500/30 hover:to-indigo-500/30',
-      component: <FindYourStyleQuiz standalone onComplete={() => markQuizCompleted('find-your-style')} />
-    },
-    {
-      id: 'mood-matcher',
-      title: 'Mood Matcher',
-      description: 'Get outfit suggestions based on your current mood and daily plans.',
-      icon: <Star className="h-6 w-6" />,
-      color: 'from-coral-500/20 to-pink-500/20 hover:from-coral-500/30 hover:to-pink-500/30',
-      component: <StyleDiscoveryQuiz onComplete={() => markQuizCompleted('mood-matcher')} />
+      getQuizData: FindYourStyleQuiz
     },
     {
       id: 'lifestyle-lens',
       title: 'Lifestyle Lens',
       description: 'See how your daily activities and lifestyle influence your ideal wardrobe.',
       icon: <Star className="h-6 w-6" />,
-      color: 'from-emerald-500/20 to-teal-500/20 hover:from-emerald-500/30 hover:to-teal-500/30'
+      color: 'from-emerald-500/20 to-teal-500/20 hover:from-emerald-500/30 hover:to-teal-500/30',
+      getQuizData: LifestyleLensQuiz
     },
     {
       id: 'vibe-check',
       title: 'Vibe Check',
       description: 'Identify the energy and aesthetic your outfits communicate to others.',
       icon: <Star className="h-6 w-6" />,
-      color: 'from-amber-500/20 to-orange-500/20 hover:from-amber-500/30 hover:to-orange-500/30'
+      color: 'from-amber-500/20 to-orange-500/20 hover:from-amber-500/30 hover:to-orange-500/30',
+      getQuizData: VibeCheckQuiz
     },
     {
       id: 'fashion-time-machine',
       title: 'Fashion Time Machine',
       description: 'Explore which fashion eras resonate with your personal style.',
       icon: <Star className="h-6 w-6" />,
-      color: 'from-blue-500/20 to-cyan-500/20 hover:from-blue-500/30 hover:to-cyan-500/30'
+      color: 'from-blue-500/20 to-cyan-500/20 hover:from-blue-500/30 hover:to-cyan-500/30',
+      getQuizData: FashionTimeMachineQuiz
     }
   ];
   
   // Handle quiz selection
   const handleQuizSelect = (quizId: string) => {
-    setActiveQuiz(quizId);
-    const quizSection = document.getElementById(quizId);
-    if (quizSection) {
-      quizSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (!user && !loading) {
+      // Redirect to auth if not logged in
+      navigate('/auth', { 
+        state: { 
+          returnTo: '/quizzes',
+          message: 'Please log in to take quizzes and save your style profile.' 
+        } 
+      });
+      return;
     }
+    
+    setModalQuizId(quizId);
   };
   
   // Handle hover on quiz card
@@ -99,6 +133,11 @@ const Quizzes = () => {
   const completionProgress = completedQuizzes.length;
   const totalQuizzes = quizzes.length;
   const progressPercentage = (completionProgress / totalQuizzes) * 100;
+
+  // Currently active quiz data for modal
+  const activeQuizData = modalQuizId 
+    ? quizzes.find(q => q.id === modalQuizId)?.getQuizData() 
+    : null;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white pb-20">
@@ -128,7 +167,7 @@ const Quizzes = () => {
             </p>
             {completionProgress > 0 && (
               <Button 
-                onClick={() => window.location.href = '/results'} 
+                onClick={() => navigate('/results')} 
                 variant="outline" 
                 className="text-purple-200 border-purple-500/30 hover:bg-purple-500/20"
               >
@@ -145,7 +184,7 @@ const Quizzes = () => {
         </div>
 
         {/* Quiz Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-16">
           {quizzes.map((quiz) => {
             const isCompleted = completedQuizzes.includes(quiz.id);
             return (
@@ -195,37 +234,17 @@ const Quizzes = () => {
           })}
         </div>
         
-        {/* Active Quiz Content */}
-        {activeQuiz && (
-          <div id={activeQuiz} className="pt-5 pb-16">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="mb-12"
-            >
-              <Card className="bg-gradient-to-br from-slate-900/70 to-indigo-900/40 border-purple-500/20 shadow-xl backdrop-blur-sm overflow-hidden">
-                <CardContent className="p-0 sm:p-6">
-                  {quizzes.find(q => q.id === activeQuiz)?.component || (
-                    <div className="p-8 text-center">
-                      <h3 className="text-2xl font-semibold mb-4 text-purple-200">
-                        {quizzes.find(q => q.id === activeQuiz)?.title}
-                      </h3>
-                      <p className="text-white/70 mb-6">
-                        Coming soon! This quiz is currently under development.
-                      </p>
-                      <Button 
-                        onClick={() => setActiveQuiz(null)} 
-                        className="bg-purple-500 text-white hover:bg-purple-600"
-                      >
-                        Back to Quizzes
-                      </Button>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </motion.div>
-          </div>
+        {/* Quiz Modal */}
+        {activeQuizData && (
+          <QuizModal
+            quiz={activeQuizData}
+            isOpen={!!modalQuizId}
+            onClose={() => setModalQuizId(null)}
+            onComplete={() => {
+              markQuizCompleted(modalQuizId!);
+              setModalQuizId(null);
+            }}
+          />
         )}
         
         {/* Results Section */}

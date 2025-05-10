@@ -13,6 +13,7 @@ import Profile from '@/pages/Profile';
 // Additional pages
 import Auth from '@/pages/Auth';
 import Quizzes from '@/pages/Quizzes';
+import StyleQuizPage from '@/pages/StyleQuiz';
 
 // Providers and Components
 import { Toaster } from 'sonner';
@@ -38,8 +39,11 @@ function App() {
               <Route path="/shop-and-try" element={<PageLayout><ShopAndTry /></PageLayout>} />
               <Route path="/settings" element={<PageLayout><Settings /></PageLayout>} />
               <Route path="/profile" element={<PageLayout><Profile /></PageLayout>} />
-              {/* Add the Quizzes route */}
+              {/* Add the Quizzes routes */}
               <Route path="/quizzes" element={<PageLayout><Quizzes /></PageLayout>} />
+              <Route path="/find-your-style" element={<PageLayout><StyleQuizPage /></PageLayout>} />
+              {/* Placeholder for results page that will be implemented later */}
+              <Route path="/results" element={<PageLayout><Profile /></PageLayout>} />
               {/* Add PageLayout to Auth page as well to ensure footer appears there too */}
               <Route path="/auth" element={<PageLayout><Auth /></PageLayout>} />
             </Routes>
