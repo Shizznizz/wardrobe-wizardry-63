@@ -277,6 +277,24 @@ const ShopAndTry = () => {
       toast.error("Invalid item");
     }
   };
+  
+  // Fix for EditorsPicks - convert ClothingItem to string ID for onTryItem
+  const handleTryOnItemAdapter = (item: ClothingItem) => {
+    if (item && item.id) {
+      handleTryOnTrendingItemAdapter(item.id);
+    } else {
+      toast.error("Invalid item for try-on");
+    }
+  };
+  
+  // Fix for OliviaDailyDrop - convert ClothingItem to string ID for onSeeHowToWear
+  const handleSeeHowToWearFromItemAdapter = (item: ClothingItem) => {
+    if (item && item.id) {
+      handleSeeHowToWearAdapter(item.id);
+    } else {
+      toast.error("Invalid item");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white overflow-x-hidden">
@@ -362,8 +380,8 @@ const ShopAndTry = () => {
         <ShopByMood 
           id="shop-by-mood"
           isPremiumUser={isPremiumUser || isAuthenticated}
-          onTryItem={(item) => handleTryOnTrendingItem(item)}
-          onStylistSuggestion={(item) => handleStylistSuggestion(item)}
+          onTryItem={handleTryOnTrendingItemAdapter}
+          onStylistSuggestion={handleStylistSuggestionAdapter}
           onUpgradeToPremium={handleShowPremiumPopup}
           activeMood={activeMood}
           onMoodSelect={handleSetActiveMood}
@@ -373,7 +391,7 @@ const ShopAndTry = () => {
         {/* SECTION 6: EDITOR'S PICKS / BASED ON YOUR VIBE / WISHLIST */}
         <EditorsPicks
           isPremiumUser={isPremiumUser || isAuthenticated}
-          onTryItem={(item) => handleTryOnTrendingItem(item)}
+          onTryItem={handleTryOnItemAdapter}
           onUpgradeToPremium={handleShowPremiumPopup}
           userCountry={userCountry}
           onSaveToWardrobe={handleSaveToWardrobeAdapter}
