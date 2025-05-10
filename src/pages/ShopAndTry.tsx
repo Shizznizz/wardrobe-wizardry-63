@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -295,6 +294,41 @@ const ShopAndTry = () => {
       toast.error("Invalid item");
     }
   };
+  
+  // New adapter for lines 383-384: convert ClothingItem to string itemId
+  const handleSaveToWardrobeItemAdapter = (item: ClothingItem) => {
+    if (item && item.id) {
+      handleSaveToWardrobeAdapter(item.id);
+    } else {
+      toast.error("Invalid item");
+    }
+  };
+  
+  // New adapter for line 397: convert string itemId to ClothingItem
+  const handleSeeHowToWearAdapter2 = (itemId: string) => {
+    const mockItem: ClothingItem = {
+      id: itemId,
+      name: "Item " + itemId,
+      type: "top",
+      color: "black",
+      season: ["all"],
+      image: ""
+    };
+    handleSeeHowToWear(mockItem);
+  };
+  
+  // New adapter for line 388: convert ClothingItem to string
+  const onSaveToWishlistStringAdapter = (itemId: string) => {
+    const mockItem: ClothingItem = {
+      id: itemId,
+      name: "Item " + itemId,
+      type: "top",
+      color: "black",
+      season: ["all"],
+      image: ""
+    };
+    handleSaveToWishlist(mockItem);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white overflow-x-hidden">
@@ -385,7 +419,7 @@ const ShopAndTry = () => {
           onUpgradeToPremium={handleShowPremiumPopup}
           activeMood={activeMood}
           onMoodSelect={handleSetActiveMood}
-          onSaveToWishlist={handleSaveToWishlistAdapter}
+          onSaveToWishlist={onSaveToWishlistStringAdapter}
         />
         
         {/* SECTION 6: EDITOR'S PICKS / BASED ON YOUR VIBE / WISHLIST */}
@@ -394,13 +428,13 @@ const ShopAndTry = () => {
           onTryItem={handleTryOnItemAdapter}
           onUpgradeToPremium={handleShowPremiumPopup}
           userCountry={userCountry}
-          onSaveToWardrobe={handleSaveToWardrobeAdapter}
+          onSaveToWardrobe={handleSaveToWardrobeItemAdapter}
         />
         
         {/* BONUS SECTION: DAILY FEATURE / STYLING CHALLENGE */}
         <OliviaDailyDrop
           isPremiumUser={isPremiumUser || isAuthenticated}
-          onSeeHowToWear={handleSeeHowToWearAdapter}
+          onSeeHowToWear={handleSeeHowToWearAdapter2}
         />
         
         {/* Footer with affiliate disclaimer and country filter */}
