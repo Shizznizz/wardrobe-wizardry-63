@@ -1,8 +1,7 @@
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import OutfitCalendar from '@/components/outfits/OutfitCalendar';
-import { sampleClothingItems, sampleOutfits } from '@/lib/wardrobeData';
 import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
 import EnhancedLocationSelector from '@/components/weather/EnhancedLocationSelector';
@@ -10,19 +9,20 @@ import { useLocationStorage } from '@/hooks/useLocationStorage';
 import { format } from 'date-fns';
 import ScrollToTop from '@/components/ScrollToTop';
 import { useAuth } from '@/hooks/useAuth';
+import { useWardrobeData } from '@/hooks/useWardrobeData';
 import { supabase } from '@/integrations/supabase/client';
 import HeroSection from '@/components/shared/HeroSection';
-import { Button } from '@/components/ui/button';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { AlertCircle } from 'lucide-react';
 
 const StylePlanner = () => {
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [items, setItems] = useState(sampleClothingItems);
-  const [outfits, setOutfits] = useState(sampleOutfits);
+  const { isAuthenticated, user } = useAuth();
+  const { clothingItems, outfits, isLoadingItems, isLoadingOutfits } = useWardrobeData();
+  
   const [location, setLocation] = useState<{ city: string; country: string }>({ city: '', country: '' });
   const [locationUpdated, setLocationUpdated] = useState(false);
   const isMobile = useIsMobile();
   const { savedLocation } = useLocationStorage();
-  const { user } = useAuth();
   const [profile, setProfile] = useState<{ first_name: string | null } | null>(null);
   const calendarRef = useRef<HTMLDivElement>(null);
 
@@ -51,37 +51,6 @@ const StylePlanner = () => {
     }
   }, [savedLocation]);
 
-  useEffect(() => {
-    const loadItems = () => {
-      setIsLoading(true);
-      try {
-        const savedItems = localStorage.getItem('wardrobeItems');
-        if (savedItems) {
-          setItems(JSON.parse(savedItems));
-        } else {
-          setItems(sampleClothingItems);
-          localStorage.setItem('wardrobeItems', JSON.stringify(sampleClothingItems));
-        }
-        
-        const savedOutfits = localStorage.getItem('wardrobeOutfits');
-        if (savedOutfits) {
-          setOutfits(JSON.parse(savedOutfits));
-        } else {
-          setOutfits(sampleOutfits);
-          localStorage.setItem('wardrobeOutfits', JSON.stringify(sampleOutfits));
-        }
-      } catch (error) {
-        console.error("Failed to load wardrobe data:", error);
-        setItems(sampleClothingItems);
-        setOutfits(sampleOutfits);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadItems();
-  }, []);
-
   const handleLocationChange = (city: string, country: string) => {
     setLocation({ city, country });
   };
@@ -90,6 +59,41 @@ const StylePlanner = () => {
     if (calendarRef.current) {
       calendarRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+  };
+
+  // Show authentication notice if user is not logged in
+  const renderAuthNotice = () => {
+    if (!isAuthenticated) {
+      return (
+        <Alert variant="warning" className="mb-6 bg-amber-900/20 border-amber-500/50">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Authentication Required</AlertTitle>
+          <AlertDescription>
+            Please log in to see your outfit calendar and plan your style.
+          </AlertDescription>
+        </Alert>
+      );
+    }
+    return null;
+  };
+  
+  // Show empty state if authenticated but no items or outfits
+  const renderEmptyNotice = () => {
+    if (isAuthenticated && !isLoadingItems && !isLoadingOutfits && 
+        (clothingItems.length === 0 || outfits.length === 0)) {
+      return (
+        <Alert variant="default" className="mb-6 bg-blue-900/20 border-blue-500/50">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>{clothingItems.length === 0 ? 'Empty Wardrobe' : 'No Outfits Found'}</AlertTitle>
+          <AlertDescription>
+            {clothingItems.length === 0 
+              ? 'Add some clothing items to your wardrobe to create outfits.' 
+              : 'Create some outfits from your wardrobe items to plan your style.'}
+          </AlertDescription>
+        </Alert>
+      );
+    }
+    return null;
   };
 
   return (
@@ -120,6 +124,11 @@ const StylePlanner = () => {
       </HeroSection>
       
       <main className="w-full px-4 sm:px-6 md:px-8 max-w-7xl mx-auto overflow-hidden">
+        <div className="container mx-auto pt-6">
+          {renderAuthNotice()}
+          {renderEmptyNotice()}
+        </div>
+        
         <motion.div 
           className="space-y-8 md:space-y-10"
           initial={{ opacity: 0 }}
@@ -144,7 +153,7 @@ const StylePlanner = () => {
             </div>
           </motion.div>
           
-          {!isLoading && (
+          {isAuthenticated && !isLoadingItems && !isLoadingOutfits && (
             <motion.div 
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
@@ -154,7 +163,7 @@ const StylePlanner = () => {
             >
               <OutfitCalendar 
                 outfits={outfits}
-                clothingItems={items}
+                clothingItems={clothingItems}
                 location={location}
                 onAddLog={(log) => {
                   toast.success(`Outfit ${log.date > new Date() ? 'planned' : 'logged'} for ${format(new Date(log.date), 'MMMM d, yyyy')}`);

@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { Plus } from 'lucide-react';
@@ -7,16 +8,20 @@ import { toast } from 'sonner';
 import WardrobeGrid from '@/components/WardrobeGrid';
 import WardrobeControls from '@/components/wardrobe/WardrobeControls';
 import { ClothingItem } from '@/lib/types';
-import { sampleClothingItems } from '@/lib/wardrobeData';
 import UploadModal from '@/components/UploadModal';
 import EnhancedWardrobeFilters from '@/components/wardrobe/EnhancedWardrobeFilters';
 import WardrobeInsights from '@/components/wardrobe/WardrobeInsights';
 import HeroSection from '@/components/shared/HeroSection';
 import { WardrobeFilters } from '@/lib/wardrobe/enhancedFilterUtils';
+import { useAuth } from '@/hooks/useAuth';
+import { useWardrobeData } from '@/hooks/useWardrobeData';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { AlertCircle } from 'lucide-react';
 
 const MyWardrobe = () => {
-  const [items, setItems] = useState<ClothingItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { isAuthenticated } = useAuth();
+  const { clothingItems, isLoadingItems, addClothingItem, deleteClothingItem, updateClothingItem } = useWardrobeData();
+  
   const [showFilters, setShowFilters] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [filteredItems, setFilteredItems] = useState<ClothingItem[]>([]);
@@ -30,50 +35,27 @@ const MyWardrobe = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showCompactView, setShowCompactView] = useState(false);
   
-  useEffect(() => {
-    const loadItems = () => {
-      setIsLoading(true);
-      try {
-        const savedItems = localStorage.getItem('wardrobeItems');
-        if (savedItems) {
-          setItems(JSON.parse(savedItems));
-          setFilteredItems(JSON.parse(savedItems));
-        } else {
-          setItems(sampleClothingItems);
-          setFilteredItems(sampleClothingItems);
-          localStorage.setItem('wardrobeItems', JSON.stringify(sampleClothingItems));
-        }
-      } catch (error) {
-        console.error("Failed to load wardrobe data:", error);
-        setItems(sampleClothingItems);
-        setFilteredItems(sampleClothingItems);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadItems();
-  }, []);
-  
   const handleUploadNew = () => {
+    if (!isAuthenticated) {
+      toast.error("Please log in to add items to your wardrobe");
+      return;
+    }
     setShowUploadModal(true);
   };
 
   const handleAddItem = (newItem: ClothingItem) => {
-    const updatedItems = [...items, newItem];
-    setItems(updatedItems);
-    setFilteredItems(updatedItems);
-    localStorage.setItem('wardrobeItems', JSON.stringify(updatedItems));
+    if (!isAuthenticated) {
+      toast.error("Please log in to add items to your wardrobe");
+      return;
+    }
+    
+    addClothingItem(newItem);
     setShowUploadModal(false);
     toast.success("New item added to your wardrobe!");
   };
   
   const handleDeleteItem = (itemId: string) => {
-    const updatedItems = items.filter(item => item.id !== itemId);
-    setItems(updatedItems);
-    setFilteredItems(updatedItems);
-    localStorage.setItem('wardrobeItems', JSON.stringify(updatedItems));
-    toast.success("Item removed from your wardrobe");
+    deleteClothingItem(itemId);
   };
   
   const handleToggleFilters = () => {
@@ -85,23 +67,19 @@ const MyWardrobe = () => {
   };
 
   const handleToggleFavorite = (id: string) => {
-    const updatedItems = items.map(item => {
-      if (item.id === id) {
-        return {...item, favorite: !item.favorite};
-      }
-      return item;
-    });
-    setItems(updatedItems);
-    setFilteredItems(updatedItems);
-    localStorage.setItem('wardrobeItems', JSON.stringify(updatedItems));
-    toast.success("Favorite status updated");
+    const item = clothingItems.find(item => item.id === id);
+    if (item) {
+      updateClothingItem(id, { favorite: !item.favorite });
+      toast.success("Favorite status updated");
+    }
   };
 
   const handleMatchItem = (item: ClothingItem) => {
     toast.success(`Finding matches for ${item.name}...`);
-    // Implement actual matching logic here
+    // Match logic would be implemented here
   };
   
+  // Apply filters to the clothing items
   const applyFilters = (
     categories: string[],
     colors: string[],
@@ -115,19 +93,19 @@ const MyWardrobe = () => {
     setSelectedOccasions(occasions);
     setSearchQuery(query);
     
-    let filtered = [...items];
+    let filtered = [...clothingItems];
     
     // Apply category filter
     if (categories.length > 0) {
-      filtered = filtered.filter(item => categories.includes(item.category || ''));
+      filtered = filtered.filter(item => categories.includes(item.category || item.type || ''));
     }
     
-    // Apply color filter - fix for color/colors mismatch
+    // Apply color filter
     if (colors.length > 0) {
       filtered = filtered.filter(item => colors.includes(item.color));
     }
     
-    // Apply season filter - fix for season/seasons mismatch
+    // Apply season filter
     if (seasons.length > 0) {
       filtered = filtered.filter(item => {
         if (Array.isArray(item.season)) {
@@ -153,7 +131,8 @@ const MyWardrobe = () => {
       filtered = filtered.filter(item => 
         item.name.toLowerCase().includes(lowerCaseQuery) || 
         item.brand?.toLowerCase().includes(lowerCaseQuery) ||
-        item.category?.toLowerCase().includes(lowerCaseQuery)
+        item.category?.toLowerCase().includes(lowerCaseQuery) ||
+        item.type?.toLowerCase().includes(lowerCaseQuery)
       );
     }
     
@@ -165,13 +144,10 @@ const MyWardrobe = () => {
   const handleFilterChange = (filters: WardrobeFilters) => {
     const categoryArray = filters.category ? [filters.category] : [];
     const colorArray = filters.color ? [filters.color] : [];
-    // Fix: Use filters.occasion for seasons as a workaround since we don't have a seasons property
-    // We'll use selectedSeasons state for storing seasons
-    const seasonArray = selectedSeasons; // Keep using the existing state
+    const seasonArray = selectedSeasons; 
     const occasionArray = filters.occasion ? [filters.occasion] : [];
     const query = filters.searchQuery || '';
     
-    // Call our existing function with extracted values
     applyFilters(categoryArray, colorArray, seasonArray, occasionArray, query);
   };
   
@@ -181,8 +157,43 @@ const MyWardrobe = () => {
     setSelectedSeasons([]);
     setSelectedOccasions([]);
     setSearchQuery('');
-    setFilteredItems(items);
+    setFilteredItems([]);
     setFilterApplied(false);
+  };
+
+  // Show authentication notice if user is not logged in
+  const renderAuthNotice = () => {
+    if (!isAuthenticated) {
+      return (
+        <Alert variant="warning" className="mb-6 bg-amber-900/20 border-amber-500/50">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Authentication Required</AlertTitle>
+          <AlertDescription>
+            Please log in to see your wardrobe items and save new ones.
+          </AlertDescription>
+        </Alert>
+      );
+    }
+    return null;
+  };
+  
+  // Show empty state if authenticated but no items
+  const renderEmptyState = () => {
+    if (isAuthenticated && !isLoadingItems && clothingItems.length === 0) {
+      return (
+        <div className="text-center p-10 border border-dashed border-white/20 rounded-xl bg-slate-900/30 mt-6">
+          <h3 className="text-xl font-medium text-white mb-2">Your Wardrobe is Empty</h3>
+          <p className="text-white/70 mb-6">Add your first clothing item to get started.</p>
+          <Button 
+            onClick={handleUploadNew}
+            className="bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90"
+          >
+            <Plus className="mr-2 h-4 w-4" /> Add Your First Item
+          </Button>
+        </div>
+      );
+    }
+    return null;
   };
   
   return (
@@ -209,8 +220,9 @@ const MyWardrobe = () => {
         ]}
       />
       
-      {/* Rest of wardrobe content */}
       <div className="container mx-auto px-4 pt-6">
+        {renderAuthNotice()}
+        
         <WardrobeControls 
           viewMode={viewMode}
           showCompactView={showCompactView}
@@ -227,50 +239,49 @@ const MyWardrobe = () => {
           {showFilters && (
             <EnhancedWardrobeFilters
               onFilterChange={handleFilterChange}
-              totalItems={items.length}
+              totalItems={clothingItems.length}
               filteredCount={filteredItems.length}
             />
           )}
         </motion.div>
         
-        {filterApplied && (
+        {filterApplied && clothingItems.length > 0 && (
           <div className="text-sm text-gray-400 mt-2">
             {filteredItems.length} items match your filters. <button onClick={clearAllFilters} className="underline">Clear Filters</button>
           </div>
         )}
         
-        {showInsights && (
+        {showInsights && clothingItems.length > 0 && (
           <motion.div 
             className="mt-6"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <WardrobeInsights items={items} />
+            <WardrobeInsights items={clothingItems} />
           </motion.div>
         )}
         
-        {isLoading ? (
-          <div className="text-center text-gray-400 mt-10">Loading wardrobe...</div>
-        ) : (
+        {renderEmptyState()}
+        
+        {isLoadingItems ? (
+          <div className="text-center text-gray-400 mt-10">Loading your wardrobe...</div>
+        ) : clothingItems.length > 0 ? (
           <WardrobeGrid 
-            items={filterApplied ? filteredItems : items} 
+            items={filterApplied ? filteredItems : clothingItems} 
             onDeleteItem={handleDeleteItem}
             onToggleFavorite={handleToggleFavorite}
             onMatchItem={handleMatchItem}
             viewMode={viewMode}
             compactView={showCompactView}
           />
-        )}
+        ) : null}
       </div>
       
-      {/* Updated UploadModal component with correct prop */}
       <UploadModal 
         onUpload={handleAddItem}
         buttonText="Add Item"
-      >
-        {/* UploadModal children */}
-      </UploadModal>
+      />
     </div>
   );
 };

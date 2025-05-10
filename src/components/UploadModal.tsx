@@ -9,6 +9,8 @@ import ImageUploader from './wardrobe/ImageUploader';
 import ClothingDetailsForm from './wardrobe/ClothingDetailsForm';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useAuth } from '@/hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 
 interface UploadModalProps {
   onUpload: (item: any) => void;
@@ -17,6 +19,8 @@ interface UploadModalProps {
 }
 
 const UploadModal = ({ onUpload, buttonText = "Add Item", children }: UploadModalProps) => {
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
   const [type, setType] = useState<ClothingType | ''>('');
@@ -80,6 +84,12 @@ const UploadModal = ({ onUpload, buttonText = "Add Item", children }: UploadModa
   const validateForm = (): string[] => {
     const errors: string[] = [];
 
+    // Check if user is authenticated
+    if (!isAuthenticated) {
+      errors.push("You need to be logged in to add items");
+      return errors;
+    }
+
     // Check for special characters in name (alphanumeric, spaces, and basic punctuation allowed)
     if (name && !/^[a-zA-Z0-9\s.,'-]*$/.test(name)) {
       errors.push("Name contains invalid characters. Please use only letters, numbers, and basic punctuation.");
@@ -96,8 +106,28 @@ const UploadModal = ({ onUpload, buttonText = "Add Item", children }: UploadModa
     return errors;
   };
 
+  const handleOpenChange = (newOpen: boolean) => {
+    if (!isAuthenticated && newOpen) {
+      toast.error("Please log in to add items to your wardrobe");
+      navigate("/login"); // Redirect to login page
+      return;
+    }
+    
+    setOpen(newOpen);
+    if (!newOpen) {
+      resetForm();
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!isAuthenticated) {
+      toast.error("Please log in to add items to your wardrobe");
+      setOpen(false);
+      navigate("/login");
+      return;
+    }
     
     // Set flag to show validations as user edits
     setAttemptedSubmit(true);
@@ -116,20 +146,17 @@ const UploadModal = ({ onUpload, buttonText = "Add Item", children }: UploadModa
     setIsLoading(true);
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
       // Default occasions
       const defaultOccasions: ClothingOccasion[] = ['casual'];
       
       // Create new item
       const newItem = {
-        id: Date.now().toString(),
+        id: Date.now().toString(), // This ID will be overridden by Supabase
         name,
         type,
         color,
         material,
-        season: seasons,  // Make sure we're using the right property name
+        season: seasons,
         seasons: seasons, // For compatibility
         image: imagePreview,
         imageUrl: imagePreview,
@@ -140,19 +167,9 @@ const UploadModal = ({ onUpload, buttonText = "Add Item", children }: UploadModa
       };
       
       onUpload(newItem);
-      toast.success('Item added to your wardrobe!');
       
       // Reset form
-      setName('');
-      setType('');
-      setColor('');
-      setMaterial('');
-      setSeasons([]);
-      setFavorite(false);
-      setImagePreview(null);
-      setImageFile(null);
-      setAttemptedSubmit(false);
-      
+      resetForm();
       setOpen(false);
     } catch (error) {
       console.error("Upload error:", error);
@@ -179,12 +196,7 @@ const UploadModal = ({ onUpload, buttonText = "Add Item", children }: UploadModa
   return (
     <Dialog 
       open={open} 
-      onOpenChange={(newOpen) => {
-        if (!newOpen) {
-          resetForm();
-        }
-        setOpen(newOpen);
-      }}
+      onOpenChange={handleOpenChange}
     >
       <DialogTrigger asChild>
         {children || (

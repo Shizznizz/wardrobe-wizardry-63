@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
-import { ClothingItem, Outfit } from '@/lib/types';
-import { sampleClothingItems, sampleOutfits } from '@/lib/wardrobeData';
+import { Outfit } from '@/lib/types';
 
 import DailyOutfitSection from '@/components/outfits/mix-match/DailyOutfitSection';
 import EnhancedWeatherSection from '@/components/outfits/mix-match/EnhancedWeatherSection';
@@ -10,77 +10,32 @@ import SuggestedOutfitsSection from '@/components/outfits/mix-match/SuggestedOut
 import OliviaRecommendationSection from '@/components/outfits/mix-match/OliviaRecommendationSection';
 import CreateOutfitSection from '@/components/outfits/mix-match/CreateOutfitSection';
 import { useAuth } from '@/hooks/useAuth';
-import { supabase } from '@/integrations/supabase/client';
+import { useWardrobeData } from '@/hooks/useWardrobeData';
 import HeroSection from '@/components/shared/HeroSection';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { AlertCircle } from 'lucide-react';
 
 const MixAndMatch = () => {
-  const [items, setItems] = useState<ClothingItem[]>([]);
-  const [outfits, setOutfits] = useState<Outfit[]>([]);
+  const { isAuthenticated, user } = useAuth();
+  const { clothingItems, outfits, isLoadingItems, isLoadingOutfits } = useWardrobeData();
+  
   const [currentOutfit, setCurrentOutfit] = useState<Outfit | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [showRecommendation, setShowRecommendation] = useState(false);
-  const { user, isAuthenticated } = useAuth();
-  const [profile, setProfile] = useState<{ first_name: string | null } | null>(null);
-  const [temperature, setTemperature] = useState(72); // Default temperature
-  const [weatherCondition, setWeatherCondition] = useState('clear'); // Default condition
-  const [situation, setSituation] = useState('casual'); // Default situation
+  const [temperature, setTemperature] = useState(72);
+  const [weatherCondition, setWeatherCondition] = useState('clear');
+  const [situation, setSituation] = useState('casual');
   
-  useEffect(() => {
-    if (user?.id) {
-      supabase
-        .from('profiles')
-        .select('first_name')
-        .eq('id', user.id)
-        .single()
-        .then(({ data, error }) => {
-          if (!error && data) {
-            setProfile(data);
-          }
-        });
-    }
-  }, [user?.id]);
-  
-  useEffect(() => {
-    const loadItems = () => {
-      setIsLoading(true);
-      try {
-        const savedItems = localStorage.getItem('wardrobeItems');
-        if (savedItems) {
-          setItems(JSON.parse(savedItems));
-        } else {
-          setItems(sampleClothingItems);
-          localStorage.setItem('wardrobeItems', JSON.stringify(sampleClothingItems));
-        }
-        
-        const savedOutfits = localStorage.getItem('wardrobeOutfits');
-        if (savedOutfits) {
-          setOutfits(JSON.parse(savedOutfits));
-          if (JSON.parse(savedOutfits).length > 0) {
-            setCurrentOutfit(JSON.parse(savedOutfits)[0]);
-          }
-        } else {
-          setOutfits(sampleOutfits);
-          if (sampleOutfits.length > 0) {
-            setCurrentOutfit(sampleOutfits[0]);
-          }
-          localStorage.setItem('wardrobeOutfits', JSON.stringify(sampleOutfits));
-        }
-      } catch (error) {
-        console.error("Failed to load wardrobe data:", error);
-        setItems(sampleClothingItems);
-        setOutfits(sampleOutfits);
-        if (sampleOutfits.length > 0) {
-          setCurrentOutfit(sampleOutfits[0]);
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadItems();
-  }, []);
-
   const handleStyleMe = () => {
+    if (!isAuthenticated) {
+      toast.error("Please log in to get personalized outfit recommendations");
+      return;
+    }
+    
+    if (clothingItems.length === 0) {
+      toast.warning("Please add some clothing items to your wardrobe first");
+      return;
+    }
+    
     setShowRecommendation(true);
     toast.success("Generating outfit recommendations...");
     
@@ -93,7 +48,7 @@ const MixAndMatch = () => {
     }, 500);
   };
 
-  // Add handler functions for weather section
+  // Handle weather section updates
   const handleWeatherUpdate = (weatherInfo: any) => {
     if (weatherInfo.temperature) {
       setTemperature(weatherInfo.temperature);
@@ -105,6 +60,38 @@ const MixAndMatch = () => {
 
   const handleSituationChange = (newSituation: string) => {
     setSituation(newSituation);
+  };
+  
+  // Show authentication notice if user is not logged in
+  const renderAuthNotice = () => {
+    if (!isAuthenticated) {
+      return (
+        <Alert variant="warning" className="mb-6 bg-amber-900/20 border-amber-500/50">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Authentication Required</AlertTitle>
+          <AlertDescription>
+            Please log in to see your outfits and get personalized recommendations.
+          </AlertDescription>
+        </Alert>
+      );
+    }
+    return null;
+  };
+  
+  // Show empty state if authenticated but no items
+  const renderEmptyWardrobeNotice = () => {
+    if (isAuthenticated && !isLoadingItems && clothingItems.length === 0) {
+      return (
+        <Alert variant="default" className="mb-6 bg-blue-900/20 border-blue-500/50">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Empty Wardrobe</AlertTitle>
+          <AlertDescription>
+            Add some clothing items to your wardrobe to create outfits.
+          </AlertDescription>
+        </Alert>
+      );
+    }
+    return null;
   };
   
   return (
@@ -127,6 +114,9 @@ const MixAndMatch = () => {
       />
       
       <div className="container mx-auto px-4 space-y-10 pt-6 pb-20">
+        {renderAuthNotice()}
+        {renderEmptyWardrobeNotice()}
+        
         <EnhancedWeatherSection 
           onWeatherUpdate={handleWeatherUpdate}
           onSituationChange={handleSituationChange}
@@ -136,36 +126,44 @@ const MixAndMatch = () => {
           weatherCondition={weatherCondition}
         />
         
-        <DailyOutfitSection 
-          clothingItems={items} 
-          currentOutfit={currentOutfit} 
-        />
-        
-        <SuggestedOutfitsSection 
-          clothingItems={items} 
-          outfits={outfits}
-          weather={{
-            temperature,
-            condition: weatherCondition
-          }}
-        />
-        
-        {showRecommendation && (
-          <div id="olivia-recommendation">
-            <OliviaRecommendationSection 
+        {isAuthenticated && (
+          <>
+            <DailyOutfitSection 
+              clothingItems={clothingItems} 
+              currentOutfit={currentOutfit}
+              isLoading={isLoadingItems} 
+            />
+            
+            <SuggestedOutfitsSection 
+              clothingItems={clothingItems} 
+              outfits={outfits}
               weather={{
                 temperature,
                 condition: weatherCondition
               }}
-              situation={situation}
+              isLoading={isLoadingOutfits}
             />
-          </div>
+            
+            {showRecommendation && (
+              <div id="olivia-recommendation">
+                <OliviaRecommendationSection 
+                  weather={{
+                    temperature,
+                    condition: weatherCondition
+                  }}
+                  situation={situation}
+                  clothingItems={clothingItems}
+                />
+              </div>
+            )}
+            
+            <CreateOutfitSection 
+              clothingItems={clothingItems}
+              isPremium={isAuthenticated}
+              isLoading={isLoadingItems}
+            />
+          </>
         )}
-        
-        <CreateOutfitSection 
-          clothingItems={items}
-          isPremium={isAuthenticated}
-        />
       </div>
     </div>
   );
