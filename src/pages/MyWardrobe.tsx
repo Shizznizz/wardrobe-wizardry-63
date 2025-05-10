@@ -22,7 +22,6 @@ const MyWardrobe = () => {
   const { clothingItems, isLoadingItems, addClothingItem, deleteClothingItem, updateClothingItem } = useWardrobeData();
   
   const [showFilters, setShowFilters] = useState(false);
-  const [showUploadModal, setShowUploadModal] = useState(false);
   const [filteredItems, setFilteredItems] = useState<ClothingItem[]>([]);
   const [filterApplied, setFilterApplied] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -39,7 +38,7 @@ const MyWardrobe = () => {
       toast.error("Please log in to add items to your wardrobe");
       return;
     }
-    setShowUploadModal(true);
+    // We'll let the UploadModal manage its own visibility
   };
 
   const handleAddItem = (newItem: ClothingItem) => {
@@ -49,7 +48,6 @@ const MyWardrobe = () => {
     }
     
     addClothingItem(newItem);
-    setShowUploadModal(false);
     toast.success("New item added to your wardrobe!");
   };
   
@@ -278,9 +276,8 @@ const MyWardrobe = () => {
         ) : null}
       </div>
       
+      {/* Updated to use UploadModal without isOpen and onClose props */}
       <UploadModal 
-        isOpen={showUploadModal}
-        onClose={() => setShowUploadModal(false)}
         onUpload={handleAddItem}
         buttonText="Add Item"
       />
