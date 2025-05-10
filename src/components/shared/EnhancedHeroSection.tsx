@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Sparkles } from 'lucide-react';
+import OptimizedImage from '@/components/ui/optimized-image';
 
 export interface HeroButtonProps {
   label: string;
@@ -97,7 +98,7 @@ const EnhancedHeroSection = ({
   return (
     <motion.section
       className={cn(
-        "relative py-12 md:py-16 lg:py-20 px-4 sm:px-6 overflow-hidden",
+        "relative py-8 md:py-16 lg:py-20 px-4 sm:px-6 overflow-hidden",
         className
       )}
       initial="hidden"
@@ -114,7 +115,7 @@ const EnhancedHeroSection = ({
       <div className="container mx-auto max-w-7xl">
         <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
           {/* Text content - always stacks above image on mobile */}
-          <div className="w-full md:w-1/2 text-center md:text-left md:pl-8 space-y-6">
+          <div className="w-full md:w-1/2 text-center md:text-left md:pl-8 space-y-6 order-2 md:order-1">
             <motion.div variants={itemVariants} className="relative">
               {hasSparkleEffect && (
                 <motion.div 
@@ -133,12 +134,12 @@ const EnhancedHeroSection = ({
                   <Sparkles className="w-5 h-5 text-coral-400" />
                 </motion.div>
               )}
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-coral-400 to-purple-400 leading-tight">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-coral-400 to-purple-400 leading-tight">
                 {title}
               </h1>
             </motion.div>
             
-            <motion.p variants={itemVariants} className="text-xl sm:text-2xl text-white/80 font-montserrat">
+            <motion.p variants={itemVariants} className="text-lg sm:text-xl text-white/80 font-montserrat">
               {subtitle}
             </motion.p>
             
@@ -181,7 +182,7 @@ const EnhancedHeroSection = ({
 
           {/* Image container */}
           <motion.div 
-            className="w-full md:w-1/2 flex justify-center"
+            className="w-full md:w-1/2 flex justify-center order-1 md:order-2"
             variants={imageVariants}
           >
             <div className="relative">
@@ -193,14 +194,15 @@ const EnhancedHeroSection = ({
               <div className="absolute inset-2 -z-5 rounded-full border border-purple-400/5"></div>
               
               {/* The image */}
-              <img 
+              <OptimizedImage 
                 src={image.src} 
                 alt={image.alt || "Olivia AI Fashion Assistant"}
                 className={cn(
                   "drop-shadow-lg animate-float",
-                  image.variant === 'portrait' ? "max-h-[400px]" : 
-                  image.variant === 'headshot' ? "max-h-[350px]" : "max-h-[550px]"
+                  image.variant === 'portrait' ? "max-h-[300px] md:max-h-[400px]" : 
+                  image.variant === 'headshot' ? "max-h-[250px] md:max-h-[350px]" : "max-h-[350px] md:max-h-[550px]"
                 )}
+                objectFit="contain"
               />
               
               {/* Subtle light effect */}

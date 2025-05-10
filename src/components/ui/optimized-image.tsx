@@ -20,6 +20,8 @@ export interface OptimizedImageProps {
   containerClassName?: string;
   width?: number;
   height?: number;
+  objectFit?: 'contain' | 'cover' | 'fill' | 'none' | 'scale-down';
+  objectPosition?: string;
 }
 
 const OptimizedImage: React.FC<OptimizedImageProps> = ({
@@ -39,6 +41,8 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   containerClassName,
   width,
   height,
+  objectFit = 'cover',
+  objectPosition,
 }) => {
   const { 
     src: optimizedSrc, 
@@ -59,9 +63,14 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   // Handle aspect ratio styling
   const aspectRatioStyle = aspectRatio ? {
     aspectRatio,
-    objectFit: 'cover' as const,
+    objectFit,
+    objectPosition,
     ...style
-  } : style;
+  } : {
+    objectFit,
+    objectPosition,
+    ...style
+  };
 
   // Element to render
   const imgElement = (
@@ -75,6 +84,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
         backgroundColor: !isLoaded && showSkeleton ? placeholderColor : undefined,
         width: width ? `${width}px` : undefined,
         height: height ? `${height}px` : undefined,
+        maxWidth: '100%', // Ensure image doesn't overflow its container
       }}
       onLoad={() => {
         if (imgProps.onLoad) imgProps.onLoad();

@@ -11,11 +11,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BarChart3, CalendarIcon, CalendarDays, Clock } from 'lucide-react';
 import { ChartContainer, ChartTooltipContent, ChartTooltip } from '@/components/ui/chart';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, CartesianGrid, Tooltip } from 'recharts';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const StylePlanner = () => {
   const { outfits, clothingItems, outfitLogs, addOutfitLog } = useOutfitState();
   const { savedLocation } = useLocationStorage();
   const [showTimeline, setShowTimeline] = useState(false);
+  const isMobile = useIsMobile();
 
   const handleShowTimeline = () => {
     setShowTimeline(true);
@@ -26,7 +28,8 @@ const StylePlanner = () => {
     }
   };
 
-  // Example data for stats
+  // Generate monthly data for the current year
+  const currentYear = new Date().getFullYear();
   const monthlyWearData = [
     { name: 'Jan', count: 4 },
     { name: 'Feb', count: 7 },
@@ -41,6 +44,11 @@ const StylePlanner = () => {
     { name: 'Nov', count: 6 },
     { name: 'Dec', count: 11 },
   ];
+
+  // For mobile, we'll show only the most recent 7 months to prevent crowding
+  const filteredMonthlyData = isMobile 
+    ? monthlyWearData.slice(-7) 
+    : monthlyWearData;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white pb-20">
@@ -74,7 +82,7 @@ const StylePlanner = () => {
           </div>
 
           {/* Calendar section */}
-          <div className="bg-slate-900/50 backdrop-blur-sm rounded-xl p-6 border border-purple-500/20 shadow-lg">
+          <div className="bg-slate-900/50 backdrop-blur-sm rounded-xl p-4 sm:p-6 border border-purple-500/20 shadow-lg">
             <OutfitCalendar 
               outfits={outfits} 
               clothingItems={clothingItems}
@@ -94,25 +102,49 @@ const StylePlanner = () => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Monthly wear frequency chart */}
-              <Card className="bg-slate-800/50 border-purple-500/20 shadow-lg backdrop-blur-sm">
+              <Card className="bg-slate-800/50 border-purple-500/20 shadow-lg backdrop-blur-sm overflow-hidden">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-lg text-purple-200 flex items-center gap-2">
                     <CalendarDays className="h-5 w-5" />
                     Monthly Outfit Wear Frequency
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <ChartContainer config={{ count: {} }} className="h-[300px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={monthlyWearData}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#444" />
-                        <XAxis dataKey="name" stroke="#aaa" />
-                        <YAxis stroke="#aaa" />
-                        <Tooltip content={<ChartTooltipContent />} />
-                        <Bar dataKey="count" fill="#a855f7" radius={[4, 4, 0, 0]} />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </ChartContainer>
+                <CardContent className="p-0 sm:p-4">
+                  <div className="w-full overflow-x-auto overflow-y-hidden">
+                    <div className={`h-[300px] ${isMobile ? 'min-w-[450px]' : 'w-full'}`}>
+                      <ChartContainer config={{ count: {} }} className="h-full">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart 
+                            data={filteredMonthlyData}
+                            margin={{ top: 20, right: 30, left: 20, bottom: 40 }}
+                          >
+                            <CartesianGrid strokeDasharray="3 3" stroke="#444" />
+                            <XAxis 
+                              dataKey="name" 
+                              stroke="#aaa" 
+                              angle={0} 
+                              tick={{ fontSize: isMobile ? 10 : 12 }}
+                              dy={10}
+                            />
+                            <YAxis 
+                              stroke="#aaa" 
+                              tick={{ fontSize: isMobile ? 10 : 12 }}
+                            />
+                            <Tooltip 
+                              content={<ChartTooltipContent />} 
+                              cursor={{ fill: 'rgba(255, 255, 255, 0.1)' }}
+                            />
+                            <Bar 
+                              dataKey="count" 
+                              fill="#a855f7" 
+                              radius={[4, 4, 0, 0]}
+                              maxBarSize={isMobile ? 30 : 60}
+                            />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </ChartContainer>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
 
@@ -124,7 +156,7 @@ const StylePlanner = () => {
                     Your Style Evolution
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="pt-4">
+                <CardContent className="pt-4 overflow-y-auto max-h-[300px]">
                   <div className="relative pl-8 space-y-6">
                     {/* Timeline elements */}
                     {[1, 2, 3].map((i) => (
