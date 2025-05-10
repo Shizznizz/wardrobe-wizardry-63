@@ -20,11 +20,6 @@ export interface OptimizedImageProps {
   containerClassName?: string;
   width?: number;
   height?: number;
-  // New glow effect props
-  withGlow?: boolean;
-  glowColor?: string;
-  hoverGlowColor?: string;
-  glowIntensity?: 'light' | 'medium' | 'strong';
 }
 
 const OptimizedImage: React.FC<OptimizedImageProps> = ({
@@ -44,11 +39,6 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   containerClassName,
   width,
   height,
-  // Glow effect props
-  withGlow = false,
-  glowColor = 'rgba(236, 72, 153, 0.4)', // Default pink glow
-  hoverGlowColor = 'rgba(236, 72, 153, 0.7)', // Default pink glow on hover
-  glowIntensity = 'medium',
 }) => {
   const { 
     src: optimizedSrc, 
@@ -62,7 +52,6 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   });
   
   const [imgError, setImgError] = useState(false);
-  const [isHovering, setIsHovering] = useState(false);
 
   // Use fallback source if provided and original source had an error
   const finalSrc = imgError ? fallbackSrc : (optimizedSrc || src);
@@ -74,37 +63,19 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
     ...style
   } : style;
 
-  // Calculate glow box-shadow based on intensity
-  const getGlowShadow = () => {
-    if (!withGlow) return undefined;
-    
-    const intensity = {
-      light: '0 0 20px',
-      medium: '0 0 30px',
-      strong: '0 0 40px'
-    }[glowIntensity];
-    
-    return isHovering 
-      ? `${intensity.replace('30', '60')} ${hoverGlowColor}` 
-      : `${intensity} ${glowColor}`;
-  };
-
   // Element to render
   const imgElement = (
     <img
       src={finalSrc}
       alt={alt}
-      className={`${className} ${!isLoaded && showSkeleton ? 'animate-pulse bg-opacity-50' : ''} ${withGlow ? 'transition-shadow duration-300 ease-in-out' : ''}`}
+      className={`${className} ${!isLoaded && showSkeleton ? 'animate-pulse bg-opacity-50' : ''}`}
       loading={lazyLoad && !priority ? 'lazy' : 'eager'}
       style={{
         ...aspectRatioStyle,
         backgroundColor: !isLoaded && showSkeleton ? placeholderColor : undefined,
         width: width ? `${width}px` : undefined,
         height: height ? `${height}px` : undefined,
-        boxShadow: getGlowShadow(),
       }}
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => setIsHovering(false)}
       onLoad={() => {
         if (imgProps.onLoad) imgProps.onLoad();
         if (onLoad) onLoad();

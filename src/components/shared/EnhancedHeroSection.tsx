@@ -21,7 +21,6 @@ export interface EnhancedHeroSectionProps {
     src: string;
     alt?: string;
     variant?: 'portrait' | 'standing' | 'headshot';
-    glowColor?: string;
   };
   buttons?: HeroButtonProps[];
   className?: string;
@@ -73,13 +72,6 @@ const EnhancedHeroSection = ({
         duration: 0.8,
         ease: "easeOut"
       }
-    },
-    hover: {
-      scale: 1.03,
-      transition: {
-        duration: 0.3,
-        ease: "easeInOut"
-      }
     }
   };
 
@@ -101,25 +93,6 @@ const EnhancedHeroSection = ({
         return 'bg-gradient-to-r from-coral-500 to-coral-400 text-white';
     }
   };
-
-  // Get appropriate glow color based on image variant or fallback to default
-  const getGlowColor = () => {
-    if (image.glowColor) return image.glowColor;
-    
-    switch (image.variant) {
-      case 'portrait':
-        return 'rgba(169, 126, 255, 0.6)'; // Purple glow
-      case 'headshot':
-        return 'rgba(236, 72, 153, 0.6)'; // Pink glow
-      case 'standing':
-        return 'rgba(139, 92, 246, 0.6)'; // Violet glow
-      default:
-        return 'rgba(236, 111, 241, 0.6)'; // Default coral/purple glow
-    }
-  };
-
-  const glowColor = getGlowColor();
-  const hoverGlowColor = glowColor.replace('0.6)', '0.8)');
 
   return (
     <motion.section
@@ -206,42 +179,32 @@ const EnhancedHeroSection = ({
             )}
           </div>
 
-          {/* Image container with enhanced glow effect */}
+          {/* Image container */}
           <motion.div 
-            className="w-full md:w-1/2 flex justify-center overflow-visible"
+            className="w-full md:w-1/2 flex justify-center"
             variants={imageVariants}
           >
             <div className="relative">
-              {/* The image with glow effect */}
-              <motion.div
-                className="relative"
-                whileHover="hover" 
-                variants={imageVariants}
-              >
-                <img 
-                  src={image.src} 
-                  alt={image.alt || "Olivia AI Fashion Assistant"}
-                  className={cn(
-                    "drop-shadow-lg animate-float",
-                    image.variant === 'portrait' ? "max-h-[400px]" : 
-                    image.variant === 'headshot' ? "max-h-[350px]" : "max-h-[550px]",
-                    "transition-shadow duration-500 ease-in-out"
-                  )}
-                  style={{
-                    boxShadow: `0 0 30px ${glowColor}`,
-                    transition: 'box-shadow 0.5s ease-in-out, transform 0.3s ease-in-out'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.boxShadow = `0 0 60px ${hoverGlowColor}`;
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.boxShadow = `0 0 30px ${glowColor}`;
-                  }}
-                />
-                
-                {/* Subtle animated ring */}
-                <div className="absolute inset-0 -z-5 rounded-full border border-white/5 animate-pulse-glow"></div>
-              </motion.div>
+              {/* Glowing backlight effect for the image */}
+              <div className="absolute inset-0 -z-10 rounded-full bg-gradient-to-r from-purple-500/20 via-coral-500/20 to-purple-500/20 blur-2xl"></div>
+              
+              {/* Subtle animated rings */}
+              <div className="absolute inset-0 -z-5 rounded-full border border-coral-400/10 animate-pulse-glow"></div>
+              <div className="absolute inset-2 -z-5 rounded-full border border-purple-400/5"></div>
+              
+              {/* The image */}
+              <img 
+                src={image.src} 
+                alt={image.alt || "Olivia AI Fashion Assistant"}
+                className={cn(
+                  "drop-shadow-lg animate-float",
+                  image.variant === 'portrait' ? "max-h-[400px]" : 
+                  image.variant === 'headshot' ? "max-h-[350px]" : "max-h-[550px]"
+                )}
+              />
+              
+              {/* Subtle light effect */}
+              <div className="absolute top-0 right-1/4 w-10 h-10 bg-white/10 rounded-full blur-xl"></div>
             </div>
           </motion.div>
         </div>
