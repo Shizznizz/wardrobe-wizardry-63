@@ -89,7 +89,7 @@ const FashionTimeMachineQuiz = (): QuizData => {
         },
         'd': {
           title: 'Y2K Trend Revivalist',
-          description: 'You embrace the playful experimentation of Y2K fashion with a contemporary twist. Your bold choices in color, texture, and silhouette create a style that's both nostalgically fun and refreshingly current.',
+          description: "You embrace the playful experimentation of Y2K fashion with a contemporary twist. Your bold choices in color, texture, and silhouette create a style that is both nostalgically fun and refreshingly current.",
           traits: ['Experimentally bold', 'Playfully ironic', 'Confident reinvention'],
           value: { styleHistory: 'Y2K Trend Revivalist', eraInfluences: ['early 2000s', '2020s'], revivalElements: ['bold colors', 'mixed textures', 'statement accessories'] }
         }
