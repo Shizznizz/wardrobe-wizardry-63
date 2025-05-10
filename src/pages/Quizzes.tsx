@@ -1,57 +1,203 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import EnhancedHeroSection from '@/components/shared/EnhancedHeroSection';
 import StyleDiscoveryQuiz from '@/components/StyleDiscoveryQuiz';
 import FindYourStyleQuiz from '@/components/FindYourStyleQuiz';
 import { Card, CardContent } from '@/components/ui/card';
-import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
+import { Check, ChevronRight, Star } from 'lucide-react';
+import OptimizedImage from '@/components/ui/optimized-image';
+import { cn } from '@/lib/utils';
+
+// Define the quiz types
+interface Quiz {
+  id: string;
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  color: string;
+  component?: React.ReactNode;
+}
 
 const Quizzes = () => {
-  const [activeSection, setActiveSection] = useState<string | null>(null);
-
-  const handleFindYourStyle = () => {
-    setActiveSection('style-quiz');
-    const styleQuizSection = document.getElementById('style-quiz');
-    if (styleQuizSection) {
-      styleQuizSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const [activeQuiz, setActiveQuiz] = useState<string | null>(null);
+  const [completedQuizzes, setCompletedQuizzes] = useState<string[]>([]);
+  const [hoveredQuiz, setHoveredQuiz] = useState<string | null>(null);
+  
+  // Load completed quizzes from localStorage on component mount
+  useEffect(() => {
+    const savedCompletedQuizzes = localStorage.getItem('completedQuizzes');
+    if (savedCompletedQuizzes) {
+      setCompletedQuizzes(JSON.parse(savedCompletedQuizzes));
     }
+  }, []);
+  
+  // Helper to mark a quiz as completed
+  const markQuizCompleted = (quizId: string) => {
+    const updatedCompletedQuizzes = [...new Set([...completedQuizzes, quizId])];
+    setCompletedQuizzes(updatedCompletedQuizzes);
+    localStorage.setItem('completedQuizzes', JSON.stringify(updatedCompletedQuizzes));
   };
 
-  const handleMoodMatcher = () => {
-    setActiveSection('mood-matcher');
-    const moodMatcherSection = document.getElementById('mood-matcher');
-    if (moodMatcherSection) {
-      moodMatcherSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  // Quiz data
+  const quizzes: Quiz[] = [
+    {
+      id: 'find-your-style',
+      title: 'Find Your Style',
+      description: 'Discover fashion styles that complement your unique personality and preferences.',
+      icon: <Star className="h-6 w-6" />,
+      color: 'from-purple-500/20 to-indigo-500/20 hover:from-purple-500/30 hover:to-indigo-500/30',
+      component: <FindYourStyleQuiz standalone onComplete={() => markQuizCompleted('find-your-style')} />
+    },
+    {
+      id: 'mood-matcher',
+      title: 'Mood Matcher',
+      description: 'Get outfit suggestions based on your current mood and daily plans.',
+      icon: <Star className="h-6 w-6" />,
+      color: 'from-coral-500/20 to-pink-500/20 hover:from-coral-500/30 hover:to-pink-500/30',
+      component: <StyleDiscoveryQuiz onComplete={() => markQuizCompleted('mood-matcher')} />
+    },
+    {
+      id: 'lifestyle-lens',
+      title: 'Lifestyle Lens',
+      description: 'See how your daily activities and lifestyle influence your ideal wardrobe.',
+      icon: <Star className="h-6 w-6" />,
+      color: 'from-emerald-500/20 to-teal-500/20 hover:from-emerald-500/30 hover:to-teal-500/30'
+    },
+    {
+      id: 'vibe-check',
+      title: 'Vibe Check',
+      description: 'Identify the energy and aesthetic your outfits communicate to others.',
+      icon: <Star className="h-6 w-6" />,
+      color: 'from-amber-500/20 to-orange-500/20 hover:from-amber-500/30 hover:to-orange-500/30'
+    },
+    {
+      id: 'fashion-time-machine',
+      title: 'Fashion Time Machine',
+      description: 'Explore which fashion eras resonate with your personal style.',
+      icon: <Star className="h-6 w-6" />,
+      color: 'from-blue-500/20 to-cyan-500/20 hover:from-blue-500/30 hover:to-cyan-500/30'
+    }
+  ];
+  
+  // Handle quiz selection
+  const handleQuizSelect = (quizId: string) => {
+    setActiveQuiz(quizId);
+    const quizSection = document.getElementById(quizId);
+    if (quizSection) {
+      quizSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
+  
+  // Handle hover on quiz card
+  const handleQuizHover = (quizId: string | null) => {
+    setHoveredQuiz(quizId);
+  };
+  
+  // Get completion progress
+  const completionProgress = completedQuizzes.length;
+  const totalQuizzes = quizzes.length;
+  const progressPercentage = (completionProgress / totalQuizzes) * 100;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white pb-20">
+      {/* Hero Section */}
       <EnhancedHeroSection
-        title="Discover Your Unique Style"
-        subtitle="Take a quick quiz to reveal your personal style identity and receive curated outfit ideas."
+        title="Ready to Unlock Your Fashion Personality?"
+        subtitle="Take fun, fast quizzes and help Olivia uncover your unique style DNA. The more she knows, the better she styles you."
         image={{
-          src: "/lovable-uploads/f0afcad3-9696-4e23-a118-04525585d72a.png",
+          src: `/lovable-uploads/${hoveredQuiz ? 'f1154816-6766-4478-ba89-6342580bc85b.png' : 'f0afcad3-9696-4e23-a118-04525585d72a.png'}`,
           alt: "Olivia headshot with ponytail and pink blouse",
           variant: "headshot"
         }}
-        buttons={[
-          {
-            label: "Find Your Style",
-            onClick: handleFindYourStyle,
-            variant: "black"
-          },
-          {
-            label: "Mood Matcher",
-            onClick: handleMoodMatcher,
-            variant: "secondary"
-          }
-        ]}
-      />
+      >
+        <div className="mt-6 p-4 bg-white/10 backdrop-blur-sm rounded-xl border border-purple-500/20 max-w-xl mx-auto md:mx-0">
+          <p className="text-white/90 text-sm">
+            Every answer helps Olivia craft more personalized fashion advice – think smarter recommendations, better outfits, and a wardrobe that feels like <span className="font-bold text-coral-400">you</span>.
+          </p>
+        </div>
+      </EnhancedHeroSection>
       
       <div className="container mx-auto px-4 pt-10">
-        <div id="style-quiz" className="pt-10 pb-8">
-          {activeSection === 'style-quiz' ? (
+        {/* Quiz Progress Tracker */}
+        <div className="mb-12">
+          <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
+            <p className="text-xl text-purple-200 font-medium">
+              Your Style Journey: {completionProgress} of {totalQuizzes} Quizzes Completed
+            </p>
+            {completionProgress > 0 && (
+              <Button 
+                onClick={() => window.location.href = '/results'} 
+                variant="outline" 
+                className="text-purple-200 border-purple-500/30 hover:bg-purple-500/20"
+              >
+                See My Results <ChevronRight className="ml-1 h-4 w-4" />
+              </Button>
+            )}
+          </div>
+          <div className="w-full bg-purple-900/30 rounded-full h-2.5">
+            <div 
+              className="bg-gradient-to-r from-coral-500 to-purple-500 h-2.5 rounded-full transition-all duration-700 ease-in-out" 
+              style={{ width: `${progressPercentage}%` }}
+            />
+          </div>
+        </div>
+
+        {/* Quiz Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+          {quizzes.map((quiz) => {
+            const isCompleted = completedQuizzes.includes(quiz.id);
+            return (
+              <motion.div 
+                key={quiz.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+                whileHover={{ scale: 1.02, y: -5 }}
+                onMouseEnter={() => handleQuizHover(quiz.id)}
+                onMouseLeave={() => handleQuizHover(null)}
+              >
+                <Card 
+                  className={cn(
+                    "cursor-pointer bg-gradient-to-br border-purple-500/20 shadow-lg backdrop-blur-sm overflow-hidden h-full",
+                    quiz.color,
+                    isCompleted ? "ring-2 ring-coral-400/50" : ""
+                  )}
+                  onClick={() => handleQuizSelect(quiz.id)}
+                >
+                  <CardContent className="p-6 flex flex-col h-full">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="p-2 rounded-full bg-white/10">
+                        {quiz.icon}
+                      </div>
+                      {isCompleted && (
+                        <div className="flex items-center gap-1 bg-coral-500/20 px-2 py-1 rounded-full">
+                          <Check className="h-4 w-4 text-coral-400" />
+                          <span className="text-xs font-medium text-coral-300">Completed</span>
+                        </div>
+                      )}
+                    </div>
+                    <h3 className="text-xl font-semibold mb-2 text-white">{quiz.title}</h3>
+                    <p className="text-white/70 text-sm flex-grow">{quiz.description}</p>
+                    <div className="mt-4">
+                      <Button
+                        variant="ghost" 
+                        className="text-white/90 hover:bg-white/10 hover:text-white w-full justify-between"
+                      >
+                        Start Quiz <ChevronRight className="h-4 w-4 ml-1" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            );
+          })}
+        </div>
+        
+        {/* Active Quiz Content */}
+        {activeQuiz && (
+          <div id={activeQuiz} className="pt-5 pb-16">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -60,47 +206,68 @@ const Quizzes = () => {
             >
               <Card className="bg-gradient-to-br from-slate-900/70 to-indigo-900/40 border-purple-500/20 shadow-xl backdrop-blur-sm overflow-hidden">
                 <CardContent className="p-0 sm:p-6">
-                  <FindYourStyleQuiz standalone />
+                  {quizzes.find(q => q.id === activeQuiz)?.component || (
+                    <div className="p-8 text-center">
+                      <h3 className="text-2xl font-semibold mb-4 text-purple-200">
+                        {quizzes.find(q => q.id === activeQuiz)?.title}
+                      </h3>
+                      <p className="text-white/70 mb-6">
+                        Coming soon! This quiz is currently under development.
+                      </p>
+                      <Button 
+                        onClick={() => setActiveQuiz(null)} 
+                        className="bg-purple-500 text-white hover:bg-purple-600"
+                      >
+                        Back to Quizzes
+                      </Button>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </motion.div>
-          ) : (
-            <div className="text-center my-12">
-              <p className="text-xl text-purple-200 mb-4">
-                Discover the fashion styles that complement your taste and personality
-              </p>
-              <p className="text-purple-300/80 mb-6 max-w-2xl mx-auto">
-                Take our detailed style assessment to learn which fashion aesthetics match your unique preferences. Get personalized recommendations tailored to your body type and lifestyle.
-              </p>
-            </div>
-          )}
-        </div>
+          </div>
+        )}
         
-        <div id="mood-matcher" className="pt-8 pb-20">
-          {activeSection === 'mood-matcher' ? (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="mb-12"
-            >
-              <Card className="bg-gradient-to-br from-slate-900/70 to-pink-900/30 border-purple-500/20 shadow-xl backdrop-blur-sm overflow-hidden">
-                <CardContent className="p-0 sm:p-6">
-                  <StyleDiscoveryQuiz />
-                </CardContent>
-              </Card>
-            </motion.div>
-          ) : (
-            <div className="text-center my-12">
-              <p className="text-xl text-purple-200 mb-4">
-                Let your mood guide your style choices
-              </p>
-              <p className="text-purple-300/80 mb-6 max-w-2xl mx-auto">
-                How you feel impacts what you want to wear. Our Mood Matcher quiz creates outfit suggestions based on your current emotions, the weather, and your plans for the day.
+        {/* Results Section */}
+        {completedQuizzes.length > 0 && (
+          <div className="mt-12 pt-8 border-t border-purple-500/20">
+            <div className="mb-8">
+              <h3 className="text-2xl font-semibold text-purple-200 mb-2">Your Style Journey So Far</h3>
+              <p className="text-white/70">
+                Based on your quiz results, Olivia is learning more about your personal style.
               </p>
             </div>
-          )}
-        </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {completedQuizzes.map((quizId) => {
+                const quiz = quizzes.find(q => q.id === quizId);
+                return quiz ? (
+                  <Card key={quizId} className="bg-white/5 border-purple-500/20 backdrop-blur-sm">
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="p-1.5 rounded-full bg-white/10">
+                          {quiz.icon}
+                        </div>
+                        <h4 className="font-medium text-white">{quiz.title}</h4>
+                      </div>
+                      <p className="text-white/60 text-sm">
+                        You've completed this quiz! Olivia is using these insights to enhance your style recommendations.
+                      </p>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="mt-3 text-xs text-purple-300 hover:text-purple-200 hover:bg-purple-500/10 w-full"
+                        onClick={() => handleQuizSelect(quizId)}
+                      >
+                        Retake Quiz <ChevronRight className="ml-1 h-3 w-3" />
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ) : null;
+              })}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

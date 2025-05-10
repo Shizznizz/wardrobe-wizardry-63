@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Coffee, Sparkles, Umbrella, Sunset, Moon, Check, ArrowRight, X } from 'lucide-react';
@@ -12,9 +11,10 @@ import QuizIntroMessage from './QuizIntroMessage';
 
 interface StyleDiscoveryQuizProps {
   onClose?: () => void;
+  onComplete?: () => void;
 }
 
-const StyleDiscoveryQuiz = ({ onClose }: StyleDiscoveryQuizProps) => {
+const StyleDiscoveryQuiz = ({ onClose, onComplete }: StyleDiscoveryQuizProps) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [showQuiz, setShowQuiz] = useState(false);
@@ -59,6 +59,7 @@ const StyleDiscoveryQuiz = ({ onClose }: StyleDiscoveryQuizProps) => {
     
     if (currentStep === questions.length - 1) {
       setShowConfetti(true);
+      if (onComplete) onComplete();
     }
   };
   
