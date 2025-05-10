@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Check, ChevronRight } from 'lucide-react';
@@ -20,7 +21,7 @@ interface QuizResult {
 
 interface FindYourStyleQuizProps {
   standalone?: boolean;
-  onComplete?: () => void;
+  onComplete?: (quizResult?: QuizResult) => void;
 }
 
 const FindYourStyleQuiz: React.FC<FindYourStyleQuizProps> = ({ standalone = false, onComplete }) => {
@@ -100,6 +101,12 @@ const FindYourStyleQuiz: React.FC<FindYourStyleQuizProps> = ({ standalone = fals
 
   const handleSubmitQuiz = () => {
     setQuizCompleted(true);
+    
+    if (onComplete) {
+      // Pass the quiz result to the parent component
+      const result = getQuizResult();
+      onComplete(result);
+    }
   };
 
   const resetQuiz = () => {
@@ -115,11 +122,11 @@ const FindYourStyleQuiz: React.FC<FindYourStyleQuizProps> = ({ standalone = fals
   };
 
   const handleQuizCompletion = () => {
-    
     if (onComplete) {
-      onComplete();
+      // Pass the quiz result to the parent component
+      const result = getQuizResult();
+      onComplete(result);
     }
-    
   };
   
   return (
