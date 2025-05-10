@@ -11,9 +11,10 @@ import { toast } from 'sonner';
 interface CreateOutfitSectionProps {
   clothingItems: ClothingItem[];
   isPremium: boolean;
+  isLoading?: boolean; // Added isLoading prop
 }
 
-const CreateOutfitSection = ({ clothingItems, isPremium }: CreateOutfitSectionProps) => {
+const CreateOutfitSection = ({ clothingItems, isPremium, isLoading }: CreateOutfitSectionProps) => {
   const { 
     setIsBuilderOpen, 
     setSelectedOutfitId,
@@ -35,6 +36,32 @@ const CreateOutfitSection = ({ clothingItems, isPremium }: CreateOutfitSectionPr
     setIsBuilderOpen(true);    // Ensure the builder modal opens
     toast.info("Creating a new outfit");
   };
+  
+  if (isLoading) {
+    return (
+      <Card className="overflow-hidden border border-white/10 bg-gradient-to-br from-purple-900/30 to-indigo-900/30 backdrop-blur-md">
+        <CardContent className="p-6">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <Sparkles className="h-5 w-5 text-purple-400" />
+                <h3 className="text-xl font-semibold text-white">Create Your Own Look</h3>
+              </div>
+              <p className="text-white/70 text-sm">Loading wardrobe items...</p>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+            {Array(5).fill(0).map((_, index) => (
+              <div key={index} className="relative group overflow-hidden rounded-lg border border-white/10 bg-slate-800/50 aspect-square">
+                <div className="w-full h-full animate-pulse bg-slate-700/50"></div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
   
   return (
     <Card className="overflow-hidden border border-white/10 bg-gradient-to-br from-purple-900/30 to-indigo-900/30 backdrop-blur-md">

@@ -13,9 +13,10 @@ interface SuggestedOutfitsSectionProps {
     temperature?: number;
     condition?: string;
   };
+  isLoading?: boolean; // Added isLoading prop
 }
 
-const SuggestedOutfitsSection = ({ outfits, clothingItems, weather }: SuggestedOutfitsSectionProps) => {
+const SuggestedOutfitsSection = ({ outfits, clothingItems, weather, isLoading }: SuggestedOutfitsSectionProps) => {
   // Handle edit (would typically open a modal/dialog)
   const handleEdit = (outfit: Outfit) => {
     toast.info(`Viewing outfit: ${outfit.name}`);
@@ -32,6 +33,31 @@ const SuggestedOutfitsSection = ({ outfits, clothingItems, weather }: SuggestedO
       ? "Removed from favorites" 
       : "Added to favorites");
   };
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="rounded-xl border border-white/10 overflow-hidden bg-slate-900/50 backdrop-blur-md p-6">
+        <div className="flex items-start justify-between mb-8">
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <Sparkles className="h-5 w-5 text-amber-400" />
+              <h3 className="text-xl font-semibold text-white">Suggested For You</h3>
+            </div>
+            <p className="text-white/70 text-sm">Loading your personalized outfit suggestions...</p>
+          </div>
+        </div>
+        
+        <div className="flex justify-center py-10">
+          <div className="animate-pulse w-full max-w-md flex flex-col items-center">
+            <div className="h-48 w-full bg-slate-700/50 rounded-lg mb-4"></div>
+            <div className="h-6 w-1/2 bg-slate-700/50 rounded mb-2"></div>
+            <div className="h-4 w-3/4 bg-slate-700/50 rounded"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="rounded-xl border border-white/10 overflow-hidden bg-slate-900/50 backdrop-blur-md p-6">

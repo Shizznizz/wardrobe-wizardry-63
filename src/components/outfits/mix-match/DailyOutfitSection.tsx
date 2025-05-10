@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Outfit, ClothingItem, WeatherInfo } from '@/lib/types';
 import { Card, CardContent } from '@/components/ui/card';
@@ -10,18 +9,28 @@ interface DailyOutfitSectionProps {
   currentOutfit: Outfit | null;
   clothingItems: ClothingItem[];
   situation?: string;
+  isLoading?: boolean; // Added isLoading prop
 }
 
 const DailyOutfitSection = ({
   weather,
   currentOutfit,
   clothingItems,
-  situation = 'casual'
+  situation = 'casual',
+  isLoading = false
 }: DailyOutfitSectionProps) => {
-  if (!currentOutfit) {
+  if (isLoading) {
     return (
       <div className="text-center p-10 bg-slate-800/50 rounded-xl border border-white/10">
         <p className="text-white/70">Loading your personalized outfit recommendation...</p>
+      </div>
+    );
+  }
+  
+  if (!currentOutfit) {
+    return (
+      <div className="text-center p-10 bg-slate-800/50 rounded-xl border border-white/10">
+        <p className="text-white/70">Create your first outfit to see personalized recommendations</p>
       </div>
     );
   }

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
@@ -165,7 +164,7 @@ const MyWardrobe = () => {
   const renderAuthNotice = () => {
     if (!isAuthenticated) {
       return (
-        <Alert variant="warning" className="mb-6 bg-amber-900/20 border-amber-500/50">
+        <Alert variant="default" className="mb-6 bg-amber-900/20 border-amber-500/50">
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>Authentication Required</AlertTitle>
           <AlertDescription>
