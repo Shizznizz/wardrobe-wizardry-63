@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -8,7 +9,7 @@ import OutfitSubscriptionPopup from '@/components/OutfitSubscriptionPopup';
 import OliviaImageGallery from '@/components/outfits/OliviaImageGallery';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import HeroSection from '@/components/shared/HeroSection';
+import EnhancedHeroSection from '@/components/shared/EnhancedHeroSection';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 
@@ -351,12 +352,12 @@ const ShopAndTry = () => {
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white overflow-x-hidden">
       <Header />
       
-      <HeroSection
+      <EnhancedHeroSection
         title="Shop & Try Fashion"
-        subtitle=""
+        subtitle="Preview new trends, mix with your wardrobe, and get smart fashion recommendations."
         image={{
-          src: "/lovable-uploads/e1aaa230-1623-42c4-ab9f-eb7c5f103ebe.png",
-          alt: "Olivia your AI Fashion Assistant",
+          src: "/lovable-uploads/0e9ba14f-845b-4c56-a82c-5a616b0a3efb.png",
+          alt: "Olivia in cropped beige jacket and pants",
           variant: "standing"
         }}
         buttons={[
@@ -364,7 +365,6 @@ const ShopAndTry = () => {
             label: "Explore Styles with Olivia",
             onClick: handleScrollToTryOn,
             variant: "primary",
-            className: "bg-gradient-to-r from-[#ff4ecb] to-[#a97eff]",
             icon: <ArrowRight className="h-5 w-5" />
           }
         ]}

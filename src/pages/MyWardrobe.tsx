@@ -10,7 +10,7 @@ import { ClothingItem } from '@/lib/types';
 import UploadModal from '@/components/UploadModal';
 import EnhancedWardrobeFilters from '@/components/wardrobe/EnhancedWardrobeFilters';
 import WardrobeInsights from '@/components/wardrobe/WardrobeInsights';
-import HeroSection from '@/components/shared/HeroSection';
+import EnhancedHeroSection from '@/components/shared/EnhancedHeroSection';
 import { WardrobeFilters } from '@/lib/wardrobe/enhancedFilterUtils';
 import { useAuth } from '@/hooks/useAuth';
 import { useWardrobeData } from '@/hooks/useWardrobeData';
@@ -164,7 +164,7 @@ const MyWardrobe = () => {
   const renderAuthNotice = () => {
     if (!isAuthenticated) {
       return (
-        <Alert variant="default" className="mb-6 bg-amber-900/20 border-amber-500/50">
+        <Alert variant="warning" className="mb-6 bg-amber-900/20 border-amber-500/50">
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>Authentication Required</AlertTitle>
           <AlertDescription>
@@ -197,12 +197,13 @@ const MyWardrobe = () => {
   
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white pb-20">
-      <HeroSection
+      <EnhancedHeroSection
         title="Your Digital Wardrobe"
-        subtitle="Elevate your style with our AI-powered organization tools. Rediscover your fashion sense."
+        subtitle="Elevate your style with our AI-powered wardrobe. Upload, organize, and rediscover your fashion favorites."
         image={{
-          src: "/lovable-uploads/e1aaa230-1623-42c4-ab9f-eb7c5f103ebe.png",
-          alt: "Olivia your AI Fashion Assistant"
+          src: "/lovable-uploads/9d6d8627-f9d3-4af3-a5ec-7b2498799ab2.png",
+          alt: "Woman in lilac open-back dress",
+          variant: "portrait"
         }}
         buttons={[
           {
@@ -213,7 +214,7 @@ const MyWardrobe = () => {
           {
             label: "Wardrobe Options",
             onClick: handleToggleFilters,
-            variant: "secondary",
+            variant: "neutral",
             className: "bg-slate-800 hover:bg-slate-700"
           }
         ]}
@@ -278,6 +279,8 @@ const MyWardrobe = () => {
       </div>
       
       <UploadModal 
+        isOpen={showUploadModal}
+        onClose={() => setShowUploadModal(false)}
         onUpload={handleAddItem}
         buttonText="Add Item"
       />

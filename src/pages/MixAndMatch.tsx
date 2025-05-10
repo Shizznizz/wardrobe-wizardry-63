@@ -11,7 +11,7 @@ import OliviaRecommendationSection from '@/components/outfits/mix-match/OliviaRe
 import CreateOutfitSection from '@/components/outfits/mix-match/CreateOutfitSection';
 import { useAuth } from '@/hooks/useAuth';
 import { useWardrobeData } from '@/hooks/useWardrobeData';
-import HeroSection from '@/components/shared/HeroSection';
+import EnhancedHeroSection from '@/components/shared/EnhancedHeroSection';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
 
@@ -66,7 +66,7 @@ const MixAndMatch = () => {
   const renderAuthNotice = () => {
     if (!isAuthenticated) {
       return (
-        <Alert variant="default" className="mb-6 bg-amber-900/20 border-amber-500/50">
+        <Alert variant="warning" className="mb-6 bg-amber-900/20 border-amber-500/50">
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>Authentication Required</AlertTitle>
           <AlertDescription>
@@ -82,7 +82,7 @@ const MixAndMatch = () => {
   const renderEmptyWardrobeNotice = () => {
     if (isAuthenticated && !isLoadingItems && clothingItems.length === 0) {
       return (
-        <Alert variant="default" className="mb-6 bg-blue-900/20 border-blue-500/50">
+        <Alert variant="warning" className="mb-6 bg-blue-900/20 border-blue-500/50">
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>Empty Wardrobe</AlertTitle>
           <AlertDescription>
@@ -96,19 +96,18 @@ const MixAndMatch = () => {
   
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white">
-      <HeroSection
+      <EnhancedHeroSection
         title="Your Daily Style, Curated by Olivia"
-        subtitle="Get AI-powered outfits based on your style, mood, and local weather."
+        subtitle="Olivia creates outfits that reflect your vibe, wardrobe, and even the weather."
         image={{
-          src: "/lovable-uploads/e1aaa230-1623-42c4-ab9f-eb7c5f103ebe.png",
-          alt: "Olivia your AI Fashion Assistant"
+          src: "/lovable-uploads/c1e6bf5e-6916-4ef2-b396-c00b6c7086f2.png",
+          alt: "Woman in beige linen two-piece with hat"
         }}
         buttons={[
           {
             label: "Let Olivia Style Me Today",
             onClick: handleStyleMe,
-            variant: "primary",
-            className: "bg-gradient-to-r from-[#EC6FF1] to-[#FF8AF0] hover:opacity-90 transition-opacity"
+            variant: "gradient"
           }
         ]}
       />
