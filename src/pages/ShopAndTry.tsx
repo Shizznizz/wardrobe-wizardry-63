@@ -329,6 +329,23 @@ const ShopAndTry = () => {
     };
     handleSaveToWishlist(mockItem);
   };
+  
+  // Create two new adapters for ShopByMood component to fix the errors on lines 417-418
+  const handleTryOnTrendingItemForShopByMood = (item: ClothingItem) => {
+    if (item && item.id) {
+      handleTryOnTrendingItemAdapter(item.id);
+    } else {
+      toast.error("Invalid item for try-on");
+    }
+  };
+  
+  const handleStylistSuggestionForShopByMood = (item: ClothingItem) => {
+    if (item && item.id) {
+      handleStylistSuggestionAdapter(item.id);
+    } else {
+      toast.error("Invalid item for styling suggestion");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white overflow-x-hidden">
@@ -414,8 +431,8 @@ const ShopAndTry = () => {
         <ShopByMood 
           id="shop-by-mood"
           isPremiumUser={isPremiumUser || isAuthenticated}
-          onTryItem={handleTryOnTrendingItemAdapter}
-          onStylistSuggestion={handleStylistSuggestionAdapter}
+          onTryItem={handleTryOnTrendingItemForShopByMood}
+          onStylistSuggestion={handleStylistSuggestionForShopByMood}
           onUpgradeToPremium={handleShowPremiumPopup}
           activeMood={activeMood}
           onMoodSelect={handleSetActiveMood}
