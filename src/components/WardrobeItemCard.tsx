@@ -69,6 +69,12 @@ const WardrobeItemCard = ({
     }
   };
 
+  const handleMatchClick = () => {
+    // Show visual feedback when matching
+    toast.success(`Finding matches for ${item.name}...`);
+    onMatchItem(item);
+  };
+
   const seasons = Array.isArray(item.season) ? item.season : [];
   
   const occasions = Array.isArray(item.occasions) 
@@ -77,6 +83,67 @@ const WardrobeItemCard = ({
 
   // Make sure we have a valid image URL
   const imageUrl = item.imageUrl || item.image || '';
+
+  // Render compact card if compactView is enabled
+  if (compactView && viewMode === 'grid') {
+    return (
+      <motion.div
+        className="relative group p-3 bg-slate-800/40 border border-white/5 rounded-xl hover:border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/10 transition-all duration-300"
+        layout
+      >
+        <div className="flex flex-col h-full">
+          <div className="flex justify-between items-start mb-1">
+            <h3 className="font-medium text-sm text-white truncate w-4/5">{item.name || 'Untitled Item'}</h3>
+            <button 
+              className="rounded-full p-1 bg-black/40"
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleFavorite(item.id);
+              }}
+            >
+              <Heart
+                className={cn(
+                  "w-3 h-3 transition-colors duration-300",
+                  item.favorite ? "fill-red-500 text-red-500" : "text-white"
+                )}
+              />
+            </button>
+          </div>
+          
+          <div className="flex flex-wrap gap-1 my-2">
+            {item.type && (
+              <Badge variant="outline" className="text-[10px] h-5 px-1.5 border-gray-500/30 text-gray-300">
+                {item.type}
+              </Badge>
+            )}
+            
+            {seasons.length > 0 && seasons.slice(0, 1).map((season) => (
+              <Badge key={`season-${season}`} variant="outline" className="text-[10px] h-5 px-1.5 border-blue-500/30 text-blue-100">
+                {season}
+              </Badge>
+            ))}
+            
+            {occasions.length > 0 && occasions.slice(0, 1).map((occasion) => (
+              <Badge key={`occasion-${occasion}`} variant="outline" className="text-[10px] h-5 px-1.5 border-purple-500/30 text-purple-100">
+                {occasion}
+              </Badge>
+            ))}
+          </div>
+          
+          <div className="mt-auto">
+            <Button 
+              size="sm" 
+              className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-xs py-1 px-2 h-7"
+              onClick={handleMatchClick}
+            >
+              Match This
+              <ArrowRight className="ml-1 h-3 w-3" />
+            </Button>
+          </div>
+        </div>
+      </motion.div>
+    );
+  }
 
   return (
     <>
@@ -199,7 +266,7 @@ const WardrobeItemCard = ({
               <Button 
                 size="sm" 
                 className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white"
-                onClick={() => onMatchItem(item)}
+                onClick={handleMatchClick}
               >
                 Match This
                 <ArrowRight className="ml-1 h-3.5 w-3.5" />
@@ -259,7 +326,7 @@ const WardrobeItemCard = ({
               <Button 
                 size="sm" 
                 className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white"
-                onClick={() => onMatchItem(item)}
+                onClick={handleMatchClick}
               >
                 Match This
                 <ArrowRight className="ml-1 h-3.5 w-3.5" />

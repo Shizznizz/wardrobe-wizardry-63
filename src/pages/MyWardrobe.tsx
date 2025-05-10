@@ -1,7 +1,8 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
-import { Plus } from 'lucide-react';
+import { Plus, Filter, Check, ArrowDown } from 'lucide-react';
 import { toast } from 'sonner';
 
 import WardrobeGrid from '@/components/WardrobeGrid';
@@ -16,6 +17,24 @@ import { useAuth } from '@/hooks/useAuth';
 import { useWardrobeData } from '@/hooks/useWardrobeData';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
+import { 
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const MyWardrobe = () => {
   const { isAuthenticated } = useAuth();
@@ -32,6 +51,12 @@ const MyWardrobe = () => {
   const [showInsights, setShowInsights] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showCompactView, setShowCompactView] = useState(false);
+  
+  // New filter state
+  const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
+  const [colorFilter, setColorFilter] = useState<string | null>(null);
+  const [seasonFilter, setSeasonFilter] = useState<string | null>(null);
+  const [sortOrder, setSortOrder] = useState<string | null>(null);
   
   const handleUploadNew = () => {
     if (!isAuthenticated) {
@@ -76,66 +101,82 @@ const MyWardrobe = () => {
     // Match logic would be implemented here
   };
   
+  // Get unique values for filters
+  const getUniqueCategories = () => {
+    const categories = clothingItems.map(item => item.type || item.category || '').filter(Boolean);
+    return [...new Set(categories)];
+  };
+  
+  const getUniqueColors = () => {
+    const colors = clothingItems.map(item => item.color || '').filter(Boolean);
+    return [...new Set(colors)];
+  };
+  
   // Apply filters to the clothing items
-  const applyFilters = (
-    categories: string[],
-    colors: string[],
-    seasons: string[],
-    occasions: string[],
-    query: string
-  ) => {
-    setSelectedCategories(categories);
-    setSelectedColors(colors);
-    setSelectedSeasons(seasons);
-    setSelectedOccasions(occasions);
-    setSearchQuery(query);
-    
+  const applyFilters = () => {
     let filtered = [...clothingItems];
     
     // Apply category filter
-    if (categories.length > 0) {
-      filtered = filtered.filter(item => categories.includes(item.category || item.type || ''));
+    if (categoryFilter) {
+      filtered = filtered.filter(item => item.type === categoryFilter || item.category === categoryFilter);
     }
     
     // Apply color filter
-    if (colors.length > 0) {
-      filtered = filtered.filter(item => colors.includes(item.color));
+    if (colorFilter) {
+      filtered = filtered.filter(item => item.color === colorFilter);
     }
     
     // Apply season filter
-    if (seasons.length > 0) {
+    if (seasonFilter) {
       filtered = filtered.filter(item => {
         if (Array.isArray(item.season)) {
-          return item.season.some(s => seasons.includes(s));
+          return item.season.includes(seasonFilter);
         }
         return false;
       });
     }
     
-    // Apply occasion filter
-    if (occasions.length > 0) {
-      filtered = filtered.filter(item => {
-        if (item.occasions) {
-          return item.occasions.some(occasion => occasions.includes(occasion));
-        }
-        return false;
-      });
+    // Apply sort order
+    if (sortOrder) {
+      switch(sortOrder) {
+        case 'newest':
+          filtered.sort((a, b) => new Date(b.dateAdded || 0).getTime() - new Date(a.dateAdded || 0).getTime());
+          break;
+        case 'oldest':
+          filtered.sort((a, b) => new Date(a.dateAdded || 0).getTime() - new Date(b.dateAdded || 0).getTime());
+          break;
+        case 'most-worn':
+          filtered.sort((a, b) => (b.timesWorn || 0) - (a.timesWorn || 0));
+          break;
+        case 'name-asc':
+          filtered.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+          break;
+        case 'name-desc':
+          filtered.sort((a, b) => (b.name || '').localeCompare(a.name || ''));
+          break;
+        default:
+          break;
+      }
     }
     
-    // Apply search query
-    if (query) {
-      const lowerCaseQuery = query.toLowerCase();
-      filtered = filtered.filter(item => 
-        item.name.toLowerCase().includes(lowerCaseQuery) || 
-        item.brand?.toLowerCase().includes(lowerCaseQuery) ||
-        item.category?.toLowerCase().includes(lowerCaseQuery) ||
-        item.type?.toLowerCase().includes(lowerCaseQuery)
-      );
-    }
-    
-    setFilterApplied(categories.length > 0 || colors.length > 0 || seasons.length > 0 || occasions.length > 0 || !!query);
+    setFilterApplied(!!categoryFilter || !!colorFilter || !!seasonFilter || !!sortOrder);
     setFilteredItems(filtered);
   };
+  
+  // Reset all filters
+  const clearAllFilters = () => {
+    setCategoryFilter(null);
+    setColorFilter(null);
+    setSeasonFilter(null);
+    setSortOrder(null);
+    setFilterApplied(false);
+    setFilteredItems([]);
+  };
+  
+  // Apply filters when any filter option changes
+  React.useEffect(() => {
+    applyFilters();
+  }, [categoryFilter, colorFilter, seasonFilter, sortOrder, clothingItems]);
 
   // Convert our applyFilters function to match the expected WardrobeFilters interface
   const handleFilterChange = (filters: WardrobeFilters) => {
@@ -145,19 +186,9 @@ const MyWardrobe = () => {
     const occasionArray = filters.occasion ? [filters.occasion] : [];
     const query = filters.searchQuery || '';
     
-    applyFilters(categoryArray, colorArray, seasonArray, occasionArray, query);
+    applyFilters();
   };
   
-  const clearAllFilters = () => {
-    setSelectedCategories([]);
-    setSelectedColors([]);
-    setSelectedSeasons([]);
-    setSelectedOccasions([]);
-    setSearchQuery('');
-    setFilteredItems([]);
-    setFilterApplied(false);
-  };
-
   // Show authentication notice if user is not logged in
   const renderAuthNotice = () => {
     if (!isAuthenticated) {
@@ -191,6 +222,174 @@ const MyWardrobe = () => {
       );
     }
     return null;
+  };
+
+  // Render filter bar
+  const renderFilterBar = () => {
+    const uniqueCategories = getUniqueCategories();
+    const uniqueColors = getUniqueColors();
+    
+    return (
+      <div className="mb-6 flex flex-col sm:flex-row gap-2 sm:gap-4 justify-between items-start sm:items-center">
+        <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="bg-slate-800/80 border-slate-700">
+                Category {categoryFilter && <Check className="ml-1 h-3 w-3" />}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-48 bg-slate-900 border-slate-700">
+              <DropdownMenuLabel>Select Category</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuGroup>
+                {categoryFilter && (
+                  <DropdownMenuItem 
+                    className="text-red-400"
+                    onClick={() => setCategoryFilter(null)}
+                  >
+                    Clear Selection
+                  </DropdownMenuItem>
+                )}
+                {uniqueCategories.map(category => (
+                  <DropdownMenuItem 
+                    key={category}
+                    className={categoryFilter === category ? "bg-purple-900/30" : ""}
+                    onClick={() => setCategoryFilter(category)}
+                  >
+                    {category} {categoryFilter === category && <Check className="ml-auto h-3 w-3" />}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="bg-slate-800/80 border-slate-700">
+                Color {colorFilter && <Check className="ml-1 h-3 w-3" />}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-48 bg-slate-900 border-slate-700">
+              <DropdownMenuLabel>Select Color</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuGroup>
+                {colorFilter && (
+                  <DropdownMenuItem 
+                    className="text-red-400"
+                    onClick={() => setColorFilter(null)}
+                  >
+                    Clear Selection
+                  </DropdownMenuItem>
+                )}
+                {uniqueColors.map(color => (
+                  <DropdownMenuItem 
+                    key={color}
+                    className={colorFilter === color ? "bg-purple-900/30" : ""}
+                    onClick={() => setColorFilter(color)}
+                  >
+                    {color} {colorFilter === color && <Check className="ml-auto h-3 w-3" />}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="bg-slate-800/80 border-slate-700">
+                Season {seasonFilter && <Check className="ml-1 h-3 w-3" />}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-48 bg-slate-900 border-slate-700">
+              <DropdownMenuLabel>Select Season</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuGroup>
+                {seasonFilter && (
+                  <DropdownMenuItem 
+                    className="text-red-400"
+                    onClick={() => setSeasonFilter(null)}
+                  >
+                    Clear Selection
+                  </DropdownMenuItem>
+                )}
+                {['summer', 'winter', 'autumn', 'spring', 'all'].map(season => (
+                  <DropdownMenuItem 
+                    key={season}
+                    className={seasonFilter === season ? "bg-purple-900/30" : ""}
+                    onClick={() => setSeasonFilter(season)}
+                  >
+                    {season} {seasonFilter === season && <Check className="ml-auto h-3 w-3" />}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="bg-slate-800/80 border-slate-700">
+                Sort {sortOrder && <Check className="ml-1 h-3 w-3" />}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-48 bg-slate-900 border-slate-700">
+              <DropdownMenuLabel>Sort By</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuGroup>
+                {sortOrder && (
+                  <DropdownMenuItem 
+                    className="text-red-400"
+                    onClick={() => setSortOrder(null)}
+                  >
+                    Clear Sorting
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuItem 
+                  className={sortOrder === 'newest' ? "bg-purple-900/30" : ""}
+                  onClick={() => setSortOrder('newest')}
+                >
+                  Newest First {sortOrder === 'newest' && <Check className="ml-auto h-3 w-3" />}
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  className={sortOrder === 'oldest' ? "bg-purple-900/30" : ""}
+                  onClick={() => setSortOrder('oldest')}
+                >
+                  Oldest First {sortOrder === 'oldest' && <Check className="ml-auto h-3 w-3" />}
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  className={sortOrder === 'most-worn' ? "bg-purple-900/30" : ""}
+                  onClick={() => setSortOrder('most-worn')}
+                >
+                  Most Worn {sortOrder === 'most-worn' && <Check className="ml-auto h-3 w-3" />}
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  className={sortOrder === 'name-asc' ? "bg-purple-900/30" : ""}
+                  onClick={() => setSortOrder('name-asc')}
+                >
+                  Name (A-Z) {sortOrder === 'name-asc' && <Check className="ml-auto h-3 w-3" />}
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  className={sortOrder === 'name-desc' ? "bg-purple-900/30" : ""}
+                  onClick={() => setSortOrder('name-desc')}
+                >
+                  Name (Z-A) {sortOrder === 'name-desc' && <Check className="ml-auto h-3 w-3" />}
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        
+        {filterApplied && (
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="text-sm bg-transparent border-red-500/30 text-red-400 hover:bg-red-900/20"
+            onClick={clearAllFilters}
+          >
+            Clear All Filters
+          </Button>
+        )}
+      </div>
+    );
   };
   
   return (
@@ -241,11 +440,13 @@ const MyWardrobe = () => {
               filteredCount={filteredItems.length}
             />
           )}
+          
+          {renderFilterBar()}
         </motion.div>
         
         {filterApplied && clothingItems.length > 0 && (
-          <div className="text-sm text-gray-400 mt-2">
-            {filteredItems.length} items match your filters. <button onClick={clearAllFilters} className="underline">Clear Filters</button>
+          <div className="text-sm text-gray-400 mt-2 mb-4">
+            {filteredItems.length} items match your filters.
           </div>
         )}
         
@@ -274,9 +475,18 @@ const MyWardrobe = () => {
             compactView={showCompactView}
           />
         ) : null}
+        
+        <div className="flex justify-center mt-10">
+          <Button 
+            onClick={handleUploadNew}
+            className="px-6 py-6 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:shadow-lg hover:shadow-purple-500/20 transition-all duration-300"
+          >
+            <Plus className="mr-2 h-5 w-5" /> Add Item
+          </Button>
+        </div>
       </div>
       
-      {/* Updated to use UploadModal without isOpen and onClose props */}
+      {/* Using UploadModal */}
       <UploadModal 
         onUpload={handleAddItem}
         buttonText="Add Item"
