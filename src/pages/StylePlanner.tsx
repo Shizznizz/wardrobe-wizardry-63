@@ -14,7 +14,7 @@ import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, CartesianGrid, Toolti
 
 const StylePlanner = () => {
   const { outfits, clothingItems, outfitLogs, addOutfitLog } = useOutfitState();
-  const { location } = useLocationStorage();
+  const { savedLocation } = useLocationStorage();
   const [showTimeline, setShowTimeline] = useState(false);
 
   const handleShowTimeline = () => {
@@ -79,7 +79,7 @@ const StylePlanner = () => {
               outfits={outfits} 
               clothingItems={clothingItems}
               onAddLog={addOutfitLog}
-              location={location}
+              location={savedLocation}
             />
           </div>
           
