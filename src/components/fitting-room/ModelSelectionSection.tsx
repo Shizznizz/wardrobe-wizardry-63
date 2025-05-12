@@ -1,10 +1,14 @@
 
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Upload, Camera, User } from 'lucide-react';
+import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 import UserPhotoDisplay from '@/components/fitting-room/UserPhotoDisplay';
+import OliviaImageSelector from './OliviaImageSelector';
 
 interface ModelSelectionSectionProps {
   userPhoto: string | null;
@@ -21,18 +25,101 @@ const ModelSelectionSection = ({
   onUserPhotoChange,
   onShowOliviaImageGallery
 }: ModelSelectionSectionProps) => {
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const { user, isAuthenticated } = useAuth();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const [showOliviaSelector, setShowOliviaSelector] = useState(false);
+  const [permissionError, setPermissionError] = useState<string | null>(null);
+  const outfitSelectionRef = useRef<HTMLDivElement | null>(null);
 
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Find the outfit selection section reference on mount
+  useEffect(() => {
+    outfitSelectionRef.current = document.getElementById('outfit-selection-section') as HTMLDivElement;
+  }, []);
+
+  // Scroll to outfit selection after photo is uploaded
+  useEffect(() => {
+    if (userPhoto && outfitSelectionRef.current) {
+      setTimeout(() => {
+        outfitSelectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }, 500);
+    }
+  }, [userPhoto]);
+
+  // Function to save user photo to Supabase
+  const savePhotoToSupabase = async (photoDataUrl: string, isOlivia: boolean = false) => {
+    if (!isAuthenticated || !user) {
+      // If user is not authenticated, just use the photo without storing
+      onUserPhotoChange(photoDataUrl);
+      return;
+    }
+
+    try {
+      // Convert data URL to blob
+      const response = await fetch(photoDataUrl);
+      const blob = await response.blob();
+      
+      // Generate a unique filename
+      const fileExt = 'png';
+      const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+      const filePath = `user-photos/${fileName}`;
+      
+      // Upload to Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from('user-models')
+        .upload(filePath, blob);
+        
+      if (uploadError) {
+        console.error('Error uploading photo:', uploadError);
+        toast.error('Failed to save your photo. Using it temporarily.');
+        onUserPhotoChange(photoDataUrl);
+        return;
+      }
+      
+      // Get public URL for the uploaded image
+      const { data } = supabase.storage.from('user-models').getPublicUrl(filePath);
+      
+      if (data && data.publicUrl) {
+        // Update user profile with the photo reference
+        const { error: updateError } = await supabase
+          .from('user_preferences')
+          .upsert({
+            user_id: user.id,
+            model_photo_url: data.publicUrl,
+            is_using_olivia: isOlivia
+          });
+          
+        if (updateError) {
+          console.error('Error updating profile:', updateError);
+        }
+        
+        // Use the photo in the UI
+        onUserPhotoChange(data.publicUrl);
+        toast.success('Your photo has been saved!');
+      }
+    } catch (error) {
+      console.error('Error in save photo process:', error);
+      // Fallback: use the photo directly without storage
+      onUserPhotoChange(photoDataUrl);
+    }
+  };
+
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        if (e.target?.result) {
-          onUserPhotoChange(e.target.result as string);
-        }
-      };
-      reader.readAsDataURL(file);
+      try {
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+          if (e.target?.result) {
+            const photoDataUrl = e.target.result as string;
+            await savePhotoToSupabase(photoDataUrl);
+          }
+        };
+        reader.readAsDataURL(file);
+      } catch (error) {
+        console.error('Error reading file:', error);
+        toast.error('Could not process your photo. Please try again.');
+      }
     }
   };
 
@@ -40,10 +127,56 @@ const ModelSelectionSection = ({
     fileInputRef.current?.click();
   };
 
-  const handleTakePhoto = () => {
-    // In a real implementation, this would access the device camera
-    // For now, let's just trigger the file input as a fallback
-    triggerFileInput();
+  const handleTakePhoto = async () => {
+    // Check if the browser supports the camera
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      toast.error('Your browser does not support camera access.');
+      setPermissionError('Camera access is not supported on this browser. Please try uploading a photo instead.');
+      return;
+    }
+
+    try {
+      // Request camera permission
+      await navigator.mediaDevices.getUserMedia({ video: true });
+      
+      // If supported, trigger the camera input
+      if (cameraInputRef.current) {
+        cameraInputRef.current.setAttribute('capture', 'user');
+        cameraInputRef.current.click();
+      }
+    } catch (err) {
+      console.error('Camera access denied:', err);
+      setPermissionError('Camera access was denied. Please check your browser settings and try again, or upload a photo instead.');
+      toast.error('Camera access denied. Please check your browser settings.');
+    }
+  };
+
+  const handleCameraCapture = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      try {
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+          if (e.target?.result) {
+            const photoDataUrl = e.target.result as string;
+            await savePhotoToSupabase(photoDataUrl);
+          }
+        };
+        reader.readAsDataURL(file);
+      } catch (error) {
+        console.error('Error processing camera photo:', error);
+        toast.error('Could not process your photo. Please try again.');
+      }
+    }
+  };
+
+  const handleSelectOliviaImage = async (imageSrc: string) => {
+    try {
+      await savePhotoToSupabase(imageSrc, true);
+    } catch (error) {
+      console.error('Error setting Olivia image:', error);
+      onUserPhotoChange(imageSrc);
+    }
   };
 
   // If already uploaded, show the photo instead
@@ -120,7 +253,7 @@ const ModelSelectionSection = ({
         >
           <h3 className="text-lg font-medium mb-3 text-blue-200">Choose a Photo</h3>
           <p className="text-white/70 mb-5 text-sm">
-            Upload a photo of yourself.
+            Upload a full-body photo of yourself to see how outfits fit you.
           </p>
           
           <input
@@ -150,8 +283,24 @@ const ModelSelectionSection = ({
         >
           <h3 className="text-lg font-medium mb-3 text-green-200">Take a Photo</h3>
           <p className="text-white/70 mb-5 text-sm">
-            Use your camera to snap one now.
+            Use your device's camera to take a picture now for the try-on.
           </p>
+          
+          <input
+            type="file"
+            ref={cameraInputRef}
+            className="hidden"
+            accept="image/*"
+            onChange={handleCameraCapture}
+          />
+          
+          {permissionError ? (
+            <div className="p-3 bg-red-900/30 border border-red-500/30 rounded-md mb-3">
+              <p className="text-white/90 text-xs">
+                {permissionError}
+              </p>
+            </div>
+          ) : null}
           
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
             <Button
@@ -173,7 +322,7 @@ const ModelSelectionSection = ({
         >
           <h3 className="text-lg font-medium mb-3 text-purple-200">Use Olivia Bloom</h3>
           <p className="text-white/70 mb-5 text-sm">
-            Let Olivia model for you.
+            Try outfits on our virtual AI model — Olivia — for a quick preview.
           </p>
           
           <div className="flex items-center justify-center mb-4">
@@ -184,7 +333,7 @@ const ModelSelectionSection = ({
           
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
             <Button
-              onClick={onShowOliviaImageGallery}
+              onClick={() => setShowOliviaSelector(true)}
               className="w-full text-sm border-purple-500/30 text-purple-300 hover:bg-purple-500/20 hover:text-purple-100 hover:border-purple-500/50 transition-all duration-300"
               variant="outline"
             >
@@ -194,6 +343,12 @@ const ModelSelectionSection = ({
           </motion.div>
         </motion.div>
       </div>
+
+      <OliviaImageSelector 
+        isOpen={showOliviaSelector} 
+        onClose={() => setShowOliviaSelector(false)}
+        onSelectImage={handleSelectOliviaImage}
+      />
     </motion.div>
   );
 };

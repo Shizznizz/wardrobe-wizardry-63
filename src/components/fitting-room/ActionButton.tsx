@@ -7,9 +7,10 @@ import { ArrowDown } from 'lucide-react';
 interface ActionButtonProps {
   text: string;
   onClick: () => void;
+  icon?: React.ReactNode;
 }
 
-const ActionButton: React.FC<ActionButtonProps> = ({ text, onClick }) => {
+const ActionButton: React.FC<ActionButtonProps> = ({ text, onClick, icon }) => {
   return (
     <motion.div
       className="mt-6" 
@@ -27,17 +28,19 @@ const ActionButton: React.FC<ActionButtonProps> = ({ text, onClick }) => {
         size="lg"
       >
         {text}
-        <motion.div
-          className="ml-2"
-          animate={{ y: [0, 5, 0] }}
-          transition={{ 
-            repeat: Infinity, 
-            duration: 1.5,
-            repeatType: "loop" 
-          }}
-        >
-          <ArrowDown className="h-5 w-5" />
-        </motion.div>
+        {icon || (
+          <motion.div
+            className="ml-2"
+            animate={{ y: [0, 5, 0] }}
+            transition={{ 
+              repeat: Infinity, 
+              duration: 1.5,
+              repeatType: "loop" 
+            }}
+          >
+            <ArrowDown className="h-5 w-5" />
+          </motion.div>
+        )}
       </Button>
     </motion.div>
   );
