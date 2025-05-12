@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Lock, Check, FilterIcon } from 'lucide-react';
-import { Outfit, ClothingItem } from '@/lib/types';
+import { Outfit, ClothingItem, ClothingSeason } from '@/lib/types';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -27,7 +27,7 @@ const OutfitSelectionSection = ({
   const [aiOutfits, setAiOutfits] = useState<Outfit[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   
-  // Filter states
+  // Filter states - using 'all' or valid ClothingSeason values
   const [selectedSeason, setSelectedSeason] = useState<string>('all');
   const [selectedStyle, setSelectedStyle] = useState<string>('all');
   
@@ -86,13 +86,15 @@ const OutfitSelectionSection = ({
   
   // Filter outfits based on selected filters
   const filteredUserOutfits = userOutfits.filter(outfit => {
-    const matchesSeason = selectedSeason === 'all' || outfit.seasons?.includes(selectedSeason);
+    // Use type guard to ensure selectedSeason matches ClothingSeason or is 'all'
+    const matchesSeason = selectedSeason === 'all' || (outfit.seasons?.includes(selectedSeason as ClothingSeason));
     const matchesStyle = selectedStyle === 'all' || outfit.occasions?.includes(selectedStyle);
     return matchesSeason && matchesStyle;
   });
   
   const filteredAiOutfits = aiOutfits.filter(outfit => {
-    const matchesSeason = selectedSeason === 'all' || outfit.seasons?.includes(selectedSeason);
+    // Use type guard to ensure selectedSeason matches ClothingSeason or is 'all'
+    const matchesSeason = selectedSeason === 'all' || (outfit.seasons?.includes(selectedSeason as ClothingSeason));
     const matchesStyle = selectedStyle === 'all' || outfit.occasions?.includes(selectedStyle);
     return matchesSeason && matchesStyle;
   });

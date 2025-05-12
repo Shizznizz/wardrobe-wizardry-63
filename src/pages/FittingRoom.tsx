@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import EnhancedHeroSection from '@/components/shared/EnhancedHeroSection';
@@ -34,7 +35,7 @@ const FittingRoom = () => {
     handleSuggestAnotherOutfit,
     handleUpgradeToPremium,
     setSelectedOutfit,
-    handleClearUserPhoto
+    clearPhotos
   } = useShowroom();
 
   // Handle replacing an item in the current outfit
@@ -58,7 +59,7 @@ const FittingRoom = () => {
 
   const handleStartOver = () => {
     // Clear photo and outfit selection
-    handleClearUserPhoto();
+    clearPhotos();
     setSelectedOutfit(null);
   };
 

@@ -89,5 +89,6 @@ export const useShowroomState = () => {
     handleClearUserPhoto,
     handleSaveOutfit,
     setSelectedOutfit,
+    clearPhotos: handleClearUserPhoto, // Alias for handleClearUserPhoto to match what FittingRoom.tsx expects
   };
 };
