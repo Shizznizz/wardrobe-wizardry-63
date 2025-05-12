@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { 
@@ -31,7 +30,7 @@ const OutfitCarousel = ({ outfits, onPreview, title = "Outfits", disabled = fals
     'Summer Vibes': 'Light and fresh for warm beach days',
     'Fall Classic': 'Cozy layers for crisp autumn air',
     'Winter Chic': 'Sophisticated warmth for holiday gatherings',
-    'Trending Style': 'What everyone\'s wearing right now',
+    'Trending Style': "What everyone's wearing right now",
     'Office Ready': 'Polished looks that mean business',
     'Date Night': 'Turning heads while staying true to you',
     'Weekend Casual': 'Effortless style for your days off',
@@ -175,16 +174,14 @@ const OutfitCarousel = ({ outfits, onPreview, title = "Outfits", disabled = fals
 
   // Helper function to process outfits with their detailed items
   const getOutfitItems = (outfit: Outfit) => {
-    const itemsFromOutfit = outfit.itemDetails 
-      ? outfit.itemDetails 
-      : outfitItems[outfit.name] || [];
-      
-    return itemsFromOutfit;
+    // Use outfit items directly or fall back to predefined items by outfit name
+    return outfitItems[outfit.name] || [];
   };
 
   // Helper function to get a description for the outfit
   const getOutfitDescription = (outfit: Outfit) => {
-    return outfit.description || outfitDescriptions[outfit.name] || "Olivia's curated selection";
+    // Use outfit description from outfitDescriptions map
+    return outfitDescriptions[outfit.name] || "Olivia's curated selection";
   };
 
   return (
