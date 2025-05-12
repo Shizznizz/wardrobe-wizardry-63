@@ -20,6 +20,8 @@ import ModelPreview from '@/components/fitting-room/ModelPreview';
 import NoPhotoMessage from '@/components/fitting-room/NoPhotoMessage';
 import CollapsibleHowItWorksSection from '@/components/fitting-room/CollapsibleHowItWorksSection';
 import OliviaStylesSection from '@/components/fitting-room/OliviaStylesSection';
+import TrendingLooksSection from '@/components/fitting-room/TrendingLooksSection';
+import { trackOutfitUsage } from '@/utils/outfitTracking';
 
 const FittingRoom = () => {
   const { isAuthenticated, isPremiumUser } = useAuth();
@@ -119,52 +121,16 @@ const FittingRoom = () => {
     handleUserPhotoUpload(photo);
   }
 
-  // Enhanced outfit selection handler with automatic scrolling
-  const handleEnhancedOutfitSelection = (outfit: Outfit) => {
+  // Enhanced outfit selection handler with automatic scrolling and tracking
+  const handleEnhancedOutfitSelection = async (outfit: Outfit) => {
+    // Track outfit usage
+    if (outfit.id) {
+      await trackOutfitUsage(outfit.id, 'tried');
+    }
     handleSelectOutfit(outfit);
   }
 
-  // Sample outfits for Popular in the Community section
-  const communityOutfits: Outfit[] = [
-    {
-      id: 'community-1',
-      name: 'Trending Style',
-      items: ['item-13', 'item-14', 'item-15'],
-      seasons: ['all'],
-      occasions: ['casual', 'weekend'],
-      favorite: false,
-      dateAdded: new Date()
-    },
-    {
-      id: 'community-2',
-      name: 'Office Ready',
-      items: ['item-16', 'item-17', 'item-18'],
-      seasons: ['autumn', 'winter'],
-      occasions: ['business', 'formal'],
-      favorite: false,
-      dateAdded: new Date()
-    },
-    {
-      id: 'community-3',
-      name: 'Date Night',
-      items: ['item-19', 'item-20', 'item-21'],
-      seasons: ['all'],
-      occasions: ['date', 'evening'],
-      favorite: true,
-      dateAdded: new Date()
-    },
-    {
-      id: 'community-4',
-      name: 'Weekend Casual',
-      items: ['item-22', 'item-23', 'item-24'],
-      seasons: ['spring', 'summer'],
-      occasions: ['casual', 'outdoor'],
-      favorite: false,
-      dateAdded: new Date()
-    }
-  ];
-
-  const handleTryOutfit = (outfit: Outfit) => {
+  const handleTryOutfit = async (outfit: Outfit) => {
     if (!userPhoto) {
       toast.error("Please upload a photo first");
       
@@ -175,6 +141,11 @@ const FittingRoom = () => {
       return;
     }
 
+    // Track outfit usage
+    if (outfit.id) {
+      await trackOutfitUsage(outfit.id, 'tried');
+    }
+    
     handleSelectOutfit(outfit);
   };
 
@@ -275,41 +246,19 @@ const FittingRoom = () => {
           </div>
         )}
         
-        {/* New Section 1: Olivia's Styles Section - with conditional blur overlay */}
+        {/* Olivia's Styles Section - with consistent card height and button alignment */}
         <OliviaStylesSection 
           onPreviewOutfit={handleTryOutfit}
           userPhoto={userPhoto}
           onClickChooseModel={scrollToModelSection}
         />
         
-        {/* New Section 2: Popular in the Community Section - with conditional blur overlay */}
-        <div id="community-outfits-section" className="mt-8">
-          <Card className="glass-dark border-white/10 overflow-hidden shadow-lg relative">
-            <div className="p-6">
-              <h2 className="text-xl font-semibold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-300 to-purple-300">
-                Trending Now 🔥
-              </h2>
-              <p className="text-white/70 mb-6">
-                These looks are trending among our users.
-              </p>
-              
-              <OutfitCarousel 
-                outfits={communityOutfits} 
-                onPreview={handleTryOutfit}
-                title=""
-                disabled={!userPhoto}
-              />
-            </div>
-            {/* Overlay when no model is selected */}
-            {!userPhoto && (
-              <BlurredSectionOverlay 
-                onClickChooseModel={scrollToModelSection} 
-                customMessage="Want to see what's trending — on you? Upload a photo or pick Olivia!"
-                buttonText="Let's Go"
-              />
-            )}
-          </Card>
-        </div>
+        {/* NEW: Trending Now Section - with usage tracking */}
+        <TrendingLooksSection
+          onPreviewOutfit={handleTryOutfit}
+          userPhoto={userPhoto}
+          onClickChooseModel={scrollToModelSection}
+        />
         
         {/* Divider before Premium Features */}
         <div className="flex items-center justify-center my-8">

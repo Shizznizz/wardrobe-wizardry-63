@@ -322,7 +322,7 @@ const ModelSelectionSection = ({
   );
 };
 
-// New reusable OptionBox component to ensure consistent heights and button alignment
+// Reusable OptionBox component to ensure consistent heights and button alignment
 interface OptionBoxProps {
   title: string;
   titleColor: string;
@@ -352,7 +352,7 @@ const OptionBox = ({
     <motion.div 
       whileHover={{ scale: 1.02, boxShadow: `0 0 20px ${boxGlowColor}` }}
       transition={{ duration: 0.2 }}
-      className="bg-white/5 border border-white/10 rounded-lg p-5 shadow-lg flex flex-col h-full"
+      className="bg-white/5 border border-white/10 rounded-lg p-5 shadow-lg flex flex-col min-h-[420px]"
     >
       <div className="flex-grow flex flex-col">
         <h3 className={`text-lg font-medium mb-3 ${titleColor}`}>{title}</h3>
@@ -365,7 +365,7 @@ const OptionBox = ({
           <Button 
             onClick={onClick}
             variant={buttonVariant}
-            className={`w-full text-sm ${buttonClassName}`}
+            className={`w-full h-[48px] font-semibold ${buttonClassName}`}
           >
             {icon}
             {buttonText}

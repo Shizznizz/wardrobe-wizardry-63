@@ -231,6 +231,30 @@ export type Database = {
         }
         Relationships: []
       }
+      outfit_usage: {
+        Row: {
+          action_type: string
+          id: string
+          outfit_id: string
+          timestamp: string
+          user_id: string
+        }
+        Insert: {
+          action_type: string
+          id?: string
+          outfit_id: string
+          timestamp?: string
+          user_id: string
+        }
+        Update: {
+          action_type?: string
+          id?: string
+          outfit_id?: string
+          timestamp?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       outfits: {
         Row: {
           color_scheme: string | null

@@ -27,3 +27,7 @@ api_url = "http://localhost"
 [[edge_functions]]
 path = "generate-seasonal-outfits"
 verify_jwt = false
+
+[[edge_functions]]
+path = "get-trending-outfits"
+verify_jwt = false

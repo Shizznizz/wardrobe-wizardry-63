@@ -1,285 +1,332 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import "https://deno.land/x/xhr@0.1.0/mod.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { Outfit } from '../../src/lib/types.ts'
 
+// CORS headers for browser requests
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 }
 
-const seasons = {
-  'winter': [11, 0, 1], // Dec, Jan, Feb
-  'spring': [2, 3, 4],  // Mar, Apr, May
-  'summer': [5, 6, 7],  // Jun, Jul, Aug
-  'autumn': [8, 9, 10]  // Sep, Oct, Nov
+// Environment variables
+const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY') || '';
+const OPENWEATHER_API_KEY = Deno.env.get('OPENWEATHER_API_KEY') || '';
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || '';
+const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY') || '';
+
+interface WeatherData {
+  main: {
+    temp: number;
+  };
+  weather: {
+    main: string;
+    description: string;
+  }[];
 }
 
-// Outfit themes per season with matching descriptions and tags
-const outfitThemes = {
-  'winter': [
-    {
-      name: 'Winter Chic',
-      description: 'Sophisticated warmth for holiday gatherings',
-      items: [
-        {image: '/lovable-uploads/c26c0c8c-7ff3-432a-b79b-1d22494daba6.png', name: 'Cashmere Cardigan'},
-        {image: '/lovable-uploads/e29a1d16-e806-4664-a744-c1f7b25262ed.png', name: 'Plaid Skirt'},
-        {image: '/lovable-uploads/e41d700a-84eb-4544-9ffc-b68b82f30f7e.png', name: 'Knee-high Boots'},
-        {image: '/lovable-uploads/6d16aa51-bd78-4fb4-a783-8d27a089e19f.png', name: 'Statement Earrings'}
-      ],
-      tags: ['winter', 'formal', 'evening'],
-    },
-    {
-      name: 'Cozy Cabin',
-      description: 'Warm layers for fireside relaxation',
-      items: [
-        {image: '/lovable-uploads/f0afcad3-9696-4e23-a118-04525585d72a.png', name: 'Cable Knit Sweater'},
-        {image: '/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png', name: 'Fleece-lined Leggings'},
-        {image: '/lovable-uploads/86bf74b8-b311-4e3c-bfd6-53819add3df8.png', name: 'Shearling Boots'},
-        {image: '/lovable-uploads/f29b0fb8-330c-409a-8488-2e7ae2b351ed.png', name: 'Chunky Scarf'}
-      ],
-      tags: ['winter', 'casual', 'weekend'],
-    },
-    {
-      name: 'Snow Queen',
-      description: 'Statement pieces for winter wonderland events',
-      items: [
-        {image: '/lovable-uploads/c26c0c8c-7ff3-432a-b79b-1d22494daba6.png', name: 'White Faux Fur Coat'},
-        {image: '/lovable-uploads/e29a1d16-e806-4664-a744-c1f7b25262ed.png', name: 'Silver Sequin Dress'},
-        {image: '/lovable-uploads/e41d700a-84eb-4544-9ffc-b68b82f30f7e.png', name: 'Crystal Heels'},
-        {image: '/lovable-uploads/6d16aa51-bd78-4fb4-a783-8d27a089e19f.png', name: 'Diamond Earrings'}
-      ],
-      tags: ['winter', 'party', 'statement'],
-    },
-    {
-      name: 'Winter Office',
-      description: 'Professional looks that beat the chill',
-      items: [
-        {image: '/lovable-uploads/45448793-cb34-4e4c-9dd8-de95f86f25ca.png', name: 'Wool Blazer'},
-        {image: '/lovable-uploads/7fc023d8-bd78-47c7-8725-d8cb48855e20.png', name: 'Cashmere Turtleneck'},
-        {image: '/lovable-uploads/e41d700a-84eb-4544-9ffc-b68b82f30f7e.png', name: 'Tailored Trousers'},
-        {image: '/lovable-uploads/2551cee7-6f38-4c04-b656-16c188b19ace.png', name: 'Leather Tote'}
-      ],
-      tags: ['winter', 'work', 'professional'],
-    }
-  ],
-  'spring': [
-    {
-      name: 'Spring Elegance',
-      description: 'Perfect for garden parties and afternoon tea',
-      items: [
-        {image: '/lovable-uploads/c937b60e-901e-48ae-b01d-28d901a11503.png', name: 'Floral Blouse'},
-        {image: '/lovable-uploads/28e5664c-3c8a-4b7e-9c99-065ad489583f.png', name: 'White Midi Skirt'},
-        {image: '/lovable-uploads/547609e6-3e31-4592-9c0c-a9a94e8e4996.png', name: 'Strappy Sandals'},
-        {image: '/lovable-uploads/db51966b-4679-4d51-81f2-8844a7a57817.png', name: 'Straw Hat'}
-      ],
-      tags: ['spring', 'dressy', 'outdoor'],
-    },
-    {
-      name: 'Pastel Paradise',
-      description: 'Soft hues for those first warm days',
-      items: [
-        {image: '/lovable-uploads/c937b60e-901e-48ae-b01d-28d901a11503.png', name: 'Lavender Cardigan'},
-        {image: '/lovable-uploads/28e5664c-3c8a-4b7e-9c99-065ad489583f.png', name: 'Mint Culotte Pants'},
-        {image: '/lovable-uploads/547609e6-3e31-4592-9c0c-a9a94e8e4996.png', name: 'White Canvas Sneakers'},
-        {image: '/lovable-uploads/db51966b-4679-4d51-81f2-8844a7a57817.png', name: 'Pink Crossbody Bag'}
-      ],
-      tags: ['spring', 'casual', 'colorful'],
-    },
-    {
-      name: 'Rain Ready',
-      description: 'Stylish options for unpredictable spring showers',
-      items: [
-        {image: '/lovable-uploads/f19c0a23-eb9d-4387-b2cf-7cfa1c908099.png', name: 'Trench Coat'},
-        {image: '/lovable-uploads/05c430e3-091c-4f96-a77b-c360610435d3.png', name: 'Straight-leg Jeans'},
-        {image: '/lovable-uploads/86bf74b8-b311-4e3c-bfd6-53819add3df8.png', name: 'Chelsea Rain Boots'},
-        {image: '/lovable-uploads/075a98ab-d879-4919-8898-87590f8f919a.png', name: 'Waterproof Tote'}
-      ],
-      tags: ['spring', 'practical', 'rainy'],
-    },
-    {
-      name: 'Spring Office',
-      description: 'Light layers for the workplace transition',
-      items: [
-        {image: '/lovable-uploads/45448793-cb34-4e4c-9dd8-de95f86f25ca.png', name: 'Lightweight Blazer'},
-        {image: '/lovable-uploads/c937b60e-901e-48ae-b01d-28d901a11503.png', name: 'Silk Button-up'},
-        {image: '/lovable-uploads/7fc023d8-bd78-47c7-8725-d8cb48855e20.png', name: 'Cropped Pants'},
-        {image: '/lovable-uploads/547609e6-3e31-4592-9c0c-a9a94e8e4996.png', name: 'Pointed Flats'}
-      ],
-      tags: ['spring', 'work', 'professional'],
-    }
-  ],
-  'summer': [
-    {
-      name: 'Summer Vibes',
-      description: 'Light and fresh for warm beach days',
-      items: [
-        {image: '/lovable-uploads/e8fc1e11-c29c-400b-8e33-2577a311b453.png', name: 'Blue Tank Top'},
-        {image: '/lovable-uploads/5c9492c5-2df1-4f02-8d61-70fd1e57a6af.png', name: 'Denim Shorts'},
-        {image: '/lovable-uploads/547609e6-3e31-4592-9c0c-a9a94e8e4996.png', name: 'White Sneakers'},
-        {image: '/lovable-uploads/075a98ab-d879-4919-8898-87590f8f919a.png', name: 'Tote Bag'}
-      ],
-      tags: ['summer', 'beach', 'casual'],
-    },
-    {
-      name: 'Tropical Sunset',
-      description: 'Vibrant prints for vacation moments',
-      items: [
-        {image: '/lovable-uploads/44448809-be5b-44da-a910-3f9b0e36264b.png', name: 'Printed Sundress'},
-        {image: '/lovable-uploads/5c9492c5-2df1-4f02-8d61-70fd1e57a6af.png', name: 'Straw Sun Hat'},
-        {image: '/lovable-uploads/547609e6-3e31-4592-9c0c-a9a94e8e4996.png', name: 'Espadrille Sandals'},
-        {image: '/lovable-uploads/f1154816-6766-4478-ba89-6342580bc85b.png', name: 'Shell Necklace'}
-      ],
-      tags: ['summer', 'vacation', 'colorful'],
-    },
-    {
-      name: 'Summer Nights',
-      description: 'Breezy elegance for evening soirées',
-      items: [
-        {image: '/lovable-uploads/44448809-be5b-44da-a910-3f9b0e36264b.png', name: 'Satin Cami'},
-        {image: '/lovable-uploads/d39047b3-c0ad-4b2c-9d73-c654479f56c4.png', name: 'Flowy Maxi Skirt'},
-        {image: '/lovable-uploads/e41d700a-84eb-4544-9ffc-b68b82f30f7e.png', name: 'Strappy Heels'},
-        {image: '/lovable-uploads/f1154816-6766-4478-ba89-6342580bc85b.png', name: 'Gold Bangles'}
-      ],
-      tags: ['summer', 'evening', 'elegant'],
-    },
-    {
-      name: 'Summer Office',
-      description: 'Stay cool while staying professional',
-      items: [
-        {image: '/lovable-uploads/45448793-cb34-4e4c-9dd8-de95f86f25ca.png', name: 'Linen Blazer'},
-        {image: '/lovable-uploads/e8fc1e11-c29c-400b-8e33-2577a311b453.png', name: 'Sleeveless Blouse'},
-        {image: '/lovable-uploads/28e5664c-3c8a-4b7e-9c99-065ad489583f.png', name: 'Culotte Pants'},
-        {image: '/lovable-uploads/e41d700a-84eb-4544-9ffc-b68b82f30f7e.png', name: 'Block Heel Pumps'}
-      ],
-      tags: ['summer', 'work', 'professional'],
-    }
-  ],
-  'autumn': [
-    {
-      name: 'Fall Classic',
-      description: 'Cozy layers for crisp autumn air',
-      items: [
-        {image: '/lovable-uploads/f0afcad3-9696-4e23-a118-04525585d72a.png', name: 'Knit Sweater'},
-        {image: '/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png', name: 'Skinny Jeans'},
-        {image: '/lovable-uploads/86bf74b8-b311-4e3c-bfd6-53819add3df8.png', name: 'Ankle Boots'},
-        {image: '/lovable-uploads/f29b0fb8-330c-409a-8488-2e7ae2b351ed.png', name: 'Wool Scarf'}
-      ],
-      tags: ['autumn', 'casual', 'everyday'],
-    },
-    {
-      name: 'Harvest Hues',
-      description: 'Warm tones that capture the changing leaves',
-      items: [
-        {image: '/lovable-uploads/f0afcad3-9696-4e23-a118-04525585d72a.png', name: 'Rust Turtleneck'},
-        {image: '/lovable-uploads/e29a1d16-e806-4664-a744-c1f7b25262ed.png', name: 'Corduroy Skirt'},
-        {image: '/lovable-uploads/86bf74b8-b311-4e3c-bfd6-53819add3df8.png', name: 'Leather Boots'},
-        {image: '/lovable-uploads/2551cee7-6f38-4c04-b656-16c188b19ace.png', name: 'Suede Crossbody'}
-      ],
-      tags: ['autumn', 'trendy', 'colorful'],
-    },
-    {
-      name: 'Weekend Getaway',
-      description: 'Versatile pieces for autumn adventures',
-      items: [
-        {image: '/lovable-uploads/f19c0a23-eb9d-4387-b2cf-7cfa1c908099.png', name: 'Utility Jacket'},
-        {image: '/lovable-uploads/c0be3b58-4cc0-4277-8c62-da17547e44ff.png', name: 'Flannel Shirt'},
-        {image: '/lovable-uploads/9d6d8627-f9d3-4af3-a5ec-7b2498799ab2.png', name: 'Boyfriend Jeans'},
-        {image: '/lovable-uploads/547609e6-3e31-4592-9c0c-a9a94e8e4996.png', name: 'Hiking Sneakers'}
-      ],
-      tags: ['autumn', 'weekend', 'outdoor'],
-    },
-    {
-      name: 'Autumn Office',
-      description: 'Sophisticated layers for workplace comfort',
-      items: [
-        {image: '/lovable-uploads/f19c0a23-eb9d-4387-b2cf-7cfa1c908099.png', name: 'Oversized Blazer'},
-        {image: '/lovable-uploads/7fc023d8-bd78-47c7-8725-d8cb48855e20.png', name: 'Fine-knit Sweater'},
-        {image: '/lovable-uploads/05c430e3-091c-4f96-a77b-c360610435d3.png', name: 'Tailored Pants'},
-        {image: '/lovable-uploads/e4bf2134-0936-46f8-8d70-adcc220e50be.png', name: 'Loafers'}
-      ],
-      tags: ['autumn', 'work', 'professional'],
-    }
-  ]
+interface Location {
+  city?: string;
+  country?: string;
+  lat?: number;
+  lon?: number;
 }
 
-function getCurrentSeason(): string {
-  const now = new Date()
-  const month = now.getMonth() // 0-11
+// Create a Supabase client
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+async function getCurrentSeason(): Promise<string> {
+  const now = new Date();
+  const month = now.getMonth();
   
-  for (const [season, months] of Object.entries(seasons)) {
-    if (months.includes(month)) {
-      return season
+  // Northern hemisphere seasons
+  if (month >= 2 && month <= 4) return 'spring';
+  if (month >= 5 && month <= 7) return 'summer';
+  if (month >= 8 && month <= 10) return 'autumn';
+  return 'winter';
+}
+
+async function getWeatherData(location?: Location): Promise<{ temp: number, condition: string }> {
+  try {
+    // Default to New York if no location provided
+    const lat = location?.lat || 40.7128;
+    const lon = location?.lon || -74.0060;
+    
+    const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${OPENWEATHER_API_KEY}`);
+    
+    if (!response.ok) {
+      console.error('Weather API error:', await response.text());
+      // Default weather data
+      return { temp: 20, condition: 'sun' };
+    }
+    
+    const data = await response.json() as WeatherData;
+    
+    // Map OpenWeather conditions to our simplified conditions
+    let condition = 'sun';
+    if (data.weather && data.weather.length > 0) {
+      const mainCondition = data.weather[0].main.toLowerCase();
+      if (mainCondition.includes('rain') || mainCondition.includes('drizzle')) {
+        condition = 'rain';
+      } else if (mainCondition.includes('snow')) {
+        condition = 'snow';
+      } else if (mainCondition.includes('cloud')) {
+        condition = 'cloud';
+      }
+    }
+    
+    return {
+      temp: Math.round(data.main.temp),
+      condition
+    };
+  } catch (error) {
+    console.error('Error fetching weather data:', error);
+    // Default values if API fails
+    return { temp: 20, condition: 'sun' };
+  }
+}
+
+async function generateOutfitMetadata(tags: string[], season: string, weatherCondition: string): Promise<{ name: string, description: string }> {
+  if (!OPENAI_API_KEY) {
+    return { 
+      name: `${season.charAt(0).toUpperCase() + season.slice(1)} Look`, 
+      description: `A stylish outfit perfect for ${season} weather.`
+    };
+  }
+  
+  try {
+    const prompt = `Generate a creative style name and brief subtitle for a ${season} outfit based on these tags: ${tags.join(', ')} and current weather: ${weatherCondition}. Return JSON format like: {"name": "Style Name", "description": "Brief subtitle under 10 words"}`;
+    
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${OPENAI_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: 150,
+        temperature: 0.7
+      })
+    });
+    
+    if (!response.ok) {
+      console.error('OpenAI API error:', await response.text());
+      throw new Error('Failed to generate outfit metadata');
+    }
+    
+    const data = await response.json();
+    const content = data.choices[0].message.content;
+    
+    // Extract JSON from response
+    try {
+      // Look for JSON object in the response
+      const jsonMatch = content.match(/(\{.*\})/s);
+      if (jsonMatch) {
+        const parsedResponse = JSON.parse(jsonMatch[0]);
+        return {
+          name: parsedResponse.name || `${season.charAt(0).toUpperCase() + season.slice(1)} Style`,
+          description: parsedResponse.description || `Perfect for ${season} weather.`
+        };
+      }
+    } catch (parseError) {
+      console.error('Error parsing AI response as JSON:', parseError);
+    }
+    
+    // Fallback if JSON parsing fails
+    return {
+      name: `${season.charAt(0).toUpperCase() + season.slice(1)} Style`,
+      description: `Perfect for ${season} weather.`
+    };
+  } catch (error) {
+    console.error('Error generating outfit metadata:', error);
+    // Default values if API fails
+    return {
+      name: `${season.charAt(0).toUpperCase() + season.slice(1)} Look`,
+      description: `A stylish outfit perfect for ${season} weather.`
+    };
+  }
+}
+
+async function fetchSampleOutfits(): Promise<any[]> {
+  try {
+    const { data, error } = await supabase
+      .from('outfits')
+      .select('*')
+      .limit(20);
+      
+    if (error) {
+      console.error('Error fetching sample outfits:', error);
+      return [];
+    }
+    
+    return data || [];
+  } catch (error) {
+    console.error('Exception fetching sample outfits:', error);
+    return [];
+  }
+}
+
+async function generateSeasonalOutfits(season: string, weather: { temp: number, condition: string }): Promise<Outfit[]> {
+  // First check if we already have cached outfits and if they're still fresh (less than 24h old)
+  const { data: existingData, error: fetchError } = await supabase
+    .from('outfit_usage')
+    .select('timestamp')
+    .eq('action_type', 'seasonal-cache')
+    .order('timestamp', { ascending: false })
+    .limit(1);
+  
+  // Check if cache is fresh (less than 24 hours old)
+  const isCacheFresh = existingData && existingData.length > 0 && 
+    new Date().getTime() - new Date(existingData[0].timestamp).getTime() < 24 * 60 * 60 * 1000;
+    
+  if (isCacheFresh) {
+    // Fetch cached outfits from outfit_usage table
+    const { data: cachedOutfits, error: cacheError } = await supabase
+      .from('outfit_usage')
+      .select('outfit_id')
+      .eq('action_type', 'seasonal-suggestion')
+      .order('timestamp', { ascending: false })
+      .limit(10);
+      
+    if (!cacheError && cachedOutfits && cachedOutfits.length > 0) {
+      // Get full outfit details for each cached outfit
+      const outfitIds = cachedOutfits.map(record => record.outfit_id);
+      const { data: outfits, error: outfitsError } = await supabase
+        .from('outfits')
+        .select('*')
+        .in('id', outfitIds);
+        
+      if (!outfitsError && outfits && outfits.length > 0) {
+        console.log('Returning cached seasonal outfits');
+        return outfits;
+      }
     }
   }
   
-  return 'autumn' // Default fallback
+  // If cache isn't fresh or we couldn't fetch cached outfits, generate new ones
+  console.log('Generating new seasonal outfits');
+  
+  // Fetch sample outfits to use as a base
+  const sampleOutfits = await fetchSampleOutfits();
+  if (!sampleOutfits || sampleOutfits.length === 0) {
+    return [];
+  }
+  
+  // Select outfits that match the current season
+  const seasonalOutfits = sampleOutfits.filter(outfit => {
+    // Convert to array if it's a string
+    const seasons = Array.isArray(outfit.season) ? outfit.season : [outfit.season];
+    return seasons.includes(season) || seasons.includes('all');
+  });
+  
+  if (seasonalOutfits.length === 0) {
+    return sampleOutfits.slice(0, 8); // Fallback if no seasonal outfits
+  }
+  
+  // Generate 8 seasonal outfits with AI-enhanced metadata
+  const generatedOutfits: Outfit[] = [];
+  
+  for (let i = 0; i < Math.min(seasonalOutfits.length, 8); i++) {
+    const baseOutfit = seasonalOutfits[i];
+    const tags = [
+      ...(baseOutfit.occasions || []), 
+      ...(baseOutfit.tags || []), 
+      season, 
+      weather.condition
+    ].slice(0, 5); // Take max 5 tags
+    
+    const metadata = await generateOutfitMetadata(tags, season, weather.condition);
+    
+    const outfit: Outfit = {
+      ...baseOutfit,
+      name: metadata.name,
+      description: metadata.description,
+      ai_generated: true,
+      dateAdded: new Date()
+    };
+    
+    generatedOutfits.push(outfit);
+    
+    // Store the generated outfit in the outfit_usage table for caching
+    await supabase
+      .from('outfit_usage')
+      .insert({
+        outfit_id: baseOutfit.id,
+        user_id: '00000000-0000-0000-0000-000000000000', // System user
+        action_type: 'seasonal-suggestion',
+        timestamp: new Date().toISOString()
+      });
+  }
+  
+  // Store timestamp to mark when cache was updated
+  await supabase
+    .from('outfit_usage')
+    .insert({
+      outfit_id: 'cache-timestamp',
+      user_id: '00000000-0000-0000-0000-000000000000', // System user
+      action_type: 'seasonal-cache',
+      timestamp: new Date().toISOString()
+    });
+  
+  return generatedOutfits;
 }
 
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders })
+    return new Response(null, {
+      status: 204,
+      headers: corsHeaders
+    });
   }
-
+  
   try {
-    // Get current season based on date
-    const currentSeason = getCurrentSeason()
-    console.log(`Current season detected: ${currentSeason}`)
+    const url = new URL(req.url);
+    const params = url.searchParams;
+    const locationParam = params.get('location');
     
-    // Get the outfit themes for the current season
-    const seasonalOutfits = outfitThemes[currentSeason as keyof typeof outfitThemes]
-    
-    // If we have user trends/preferences in the request, we could use them here
-    // For now, we'll just return the seasonal outfits
-    
-    // Convert to Outfit objects for the frontend
-    const outfits = seasonalOutfits.map((theme, idx) => {
-      return {
-        id: `${currentSeason}-${idx}`,
-        name: theme.name,
-        description: theme.description, 
-        items: theme.items.map(item => item.image),
-        itemDetails: theme.items,
-        seasons: [currentSeason],
-        occasions: theme.tags.filter(tag => tag !== currentSeason),
-        favorite: false,
-        dateAdded: new Date().toISOString()
+    let location: Location | undefined;
+    if (locationParam) {
+      try {
+        location = JSON.parse(locationParam);
+      } catch (e) {
+        console.error('Invalid location param:', e);
       }
-    })
+    }
     
-    // Store in database for caching (not implemented here)
-    // You would use the Supabase client to upsert these to a seasonal_outfits table
+    const season = await getCurrentSeason();
+    const weather = await getWeatherData(location);
+    const outfits = await generateSeasonalOutfits(season, weather);
     
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         outfits,
-        season: currentSeason,
-        generatedAt: new Date().toISOString(),
-        refreshAfter: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 days
+        season,
+        weather,
+        lastUpdated: new Date(),
       }),
-      { 
-        headers: { 
+      {
+        headers: {
           ...corsHeaders,
-          'Content-Type': 'application/json'
-        } 
-      }
-    )
-  } catch (error) {
-    console.error('Error generating seasonal outfits:', error)
-    
-    // Return friendly error
-    return new Response(
-      JSON.stringify({ 
-        error: 'Failed to generate seasonal outfits',
-        details: error.message
-      }),
-      { 
-        headers: { 
-          ...corsHeaders,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        status: 500 
       }
-    )
+    );
+  } catch (error) {
+    console.error('Error in generate-seasonal-outfits:', error);
+    
+    return new Response(
+      JSON.stringify({ error: error.message }),
+      {
+        status: 500,
+        headers: {
+          ...corsHeaders,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
   }
 })
