@@ -2,17 +2,15 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { ArrowDown, Info } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { ArrowDown } from 'lucide-react';
 
 interface ActionButtonProps {
   text: string;
   onClick: () => void;
-  tooltip?: string;
 }
 
-const ActionButton: React.FC<ActionButtonProps> = ({ text, onClick, tooltip }) => {
-  const button = (
+const ActionButton: React.FC<ActionButtonProps> = ({ text, onClick }) => {
+  return (
     <motion.div
       className="mt-6" 
       initial={{ opacity: 0, y: 20 }}
@@ -43,23 +41,6 @@ const ActionButton: React.FC<ActionButtonProps> = ({ text, onClick, tooltip }) =
       </Button>
     </motion.div>
   );
-
-  if (tooltip) {
-    return (
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            {button}
-          </TooltipTrigger>
-          <TooltipContent className="bg-slate-800 border-white/10 text-white max-w-xs">
-            <p>{tooltip}</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-    );
-  }
-
-  return button;
 };
 
 export default ActionButton;
