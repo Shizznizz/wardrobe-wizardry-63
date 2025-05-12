@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { useOutfitState } from './useOutfitState';
@@ -18,6 +17,7 @@ export const useShowroom = () => {
   const [challengeParticipantCount] = useState<number>(347); // For demo purposes
   const [showFloatingChat, setShowFloatingChat] = useState(false);
   const [clothingPhoto, setClothingPhoto] = useState<string | null>(null);
+  const [oliviaSuggestion, setOliviaSuggestion] = useState<string>("");
   
   const outfitsWithDefault = Array.isArray(sampleOutfits) ? sampleOutfits : [];
   const clothingItemsWithDefault = Array.isArray(sampleClothingItems) ? sampleClothingItems : [];
@@ -29,8 +29,6 @@ export const useShowroom = () => {
     setFinalImage = () => {},
     isUsingOliviaImage = false,
     isUploadLoading = false,
-    oliviaSuggestion = "",
-    setOliviaSuggestion = () => {},
     selectedOutfit = null,
     isProcessingTryOn = false,
     setIsProcessingTryOn = () => {},
@@ -75,13 +73,16 @@ export const useShowroom = () => {
         "Perfect choice for your style profile!",
         "This color really complements your features!",
         "I love how this outfit highlights your silhouette!",
-        "This look will definitely turn heads!"
+        "This look will definitely turn heads!",
+        "The proportions of this outfit are really flattering on you!",
+        "These colors work beautifully together and suit your complexion.",
+        "This is a great balance of comfort and style - perfect for your day!"
       ];
       setOliviaSuggestion(suggestions[Math.floor(Math.random() * suggestions.length)]);
     } else {
       setShowStatusBar(false);
     }
-  }, [userPhoto, selectedOutfit, setShowStatusBar, setOliviaSuggestion]);
+  }, [userPhoto, selectedOutfit, setShowStatusBar]);
 
   const handleClothingPhotoUpload = (photo: string) => {
     setClothingPhoto(photo);
@@ -227,10 +228,6 @@ export const useShowroom = () => {
     generationError,
     challengeParticipantCount,
     
-    // Added missing methods
-    resetSelection,
-    handlePreviewNow,
-    
     // Add these exported methods
     handleSelectOliviaImage,
     handleSelectOutfit,
@@ -240,7 +237,7 @@ export const useShowroom = () => {
     handleUpgradeToPremium,
     handleCloseSubscriptionPopup,
     handleTryOn,
-    clearPhotos,
+    clearPhotos: handleClearUserPhoto,
     handleTryOnTrendingItem: handleTryOnTrendingItemWithCheck,
     handleSuggestAnotherOutfit: suggestAnotherOutfit,
     handleShowPremiumPopup,
@@ -248,7 +245,7 @@ export const useShowroom = () => {
     setShowOliviaImageGallery,
     setShowFloatingChat,
     
-    // Add the missing setters that were causing errors
+    // Add the setters
     setFinalImage,
     setOliviaSuggestion,
     setIsProcessingTryOn,

@@ -1,17 +1,22 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import EnhancedHeroSection from '@/components/shared/EnhancedHeroSection';
-import HeaderSection from '@/components/showroom/HeaderSection';
-import ButtonSection from '@/components/showroom/ButtonSection';
-import UserPhotoSection from '@/components/showroom/UserPhotoSection';
-import OutfitSelectionSection from '@/components/showroom/OutfitSelectionSection';
-import OutfitPreviewSection from '@/components/showroom/OutfitPreviewSection';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Container } from '@/components/ui/container';
+import { Lock, Upload, Shirt, Eye, List } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import UserPhotoDisplay from '@/components/fitting-room/UserPhotoDisplay';
 import PremiumFeaturesSection from '@/components/showroom/PremiumFeaturesSection';
-import IntroductionSlider from '@/components/showroom/IntroductionSlider';
+import OutfitPreviewSection from '@/components/showroom/OutfitPreviewSection';
 import ResultSection from '@/components/showroom/ResultSection';
 import { useAuth } from '@/hooks/useAuth';
 import { useShowroom } from '@/hooks/useShowroom';
+import HowItWorksSection from '@/components/fitting-room/HowItWorksSection';
+import PhotoUploadSection from '@/components/fitting-room/PhotoUploadSection';
+import OutfitSelectionTabs from '@/components/fitting-room/OutfitSelectionTabs';
+import OliviaRatingSection from '@/components/fitting-room/OliviaRatingSection';
 
 const FittingRoom = () => {
   const { isAuthenticated, isPremiumUser } = useAuth();
@@ -26,6 +31,7 @@ const FittingRoom = () => {
     clothingItems,
     fashionCollections,
     isProcessingTryOn,
+    oliviaSuggestion,
     handleUserPhotoUpload,
     setShowOliviaImageGallery,
     handleSelectOutfit,
@@ -46,35 +52,24 @@ const FittingRoom = () => {
         }}
       />
       
-      <div className="w-full mx-auto space-y-16 container px-4">
-        <HeaderSection />
+      <Container className="space-y-16 px-4">
+        <HowItWorksSection />
         
-        <IntroductionSlider />
-        
-        <ButtonSection onSuggestAnotherOutfit={handleSuggestAnotherOutfit} />
-        
-        <motion.div
-          id="photo-section"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.3 }}
-          style={{ display: finalImage ? 'none' : 'block' }}
-          className="mt-12"
-        >
-          <UserPhotoSection 
+        <div id="photo-section">
+          <PhotoUploadSection 
             userPhoto={userPhoto} 
             isUploading={isUploadLoading}
             isUsingOliviaImage={isUsingOliviaImage}
             onUserPhotoChange={handleUserPhotoUpload}
             onShowOliviaImageGallery={() => setShowOliviaImageGallery(true)}
           />
-        </motion.div>
+        </div>
         
         <div className="flex items-center justify-center my-12">
           <div className="h-px bg-gradient-to-r from-transparent via-purple-500/30 to-transparent w-full max-w-2xl"></div>
         </div>
         
-        <OutfitSelectionSection 
+        <OutfitSelectionTabs 
           fashionCollections={fashionCollections}
           clothingItems={clothingItems}
           selectedOutfit={selectedOutfit}
@@ -100,6 +95,13 @@ const FittingRoom = () => {
             }}
           />
           
+          {finalImage && selectedOutfit && (
+            <OliviaRatingSection 
+              outfit={selectedOutfit}
+              suggestion={oliviaSuggestion}
+            />
+          )}
+          
           <ResultSection
             finalImage={finalImage}
             selectedOutfit={selectedOutfit}
@@ -112,7 +114,7 @@ const FittingRoom = () => {
             onUpgradeToPremium={handleUpgradeToPremium} 
           />
         )}
-      </div>
+      </Container>
     </div>
   );
 };
