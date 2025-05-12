@@ -1,6 +1,6 @@
 
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import EnhancedHeroSection from '@/components/shared/EnhancedHeroSection';
 import { Container } from '@/components/ui/container';
 import { Card } from '@/components/ui/card';
@@ -16,6 +16,10 @@ import OutfitCustomizationSection from '@/components/fitting-room/OutfitCustomiz
 import OutfitCarousel from '@/components/fitting-room/OutfitCarousel';
 import { toast } from 'sonner';
 import { Outfit } from '@/lib/types';
+import ActionButton from '@/components/fitting-room/ActionButton';
+import BlurredSectionOverlay from '@/components/fitting-room/BlurredSectionOverlay';
+import ModelPreview from '@/components/fitting-room/ModelPreview';
+import NoPhotoMessage from '@/components/fitting-room/NoPhotoMessage';
 
 const FittingRoom = () => {
   const { isAuthenticated, isPremiumUser } = useAuth();
@@ -40,6 +44,8 @@ const FittingRoom = () => {
     setSelectedOutfit,
     clearPhotos
   } = useShowroom();
+
+  const modelSelectionRef = useRef<HTMLDivElement>(null);
 
   // Helper function to get clothing item by ID
   const getClothingItemById = (id: string) => {
@@ -79,6 +85,10 @@ const FittingRoom = () => {
     document.getElementById('outfit-selection-section')?.scrollIntoView({ 
       behavior: 'smooth' 
     });
+  };
+
+  const scrollToModelSection = () => {
+    modelSelectionRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   // Sample outfits for Olivia's Styles section
@@ -166,7 +176,7 @@ const FittingRoom = () => {
       toast.error("Please upload a photo first");
       
       // Scroll to model selection section to prompt the user
-      document.getElementById('model-selection-section')?.scrollIntoView({
+      modelSelectionRef.current?.scrollIntoView({
         behavior: 'smooth'
       });
       return;
@@ -194,12 +204,20 @@ const FittingRoom = () => {
         }}
       />
       
+      {/* CTA Button when no photo is selected */}
+      {!userPhoto && (
+        <ActionButton 
+          text="Start Now – Choose Your Model" 
+          onClick={scrollToModelSection} 
+        />
+      )}
+
       <Container className="space-y-16 px-4">
-        {/* Step 1: How It Works Section */}
-        <HowItWorksSection />
+        {/* Step 1: How It Works Section - Moved down if no photo is uploaded */}
+        {userPhoto && <HowItWorksSection />}
         
-        {/* Step 2: Choose a Model Section */}
-        <div id="model-selection-section">
+        {/* Step 2: Choose a Model Section - Moved up in the flow */}
+        <div id="model-selection-section" ref={modelSelectionRef}>
           <ModelSelectionSection 
             userPhoto={userPhoto}
             isUploading={isUploadLoading}
@@ -208,6 +226,9 @@ const FittingRoom = () => {
             onShowOliviaImageGallery={() => setShowOliviaImageGallery(true)}
           />
         </div>
+        
+        {/* How it works section moved below model selection if no photo is uploaded */}
+        {!userPhoto && <HowItWorksSection />}
         
         {/* Divider */}
         {userPhoto && (
@@ -260,9 +281,9 @@ const FittingRoom = () => {
           </div>
         )}
         
-        {/* New Section 1: Olivia's Styles Section */}
+        {/* New Section 1: Olivia's Styles Section - with conditional blur overlay */}
         <div id="olivia-styles-section" className="mt-16">
-          <Card className="glass-dark border-white/10 overflow-hidden shadow-lg">
+          <Card className="glass-dark border-white/10 overflow-hidden shadow-lg relative">
             <div className="p-6">
               <h2 className="text-xl font-semibold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-300 to-purple-300">
                 Olivia's Styles
@@ -275,14 +296,19 @@ const FittingRoom = () => {
                 outfits={oliviaStyles} 
                 onPreview={handleTryOutfit}
                 title=""
+                disabled={!userPhoto}
               />
             </div>
+            {/* Overlay when no model is selected */}
+            {!userPhoto && (
+              <BlurredSectionOverlay onClickChooseModel={scrollToModelSection} />
+            )}
           </Card>
         </div>
         
-        {/* New Section 2: Popular in the Community Section */}
+        {/* New Section 2: Popular in the Community Section - with conditional blur overlay */}
         <div id="community-outfits-section" className="mt-16">
-          <Card className="glass-dark border-white/10 overflow-hidden shadow-lg">
+          <Card className="glass-dark border-white/10 overflow-hidden shadow-lg relative">
             <div className="p-6">
               <h2 className="text-xl font-semibold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-300 to-purple-300">
                 Popular in the Community
@@ -295,8 +321,13 @@ const FittingRoom = () => {
                 outfits={communityOutfits} 
                 onPreview={handleTryOutfit}
                 title=""
+                disabled={!userPhoto}
               />
             </div>
+            {/* Overlay when no model is selected */}
+            {!userPhoto && (
+              <BlurredSectionOverlay onClickChooseModel={scrollToModelSection} />
+            )}
           </Card>
         </div>
         
@@ -311,6 +342,17 @@ const FittingRoom = () => {
           />
         )}
       </Container>
+
+      {/* Sticky model preview */}
+      <AnimatePresence>
+        {userPhoto && (
+          <ModelPreview
+            userPhoto={userPhoto}
+            isUsingOliviaImage={isUsingOliviaImage}
+            onChangeModel={scrollToModelSection}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };
