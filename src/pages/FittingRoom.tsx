@@ -105,7 +105,7 @@ const FittingRoom = () => {
       id: 'olivia-style-3',
       name: 'Fall Classic',
       items: ['item-7', 'item-8', 'item-9'],
-      seasons: ['fall'],
+      seasons: ['autumn'], // Changed from 'fall' to 'autumn' to match ClothingSeason type
       occasions: ['office', 'dinner'],
       favorite: false,
       dateAdded: new Date()
@@ -136,7 +136,7 @@ const FittingRoom = () => {
       id: 'community-2',
       name: 'Office Ready',
       items: ['item-16', 'item-17', 'item-18'],
-      seasons: ['fall', 'winter'],
+      seasons: ['autumn', 'winter'], // Changed from 'fall' to 'autumn' to match ClothingSeason type
       occasions: ['business', 'formal'],
       favorite: false,
       dateAdded: new Date()
