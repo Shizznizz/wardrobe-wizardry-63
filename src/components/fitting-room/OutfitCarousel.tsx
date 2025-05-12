@@ -31,7 +31,7 @@ const OutfitCarousel = ({ outfits, onPreview, title = "Outfits", disabled = fals
     'Summer Vibes': 'Light and fresh for warm beach days',
     'Fall Classic': 'Cozy layers for crisp autumn air',
     'Winter Chic': 'Sophisticated warmth for holiday gatherings',
-    'Trending Style': 'What everyone's wearing right now',
+    'Trending Style': 'What everyone\'s wearing right now',
     'Office Ready': 'Polished looks that mean business',
     'Date Night': 'Turning heads while staying true to you',
     'Weekend Casual': 'Effortless style for your days off'
