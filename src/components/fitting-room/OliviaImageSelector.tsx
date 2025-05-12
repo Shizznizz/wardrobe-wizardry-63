@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 
 interface OliviaImageSelectorProps {
   isOpen: boolean;
@@ -15,7 +16,6 @@ interface OliviaImageSelectorProps {
 
 const OliviaImageSelector: React.FC<OliviaImageSelectorProps> = ({ isOpen, onClose, onSelectImage }) => {
   const isMobile = useIsMobile();
-  const [selectedImage, setSelectedImage] = useState<number | null>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
   const carouselRef = useRef<HTMLDivElement>(null);
 
@@ -44,7 +44,7 @@ const OliviaImageSelector: React.FC<OliviaImageSelectorProps> = ({ isOpen, onClo
 
   // Set up scroll snap for mobile
   useEffect(() => {
-    if (isMobile && carouselRef.current) {
+    if (isMobile && carouselRef.current && isOpen) {
       const scrollContainer = carouselRef.current;
       
       const handleScroll = () => {
@@ -66,23 +66,17 @@ const OliviaImageSelector: React.FC<OliviaImageSelectorProps> = ({ isOpen, onClo
   }, [isMobile, isOpen]);
   
   const handleSelectImage = (index: number) => {
-    setSelectedImage(index);
-  };
-  
-  const handleConfirmSelection = () => {
-    if (selectedImage !== null) {
-      const selectedSrc = oliviaImages[selectedImage].src;
-      onSelectImage(selectedSrc);
-      onClose();
-      
-      // Wait for modal to close before scrolling to outfit selection
-      setTimeout(() => {
-        const outfitSelectionSection = document.getElementById('outfit-selection-section');
-        if (outfitSelectionSection) {
-          outfitSelectionSection.scrollIntoView({ behavior: 'smooth' });
-        }
-      }, 300);
-    }
+    const selectedSrc = oliviaImages[index].src;
+    onSelectImage(selectedSrc);
+    onClose();
+    
+    // Wait for modal to close before scrolling to outfit selection
+    setTimeout(() => {
+      const outfitSelectionSection = document.getElementById('outfit-selection-section');
+      if (outfitSelectionSection) {
+        outfitSelectionSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 250);
   };
 
   const nextSlide = () => {
@@ -107,35 +101,39 @@ const OliviaImageSelector: React.FC<OliviaImageSelectorProps> = ({ isOpen, onClo
     }
   };
 
-  return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="p-0 sm:p-6 max-w-5xl max-h-[90vh] overflow-hidden bg-slate-900 border-white/10">
-        <div className="flex flex-col h-full">
-          <div className="p-4 sm:p-0">
-            <h2 className="text-xl font-semibold text-white mb-2">
-              Select Olivia Model
-            </h2>
-            <p className="text-white/70 text-sm max-w-md">
-              Choose which version of Olivia you'd like to use to try on outfits
-            </p>
-          </div>
-          
-          {/* Mobile Carousel */}
-          {isMobile && (
+  // For mobile: use a full-screen sheet instead of a dialog
+  if (isMobile) {
+    return (
+      <Sheet open={isOpen} onOpenChange={onClose}>
+        <SheetContent 
+          side="bottom" 
+          className="p-0 rounded-t-xl max-h-[90vh] bg-slate-900 border-white/10"
+        >
+          <div className="flex flex-col h-full">
+            <div className="p-4">
+              <h2 className="text-xl font-semibold text-white mb-2">
+                Select Olivia Model
+              </h2>
+              <p className="text-white/70 text-sm max-w-md">
+                Choose which Olivia you'd like to use
+              </p>
+            </div>
+            
             <div className="relative flex-grow">
               <div 
                 ref={carouselRef}
-                className="flex snap-x snap-mandatory overflow-x-auto h-full"
+                className="flex snap-x snap-mandatory overflow-x-auto h-[60vh]"
                 style={{ scrollbarWidth: 'none', scrollSnapType: 'x mandatory' }}
               >
                 {oliviaImages.map((image, index) => (
                   <div 
                     key={index}
-                    className="snap-center flex-shrink-0 w-full h-full flex flex-col items-center justify-center p-6"
+                    className="snap-center flex-shrink-0 w-full h-full flex flex-col items-center justify-center p-4"
                   >
-                    <div 
-                      className={`relative cursor-pointer rounded-xl overflow-hidden h-[70vh] w-full bg-slate-800`}
+                    <motion.div 
+                      className="relative cursor-pointer rounded-xl overflow-hidden h-full w-full bg-slate-800"
                       onClick={() => handleSelectImage(index)}
+                      whileTap={{ scale: 0.98 }}
                     >
                       <img 
                         src={image.src}
@@ -143,23 +141,17 @@ const OliviaImageSelector: React.FC<OliviaImageSelectorProps> = ({ isOpen, onClo
                         className="w-full h-full object-cover"
                       />
                       
-                      {selectedImage === index && (
-                        <div className="absolute inset-0 bg-purple-600/20 flex items-center justify-center">
-                          <CheckCircle className="h-12 w-12 text-purple-500" />
-                        </div>
-                      )}
-                      
                       <div className="absolute bottom-0 inset-x-0 p-4 bg-gradient-to-t from-black/70 to-transparent">
                         <h3 className="font-medium text-white">{image.name}</h3>
                         <p className="text-white/70 text-sm">{image.description}</p>
                       </div>
-                    </div>
+                    </motion.div>
                   </div>
                 ))}
               </div>
               
               {/* Mobile Navigation */}
-              <div className="absolute left-2 top-1/2 -translate-y-1/2">
+              <div className="absolute left-2 top-1/2 -translate-y-1/2 z-10">
                 <Button 
                   variant="ghost" 
                   size="icon"
@@ -171,7 +163,7 @@ const OliviaImageSelector: React.FC<OliviaImageSelectorProps> = ({ isOpen, onClo
                 </Button>
               </div>
               
-              <div className="absolute right-2 top-1/2 -translate-y-1/2">
+              <div className="absolute right-2 top-1/2 -translate-y-1/2 z-10">
                 <Button 
                   variant="ghost" 
                   size="icon"
@@ -194,66 +186,60 @@ const OliviaImageSelector: React.FC<OliviaImageSelectorProps> = ({ isOpen, onClo
                 ))}
               </div>
             </div>
-          )}
+          </div>
+        </SheetContent>
+      </Sheet>
+    );
+  }
+
+  // Desktop dialog
+  return (
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="p-0 sm:p-6 max-w-5xl max-h-[90vh] overflow-hidden bg-slate-900 border-white/10">
+        <div className="flex flex-col h-full">
+          <div className="p-4 sm:p-0">
+            <h2 className="text-xl font-semibold text-white mb-2">
+              Select Olivia Model
+            </h2>
+            <p className="text-white/70 text-sm max-w-md">
+              Choose which version of Olivia you'd like to use to try on outfits
+            </p>
+          </div>
           
-          {/* Desktop Grid */}
-          {!isMobile && (
-            <div className="flex-grow overflow-auto p-6">
-              <div className="flex flex-row gap-6 h-[90vh]">
-                {oliviaImages.map((image, index) => (
+          {/* Desktop Grid - single row with equal widths */}
+          <div className="flex-grow overflow-auto p-6">
+            <div className="flex flex-row justify-between gap-4 h-[60vh]">
+              {oliviaImages.map((image, index) => (
+                <motion.div 
+                  key={index}
+                  className="relative cursor-pointer rounded-xl overflow-hidden flex-1 bg-slate-800 transition-all duration-300 hover:ring-2 hover:ring-purple-400"
+                  onClick={() => handleSelectImage(index)}
+                  whileHover={{ scale: 1.02, y: -5 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <img 
+                    src={image.src}
+                    alt={image.name}
+                    className="w-full h-full object-cover"
+                  />
+                  
                   <motion.div 
-                    key={index}
-                    className={`relative cursor-pointer rounded-xl overflow-hidden flex-1 bg-slate-800 transition-all duration-300 ${
-                      selectedImage === index ? 'ring-4 ring-purple-600' : 'hover:ring-2 hover:ring-purple-400'
-                    }`}
-                    onClick={() => handleSelectImage(index)}
-                    whileHover={{ scale: 1.02, y: -5 }}
-                    whileTap={{ scale: 0.98 }}
+                    className="absolute inset-0 bg-purple-600/20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity"
+                    whileHover={{ opacity: 1 }}
                   >
-                    <img 
-                      src={image.src}
-                      alt={image.name}
-                      className="w-full h-full object-cover"
-                    />
-                    
-                    {selectedImage === index && (
-                      <motion.div 
-                        className="absolute inset-0 bg-purple-600/20 flex items-center justify-center"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <CheckCircle className="h-12 w-12 text-purple-500" />
-                      </motion.div>
-                    )}
-                    
-                    <div className="absolute bottom-0 inset-x-0 p-4 bg-gradient-to-t from-black/70 to-transparent">
-                      <h3 className="font-medium text-white">{image.name}</h3>
-                      <p className="text-white/70 text-sm">{image.description}</p>
-                      
-                      <Badge className="mt-2 bg-white/10 hover:bg-white/20">
-                        Select this look
-                      </Badge>
-                    </div>
+                    <CheckCircle className="h-12 w-12 text-purple-500" />
                   </motion.div>
-                ))}
-              </div>
-            </div>
-          )}
-          
-          {/* Selection buttons */}
-          <div className="p-4 border-t border-white/10 mt-auto">
-            <div className="flex justify-between">
-              <Button variant="outline" onClick={onClose} className="border-white/10 text-white hover:bg-white/10">
-                Cancel
-              </Button>
-              <Button 
-                onClick={handleConfirmSelection} 
-                disabled={selectedImage === null}
-                className="bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:opacity-90"
-              >
-                Confirm Selection
-              </Button>
+                  
+                  <div className="absolute bottom-0 inset-x-0 p-4 bg-gradient-to-t from-black/70 to-transparent">
+                    <h3 className="font-medium text-white">{image.name}</h3>
+                    <p className="text-white/70 text-sm">{image.description}</p>
+                    
+                    <Badge className="mt-2 bg-white/10 hover:bg-white/20">
+                      Select this look
+                    </Badge>
+                  </div>
+                </motion.div>
+              ))}
             </div>
           </div>
         </div>
