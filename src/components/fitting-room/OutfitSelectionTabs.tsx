@@ -107,7 +107,7 @@ const OutfitSelectionTabs = ({
     >
       <Card className="glass-dark border-white/10 overflow-hidden shadow-lg">
         <CardContent className="p-6">
-          <h2 className="text-xl font-semibold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-300 to-purple-300">
+          <h2 className="text-xl font-semibold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-300 to-purple-300">
             Choose an Outfit to Try On
           </h2>
 
@@ -117,7 +117,7 @@ const OutfitSelectionTabs = ({
             onValueChange={setActiveTab}
             className="w-full"
           >
-            <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-6">
+            <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-4">
               <TabsTrigger value="your-outfits">Your Outfits</TabsTrigger>
               <TabsTrigger 
                 value="ai-suggested"
@@ -134,7 +134,7 @@ const OutfitSelectionTabs = ({
             </TabsList>
             
             <TabsContent value="your-outfits">
-              <div className="space-y-8">
+              <div className="space-y-4">
                 <div className="bg-white/5 rounded-lg p-4 border border-white/10">
                   {isLoading ? (
                     <div className="flex justify-center items-center h-40">
@@ -150,7 +150,7 @@ const OutfitSelectionTabs = ({
                       onSelectOutfit={handleSelectOutfit}
                     />
                   ) : (
-                    <div className="text-center py-12">
+                    <div className="text-center py-10">
                       <p className="text-lg text-white/70">You haven't created any outfits yet.</p>
                       <Button 
                         variant="outline"
@@ -166,7 +166,7 @@ const OutfitSelectionTabs = ({
             </TabsContent>
             
             <TabsContent value="ai-suggested">
-              <div className="space-y-8">
+              <div className="space-y-4">
                 {isPremiumUser ? (
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {/* Premium AI Suggested Outfits */}
@@ -175,12 +175,11 @@ const OutfitSelectionTabs = ({
                         key={idx}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 * idx }}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        className="bg-white/5 rounded-lg border border-white/10 overflow-hidden hover:border-purple-400/30 transition-colors"
+                        transition={{ delay: 0.1 * idx, duration: 0.4 }}
+                        whileHover={{ scale: 1.03, y: -4 }}
+                        className="bg-white/5 rounded-lg border border-white/10 overflow-hidden hover:border-purple-400/30 transition-colors h-[420px] flex flex-col"
                       >
-                        <div className="aspect-square relative">
+                        <div className="aspect-square relative flex-shrink-0">
                           <img 
                             src={collection.image || "/placeholder-outfit.png"} 
                             alt={collection.name} 
@@ -194,9 +193,12 @@ const OutfitSelectionTabs = ({
                             </div>
                           </div>
                         </div>
-                        <div className="p-4">
+                        <div className="p-4 flex-grow flex flex-col">
+                          <p className="text-white/70 text-sm flex-grow">
+                            {collection.description || "A perfect combination for your style and preferences."}
+                          </p>
                           <Button 
-                            className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                            className="w-full bg-purple-600 hover:bg-purple-700 text-white mt-auto"
                             onClick={() => handleSelectOutfit(collection.outfit)}
                           >
                             <Check className="mr-2 h-4 w-4" /> Try This On

@@ -17,6 +17,7 @@ interface OliviaImageSelectorProps {
 const OliviaImageSelector: React.FC<OliviaImageSelectorProps> = ({ isOpen, onClose, onSelectImage }) => {
   const isMobile = useIsMobile();
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
 
   const oliviaImages = [
@@ -64,19 +65,31 @@ const OliviaImageSelector: React.FC<OliviaImageSelectorProps> = ({ isOpen, onClo
       };
     }
   }, [isMobile, isOpen]);
+
+  useEffect(() => {
+    // Reset state when modal opens
+    if (isOpen) {
+      setSelectedIndex(null);
+    }
+  }, [isOpen]);
   
   const handleSelectImage = (index: number) => {
-    const selectedSrc = oliviaImages[index].src;
-    onSelectImage(selectedSrc);
-    onClose();
+    setSelectedIndex(index);
     
-    // Wait for modal to close before scrolling to outfit selection
+    // Add a short delay for selection effect before closing
     setTimeout(() => {
-      const outfitSelectionSection = document.getElementById('outfit-selection-section');
-      if (outfitSelectionSection) {
-        outfitSelectionSection.scrollIntoView({ behavior: 'smooth' });
-      }
-    }, 250);
+      const selectedSrc = oliviaImages[index].src;
+      onSelectImage(selectedSrc);
+      onClose();
+      
+      // Wait for modal to close before scrolling to outfit selection
+      setTimeout(() => {
+        const outfitSelectionSection = document.getElementById('outfit-selection-section');
+        if (outfitSelectionSection) {
+          outfitSelectionSection.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 200);
+    }, 300);
   };
 
   const nextSlide = () => {
@@ -131,7 +144,11 @@ const OliviaImageSelector: React.FC<OliviaImageSelectorProps> = ({ isOpen, onClo
                     className="snap-center flex-shrink-0 w-full h-full flex flex-col items-center justify-center p-4"
                   >
                     <motion.div 
-                      className="relative cursor-pointer rounded-xl overflow-hidden h-full w-full bg-slate-800"
+                      className={`relative cursor-pointer rounded-xl overflow-hidden h-full w-full ${
+                        selectedIndex === index 
+                          ? 'ring-4 ring-purple-500/60 shadow-lg shadow-purple-500/30' 
+                          : 'bg-slate-800'
+                      }`}
                       onClick={() => handleSelectImage(index)}
                       whileTap={{ scale: 0.98 }}
                     >
@@ -140,6 +157,17 @@ const OliviaImageSelector: React.FC<OliviaImageSelectorProps> = ({ isOpen, onClo
                         alt={image.name}
                         className="w-full h-full object-cover"
                       />
+                      
+                      {selectedIndex === index && (
+                        <motion.div 
+                          className="absolute inset-0 bg-purple-600/20 flex items-center justify-center"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <CheckCircle className="h-16 w-16 text-purple-500" />
+                        </motion.div>
+                      )}
                       
                       <div className="absolute bottom-0 inset-x-0 p-4 bg-gradient-to-t from-black/70 to-transparent">
                         <h3 className="font-medium text-white">{image.name}</h3>
@@ -192,12 +220,12 @@ const OliviaImageSelector: React.FC<OliviaImageSelectorProps> = ({ isOpen, onClo
     );
   }
 
-  // Desktop dialog
+  // Desktop dialog - horizontal row layout with consistent sizing
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="p-0 sm:p-6 max-w-5xl max-h-[90vh] overflow-hidden bg-slate-900 border-white/10">
+      <DialogContent className="p-6 max-w-5xl max-h-[90vh] overflow-hidden bg-slate-900 border-white/10">
         <div className="flex flex-col h-full">
-          <div className="p-4 sm:p-0">
+          <div className="mb-6">
             <h2 className="text-xl font-semibold text-white mb-2">
               Select Olivia Model
             </h2>
@@ -206,13 +234,17 @@ const OliviaImageSelector: React.FC<OliviaImageSelectorProps> = ({ isOpen, onClo
             </p>
           </div>
           
-          {/* Desktop Grid - single row with equal widths */}
-          <div className="flex-grow overflow-auto p-6">
-            <div className="flex flex-row justify-between gap-4 h-[60vh]">
+          {/* Desktop: Single horizontal row with equal widths */}
+          <div className="flex-grow">
+            <div className="grid grid-cols-4 gap-4 h-[60vh]">
               {oliviaImages.map((image, index) => (
                 <motion.div 
                   key={index}
-                  className="relative cursor-pointer rounded-xl overflow-hidden flex-1 bg-slate-800 transition-all duration-300 hover:ring-2 hover:ring-purple-400"
+                  className={`relative cursor-pointer rounded-xl overflow-hidden h-full ${
+                    selectedIndex === index 
+                      ? 'ring-4 ring-purple-500/60 shadow-lg shadow-purple-500/30' 
+                      : 'bg-slate-800'
+                  }`}
                   onClick={() => handleSelectImage(index)}
                   whileHover={{ scale: 1.02, y: -5 }}
                   whileTap={{ scale: 0.98 }}
@@ -223,12 +255,16 @@ const OliviaImageSelector: React.FC<OliviaImageSelectorProps> = ({ isOpen, onClo
                     className="w-full h-full object-cover"
                   />
                   
-                  <motion.div 
-                    className="absolute inset-0 bg-purple-600/20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity"
-                    whileHover={{ opacity: 1 }}
-                  >
-                    <CheckCircle className="h-12 w-12 text-purple-500" />
-                  </motion.div>
+                  {selectedIndex === index && (
+                    <motion.div 
+                      className="absolute inset-0 bg-purple-600/20 flex items-center justify-center"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <CheckCircle className="h-16 w-16 text-purple-500" />
+                    </motion.div>
+                  )}
                   
                   <div className="absolute bottom-0 inset-x-0 p-4 bg-gradient-to-t from-black/70 to-transparent">
                     <h3 className="font-medium text-white">{image.name}</h3>

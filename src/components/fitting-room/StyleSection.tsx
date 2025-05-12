@@ -3,12 +3,13 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, RefreshCw } from 'lucide-react';
+import { ChevronLeft, ChevronRight, RefreshCw, Sparkles } from 'lucide-react';
 import { Outfit } from '@/lib/types';
 import OutfitCard from './OutfitCard';
 import BlurredSectionOverlay from './BlurredSectionOverlay';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface StyleSectionProps {
   title: string;
@@ -63,6 +64,48 @@ const StyleSection: React.FC<StyleSectionProps> = ({
       scrollContainerRef.current.scrollBy({ left: 300, behavior: 'smooth' });
     }
   };
+
+  // Olivia's Current Faves - fallback outfits when no outfits are available
+  const oliviaFavorites: Outfit[] = [
+    {
+      id: "olivia-fave-1",
+      name: "Spring Casual",
+      notes: "Olivia loves this relaxed yet put-together look for spring days",
+      items: [],
+      seasons: ["spring"],
+      occasions: ["casual", "everyday"],
+      favorite: true,
+      dateAdded: new Date()
+    },
+    {
+      id: "olivia-fave-2",
+      name: "Weekend Brunch",
+      notes: "Perfect for weekend brunches or coffee dates",
+      items: [],
+      seasons: ["spring", "summer"],
+      occasions: ["casual", "brunch"],
+      favorite: true,
+      dateAdded: new Date()
+    },
+    {
+      id: "olivia-fave-3",
+      name: "Office Chic",
+      notes: "Professional but stylish outfit for the office",
+      items: [],
+      seasons: ["all"],
+      occasions: ["work", "business"],
+      favorite: true,
+      dateAdded: new Date()
+    }
+  ];
+  
+  // Determine which outfits to display - use Olivia's faves if no outfits provided
+  const displayOutfits = outfits.length > 0 ? outfits : (showTrending ? oliviaFavorites : outfits);
+  
+  // Adjust title if showing fallback outfits
+  const displayTitle = (outfits.length === 0 && showTrending && displayOutfits.length > 0) 
+    ? "Olivia's Current Faves" 
+    : title;
   
   return (
     <div className={`mt-8 relative ${className}`}>
@@ -79,7 +122,7 @@ const StyleSection: React.FC<StyleSectionProps> = ({
                 transition={{ duration: 0.5 }}
                 className="inline-flex items-center"
               >
-                {title}
+                {displayTitle}
                 {icon && (
                   <motion.div
                     initial={{ opacity: 0, scale: 0 }}
@@ -99,6 +142,22 @@ const StyleSection: React.FC<StyleSectionProps> = ({
             </h2>
             
             <div className="flex items-center gap-2">
+              {outfits.length === 0 && showTrending && displayOutfits.length > 0 && (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="text-xs text-white/50 flex items-center">
+                        <Sparkles className="h-3 w-3 mr-1 text-yellow-400" />
+                        <span>Updates daily</span>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent className="bg-slate-800 border-white/10 text-white">
+                      <p>This section updates every 24h based on what users are wearing.</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
+              
               {lastUpdated && (
                 <motion.span 
                   className="text-xs text-white/50"
@@ -158,24 +217,36 @@ const StyleSection: React.FC<StyleSectionProps> = ({
             ) : (
               <div 
                 ref={scrollContainerRef}
-                className="flex gap-6 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent pl-12 pr-12"
+                className="flex gap-6 overflow-x-auto pb-4 pl-12 pr-12 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent"
                 style={{ scrollbarWidth: 'thin' }}
               >
-                {outfits.map((outfit, index) => (
-                  <div key={outfit.id || index} className="flex-shrink-0 w-[300px]">
-                    <OutfitCard
-                      outfit={outfit}
-                      onPreview={onPreviewOutfit}
-                      disabled={!userPhoto}
-                      isHighlighted={index === 0}
-                      isTrending={showTrending}
-                    />
-                  </div>
-                ))}
-                
-                {outfits.length === 0 && !isLoading && (
-                  <div className="flex items-center justify-center w-full h-[420px] text-white/50">
-                    No outfits available
+                {displayOutfits.length > 0 ? (
+                  displayOutfits.map((outfit, index) => (
+                    <div key={outfit.id || index} className="flex-shrink-0 w-[300px]">
+                      <OutfitCard
+                        outfit={outfit}
+                        onPreview={onPreviewOutfit}
+                        disabled={!userPhoto}
+                        isHighlighted={index === 0}
+                        isTrending={showTrending}
+                      />
+                    </div>
+                  ))
+                ) : (
+                  // Center content when no outfits
+                  <div className="mx-auto w-full flex items-center justify-center h-[420px] text-white/50">
+                    <div className="text-center">
+                      <p>No outfits available</p>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="mt-3 border-white/10 hover:border-white/20"
+                        onClick={onRefresh}
+                      >
+                        <RefreshCw className="mr-2 h-4 w-4" />
+                        Refresh
+                      </Button>
+                    </div>
                   </div>
                 )}
               </div>

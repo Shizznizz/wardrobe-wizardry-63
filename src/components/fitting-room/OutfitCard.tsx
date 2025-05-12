@@ -48,13 +48,13 @@ const OutfitCard = ({
   
   return (
     <motion.div 
-      whileHover={{ scale: 1.02, y: -2 }}
+      whileHover={{ scale: 1.03, y: -4 }}
       transition={{ duration: 0.2 }}
       className={cn(
-        "bg-slate-900/70 border rounded-lg overflow-hidden shadow-md min-h-[420px] flex flex-col",
+        "bg-slate-900/70 border rounded-lg overflow-hidden shadow-md h-[420px] flex flex-col",
         isHighlighted 
           ? "border-purple-500/50 shadow-lg shadow-purple-500/10" 
-          : "border-white/10",
+          : "border-white/10 hover:border-purple-400/30 hover:shadow-lg hover:shadow-purple-500/5",
         className
       )}
     >
@@ -67,7 +67,7 @@ const OutfitCard = ({
       </div>
       
       {/* Outfit Items Grid */}
-      <div className="p-4 flex-grow">
+      <div className="p-4 flex-grow overflow-auto">
         <div className={cn(
           "grid gap-2",
           outfitItems.length > 0 

@@ -1,9 +1,11 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Outfit } from '@/lib/types';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Shirt } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface OliviaRatingSectionProps {
   outfit: Outfit | null;
@@ -11,16 +13,22 @@ interface OliviaRatingSectionProps {
 }
 
 const OliviaRatingSection = ({ outfit, suggestion }: OliviaRatingSectionProps) => {
-  const defaultSuggestions = [
-    "This outfit's colors complement each other beautifully. The proportions are well-balanced too!",
-    "I love how this look balances comfort and style. Great choice for everyday wear!",
-    "This outfit really highlights your best features. The silhouette is very flattering!",
-    "The textures in this outfit work so well together. It creates visual interest without being overwhelming.",
-    "These pieces create a cohesive look that's right on-trend but still timeless."
+  const personalizedSuggestions = [
+    "This casual look is perfect for a sunny walk in the park. 🌸 The colors really suit you!",
+    "I love how this styling brings out your natural vibe. It's relaxed yet put-together for everyday wear. ✨",
+    "This is exactly what I'd recommend for a coffee date or casual meetup! The silhouette is so flattering on you. 💫",
+    "The way these pieces work together creates such a balanced look. Great for running errands in style! 🛍️",
+    "This outfit has the perfect blend of comfort and style. You'll turn heads for all the right reasons! 👗"
   ];
 
   const displaySuggestion = suggestion || 
-    defaultSuggestions[Math.floor(Math.random() * defaultSuggestions.length)];
+    personalizedSuggestions[Math.floor(Math.random() * personalizedSuggestions.length)];
+    
+  const handleShowAccessories = () => {
+    toast.info("Accessory suggestions coming soon!", {
+      description: "This feature will be available in a future update."
+    });
+  };
 
   return (
     <motion.div
@@ -37,10 +45,21 @@ const OliviaRatingSection = ({ outfit, suggestion }: OliviaRatingSectionProps) =
             </div>
             <div>
               <h3 className="text-lg font-semibold text-purple-200 mb-1">Olivia's Take</h3>
-              <p className="text-white/70 italic">{displaySuggestion}</p>
+              <p className="text-white/80 italic">{displaySuggestion}</p>
             </div>
           </div>
         </CardContent>
+        <CardFooter className="pt-0 pb-4 px-4">
+          <Button 
+            variant="outline" 
+            size="sm"
+            className="ml-auto border-purple-500/30 text-purple-300 hover:bg-purple-500/20 hover:text-purple-200"
+            onClick={handleShowAccessories}
+          >
+            <Shirt className="h-4 w-4 mr-2" />
+            Show Accessory Suggestions
+          </Button>
+        </CardFooter>
       </Card>
     </motion.div>
   );
