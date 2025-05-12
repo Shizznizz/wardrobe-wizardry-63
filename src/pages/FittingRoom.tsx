@@ -198,7 +198,7 @@ const FittingRoom = () => {
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white pb-20">
       <EnhancedHeroSection
         title="Try On Your Wardrobe"
-        subtitle="Upload a photo or use Olivia to see how clothes from your wardrobe look when styled together."
+        subtitle="See your favorite outfits come to life — on you or with Olivia's help."
         image={{
           src: "/lovable-uploads/0e9ba14f-845b-4c56-a82c-5a616b0a3efb.png",
           alt: "Olivia in pink blouse and white pants",
@@ -214,25 +214,31 @@ const FittingRoom = () => {
         }
       />
       
-      <Container className="space-y-8 px-4">
-        {/* Model Selection Section - Always at the top when no photo is selected */}
-        <div id="model-selection-section" ref={modelSelectionRef}>
-          <ModelSelectionSection 
-            userPhoto={userPhoto}
-            isUploading={isUploadLoading}
-            isUsingOliviaImage={isUsingOliviaImage}
-            onUserPhotoChange={handleUserPhotoUpload}
-            onShowOliviaImageGallery={() => setShowOliviaImageGallery(true)}
-          />
-        </div>
+      <Container className="space-y-12 px-4">
+        {/* Collapsible How It Works Section - always shown but collapsed by default */}
+        <CollapsibleHowItWorksSection 
+          isOpen={showHowItWorks}
+          onToggle={() => setShowHowItWorks(!showHowItWorks)}
+        />
         
-        {/* Collapsible How It Works Section - only shown when no photo is selected */}
-        {!userPhoto && (
-          <CollapsibleHowItWorksSection 
-            isOpen={showHowItWorks}
-            onToggle={() => setShowHowItWorks(!showHowItWorks)}
-          />
-        )}
+        {/* Model Selection Section */}
+        <div id="model-selection-section" ref={modelSelectionRef}>
+          <Card className="glass-dark border-white/10 overflow-hidden shadow-lg">
+            <div className="p-6">
+              <h2 className="text-xl font-semibold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-300 to-purple-300">
+                Choose how you want to try outfits on.
+              </h2>
+              
+              <ModelSelectionSection 
+                userPhoto={userPhoto}
+                isUploading={isUploadLoading}
+                isUsingOliviaImage={isUsingOliviaImage}
+                onUserPhotoChange={handleUserPhotoUpload}
+                onShowOliviaImageGallery={() => setShowOliviaImageGallery(true)}
+              />
+            </div>
+          </Card>
+        </div>
         
         {/* Regular How It Works Section - only shown after photo is selected */}
         {userPhoto && <HowItWorksSection />}
@@ -308,7 +314,10 @@ const FittingRoom = () => {
             </div>
             {/* Overlay when no model is selected */}
             {!userPhoto && (
-              <BlurredSectionOverlay onClickChooseModel={scrollToModelSection} />
+              <BlurredSectionOverlay 
+                onClickChooseModel={scrollToModelSection} 
+                customMessage="Choose a photo or Olivia to preview these outfits"
+              />
             )}
           </Card>
         </div>
@@ -333,7 +342,11 @@ const FittingRoom = () => {
             </div>
             {/* Overlay when no model is selected */}
             {!userPhoto && (
-              <BlurredSectionOverlay onClickChooseModel={scrollToModelSection} />
+              <BlurredSectionOverlay 
+                onClickChooseModel={scrollToModelSection} 
+                customMessage="Want to see what's trending — on you? Upload a photo or pick Olivia!"
+                buttonText="Let's Go"
+              />
             )}
           </Card>
         </div>

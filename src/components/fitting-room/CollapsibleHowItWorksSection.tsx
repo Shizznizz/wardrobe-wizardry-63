@@ -15,19 +15,28 @@ const CollapsibleHowItWorksSection: React.FC<CollapsibleHowItWorksSectionProps> 
 }) => {
   const steps = [
     {
-      icon: <Upload className="h-10 w-10 text-blue-400" />,
+      icon: <Upload className="h-8 w-8 text-blue-400" />,
       title: "Upload a Photo",
-      description: "Use your own photo or choose Olivia as a model"
+      points: [
+        "Use your own photo", 
+        "Or choose Olivia as a model"
+      ]
     },
     {
-      icon: <Shirt className="h-10 w-10 text-purple-400" />,
+      icon: <Shirt className="h-8 w-8 text-purple-400" />,
       title: "Select an Outfit",
-      description: "Choose from your saved outfits or AI suggestions"
+      points: [
+        "From your saved outfits", 
+        "Or try AI suggestions"
+      ]
     },
     {
-      icon: <Eye className="h-10 w-10 text-pink-400" />,
+      icon: <Eye className="h-8 w-8 text-pink-400" />,
       title: "See the Result",
-      description: "View your outfit virtually styled on your photo"
+      points: [
+        "Instant virtual try-on",
+        "Mix & match to perfect your look"
+      ]
     }
   ];
 
@@ -60,11 +69,7 @@ const CollapsibleHowItWorksSection: React.FC<CollapsibleHowItWorksSectionProps> 
             className="overflow-hidden"
           >
             <div className="p-4 pt-0">
-              <p className="text-white/70 mb-6">
-                Upload a photo of yourself or use Olivia. Then select one of your outfits and see it styled on your body.
-              </p>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2">
                 {steps.map((step, index) => (
                   <motion.div
                     key={index}
@@ -74,15 +79,19 @@ const CollapsibleHowItWorksSection: React.FC<CollapsibleHowItWorksSectionProps> 
                     className="flex flex-col items-center text-center"
                   >
                     <div className="relative">
-                      <div className="h-16 w-16 rounded-full bg-gradient-to-br from-slate-700/80 to-slate-900/80 flex items-center justify-center mb-3 border border-white/10 shadow-lg">
+                      <div className="h-14 w-14 rounded-full bg-gradient-to-br from-slate-700/80 to-slate-900/80 flex items-center justify-center mb-2 border border-white/10 shadow-lg">
                         {step.icon}
                       </div>
                       {index < steps.length - 1 && (
-                        <div className="hidden md:block absolute top-8 left-full w-full h-px bg-gradient-to-r from-transparent via-white/20 to-transparent transform -translate-x-4" />
+                        <div className="hidden md:block absolute top-7 left-full w-full h-px bg-gradient-to-r from-transparent via-white/20 to-transparent transform -translate-x-4" />
                       )}
                     </div>
                     <h3 className="text-base font-medium mb-1 text-white">{step.title}</h3>
-                    <p className="text-sm text-white/70">{step.description}</p>
+                    <ul className="text-sm text-white/70 list-disc list-inside text-left">
+                      {step.points.map((point, i) => (
+                        <li key={i} className="mb-1">{point}</li>
+                      ))}
+                    </ul>
                   </motion.div>
                 ))}
               </div>
