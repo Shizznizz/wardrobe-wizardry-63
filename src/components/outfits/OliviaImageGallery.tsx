@@ -12,22 +12,27 @@ interface OliviaImageGalleryProps {
 }
 
 const OliviaImageGallery = ({ isOpen, onClose, onSelectImage }: OliviaImageGalleryProps) => {
-  // Olivia's model images
+  // Olivia's model images - updated with new images
   const oliviaImages = [
     {
       id: 'olivia-1',
-      src: '/lovable-uploads/7bf89910-ba2c-43e0-a523-899d90c3022e.png',
-      alt: 'Olivia in white outfit with crop top and skirt'
+      src: '/lovable-uploads/5c9492c5-2df1-4f02-8d61-70fd1e57a6af.png',
+      alt: 'Olivia in white top and white jeans with sunglasses'
     },
     {
       id: 'olivia-2',
-      src: '/lovable-uploads/1d4e81c7-dcef-4208-ba9f-77c0544f9e12.png',
-      alt: 'Olivia in white fitted jeans and t-shirt'
+      src: '/lovable-uploads/0faf7bac-a971-4e2f-ba98-333a2cf04330.png',
+      alt: 'Olivia with pink hair in white top and blue jeans'
     },
     {
       id: 'olivia-3',
-      src: '/lovable-uploads/f1154816-6766-4478-ba89-6342580bc85b.png',
-      alt: 'Olivia in white t-shirt and blue jeans'
+      src: '/lovable-uploads/16174419-f0c2-45e4-a3eb-748285607f4c.png',
+      alt: 'Olivia with pink hair in white crop top and pink leggings'
+    },
+    {
+      id: 'olivia-4',
+      src: '/lovable-uploads/98564f66-6f82-49bd-a88a-abcf2b8234ac.png',
+      alt: 'Olivia in white top and blue jeans with black heels'
     }
   ];
 
@@ -46,7 +51,7 @@ const OliviaImageGallery = ({ isOpen, onClose, onSelectImage }: OliviaImageGalle
             Select one of these images of Olivia to use as your model for virtual try-on.
           </p>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {oliviaImages.map((image) => (
               <motion.div
                 key={image.id}

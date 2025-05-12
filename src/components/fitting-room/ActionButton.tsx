@@ -12,10 +12,14 @@ interface ActionButtonProps {
 const ActionButton: React.FC<ActionButtonProps> = ({ text, onClick }) => {
   return (
     <motion.div
-      className="mt-6" // Matches Mix & Match style
+      className="mt-6" 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.4 }}
+      whileHover={{ 
+        y: -5,
+        boxShadow: "0px 10px 25px -5px rgba(168,85,247,0.5)"
+      }}
     >
       <Button
         onClick={onClick}

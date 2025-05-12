@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import EnhancedHeroSection from '@/components/shared/EnhancedHeroSection';
@@ -45,7 +46,11 @@ const FittingRoom = () => {
   } = useShowroom();
 
   const modelSelectionRef = useRef<HTMLDivElement>(null);
+  const outfitSelectionRef = useRef<HTMLDivElement>(null);
+  const resultPreviewRef = useRef<HTMLDivElement>(null);
   const [showHowItWorks, setShowHowItWorks] = useState(false);
+  const [previousUserPhoto, setPreviousUserPhoto] = useState<string | null>(null);
+  const [previousSelectedOutfit, setPreviousSelectedOutfit] = useState<Outfit | null>(null);
 
   // Helper function to get clothing item by ID
   const getClothingItemById = (id: string) => {
@@ -82,14 +87,42 @@ const FittingRoom = () => {
     setSelectedOutfit(null);
     
     // Scroll to outfit selection section
-    document.getElementById('outfit-selection-section')?.scrollIntoView({ 
-      behavior: 'smooth' 
-    });
+    outfitSelectionRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   const scrollToModelSection = () => {
     modelSelectionRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
+
+  // Automatic scrolling to outfit selection when a photo is uploaded
+  useEffect(() => {
+    if (userPhoto && !previousUserPhoto && outfitSelectionRef.current) {
+      setTimeout(() => {
+        outfitSelectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }, 500);
+    }
+    setPreviousUserPhoto(userPhoto);
+  }, [userPhoto, previousUserPhoto]);
+
+  // Automatic scrolling to results when an outfit is selected
+  useEffect(() => {
+    if (selectedOutfit && !previousSelectedOutfit && resultPreviewRef.current) {
+      setTimeout(() => {
+        resultPreviewRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }, 500);
+    }
+    setPreviousSelectedOutfit(selectedOutfit);
+  }, [selectedOutfit, previousSelectedOutfit]);
+
+  // Enhanced photo upload handler with automatic scrolling
+  const handleEnhancedPhotoUpload = (photo: string) => {
+    handleUserPhotoUpload(photo);
+  }
+
+  // Enhanced outfit selection handler with automatic scrolling
+  const handleEnhancedOutfitSelection = (outfit: Outfit) => {
+    handleSelectOutfit(outfit);
+  }
 
   // Sample outfits for Olivia's Styles section
   const oliviaStyles: Outfit[] = [
@@ -183,13 +216,6 @@ const FittingRoom = () => {
     }
 
     handleSelectOutfit(outfit);
-    
-    // Scroll to result section
-    setTimeout(() => {
-      document.getElementById('result-preview-section')?.scrollIntoView({
-        behavior: 'smooth'
-      });
-    }, 100);
   };
 
   return (
@@ -231,7 +257,7 @@ const FittingRoom = () => {
                 userPhoto={userPhoto}
                 isUploading={isUploadLoading}
                 isUsingOliviaImage={isUsingOliviaImage}
-                onUserPhotoChange={handleUserPhotoUpload}
+                onUserPhotoChange={handleEnhancedPhotoUpload}
                 onShowOliviaImageGallery={() => setShowOliviaImageGallery(true)}
               />
             </div>
@@ -247,10 +273,10 @@ const FittingRoom = () => {
         
         {/* Step 3: Outfit Selection Section - only shown after photo is selected */}
         {userPhoto && (
-          <div id="outfit-selection-section">
+          <div id="outfit-selection-section" ref={outfitSelectionRef}>
             <OutfitSelectionSection 
               isPremiumUser={effectivePremiumUser}
-              onSelectOutfit={handleSelectOutfit}
+              onSelectOutfit={handleEnhancedOutfitSelection}
             />
           </div>
         )}
@@ -264,7 +290,7 @@ const FittingRoom = () => {
         
         {/* Step 4: Result Preview Section - only shown after both photo and outfit are selected */}
         {userPhoto && selectedOutfit && (
-          <div id="result-preview-section">
+          <div id="result-preview-section" ref={resultPreviewRef}>
             <ResultPreviewSection 
               finalImage={finalImage}
               userPhoto={userPhoto}
