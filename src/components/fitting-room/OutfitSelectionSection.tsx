@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -6,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Lock, Check, FilterIcon, Shirt } from 'lucide-react';
-import { Outfit, ClothingItem, ClothingSeason } from '@/lib/types';
+import { ClothingSeason, ClothingOccasion, Outfit } from '@/lib/types';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -152,16 +151,16 @@ const OutfitSelectionSection = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3 }}
-      className="mb-8"
+      className="mb-6"
     >
       <Card className="glass-dark border-white/10 overflow-hidden shadow-lg">
-        <CardContent className="p-6">
-          <h2 className="text-xl font-semibold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-300 to-purple-300">
+        <CardContent className="p-5">
+          <h2 className="text-xl font-semibold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-300 to-purple-300">
             Choose an Outfit to Try On
           </h2>
 
           {/* Filters */}
-          <div className="flex flex-wrap gap-3 mb-6">
+          <div className="flex flex-wrap gap-3 mb-5">
             <div className="flex items-center gap-2">
               <FilterIcon className="h-4 w-4 text-white/60" />
               <span className="text-sm text-white/60">Filters:</span>
@@ -221,13 +220,13 @@ const OutfitSelectionSection = ({
             </TabsList>
             
             <TabsContent value="your-outfits">
-              <div className="space-y-8">
+              <div className="space-y-6">
                 {isLoading ? (
                   <div className="flex justify-center items-center h-40">
                     <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-white"></div>
                   </div>
                 ) : filteredUserOutfits.length > 0 ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                     {filteredUserOutfits.map((outfit) => (
                       <OutfitCard 
                         key={outfit.id} 
@@ -318,12 +317,12 @@ interface OutfitCardProps {
 const OutfitCard = ({ outfit, onSelect, isAiGenerated = false, getClothingItemById }: OutfitCardProps) => {
   return (
     <motion.div
-      whileHover={{ scale: 1.02 }}
+      whileHover={{ scale: 1.03, y: -3 }}
       whileTap={{ scale: 0.98 }}
-      className="bg-white/5 rounded-lg border border-white/10 overflow-hidden hover:border-purple-400/30 transition-colors"
+      className="bg-white/5 rounded-lg border border-white/10 overflow-hidden hover:border-purple-400/30 transition-all duration-300"
     >
       <div className="aspect-square relative">
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex flex-col justify-end p-4">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex flex-col justify-end p-4 z-10">
           <h3 className="text-lg font-medium text-white">{outfit.name}</h3>
           <div className="flex flex-wrap gap-1 mt-1">
             {isAiGenerated && (
@@ -343,29 +342,31 @@ const OutfitCard = ({ outfit, onSelect, isAiGenerated = false, getClothingItemBy
         </div>
       </div>
       
-      <div className="grid grid-cols-2 gap-1 p-2">
+      {/* Outfit items grid - improved layout and styling */}
+      <div className="grid grid-cols-2 gap-1.5 p-3 pt-0">
         {Array.isArray(outfit.items) && outfit.items.slice(0, 4).map((itemId, index) => {
           const item = getClothingItemById(itemId);
           return (
-            <div 
-              key={`${itemId}-${index}`} 
-              className="aspect-square w-full rounded-md bg-slate-800/80 border border-white/5 overflow-hidden"
+            <motion.div 
+              key={`${itemId}-${index}`}
+              whileHover={{ scale: 1.05 }}
+              className="aspect-square w-full rounded-md bg-slate-800/80 border border-white/10 overflow-hidden shadow-md hover:shadow-lg transition-all duration-200"
             >
               {item?.imageUrl ? (
                 <img 
                   src={item.imageUrl} 
                   alt={item.name || `Item ${index + 1}`}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-transform hover:scale-110 duration-300"
                 />
               ) : (
-                <div className="w-full h-full flex flex-col items-center justify-center text-white/20">
-                  <Shirt className="h-6 w-6 mb-1 opacity-40" />
+                <div className="w-full h-full flex flex-col items-center justify-center text-white/30">
+                  <Shirt className="h-6 w-6 mb-1 opacity-50" />
                   <span className="text-xs text-center">
                     {item?.name || `Item ${index + 1}`}
                   </span>
                 </div>
               )}
-            </div>
+            </motion.div>
           );
         })}
         
@@ -374,7 +375,7 @@ const OutfitCard = ({ outfit, onSelect, isAiGenerated = false, getClothingItemBy
           Array(4 - outfit.items.length).fill(0).map((_, index) => (
             <div 
               key={`empty-${index}`} 
-              className="aspect-square w-full rounded-md bg-slate-800/50 border border-white/5 overflow-hidden flex items-center justify-center"
+              className="aspect-square w-full rounded-md bg-slate-800/30 border border-white/5 overflow-hidden flex items-center justify-center"
             >
               <span className="text-white/10 text-xs">Empty</span>
             </div>
@@ -382,9 +383,10 @@ const OutfitCard = ({ outfit, onSelect, isAiGenerated = false, getClothingItemBy
         }
       </div>
       
-      <div className="p-4">
+      {/* CTA Button - improved alignment and effects */}
+      <div className="px-3 pb-3">
         <Button 
-          className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+          className="w-full bg-purple-600 hover:bg-purple-500 text-white transition-all duration-300 hover:shadow-[0_0_12px_rgba(168,85,247,0.5)] hover:brightness-110"
           onClick={() => onSelect(outfit)}
         >
           <Check className="mr-2 h-4 w-4" /> Try This On
