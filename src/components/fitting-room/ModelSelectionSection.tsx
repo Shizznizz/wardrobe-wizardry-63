@@ -245,17 +245,18 @@ const ModelSelectionSection = ({
       transition={{ delay: 0.2 }}
     >
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Button 1: Choose a Photo */}
-        <motion.div 
-          whileHover={{ scale: 1.02, boxShadow: "0 0 20px rgba(59, 130, 246, 0.3)" }}
-          transition={{ duration: 0.2 }}
-          className="bg-white/5 border border-white/10 rounded-lg p-5 shadow-lg"
+        {/* All three option boxes are contained in a grid layout */}
+        <OptionBox
+          title="Choose a Photo"
+          titleColor="text-blue-200"
+          description="Upload a full-body photo of yourself to see how outfits fit you."
+          icon={<Upload className="h-5 w-5 mr-2" />}
+          buttonText="Choose Photo"
+          buttonVariant="default"
+          buttonClassName="bg-gradient-to-r from-blue-600 to-blue-500 hover:opacity-90 shadow-lg shadow-blue-900/20 transition-all duration-300"
+          boxGlowColor="rgba(59, 130, 246, 0.3)"
+          onClick={triggerFileInput}
         >
-          <h3 className="text-lg font-medium mb-3 text-blue-200">Choose a Photo</h3>
-          <p className="text-white/70 mb-5 text-sm">
-            Upload a full-body photo of yourself to see how outfits fit you.
-          </p>
-          
           <input
             type="file"
             ref={fileInputRef}
@@ -263,29 +264,19 @@ const ModelSelectionSection = ({
             accept="image/*"
             onChange={handlePhotoUpload}
           />
-          
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
-            <Button 
-              onClick={triggerFileInput}
-              className="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:opacity-90 shadow-lg shadow-blue-900/20 transition-all duration-300"
-            >
-              <Upload className="h-5 w-5 mr-2" />
-              Choose Photo
-            </Button>
-          </motion.div>
-        </motion.div>
+        </OptionBox>
         
-        {/* Button 2: Take a Photo */}
-        <motion.div 
-          whileHover={{ scale: 1.02, boxShadow: "0 0 20px rgba(74, 222, 128, 0.2)" }}
-          transition={{ duration: 0.2 }}
-          className="bg-white/5 border border-white/10 rounded-lg p-5 shadow-lg"
+        <OptionBox
+          title="Take a Photo"
+          titleColor="text-green-200"
+          description="Use your device's camera to take a picture now for the try-on."
+          icon={<Camera className="h-5 w-5 mr-2" />}
+          buttonText="Take a Photo"
+          buttonVariant="outline"
+          buttonClassName="border-green-400/30 text-white hover:bg-green-500/10 transition-all duration-300"
+          boxGlowColor="rgba(74, 222, 128, 0.2)"
+          onClick={handleTakePhoto}
         >
-          <h3 className="text-lg font-medium mb-3 text-green-200">Take a Photo</h3>
-          <p className="text-white/70 mb-5 text-sm">
-            Use your device's camera to take a picture now for the try-on.
-          </p>
-          
           <input
             type="file"
             ref={cameraInputRef}
@@ -294,54 +285,32 @@ const ModelSelectionSection = ({
             onChange={handleCameraCapture}
           />
           
-          {permissionError ? (
+          {permissionError && (
             <div className="p-3 bg-red-900/30 border border-red-500/30 rounded-md mb-3">
               <p className="text-white/90 text-xs">
                 {permissionError}
               </p>
             </div>
-          ) : null}
-          
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
-            <Button
-              onClick={handleTakePhoto}
-              variant="outline"
-              className="w-full border-green-400/30 text-white hover:bg-green-500/10 transition-all duration-300"
-            >
-              <Camera className="h-5 w-5 mr-2" />
-              Take a Photo
-            </Button>
-          </motion.div>
-        </motion.div>
+          )}
+        </OptionBox>
         
-        {/* Button 3: Use Olivia Bloom */}
-        <motion.div 
-          whileHover={{ scale: 1.02, boxShadow: "0 0 20px rgba(147, 51, 234, 0.2)" }}
-          transition={{ duration: 0.2 }}
-          className="bg-white/5 border border-white/10 rounded-lg p-5 shadow-lg"
+        <OptionBox
+          title="Use Olivia Bloom"
+          titleColor="text-purple-200"
+          description="Try outfits on our virtual AI model — Olivia — for a quick preview."
+          icon={<User className="h-5 w-5 mr-2" />}
+          buttonText="Choose Olivia"
+          buttonVariant="outline"
+          buttonClassName="border-purple-500/30 text-purple-300 hover:bg-purple-500/20 hover:text-purple-100 hover:border-purple-500/50 transition-all duration-300"
+          boxGlowColor="rgba(147, 51, 234, 0.2)"
+          onClick={() => setShowOliviaSelector(true)}
         >
-          <h3 className="text-lg font-medium mb-3 text-purple-200">Use Olivia Bloom</h3>
-          <p className="text-white/70 mb-5 text-sm">
-            Try outfits on our virtual AI model — Olivia — for a quick preview.
-          </p>
-          
           <div className="flex items-center justify-center mb-4">
             <div className="h-16 w-16 rounded-full bg-gradient-to-br from-purple-500/20 to-purple-500/5 flex items-center justify-center border border-purple-400/20">
               <User className="h-8 w-8 text-purple-400" />
             </div>
           </div>
-          
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
-            <Button
-              onClick={() => setShowOliviaSelector(true)}
-              className="w-full text-sm border-purple-500/30 text-purple-300 hover:bg-purple-500/20 hover:text-purple-100 hover:border-purple-500/50 transition-all duration-300"
-              variant="outline"
-            >
-              <User className="h-5 w-5 mr-2" />
-              Choose Olivia
-            </Button>
-          </motion.div>
-        </motion.div>
+        </OptionBox>
       </div>
 
       <OliviaImageSelector 
@@ -349,6 +318,60 @@ const ModelSelectionSection = ({
         onClose={() => setShowOliviaSelector(false)}
         onSelectImage={handleSelectOliviaImage}
       />
+    </motion.div>
+  );
+};
+
+// New reusable OptionBox component to ensure consistent heights and button alignment
+interface OptionBoxProps {
+  title: string;
+  titleColor: string;
+  description: string;
+  icon: React.ReactNode;
+  buttonText: string;
+  buttonVariant: "default" | "outline";
+  buttonClassName: string;
+  boxGlowColor: string;
+  onClick: () => void;
+  children?: React.ReactNode;
+}
+
+const OptionBox = ({
+  title,
+  titleColor,
+  description,
+  icon,
+  buttonText,
+  buttonVariant,
+  buttonClassName,
+  boxGlowColor,
+  onClick,
+  children
+}: OptionBoxProps) => {
+  return (
+    <motion.div 
+      whileHover={{ scale: 1.02, boxShadow: `0 0 20px ${boxGlowColor}` }}
+      transition={{ duration: 0.2 }}
+      className="bg-white/5 border border-white/10 rounded-lg p-5 shadow-lg flex flex-col h-full"
+    >
+      <div className="flex-grow flex flex-col">
+        <h3 className={`text-lg font-medium mb-3 ${titleColor}`}>{title}</h3>
+        <p className="text-white/70 mb-5 text-sm">{description}</p>
+        {children}
+      </div>
+      
+      <div className="mt-auto">
+        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
+          <Button 
+            onClick={onClick}
+            variant={buttonVariant}
+            className={`w-full text-sm ${buttonClassName}`}
+          >
+            {icon}
+            {buttonText}
+          </Button>
+        </motion.div>
+      </div>
     </motion.div>
   );
 };
