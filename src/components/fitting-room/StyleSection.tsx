@@ -82,14 +82,13 @@ const StyleSection: React.FC<StyleSectionProps> = ({
                 {title}
                 {icon && (
                   <motion.div
-                    className="ml-2"
                     initial={{ opacity: 0, scale: 0 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.3, duration: 0.5 }}
                   >
                     {React.isValidElement(icon) ? 
                       React.cloneElement(icon as React.ReactElement, { 
-                        className: `h-5 w-5 ${iconColor}` 
+                        className: `h-5 w-5 ml-2 ${iconColor}` 
                       }) : 
                       icon
                     }
