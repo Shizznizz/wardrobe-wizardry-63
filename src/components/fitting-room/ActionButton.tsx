@@ -12,7 +12,7 @@ interface ActionButtonProps {
 const ActionButton: React.FC<ActionButtonProps> = ({ text, onClick }) => {
   return (
     <motion.div
-      className="w-full flex justify-center my-10"
+      className="mt-6" // Changed from "w-full flex justify-center my-10" to "mt-6" to match Mix & Match style
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.4 }}

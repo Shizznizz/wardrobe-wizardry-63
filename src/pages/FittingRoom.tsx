@@ -115,7 +115,7 @@ const FittingRoom = () => {
       id: 'olivia-style-3',
       name: 'Fall Classic',
       items: ['item-7', 'item-8', 'item-9'],
-      seasons: ['autumn'], // Changed from 'fall' to 'autumn' to match ClothingSeason type
+      seasons: ['autumn'],
       occasions: ['office', 'dinner'],
       favorite: false,
       dateAdded: new Date()
@@ -146,7 +146,7 @@ const FittingRoom = () => {
       id: 'community-2',
       name: 'Office Ready',
       items: ['item-16', 'item-17', 'item-18'],
-      seasons: ['autumn', 'winter'], // Changed from 'fall' to 'autumn' to match ClothingSeason type
+      seasons: ['autumn', 'winter'],
       occasions: ['business', 'formal'],
       favorite: false,
       dateAdded: new Date()
@@ -202,16 +202,20 @@ const FittingRoom = () => {
           alt: "Olivia in pink blouse and white pants",
           variant: "standing"
         }}
+        // Added the ActionButton as part of the hero section's children prop
+        // to position it similar to the Mix & Match page
+        children={
+          !userPhoto && (
+            <ActionButton 
+              text="Start Now – Choose Your Model" 
+              onClick={scrollToModelSection} 
+            />
+          )
+        }
       />
       
-      {/* CTA Button when no photo is selected */}
-      {!userPhoto && (
-        <ActionButton 
-          text="Start Now – Choose Your Model" 
-          onClick={scrollToModelSection} 
-        />
-      )}
-
+      {/* Removed the separate CTA Button section that was here */}
+      
       <Container className="space-y-16 px-4">
         {/* Step 1: How It Works Section - Moved down if no photo is uploaded */}
         {userPhoto && <HowItWorksSection />}
