@@ -87,9 +87,10 @@ const StyleSection: React.FC<StyleSectionProps> = ({
                     transition={{ delay: 0.3, duration: 0.5 }}
                   >
                     {React.isValidElement(icon) ? 
-                      React.cloneElement(icon as React.ReactElement, { 
+                      React.cloneElement(icon, { 
+                        style: { marginLeft: '0.5rem' },
                         className: `h-5 w-5 ml-2 ${iconColor}` 
-                      }) : 
+                      } as React.HTMLAttributes<HTMLElement>) : 
                       icon
                     }
                   </motion.div>
@@ -145,9 +146,10 @@ const StyleSection: React.FC<StyleSectionProps> = ({
               <div className="flex items-center justify-center h-[420px]">
                 <div className="animate-pulse flex flex-col items-center">
                   {icon && React.isValidElement(icon) ? 
-                    React.cloneElement(icon as React.ReactElement, { 
-                      className: "h-8 w-8 text-white/30 mb-3" 
-                    }) : 
+                    React.cloneElement(icon, { 
+                      className: "h-8 w-8 text-white/30 mb-3",
+                      style: {}
+                    } as React.HTMLAttributes<HTMLElement>) : 
                     null
                   }
                   <p className="text-white/50">Loading styles for you...</p>
