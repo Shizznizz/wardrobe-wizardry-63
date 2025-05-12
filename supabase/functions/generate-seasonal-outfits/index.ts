@@ -2,7 +2,29 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import "https://deno.land/x/xhr@0.1.0/mod.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-import { Outfit } from '../../src/lib/types.ts'
+
+// Define the Outfit type directly in this file instead of importing it
+interface Outfit {
+  id: string;
+  name: string;
+  items: string[];
+  seasons?: string[];
+  season?: string[] | string;
+  occasion?: string;
+  occasions?: string[];
+  favorite?: boolean;
+  dateAdded?: string | Date;
+  timesWorn?: number;
+  lastWorn?: Date;
+  notes?: string;
+  tags?: string[];
+  colors?: string[];
+  thumbnail?: string;
+  color_scheme?: string;
+  personality_tags?: string[];
+  description?: string;
+  ai_generated?: boolean;
+}
 
 // CORS headers for browser requests
 const corsHeaders = {
@@ -306,7 +328,9 @@ serve(async (req) => {
         outfits,
         season,
         weather,
-        lastUpdated: new Date(),
+        lastUpdated: new Date().toISOString(),
+        generatedAt: new Date().toISOString(),
+        refreshAfter: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
       }),
       {
         headers: {

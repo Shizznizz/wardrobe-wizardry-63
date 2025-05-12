@@ -10,6 +10,7 @@ export interface TrendingOutfitsResult {
   error: string | null;
   lastUpdated: Date | null;
   refreshOutfits: () => Promise<void>;
+  isRefreshing: boolean;
 }
 
 export const useTrendingOutfits = (): TrendingOutfitsResult => {
@@ -18,6 +19,7 @@ export const useTrendingOutfits = (): TrendingOutfitsResult => {
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [refreshCounter, setRefreshCounter] = useState<number>(0);
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 
   const fetchTrendingOutfits = async () => {
     setIsLoading(true);
@@ -68,7 +70,12 @@ export const useTrendingOutfits = (): TrendingOutfitsResult => {
   }, [refreshCounter]);
 
   const refreshOutfits = async () => {
-    setRefreshCounter(prev => prev + 1);
+    setIsRefreshing(true);
+    try {
+      await fetchTrendingOutfits();
+    } finally {
+      setIsRefreshing(false);
+    }
   };
 
   return {
@@ -76,6 +83,7 @@ export const useTrendingOutfits = (): TrendingOutfitsResult => {
     isLoading,
     error,
     lastUpdated,
-    refreshOutfits
+    refreshOutfits,
+    isRefreshing
   };
 };

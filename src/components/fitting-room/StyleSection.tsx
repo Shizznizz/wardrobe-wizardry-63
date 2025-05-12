@@ -8,6 +8,7 @@ import { Outfit } from '@/lib/types';
 import OutfitCard from './OutfitCard';
 import BlurredSectionOverlay from './BlurredSectionOverlay';
 import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 interface StyleSectionProps {
   title: string;
@@ -46,7 +47,7 @@ const StyleSection: React.FC<StyleSectionProps> = ({
   onClickChooseModel,
   lastUpdated,
   isRefreshing = false,
-  className,
+  className = '',
   showTrending = false
 }) => {
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
@@ -86,7 +87,12 @@ const StyleSection: React.FC<StyleSectionProps> = ({
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.3, duration: 0.5 }}
                   >
-                    {React.cloneElement(icon as React.ReactElement, { className: `h-5 w-5 ${iconColor}` })}
+                    {React.isValidElement(icon) ? 
+                      React.cloneElement(icon as React.ReactElement, { 
+                        className: `h-5 w-5 ${iconColor}` 
+                      }) : 
+                      icon
+                    }
                   </motion.div>
                 )}
               </motion.span>
@@ -139,7 +145,12 @@ const StyleSection: React.FC<StyleSectionProps> = ({
             {isLoading ? (
               <div className="flex items-center justify-center h-[420px]">
                 <div className="animate-pulse flex flex-col items-center">
-                  {icon && React.cloneElement(icon as React.ReactElement, { className: "h-8 w-8 text-white/30 mb-3" })}
+                  {icon && React.isValidElement(icon) ? 
+                    React.cloneElement(icon as React.ReactElement, { 
+                      className: "h-8 w-8 text-white/30 mb-3" 
+                    }) : 
+                    null
+                  }
                   <p className="text-white/50">Loading styles for you...</p>
                 </div>
               </div>

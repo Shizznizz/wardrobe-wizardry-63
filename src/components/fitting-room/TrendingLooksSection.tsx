@@ -22,7 +22,8 @@ const TrendingLooksSection: React.FC<TrendingLooksSectionProps> = ({
     isLoading, 
     error,
     lastUpdated,
-    refreshOutfits 
+    refreshOutfits,
+    isRefreshing 
   } = useTrendingOutfits();
 
   // Handle outfit preview and track the usage
@@ -54,6 +55,7 @@ const TrendingLooksSection: React.FC<TrendingLooksSectionProps> = ({
       userPhoto={userPhoto}
       onClickChooseModel={onClickChooseModel}
       lastUpdated={lastUpdated}
+      isRefreshing={isRefreshing}
       showTrending={true}
     />
   );

@@ -18,6 +18,7 @@ export function useSeasonalOutfits() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 
   // Function to fetch outfits from our edge function
   const fetchOutfits = async () => {
@@ -51,14 +52,19 @@ export function useSeasonalOutfits() {
       }
       
       // Process and store the result
-      const result = data as SeasonalOutfitsResponse;
+      const result = data;
       
       setOutfits(result.outfits);
       setSeason(result.season);
-      setLastUpdated(new Date(result.generatedAt));
+      setLastUpdated(new Date(result.lastUpdated));
       
       // Cache the result in local storage
-      localStorage.setItem('olivia_seasonal_outfits', JSON.stringify(result));
+      localStorage.setItem('olivia_seasonal_outfits', JSON.stringify({
+        outfits: result.outfits,
+        season: result.season,
+        generatedAt: result.generatedAt || result.lastUpdated,
+        refreshAfter: result.refreshAfter || new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+      }));
       
     } catch (err) {
       console.error('Failed to fetch seasonal outfits:', err);
@@ -69,6 +75,18 @@ export function useSeasonalOutfits() {
       loadFallbackOutfits();
     } finally {
       setIsLoading(false);
+    }
+  };
+  
+  // Refreshing function that shows a loading state
+  const refreshOutfits = async () => {
+    setIsRefreshing(true);
+    try {
+      // Remove from local storage to force refresh
+      localStorage.removeItem('olivia_seasonal_outfits');
+      await fetchOutfits();
+    } finally {
+      setIsRefreshing(false);
     }
   };
   
@@ -156,6 +174,7 @@ export function useSeasonalOutfits() {
     isLoading,
     error,
     lastUpdated,
-    refreshOutfits: fetchOutfits
+    refreshOutfits,
+    isRefreshing
   };
 }

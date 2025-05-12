@@ -126,7 +126,7 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({
         outfits: trendingOutfits,
-        lastUpdated: new Date()
+        lastUpdated: new Date().toISOString()
       }),
       {
         headers: {

@@ -62,7 +62,7 @@ const OutfitCard = ({
       <div className="p-4 border-b border-white/10">
         <h3 className="font-medium text-white mb-1">{outfit.name}</h3>
         <p className="text-white/70 text-sm line-clamp-2">
-          {outfit.description || 'A stylish combination for any occasion.'}
+          {outfit.notes || outfit.description || 'A stylish combination for any occasion.'}
         </p>
       </div>
       
