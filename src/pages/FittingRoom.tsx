@@ -38,6 +38,11 @@ const FittingRoom = () => {
     clearPhotos
   } = useShowroom();
 
+  // Helper function to get clothing item by ID
+  const getClothingItemById = (id: string) => {
+    return clothingItems.find(item => item.id === id);
+  };
+
   // Handle replacing an item in the current outfit
   const handleReplaceItem = (oldItemId: string, newItemId: string) => {
     if (!selectedOutfit) return;

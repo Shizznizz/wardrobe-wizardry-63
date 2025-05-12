@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Lock, Check, FilterIcon } from 'lucide-react';
+import { Lock, Check, FilterIcon, Shirt } from 'lucide-react';
 import { Outfit, ClothingItem, ClothingSeason } from '@/lib/types';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -26,18 +26,49 @@ const OutfitSelectionSection = ({
   const [userOutfits, setUserOutfits] = useState<Outfit[]>([]);
   const [aiOutfits, setAiOutfits] = useState<Outfit[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [clothingItems, setClothingItems] = useState<ClothingItem[]>([]);
   
   // Filter states - using 'all' or valid ClothingSeason values
   const [selectedSeason, setSelectedSeason] = useState<string>('all');
   const [selectedStyle, setSelectedStyle] = useState<string>('all');
   
-  // Fetch user's outfits from Supabase
+  // Fetch user's outfits and clothing items from Supabase
   useEffect(() => {
     if (user) {
-      const fetchUserOutfits = async () => {
+      const fetchUserData = async () => {
         setIsLoading(true);
         
         try {
+          // First fetch the clothing items
+          const { data: clothingData, error: clothingError } = await supabase
+            .from('clothing_items')
+            .select('*')
+            .eq('user_id', user.id);
+          
+          if (clothingError) {
+            console.error('Error fetching clothing items:', clothingError);
+            toast.error('Failed to load your wardrobe items');
+          } else if (clothingData) {
+            // Format clothing data
+            const formattedClothing: ClothingItem[] = clothingData.map(item => ({
+              id: item.id,
+              name: item.name,
+              type: item.type,
+              imageUrl: item.image_url,
+              image: item.image_url,
+              color: item.color,
+              material: item.material || '',
+              season: Array.isArray(item.season) ? item.season : ['all'],
+              occasions: Array.isArray(item.occasions) ? item.occasions : ['casual'],
+              favorite: item.favorite || false,
+              timesWorn: item.times_worn || 0,
+              dateAdded: new Date(item.date_added)
+            }));
+            
+            setClothingItems(formattedClothing);
+          }
+          
+          // Now fetch the outfits
           const { data, error } = await supabase
             .from('outfits')
             .select('*')
@@ -80,7 +111,7 @@ const OutfitSelectionSection = ({
         }
       };
       
-      fetchUserOutfits();
+      fetchUserData();
     }
   }, [user]);
   
@@ -98,6 +129,11 @@ const OutfitSelectionSection = ({
     const matchesStyle = selectedStyle === 'all' || outfit.occasions?.includes(selectedStyle);
     return matchesSeason && matchesStyle;
   });
+  
+  // Helper function to get clothing item by ID
+  const getClothingItemById = (itemId: string): ClothingItem | undefined => {
+    return clothingItems.find(item => item.id === itemId);
+  };
   
   const handleSelectOutfit = (outfit: Outfit) => {
     onSelectOutfit(outfit);
@@ -196,7 +232,8 @@ const OutfitSelectionSection = ({
                       <OutfitCard 
                         key={outfit.id} 
                         outfit={outfit} 
-                        onSelect={handleSelectOutfit} 
+                        onSelect={handleSelectOutfit}
+                        getClothingItemById={getClothingItemById}
                       />
                     ))}
                   </div>
@@ -229,6 +266,7 @@ const OutfitSelectionSection = ({
                           outfit={outfit} 
                           onSelect={handleSelectOutfit}
                           isAiGenerated
+                          getClothingItemById={getClothingItemById}
                         />
                       ))}
                     </div>
@@ -274,9 +312,10 @@ interface OutfitCardProps {
   outfit: Outfit;
   onSelect: (outfit: Outfit) => void;
   isAiGenerated?: boolean;
+  getClothingItemById: (id: string) => ClothingItem | undefined;
 }
 
-const OutfitCard = ({ outfit, onSelect, isAiGenerated = false }: OutfitCardProps) => {
+const OutfitCard = ({ outfit, onSelect, isAiGenerated = false, getClothingItemById }: OutfitCardProps) => {
   return (
     <motion.div
       whileHover={{ scale: 1.02 }}
@@ -305,16 +344,42 @@ const OutfitCard = ({ outfit, onSelect, isAiGenerated = false }: OutfitCardProps
       </div>
       
       <div className="grid grid-cols-2 gap-1 p-2">
-        {[1, 2, 3, 4].map((_, index) => (
-          <div 
-            key={index} 
-            className="aspect-square w-full rounded-md bg-slate-800/80 border border-white/5 overflow-hidden"
-          >
-            <div className="w-full h-full flex items-center justify-center text-white/20 text-xs">
-              Item {index + 1}
+        {Array.isArray(outfit.items) && outfit.items.slice(0, 4).map((itemId, index) => {
+          const item = getClothingItemById(itemId);
+          return (
+            <div 
+              key={`${itemId}-${index}`} 
+              className="aspect-square w-full rounded-md bg-slate-800/80 border border-white/5 overflow-hidden"
+            >
+              {item?.imageUrl ? (
+                <img 
+                  src={item.imageUrl} 
+                  alt={item.name || `Item ${index + 1}`}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex flex-col items-center justify-center text-white/20">
+                  <Shirt className="h-6 w-6 mb-1 opacity-40" />
+                  <span className="text-xs text-center">
+                    {item?.name || `Item ${index + 1}`}
+                  </span>
+                </div>
+              )}
             </div>
-          </div>
-        ))}
+          );
+        })}
+        
+        {/* Fill empty slots if there are fewer than 4 items */}
+        {Array.isArray(outfit.items) && outfit.items.length < 4 && 
+          Array(4 - outfit.items.length).fill(0).map((_, index) => (
+            <div 
+              key={`empty-${index}`} 
+              className="aspect-square w-full rounded-md bg-slate-800/50 border border-white/5 overflow-hidden flex items-center justify-center"
+            >
+              <span className="text-white/10 text-xs">Empty</span>
+            </div>
+          ))
+        }
       </div>
       
       <div className="p-4">
