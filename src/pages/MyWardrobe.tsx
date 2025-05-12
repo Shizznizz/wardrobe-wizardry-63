@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
@@ -7,7 +6,7 @@ import { toast } from 'sonner';
 
 import WardrobeGrid from '@/components/WardrobeGrid';
 import WardrobeControls from '@/components/wardrobe/WardrobeControls';
-import { ClothingItem } from '@/lib/types';
+import { ClothingItem, ClothingSeason } from '@/lib/types';
 import UploadModal from '@/components/UploadModal';
 import EnhancedWardrobeFilters from '@/components/wardrobe/EnhancedWardrobeFilters';
 import WardrobeInsights from '@/components/wardrobe/WardrobeInsights';
@@ -55,7 +54,7 @@ const MyWardrobe = () => {
   // New filter state
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
   const [colorFilter, setColorFilter] = useState<string | null>(null);
-  const [seasonFilter, setSeasonFilter] = useState<string | null>(null);
+  const [seasonFilter, setSeasonFilter] = useState<ClothingSeason | null>(null);
   const [sortOrder, setSortOrder] = useState<string | null>(null);
   
   const handleUploadNew = () => {
@@ -228,6 +227,7 @@ const MyWardrobe = () => {
   const renderFilterBar = () => {
     const uniqueCategories = getUniqueCategories();
     const uniqueColors = getUniqueColors();
+    const seasons: ClothingSeason[] = ['summer', 'winter', 'autumn', 'spring', 'all'];
     
     return (
       <div className="mb-6 flex flex-col sm:flex-row gap-2 sm:gap-4 justify-between items-start sm:items-center">
@@ -312,7 +312,7 @@ const MyWardrobe = () => {
                     Clear Selection
                   </DropdownMenuItem>
                 )}
-                {['summer', 'winter', 'autumn', 'spring', 'all'].map(season => (
+                {seasons.map(season => (
                   <DropdownMenuItem 
                     key={season}
                     className={seasonFilter === season ? "bg-purple-900/30" : ""}
