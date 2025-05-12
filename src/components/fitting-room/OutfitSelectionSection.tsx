@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -152,23 +151,23 @@ const OutfitSelectionSection = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3 }}
-      className="mb-6"
+      className="mb-5" // Reduced bottom margin from mb-6 to mb-5
     >
       <Card className="glass-dark border-white/10 overflow-hidden shadow-lg">
-        <CardContent className="p-5">
-          <h2 className="text-xl font-semibold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-300 to-purple-300">
+        <CardContent className="p-4"> {/* Reduced padding from p-5 to p-4 */}
+          <h2 className="text-xl font-semibold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-blue-300 to-purple-300">
             Choose an Outfit to Try On
           </h2>
 
-          {/* Filters */}
-          <div className="flex flex-wrap gap-3 mb-5">
+          {/* Filters - Enhanced with subtle styling */}
+          <div className="flex flex-wrap gap-3 mb-4 sticky top-0 z-10 bg-black/20 backdrop-blur-sm p-2 rounded-lg border border-white/10 shadow-sm">
             <div className="flex items-center gap-2">
               <FilterIcon className="h-4 w-4 text-white/60" />
               <span className="text-sm text-white/60">Filters:</span>
             </div>
             
             <Select value={selectedSeason} onValueChange={setSelectedSeason}>
-              <SelectTrigger className="w-[140px] h-8 text-xs bg-white/5 border-white/10">
+              <SelectTrigger className="w-[140px] h-8 text-xs bg-white/5 border-white/20 hover:border-white/40 transition-colors shadow-inner">
                 <SelectValue placeholder="Season" />
               </SelectTrigger>
               <SelectContent>
@@ -183,7 +182,7 @@ const OutfitSelectionSection = ({
             </Select>
             
             <Select value={selectedStyle} onValueChange={setSelectedStyle}>
-              <SelectTrigger className="w-[140px] h-8 text-xs bg-white/5 border-white/10">
+              <SelectTrigger className="w-[140px] h-8 text-xs bg-white/5 border-white/20 hover:border-white/40 transition-colors shadow-inner">
                 <SelectValue placeholder="Style" />
               </SelectTrigger>
               <SelectContent>
@@ -204,7 +203,7 @@ const OutfitSelectionSection = ({
             onValueChange={setActiveTab}
             className="w-full"
           >
-            <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-6">
+            <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-4"> {/* Reduced margin from mb-6 to mb-4 */}
               <TabsTrigger value="your-outfits">Your Outfits</TabsTrigger>
               <TabsTrigger 
                 value="ai-suggested"
@@ -221,7 +220,7 @@ const OutfitSelectionSection = ({
             </TabsList>
             
             <TabsContent value="your-outfits">
-              <div className="space-y-6">
+              <div className="space-y-4"> {/* Reduced from space-y-6 to space-y-4 */}
                 {isLoading ? (
                   <div className="flex justify-center items-center h-40">
                     <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-white"></div>
@@ -322,72 +321,73 @@ const OutfitCard = ({ outfit, onSelect, isAiGenerated = false, getClothingItemBy
       whileTap={{ scale: 0.98 }}
       className="bg-white/5 rounded-lg border border-white/10 overflow-hidden hover:border-purple-400/30 transition-all duration-300"
     >
-      <div className="aspect-square relative">
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex flex-col justify-end p-4 z-10">
-          <h3 className="text-lg font-medium text-white">{outfit.name}</h3>
-          <div className="flex flex-wrap gap-1 mt-1">
-            {isAiGenerated && (
-              <Badge className="bg-purple-500/70 text-white border-none">AI Generated</Badge>
-            )}
-            {outfit.occasions?.slice(0, 1).map(occasion => (
-              <Badge key={occasion} className="bg-slate-700/70 text-white border-none capitalize">
-                {occasion}
-              </Badge>
-            ))}
-            {outfit.seasons?.slice(0, 1).map(season => (
-              <Badge key={season} className="bg-blue-700/70 text-white border-none capitalize">
-                {season}
-              </Badge>
-            ))}
-          </div>
+      {/* Title and badge section */}
+      <div className="p-3 pb-2">
+        <h3 className="text-lg font-medium text-white">{outfit.name}</h3>
+        <div className="flex flex-wrap gap-1.5 mt-1.5 mb-1">
+          {isAiGenerated && (
+            <Badge className="bg-purple-500/70 text-white border-none">AI Generated</Badge>
+          )}
+          {outfit.occasions?.slice(0, 1).map(occasion => (
+            <Badge key={occasion} className="bg-slate-700/70 text-white border-none capitalize">
+              {occasion}
+            </Badge>
+          ))}
+          {outfit.seasons?.slice(0, 1).map(season => (
+            <Badge key={season} className="bg-blue-700/70 text-white border-none capitalize">
+              {season}
+            </Badge>
+          ))}
         </div>
       </div>
       
       {/* Outfit items grid - improved layout and styling */}
-      <div className="grid grid-cols-2 gap-1.5 p-3 pt-0">
-        {Array.isArray(outfit.items) && outfit.items.slice(0, 4).map((itemId, index) => {
-          const item = getClothingItemById(itemId);
-          return (
-            <motion.div 
-              key={`${itemId}-${index}`}
-              whileHover={{ scale: 1.05 }}
-              className="aspect-square w-full rounded-md bg-slate-800/80 border border-white/10 overflow-hidden shadow-md hover:shadow-lg transition-all duration-200"
-            >
-              {item?.imageUrl ? (
-                <img 
-                  src={item.imageUrl} 
-                  alt={item.name || `Item ${index + 1}`}
-                  className="w-full h-full object-cover transition-transform hover:scale-110 duration-300"
-                />
-              ) : (
-                <div className="w-full h-full flex flex-col items-center justify-center text-white/30">
-                  <Shirt className="h-6 w-6 mb-1 opacity-50" />
-                  <span className="text-xs text-center">
-                    {item?.name || `Item ${index + 1}`}
-                  </span>
-                </div>
-              )}
-            </motion.div>
-          );
-        })}
-        
-        {/* Fill empty slots if there are fewer than 4 items */}
-        {Array.isArray(outfit.items) && outfit.items.length < 4 && 
-          Array(4 - outfit.items.length).fill(0).map((_, index) => (
-            <div 
-              key={`empty-${index}`} 
-              className="aspect-square w-full rounded-md bg-slate-800/30 border border-white/5 overflow-hidden flex items-center justify-center"
-            >
-              <span className="text-white/10 text-xs">Empty</span>
+      <div className="grid grid-cols-2 gap-2 p-3 pt-0">
+        {Array.isArray(outfit.items) && outfit.items.length > 0 ? (
+          // If there are items, render them in the grid
+          outfit.items.slice(0, 4).map((itemId, index) => {
+            const item = getClothingItemById(itemId);
+            return (
+              <motion.div 
+                key={`${itemId}-${index}`}
+                whileHover={{ scale: 1.08, zIndex: 10 }}
+                className="aspect-square w-full rounded-md overflow-hidden shadow-md hover:shadow-lg transition-all duration-200 relative"
+              >
+                {item?.imageUrl ? (
+                  <div className="w-full h-full overflow-hidden rounded-md shadow-[0_2px_5px_rgba(0,0,0,0.2)]">
+                    <img 
+                      src={item.imageUrl} 
+                      alt={item.name || `Item ${index + 1}`}
+                      className="w-full h-full object-cover transition-transform hover:scale-110 duration-300"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center text-white/30 bg-slate-800/80 rounded-md shadow-[0_2px_5px_rgba(0,0,0,0.2)]">
+                    <Shirt className="h-6 w-6 mb-1 opacity-50" />
+                    <span className="text-xs text-center">
+                      {item?.name || `Item ${index + 1}`}
+                    </span>
+                  </div>
+                )}
+              </motion.div>
+            );
+          })
+        ) : (
+          // If no items, show a placeholder centered
+          <div className="col-span-2 flex items-center justify-center h-32 text-white/30">
+            <div className="text-center">
+              <Shirt className="h-8 w-8 mx-auto mb-2 opacity-50" />
+              <p className="text-sm">No items in this outfit</p>
             </div>
-          ))
-        }
+          </div>
+        )}
       </div>
       
       {/* CTA Button - improved alignment and effects */}
       <div className="px-3 pb-3">
         <Button 
-          className="w-full bg-purple-600 hover:bg-purple-500 text-white transition-all duration-300 hover:shadow-[0_0_12px_rgba(168,85,247,0.5)] hover:brightness-110"
+          className="w-full bg-purple-600 hover:bg-purple-500 text-white transition-all duration-300 
+                   shadow-sm hover:shadow-[0_0_12px_rgba(168,85,247,0.5)] hover:brightness-110"
           onClick={() => onSelect(outfit)}
         >
           <Check className="mr-2 h-4 w-4" /> Try This On
