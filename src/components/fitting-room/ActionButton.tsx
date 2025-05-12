@@ -19,7 +19,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({ text, onClick }) => {
     >
       <Button
         onClick={onClick}
-        className="text-lg py-6 px-8 bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 rounded-xl shadow-lg group hover:shadow-[0_0_15px_rgba(168,85,247,0.5)] transition-all duration-300"
+        className="text-lg py-6 px-8 bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 rounded-xl shadow-lg group hover:shadow-[0_0_20px_rgba(168,85,247,0.6)] transition-all duration-300"
         size="lg"
       >
         {text}

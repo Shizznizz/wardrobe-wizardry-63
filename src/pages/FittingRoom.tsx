@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import EnhancedHeroSection from '@/components/shared/EnhancedHeroSection';
@@ -8,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import PremiumFeaturesSection from '@/components/showroom/PremiumFeaturesSection';
 import { useAuth } from '@/hooks/useAuth';
 import { useShowroom } from '@/hooks/useShowroom';
-import HowItWorksSection from '@/components/fitting-room/HowItWorksSection';
 import ModelSelectionSection from '@/components/fitting-room/ModelSelectionSection';
 import OutfitSelectionSection from '@/components/fitting-room/OutfitSelectionSection';
 import ResultPreviewSection from '@/components/fitting-room/ResultPreviewSection';
@@ -240,9 +238,6 @@ const FittingRoom = () => {
           </Card>
         </div>
         
-        {/* Regular How It Works Section - only shown after photo is selected */}
-        {userPhoto && <HowItWorksSection />}
-        
         {/* Divider only shown when photo is selected */}
         {userPhoto && (
           <div className="flex items-center justify-center my-6">
@@ -327,7 +322,7 @@ const FittingRoom = () => {
           <Card className="glass-dark border-white/10 overflow-hidden shadow-lg relative">
             <div className="p-6">
               <h2 className="text-xl font-semibold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-300 to-purple-300">
-                Popular in the Community
+                Trending Now 🔥
               </h2>
               <p className="text-white/70 mb-6">
                 These looks are trending among our users.

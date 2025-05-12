@@ -25,7 +25,7 @@ const BlurredSectionOverlay: React.FC<BlurredSectionOverlayProps> = ({
       <div className="h-16 w-16 bg-purple-600/20 rounded-full flex items-center justify-center mb-4">
         <Camera className="h-8 w-8 text-purple-300" />
       </div>
-      <h3 className="text-xl font-medium text-white mb-2">
+      <h3 className="text-xl font-medium text-white mb-2 text-center px-4">
         {customMessage || "Choose a photo or Olivia to preview these outfits"}
       </h3>
       <p className="text-white/70 text-center max-w-md mb-4 px-4">

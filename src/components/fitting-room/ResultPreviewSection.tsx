@@ -3,7 +3,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Camera, ArrowLeft, Download, RefreshCw, Share } from 'lucide-react';
+import { Camera, ArrowLeft, Download, RefreshCw, Share, User } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Outfit } from '@/lib/types';
 import OliviaRatingSection from '@/components/fitting-room/OliviaRatingSection';
@@ -47,7 +47,7 @@ const ResultPreviewSection = ({
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.5 }}
             >
-              Virtual Try-On Result
+              {isUsingOliviaImage ? "Here's how it looks on Olivia" : "Here's how it looks on you"}
             </motion.h2>
             
             <div className="flex items-center gap-2">
@@ -56,7 +56,7 @@ const ResultPreviewSection = ({
                   <Button 
                     size="sm"
                     variant="outline"
-                    className="border-white/20 text-white hover:bg-white/10"
+                    className="border-white/20 text-white hover:bg-white/10 hover:border-white/40 hover:shadow-sm"
                     onClick={onSaveLook}
                   >
                     <Download className="h-4 w-4 mr-1" />
@@ -66,7 +66,7 @@ const ResultPreviewSection = ({
                   <Button 
                     size="sm"
                     variant="outline" 
-                    className="border-white/20 text-white hover:bg-white/10"
+                    className="border-white/20 text-white hover:bg-white/10 hover:border-white/40 hover:shadow-sm"
                   >
                     <Share className="h-4 w-4 mr-1" />
                     Share
@@ -159,10 +159,20 @@ const ResultPreviewSection = ({
                 
                 {/* Olivia's Rating Section */}
                 {finalImage && selectedOutfit && (
-                  <OliviaRatingSection 
-                    outfit={selectedOutfit}
-                    suggestion={oliviaSuggestion}
-                  />
+                  <div className="mt-6 p-4 rounded-lg bg-purple-900/20 border border-purple-500/20 relative overflow-hidden">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0">
+                        <User className="h-5 w-5 text-white" />
+                      </div>
+                      <div>
+                        <h4 className="text-base font-medium text-white mb-1">Olivia's Take</h4>
+                        <p className="text-white/80 text-sm">
+                          {oliviaSuggestion}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-full -mr-16 -mt-16 backdrop-blur-3xl"></div>
+                  </div>
                 )}
               </motion.div>
             )}
