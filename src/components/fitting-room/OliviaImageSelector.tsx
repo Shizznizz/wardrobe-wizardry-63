@@ -71,8 +71,17 @@ const OliviaImageSelector: React.FC<OliviaImageSelectorProps> = ({ isOpen, onClo
   
   const handleConfirmSelection = () => {
     if (selectedImage !== null) {
-      onSelectImage(oliviaImages[selectedImage].src);
+      const selectedSrc = oliviaImages[selectedImage].src;
+      onSelectImage(selectedSrc);
       onClose();
+      
+      // Wait for modal to close before scrolling to outfit selection
+      setTimeout(() => {
+        const outfitSelectionSection = document.getElementById('outfit-selection-section');
+        if (outfitSelectionSection) {
+          outfitSelectionSection.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 300);
     }
   };
 
