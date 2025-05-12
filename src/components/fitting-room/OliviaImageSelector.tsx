@@ -21,24 +21,24 @@ const OliviaImageSelector: React.FC<OliviaImageSelectorProps> = ({ isOpen, onClo
 
   const oliviaImages = [
     {
-      src: '/lovable-uploads/0e9ba14f-845b-4c56-a82c-5a616b0a3efb.png',
-      name: 'Olivia - Casual',
-      description: 'Perfect for everyday casual outfits',
+      src: '/lovable-uploads/446878e5-9a46-4779-af1f-3b96a896f81c.png',
+      name: 'Classic Casual',
+      description: 'White top with light jeans and sunglasses',
     },
     {
-      src: '/lovable-uploads/b8ab03e1-025f-4e8e-8f75-31495ba951c5.png',
-      name: 'Olivia - Formal',
-      description: 'Great for professional and formal wear',
+      src: '/lovable-uploads/ba771b95-f70c-4fb3-b306-66b21e14dba7.png',
+      name: 'Pink Hair Style',
+      description: 'White t-shirt with blue jeans',
     },
     {
-      src: '/lovable-uploads/7c23e108-9a95-45f8-825c-da85e8d29bbd.png',
-      name: 'Olivia - Full Body',
-      description: 'Shows complete outfits including shoes',
+      src: '/lovable-uploads/363e61f4-22b2-4830-be21-23a0c9266ce5.png',
+      name: 'Athleisure Look',
+      description: 'White tank top with pink leggings',
     },
     {
-      src: '/lovable-uploads/124e62fe-3004-4331-a80d-a4581b66da5d.png',
-      name: 'Olivia - Stylish',
-      description: 'Perfect for trendy and fashion-forward styles',
+      src: '/lovable-uploads/673cd608-25a6-4a41-93f1-870e5d9be759.png',
+      name: 'Everyday Style',
+      description: 'White top with dark blue jeans',
     }
   ];
 
