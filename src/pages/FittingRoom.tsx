@@ -78,7 +78,7 @@ const FittingRoom = () => {
             userPhoto={userPhoto} 
             isUploading={isUploadLoading}
             isUsingOliviaImage={isUsingOliviaImage}
-            onUserPhotoUpload={handleUserPhotoUpload}
+            onUserPhotoChange={handleUserPhotoUpload}
             onShowOliviaImageGallery={() => setShowOliviaImageGallery(true)}
           />
         </div>
