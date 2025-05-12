@@ -1,8 +1,9 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Camera, User } from 'lucide-react';
+import { Camera, User, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface BlurredSectionOverlayProps {
   onClickChooseModel: () => void;
@@ -25,9 +26,23 @@ const BlurredSectionOverlay: React.FC<BlurredSectionOverlayProps> = ({
       <div className="h-16 w-16 bg-purple-600/20 rounded-full flex items-center justify-center mb-4">
         <Camera className="h-8 w-8 text-purple-300" />
       </div>
-      <h3 className="text-xl font-medium text-white mb-2 text-center px-4">
-        {customMessage || "Choose a photo or Olivia to preview these outfits"}
-      </h3>
+      <div className="flex items-center mb-2">
+        <h3 className="text-xl font-medium text-white text-center px-4">
+          {customMessage || "Choose a photo or Olivia to preview these outfits"}
+        </h3>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-6 w-6">
+                <Info className="h-4 w-4 text-white/70" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent className="bg-slate-800 border-white/10 text-white max-w-xs">
+              <p>Select a model to see how outfits would look before browsing</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
       <p className="text-white/70 text-center max-w-md mb-4 px-4">
         Upload your photo or use Olivia as a model to try on these looks
       </p>
