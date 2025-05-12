@@ -20,6 +20,7 @@ import ActionButton from '@/components/fitting-room/ActionButton';
 import BlurredSectionOverlay from '@/components/fitting-room/BlurredSectionOverlay';
 import ModelPreview from '@/components/fitting-room/ModelPreview';
 import NoPhotoMessage from '@/components/fitting-room/NoPhotoMessage';
+import CollapsibleHowItWorksSection from '@/components/fitting-room/CollapsibleHowItWorksSection';
 
 const FittingRoom = () => {
   const { isAuthenticated, isPremiumUser } = useAuth();
@@ -46,6 +47,7 @@ const FittingRoom = () => {
   } = useShowroom();
 
   const modelSelectionRef = useRef<HTMLDivElement>(null);
+  const [showHowItWorks, setShowHowItWorks] = useState(false);
 
   // Helper function to get clothing item by ID
   const getClothingItemById = (id: string) => {
@@ -202,8 +204,6 @@ const FittingRoom = () => {
           alt: "Olivia in pink blouse and white pants",
           variant: "standing"
         }}
-        // Added the ActionButton as part of the hero section's children prop
-        // to position it similar to the Mix & Match page
         children={
           !userPhoto && (
             <ActionButton 
@@ -214,13 +214,8 @@ const FittingRoom = () => {
         }
       />
       
-      {/* Removed the separate CTA Button section that was here */}
-      
-      <Container className="space-y-16 px-4">
-        {/* Step 1: How It Works Section - Moved down if no photo is uploaded */}
-        {userPhoto && <HowItWorksSection />}
-        
-        {/* Step 2: Choose a Model Section - Moved up in the flow */}
+      <Container className="space-y-8 px-4">
+        {/* Model Selection Section - Always at the top when no photo is selected */}
         <div id="model-selection-section" ref={modelSelectionRef}>
           <ModelSelectionSection 
             userPhoto={userPhoto}
@@ -231,12 +226,20 @@ const FittingRoom = () => {
           />
         </div>
         
-        {/* How it works section moved below model selection if no photo is uploaded */}
-        {!userPhoto && <HowItWorksSection />}
+        {/* Collapsible How It Works Section - only shown when no photo is selected */}
+        {!userPhoto && (
+          <CollapsibleHowItWorksSection 
+            isOpen={showHowItWorks}
+            onToggle={() => setShowHowItWorks(!showHowItWorks)}
+          />
+        )}
         
-        {/* Divider */}
+        {/* Regular How It Works Section - only shown after photo is selected */}
+        {userPhoto && <HowItWorksSection />}
+        
+        {/* Divider only shown when photo is selected */}
         {userPhoto && (
-          <div className="flex items-center justify-center my-12">
+          <div className="flex items-center justify-center my-6">
             <div className="h-px bg-gradient-to-r from-transparent via-purple-500/30 to-transparent w-full max-w-2xl"></div>
           </div>
         )}
@@ -251,9 +254,9 @@ const FittingRoom = () => {
           </div>
         )}
         
-        {/* Divider */}
+        {/* Divider only shown when both photo and outfit are selected */}
         {userPhoto && selectedOutfit && (
-          <div className="flex items-center justify-center my-12">
+          <div className="flex items-center justify-center my-6">
             <div className="h-px bg-gradient-to-r from-transparent via-purple-500/30 to-transparent w-full max-w-2xl"></div>
           </div>
         )}
@@ -286,7 +289,7 @@ const FittingRoom = () => {
         )}
         
         {/* New Section 1: Olivia's Styles Section - with conditional blur overlay */}
-        <div id="olivia-styles-section" className="mt-16">
+        <div id="olivia-styles-section" className="mt-8">
           <Card className="glass-dark border-white/10 overflow-hidden shadow-lg relative">
             <div className="p-6">
               <h2 className="text-xl font-semibold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-300 to-purple-300">
@@ -311,7 +314,7 @@ const FittingRoom = () => {
         </div>
         
         {/* New Section 2: Popular in the Community Section - with conditional blur overlay */}
-        <div id="community-outfits-section" className="mt-16">
+        <div id="community-outfits-section" className="mt-8">
           <Card className="glass-dark border-white/10 overflow-hidden shadow-lg relative">
             <div className="p-6">
               <h2 className="text-xl font-semibold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-300 to-purple-300">
@@ -336,7 +339,7 @@ const FittingRoom = () => {
         </div>
         
         {/* Divider before Premium Features */}
-        <div className="flex items-center justify-center my-16">
+        <div className="flex items-center justify-center my-8">
           <div className="h-px bg-gradient-to-r from-transparent via-purple-500/30 to-transparent w-full max-w-3xl"></div>
         </div>
         
