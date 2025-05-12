@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import EnhancedHeroSection from '@/components/shared/EnhancedHeroSection';
@@ -20,6 +19,7 @@ import BlurredSectionOverlay from '@/components/fitting-room/BlurredSectionOverl
 import ModelPreview from '@/components/fitting-room/ModelPreview';
 import NoPhotoMessage from '@/components/fitting-room/NoPhotoMessage';
 import CollapsibleHowItWorksSection from '@/components/fitting-room/CollapsibleHowItWorksSection';
+import OliviaStylesSection from '@/components/fitting-room/OliviaStylesSection';
 
 const FittingRoom = () => {
   const { isAuthenticated, isPremiumUser } = useAuth();
@@ -123,46 +123,6 @@ const FittingRoom = () => {
   const handleEnhancedOutfitSelection = (outfit: Outfit) => {
     handleSelectOutfit(outfit);
   }
-
-  // Sample outfits for Olivia's Styles section
-  const oliviaStyles: Outfit[] = [
-    {
-      id: 'olivia-style-1',
-      name: 'Spring Elegance',
-      items: ['item-1', 'item-2', 'item-3'],
-      seasons: ['spring'],
-      occasions: ['casual', 'brunch'],
-      favorite: false,
-      dateAdded: new Date()
-    },
-    {
-      id: 'olivia-style-2',
-      name: 'Summer Vibes',
-      items: ['item-4', 'item-5', 'item-6'],
-      seasons: ['summer'],
-      occasions: ['beach', 'vacation'],
-      favorite: false,
-      dateAdded: new Date()
-    },
-    {
-      id: 'olivia-style-3',
-      name: 'Fall Classic',
-      items: ['item-7', 'item-8', 'item-9'],
-      seasons: ['autumn'],
-      occasions: ['office', 'dinner'],
-      favorite: false,
-      dateAdded: new Date()
-    },
-    {
-      id: 'olivia-style-4',
-      name: 'Winter Chic',
-      items: ['item-10', 'item-11', 'item-12'],
-      seasons: ['winter'],
-      occasions: ['evening', 'formal'],
-      favorite: true,
-      dateAdded: new Date()
-    }
-  ];
 
   // Sample outfits for Popular in the Community section
   const communityOutfits: Outfit[] = [
@@ -316,32 +276,11 @@ const FittingRoom = () => {
         )}
         
         {/* New Section 1: Olivia's Styles Section - with conditional blur overlay */}
-        <div id="olivia-styles-section" className="mt-8">
-          <Card className="glass-dark border-white/10 overflow-hidden shadow-lg relative">
-            <div className="p-6">
-              <h2 className="text-xl font-semibold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-300 to-purple-300">
-                Olivia's Styles
-              </h2>
-              <p className="text-white/70 mb-6">
-                Personally selected by Olivia to match the season's trends.
-              </p>
-              
-              <OutfitCarousel 
-                outfits={oliviaStyles} 
-                onPreview={handleTryOutfit}
-                title=""
-                disabled={!userPhoto}
-              />
-            </div>
-            {/* Overlay when no model is selected */}
-            {!userPhoto && (
-              <BlurredSectionOverlay 
-                onClickChooseModel={scrollToModelSection} 
-                customMessage="Choose a photo or Olivia to preview these outfits"
-              />
-            )}
-          </Card>
-        </div>
+        <OliviaStylesSection 
+          onPreviewOutfit={handleTryOutfit}
+          userPhoto={userPhoto}
+          onClickChooseModel={scrollToModelSection}
+        />
         
         {/* New Section 2: Popular in the Community Section - with conditional blur overlay */}
         <div id="community-outfits-section" className="mt-8">
