@@ -13,6 +13,9 @@ import ModelSelectionSection from '@/components/fitting-room/ModelSelectionSecti
 import OutfitSelectionSection from '@/components/fitting-room/OutfitSelectionSection';
 import ResultPreviewSection from '@/components/fitting-room/ResultPreviewSection';
 import OutfitCustomizationSection from '@/components/fitting-room/OutfitCustomizationSection';
+import OutfitCarousel from '@/components/fitting-room/OutfitCarousel';
+import { toast } from 'sonner';
+import { Outfit } from '@/lib/types';
 
 const FittingRoom = () => {
   const { isAuthenticated, isPremiumUser } = useAuth();
@@ -76,6 +79,107 @@ const FittingRoom = () => {
     document.getElementById('outfit-selection-section')?.scrollIntoView({ 
       behavior: 'smooth' 
     });
+  };
+
+  // Sample outfits for Olivia's Styles section
+  const oliviaStyles: Outfit[] = [
+    {
+      id: 'olivia-style-1',
+      name: 'Spring Elegance',
+      items: ['item-1', 'item-2', 'item-3'],
+      seasons: ['spring'],
+      occasions: ['casual', 'brunch'],
+      favorite: false,
+      dateAdded: new Date()
+    },
+    {
+      id: 'olivia-style-2',
+      name: 'Summer Vibes',
+      items: ['item-4', 'item-5', 'item-6'],
+      seasons: ['summer'],
+      occasions: ['beach', 'vacation'],
+      favorite: false,
+      dateAdded: new Date()
+    },
+    {
+      id: 'olivia-style-3',
+      name: 'Fall Classic',
+      items: ['item-7', 'item-8', 'item-9'],
+      seasons: ['fall'],
+      occasions: ['office', 'dinner'],
+      favorite: false,
+      dateAdded: new Date()
+    },
+    {
+      id: 'olivia-style-4',
+      name: 'Winter Chic',
+      items: ['item-10', 'item-11', 'item-12'],
+      seasons: ['winter'],
+      occasions: ['evening', 'formal'],
+      favorite: true,
+      dateAdded: new Date()
+    }
+  ];
+
+  // Sample outfits for Popular in the Community section
+  const communityOutfits: Outfit[] = [
+    {
+      id: 'community-1',
+      name: 'Trending Style',
+      items: ['item-13', 'item-14', 'item-15'],
+      seasons: ['all'],
+      occasions: ['casual', 'weekend'],
+      favorite: false,
+      dateAdded: new Date()
+    },
+    {
+      id: 'community-2',
+      name: 'Office Ready',
+      items: ['item-16', 'item-17', 'item-18'],
+      seasons: ['fall', 'winter'],
+      occasions: ['business', 'formal'],
+      favorite: false,
+      dateAdded: new Date()
+    },
+    {
+      id: 'community-3',
+      name: 'Date Night',
+      items: ['item-19', 'item-20', 'item-21'],
+      seasons: ['all'],
+      occasions: ['date', 'evening'],
+      favorite: true,
+      dateAdded: new Date()
+    },
+    {
+      id: 'community-4',
+      name: 'Weekend Casual',
+      items: ['item-22', 'item-23', 'item-24'],
+      seasons: ['spring', 'summer'],
+      occasions: ['casual', 'outdoor'],
+      favorite: false,
+      dateAdded: new Date()
+    }
+  ];
+
+  const handleTryOutfit = (outfit: Outfit) => {
+    if (!userPhoto) {
+      toast.error("Please upload a photo first");
+      
+      // Scroll to model selection section to prompt the user
+      document.getElementById('model-selection-section')?.scrollIntoView({
+        behavior: 'smooth'
+      });
+      return;
+    }
+
+    handleSelectOutfit(outfit);
+    
+    // Scroll to result section
+    setTimeout(() => {
+      document.getElementById('result-preview-section')?.scrollIntoView({
+        behavior: 'smooth'
+      });
+    }, 100);
   };
 
   return (
@@ -155,6 +259,51 @@ const FittingRoom = () => {
             />
           </div>
         )}
+        
+        {/* New Section 1: Olivia's Styles Section */}
+        <div id="olivia-styles-section" className="mt-16">
+          <Card className="glass-dark border-white/10 overflow-hidden shadow-lg">
+            <div className="p-6">
+              <h2 className="text-xl font-semibold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-300 to-purple-300">
+                Olivia's Styles
+              </h2>
+              <p className="text-white/70 mb-6">
+                Personally selected by Olivia to match the season's trends.
+              </p>
+              
+              <OutfitCarousel 
+                outfits={oliviaStyles} 
+                onPreview={handleTryOutfit}
+                title=""
+              />
+            </div>
+          </Card>
+        </div>
+        
+        {/* New Section 2: Popular in the Community Section */}
+        <div id="community-outfits-section" className="mt-16">
+          <Card className="glass-dark border-white/10 overflow-hidden shadow-lg">
+            <div className="p-6">
+              <h2 className="text-xl font-semibold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-300 to-purple-300">
+                Popular in the Community
+              </h2>
+              <p className="text-white/70 mb-6">
+                These looks are trending among our users.
+              </p>
+              
+              <OutfitCarousel 
+                outfits={communityOutfits} 
+                onPreview={handleTryOutfit}
+                title=""
+              />
+            </div>
+          </Card>
+        </div>
+        
+        {/* Divider before Premium Features */}
+        <div className="flex items-center justify-center my-16">
+          <div className="h-px bg-gradient-to-r from-transparent via-purple-500/30 to-transparent w-full max-w-3xl"></div>
+        </div>
         
         {!effectivePremiumUser && (
           <PremiumFeaturesSection 
