@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
@@ -8,6 +8,9 @@ import { Button } from '@/components/ui/button';
 import { Lock, Check } from 'lucide-react';
 import { ClothingItem, Outfit } from '@/lib/types';
 import OutfitGrid from '@/components/OutfitGrid';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface OutfitSelectionTabsProps {
   fashionCollections: any[];
@@ -24,7 +27,52 @@ const OutfitSelectionTabs = ({
   isPremiumUser,
   onSelectOutfit
 }: OutfitSelectionTabsProps) => {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('your-outfits');
+  const [userOutfits, setUserOutfits] = useState<Outfit[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  
+  // Fetch user's outfits from Supabase
+  useEffect(() => {
+    if (user) {
+      const fetchUserOutfits = async () => {
+        setIsLoading(true);
+        
+        try {
+          const { data, error } = await supabase
+            .from('outfits')
+            .select('*')
+            .eq('user_id', user.id);
+          
+          if (error) {
+            console.error('Error fetching outfits:', error);
+            toast.error('Failed to load your outfits');
+            setUserOutfits([]);
+          } else if (data) {
+            // Format the data to match Outfit type
+            const formattedOutfits: Outfit[] = data.map(outfitData => ({
+              id: outfitData.id,
+              name: outfitData.name || `Outfit ${outfitData.id.slice(0, 4)}`,
+              items: outfitData.items || [],
+              seasons: outfitData.season || ['all'],
+              occasions: outfitData.occasions || [outfitData.occasion || 'casual'],
+              favorite: outfitData.favorite || false,
+              dateAdded: new Date(outfitData.date_added || outfitData.created_at)
+            }));
+            
+            setUserOutfits(formattedOutfits);
+          }
+        } catch (err) {
+          console.error('Exception fetching outfits:', err);
+          toast.error("Couldn't load your outfits");
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      
+      fetchUserOutfits();
+    }
+  }, [user]);
   
   const handleSelectOutfit = (outfit: Outfit) => {
     onSelectOutfit(outfit);
@@ -88,9 +136,13 @@ const OutfitSelectionTabs = ({
             <TabsContent value="your-outfits">
               <div className="space-y-8">
                 <div className="bg-white/5 rounded-lg p-4 border border-white/10">
-                  {fashionCollections[0]?.outfits?.length > 0 ? (
+                  {isLoading ? (
+                    <div className="flex justify-center items-center h-40">
+                      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-white"></div>
+                    </div>
+                  ) : userOutfits.length > 0 ? (
                     <OutfitGrid
-                      outfits={fashionCollections[0]?.outfits || []}
+                      outfits={userOutfits}
                       clothingItems={clothingItems}
                       onEdit={handleEditOutfit}
                       onDelete={handleDeleteOutfit}
@@ -103,6 +155,7 @@ const OutfitSelectionTabs = ({
                       <Button 
                         variant="outline"
                         className="mt-4 border-blue-400/30 text-blue-300 hover:bg-blue-900/20"
+                        onClick={() => window.location.href = '/wardrobe/mix-match'}
                       >
                         Go to Mix & Match to create outfits
                       </Button>

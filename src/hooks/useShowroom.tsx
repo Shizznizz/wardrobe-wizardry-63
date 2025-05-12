@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { useOutfitState } from './useOutfitState';
@@ -7,9 +8,10 @@ import { useAuth } from '@/hooks/useAuth';
 import { useShowroomState } from './useShowroomState';
 import { useShowroomCollections } from './useShowroomCollections';
 import { useShowroomPopups } from './useShowroomPopups';
+import { supabase } from '@/integrations/supabase/client';
 
 export const useShowroom = () => {
-  const { isAuthenticated = false } = useAuth();
+  const { isAuthenticated = false, user } = useAuth();
   const [generationError, setGenerationError] = useState<string | null>(null);
   const [predictionId, setPredictionId] = useState<string | null>(null);
   const [oliviaMood, setOliviaMood] = useState<'happy' | 'thinking' | 'neutral'>('neutral');
@@ -18,9 +20,12 @@ export const useShowroom = () => {
   const [showFloatingChat, setShowFloatingChat] = useState(false);
   const [clothingPhoto, setClothingPhoto] = useState<string | null>(null);
   const [oliviaSuggestion, setOliviaSuggestion] = useState<string>("");
+  const [userOutfits, setUserOutfits] = useState<Outfit[]>([]);
+  const [userClothingItems, setUserClothingItems] = useState<ClothingItem[]>([]);
+  const [isLoadingUserData, setIsLoadingUserData] = useState(false);
   
-  const outfitsWithDefault = Array.isArray(sampleOutfits) ? sampleOutfits : [];
-  const clothingItemsWithDefault = Array.isArray(sampleClothingItems) ? sampleClothingItems : [];
+  const outfitsWithDefault = userOutfits.length > 0 ? userOutfits : (Array.isArray(sampleOutfits) ? sampleOutfits : []);
+  const clothingItemsWithDefault = userClothingItems.length > 0 ? userClothingItems : (Array.isArray(sampleClothingItems) ? sampleClothingItems : []);
   
   const {
     isPremiumUser = false,
@@ -63,6 +68,77 @@ export const useShowroom = () => {
     handleShowPremiumPopup = () => {},
     handleCloseSubscriptionPopup = () => {}
   } = useShowroomPopups(isPremiumUser, isAuthenticated, userPhoto, finalImage);
+
+  // Fetch user's outfits and clothing items from Supabase
+  useEffect(() => {
+    if (user) {
+      const fetchUserData = async () => {
+        setIsLoadingUserData(true);
+        
+        try {
+          // Fetch user's outfits
+          const { data: outfitsData, error: outfitsError } = await supabase
+            .from('outfits')
+            .select('*')
+            .eq('user_id', user.id);
+          
+          if (outfitsError) {
+            console.error('Error fetching outfits:', outfitsError);
+            toast.error('Failed to load your outfits');
+          } else if (outfitsData) {
+            // Format outfits data
+            const formattedOutfits: Outfit[] = outfitsData.map(outfitData => ({
+              id: outfitData.id,
+              name: outfitData.name || `Outfit ${outfitData.id.slice(0, 4)}`,
+              items: outfitData.items || [],
+              seasons: outfitData.season || ['all'],
+              occasions: outfitData.occasions || [outfitData.occasion || 'casual'],
+              favorite: outfitData.favorite || false,
+              dateAdded: new Date(outfitData.date_added || outfitData.created_at)
+            }));
+            
+            setUserOutfits(formattedOutfits);
+          }
+
+          // Fetch user's clothing items
+          const { data: clothingData, error: clothingError } = await supabase
+            .from('clothing_items')
+            .select('*')
+            .eq('user_id', user.id);
+          
+          if (clothingError) {
+            console.error('Error fetching clothing items:', clothingError);
+            toast.error('Failed to load your wardrobe items');
+          } else if (clothingData) {
+            // Format clothing data
+            const formattedClothing: ClothingItem[] = clothingData.map(item => ({
+              id: item.id,
+              name: item.name,
+              type: item.type,
+              imageUrl: item.image_url,
+              image: item.image_url,
+              color: item.color,
+              material: item.material || '',
+              season: Array.isArray(item.season) ? item.season : ['all'],
+              occasions: Array.isArray(item.occasions) ? item.occasions : ['casual'],
+              favorite: item.favorite || false,
+              timesWorn: item.times_worn || 0,
+              dateAdded: new Date(item.date_added)
+            }));
+            
+            setUserClothingItems(formattedClothing);
+          }
+        } catch (err) {
+          console.error("Error fetching user data:", err);
+          toast.error("Couldn't load your wardrobe");
+        } finally {
+          setIsLoadingUserData(false);
+        }
+      };
+      
+      fetchUserData();
+    }
+  }, [user]);
 
   useEffect(() => {
     if (userPhoto && selectedOutfit) {
@@ -190,7 +266,7 @@ export const useShowroom = () => {
     toast.info("Olivia is ready to chat about your style!");
   };
 
-  // Added missing methods for Showroom.tsx
+  // Reset selection
   const resetSelection = () => {
     setSelectedOutfit(null);
     setClothingPhoto(null);
@@ -227,6 +303,9 @@ export const useShowroom = () => {
     showFloatingChat,
     generationError,
     challengeParticipantCount,
+    isLoadingUserData,
+    userOutfits,
+    userClothingItems,
     
     // Add these exported methods
     handleSelectOliviaImage,
@@ -248,6 +327,7 @@ export const useShowroom = () => {
     // Add the setters
     setFinalImage,
     setOliviaSuggestion,
+    setSelectedOutfit,
     setIsProcessingTryOn,
     setSelectedItems
   };

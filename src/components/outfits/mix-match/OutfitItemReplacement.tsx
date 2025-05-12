@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ClothingItem } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { RefreshCw, ArrowRight } from 'lucide-react';
@@ -40,9 +40,15 @@ const OutfitItemReplacement = ({ item, onReplaceItem, category }: OutfitItemRepl
         .eq('user_id', user.id)
         .eq('type', itemCategory)
         .neq('id', item.id)
-        .limit(3);
+        .limit(6);
       
       if (error) throw error;
+      
+      if (!data || data.length === 0) {
+        toast.info(`No alternative ${itemCategory} items found in your wardrobe`);
+        setAlternatives([]);
+        return;
+      }
       
       // Format the data to match ClothingItem type
       const formattedItems: ClothingItem[] = data.map(dbItem => ({
@@ -60,11 +66,7 @@ const OutfitItemReplacement = ({ item, onReplaceItem, category }: OutfitItemRepl
         dateAdded: new Date(dbItem.date_added)
       }));
       
-      setAlternatives(formattedItems.length > 0 ? formattedItems : []);
-      
-      if (formattedItems.length === 0) {
-        toast.info(`No alternative ${itemCategory} items found in your wardrobe`);
-      }
+      setAlternatives(formattedItems);
     } catch (err) {
       console.error("Error fetching alternatives:", err);
       toast.error("Couldn't load alternatives");
@@ -85,6 +87,7 @@ const OutfitItemReplacement = ({ item, onReplaceItem, category }: OutfitItemRepl
         item_id: item.id,
         replacement_item_id: alternativeItem.id,
         label: 'replacement',
+        outfit_id: 'virtual-try-on',
         timestamp: new Date().toISOString()
       }).then(({ error }) => {
         if (error) console.error("Error saving feedback:", error);
@@ -98,7 +101,7 @@ const OutfitItemReplacement = ({ item, onReplaceItem, category }: OutfitItemRepl
       <div className="rounded-lg overflow-hidden border border-white/10">
         <div className="aspect-square overflow-hidden relative">
           <img 
-            src={item.imageUrl} 
+            src={item.imageUrl || item.image} 
             alt={item.name}
             className="w-full h-full object-cover"
           />
@@ -149,7 +152,7 @@ const OutfitItemReplacement = ({ item, onReplaceItem, category }: OutfitItemRepl
                   >
                     <div className="aspect-square overflow-hidden rounded-md border border-white/10 mb-1 relative">
                       <img 
-                        src={alt.imageUrl} 
+                        src={alt.imageUrl || alt.image} 
                         alt={alt.name}
                         className="w-full h-full object-cover"
                       />
@@ -162,7 +165,7 @@ const OutfitItemReplacement = ({ item, onReplaceItem, category }: OutfitItemRepl
                 ))}
               </div>
             ) : (
-              <p className="text-white/70 text-xs p-2">No alternatives available</p>
+              <p className="text-white/70 text-xs p-2">No alternatives available. Add more items to your wardrobe.</p>
             )}
           </CardContent>
         </Card>
