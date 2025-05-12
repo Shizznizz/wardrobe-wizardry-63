@@ -1,5 +1,6 @@
 
-import React, { useState } from 'react';
+import React from 'react';
+import { motion } from 'framer-motion';
 import EnhancedHeroSection from '@/components/shared/EnhancedHeroSection';
 import HeaderSection from '@/components/showroom/HeaderSection';
 import ButtonSection from '@/components/showroom/ButtonSection';
@@ -25,12 +26,12 @@ const FittingRoom = () => {
     clothingItems,
     fashionCollections,
     isProcessingTryOn,
-    onUserPhotoUpload,
-    onShowOliviaImageGallery,
-    onSelectOutfit,
-    onSaveLook,
-    onSuggestAnotherOutfit,
-    onUpgradeToPremium
+    handleUserPhotoUpload,
+    setShowOliviaImageGallery,
+    handleSelectOutfit,
+    handleSaveLook,
+    handleSuggestAnotherOutfit,
+    handleUpgradeToPremium
   } = useShowroom();
 
   return (
@@ -50,7 +51,7 @@ const FittingRoom = () => {
         
         <IntroductionSlider />
         
-        <ButtonSection onSuggestAnotherOutfit={onSuggestAnotherOutfit} />
+        <ButtonSection onSuggestAnotherOutfit={handleSuggestAnotherOutfit} />
         
         <motion.div
           id="photo-section"
@@ -64,8 +65,8 @@ const FittingRoom = () => {
             userPhoto={userPhoto} 
             isUploading={isUploadLoading}
             isUsingOliviaImage={isUsingOliviaImage}
-            onUserPhotoChange={onUserPhotoUpload}
-            onShowOliviaImageGallery={onShowOliviaImageGallery}
+            onUserPhotoChange={handleUserPhotoUpload}
+            onShowOliviaImageGallery={() => setShowOliviaImageGallery(true)}
           />
         </motion.div>
         
@@ -78,7 +79,7 @@ const FittingRoom = () => {
           clothingItems={clothingItems}
           selectedOutfit={selectedOutfit}
           isPremiumUser={effectivePremiumUser}
-          onSelectOutfit={onSelectOutfit}
+          onSelectOutfit={handleSelectOutfit}
         />
         
         <div className="flex items-center justify-center my-12">
@@ -93,7 +94,7 @@ const FittingRoom = () => {
             isProcessingTryOn={isProcessingTryOn}
             userPhoto={userPhoto}
             isUsingOliviaImage={isUsingOliviaImage}
-            onSaveLook={onSaveLook}
+            onSaveLook={handleSaveLook}
             onChangePhoto={() => {
               document.getElementById('photo-section')?.scrollIntoView({ behavior: 'smooth' });
             }}
@@ -102,13 +103,13 @@ const FittingRoom = () => {
           <ResultSection
             finalImage={finalImage}
             selectedOutfit={selectedOutfit}
-            onSuggestAnotherOutfit={onSuggestAnotherOutfit}
+            onSuggestAnotherOutfit={handleSuggestAnotherOutfit}
           />
         </div>
         
         {!effectivePremiumUser && (
           <PremiumFeaturesSection 
-            onUpgradeToPremium={onUpgradeToPremium} 
+            onUpgradeToPremium={handleUpgradeToPremium} 
           />
         )}
       </div>
