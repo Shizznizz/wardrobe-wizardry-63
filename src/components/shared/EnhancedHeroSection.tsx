@@ -1,217 +1,97 @@
 
 import React from 'react';
-import { motion } from 'framer-motion';
-import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Sparkles } from 'lucide-react';
-import OptimizedImage from '@/components/ui/optimized-image';
+import { cn } from '@/lib/utils';
 
-export interface HeroButtonProps {
-  label: string;
-  onClick?: () => void;
-  variant?: 'primary' | 'secondary' | 'neutral' | 'gradient' | 'lavender' | 'black';
-  icon?: React.ReactNode;
-  className?: string;
-}
-
-export interface EnhancedHeroSectionProps {
+type EnhancedHeroSectionProps = {
   title: string;
-  subtitle: string;
-  description?: string | React.ReactNode;
-  image: {
+  subtitle?: string;
+  image?: {
     src: string;
-    alt?: string;
-    variant?: 'portrait' | 'standing' | 'headshot';
+    alt: string;
+    variant?: 'portrait' | 'landscape' | 'standing';
   };
-  buttons?: HeroButtonProps[];
+  buttons?: {
+    label: string;
+    onClick: () => void;
+    variant?: 'primary' | 'secondary' | 'neutral' | 'lavender';
+    className?: string;
+    icon?: React.ReactNode;
+  }[];
+  titleSize?: 'small' | 'medium' | 'large';
   className?: string;
-  children?: React.ReactNode;
-  hasSparkleEffect?: boolean;
-}
+};
 
-const EnhancedHeroSection = ({
+const EnhancedHeroSection: React.FC<EnhancedHeroSectionProps> = ({
   title,
   subtitle,
-  description,
   image,
-  buttons,
-  className,
-  children,
-  hasSparkleEffect = false,
-}: EnhancedHeroSectionProps) => {
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        type: 'spring',
-        stiffness: 100,
-        damping: 10
-      }
-    }
-  };
-
-  const imageVariants = {
-    hidden: { opacity: 0, scale: 0.95 },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      transition: {
-        delay: 0.3,
-        duration: 0.8,
-        ease: "easeOut"
-      }
-    }
-  };
-
-  const getButtonClassName = (variant?: string) => {
-    switch (variant) {
-      case 'primary':
-        return 'bg-gradient-to-r from-coral-500 to-coral-400 text-white';
-      case 'secondary':
-        return 'bg-slate-800 text-white hover:bg-slate-700';
-      case 'neutral':
-        return 'bg-slate-800 text-white hover:bg-slate-700';
-      case 'gradient':
-        return 'bg-gradient-to-r from-purple-500 to-pink-500 text-white';
-      case 'lavender':
-        return 'bg-purple-500 text-white hover:bg-purple-600';
-      case 'black':
-        return 'bg-black text-white hover:bg-gray-800';
-      default:
-        return 'bg-gradient-to-r from-coral-500 to-coral-400 text-white';
-    }
-  };
-
+  buttons = [],
+  titleSize = 'large',
+  className = '',
+}) => {
   return (
-    <motion.section
-      className={cn(
-        "relative py-8 md:py-16 lg:py-20 px-4 sm:px-6 overflow-hidden",
-        className
-      )}
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
-    >
-      {/* Enhanced background elements */}
-      <div className="absolute inset-0 overflow-hidden -z-10">
-        <div className="absolute top-1/3 left-1/4 w-64 h-64 rounded-full bg-purple-500/10 blur-3xl"></div>
-        <div className="absolute top-1/2 right-1/4 w-72 h-72 rounded-full bg-coral-500/10 blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-full h-1/3 bg-gradient-to-t from-purple-900/10 to-transparent"></div>
-      </div>
-
-      <div className="container mx-auto max-w-7xl">
-        <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
-          {/* Text content - always stacks above image on mobile */}
-          <div className="w-full md:w-1/2 text-center md:text-left md:pl-8 space-y-6 order-2 md:order-1">
-            <motion.div variants={itemVariants} className="relative">
-              {hasSparkleEffect && (
-                <motion.div 
-                  className="absolute -top-6 left-1/2 md:left-0 transform -translate-x-1/2 md:translate-x-0"
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={{ 
-                    opacity: 1, 
-                    scale: 1,
-                    transition: {
-                      delay: 0.8,
-                      duration: 0.5,
-                      ease: "easeOut"
-                    }
-                  }}
-                >
-                  <Sparkles className="w-5 h-5 text-coral-400" />
-                </motion.div>
-              )}
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-coral-400 to-purple-400 leading-tight">
-                {title}
-              </h1>
-            </motion.div>
-            
-            <motion.p variants={itemVariants} className="text-lg sm:text-xl text-white/80 font-montserrat">
+    <div className={cn("relative overflow-hidden border-b border-white/10", className)}>
+      {/* Title section now placed above the image */}
+      <div className="container mx-auto px-4 py-8 md:py-10 relative z-10">
+        <div className="text-center mb-6">
+          <h1 className={cn(
+            "font-bold text-white tracking-tight",
+            titleSize === 'large' && "text-3xl md:text-5xl",
+            titleSize === 'medium' && "text-2xl md:text-4xl",
+            titleSize === 'small' && "text-xl md:text-3xl"
+          )}>
+            {title}
+          </h1>
+          
+          {subtitle && (
+            <p className="mt-3 text-sm md:text-base lg:text-lg text-white/70 max-w-3xl mx-auto">
               {subtitle}
-            </motion.p>
-            
-            {description && (
-              <motion.div variants={itemVariants} className="text-white/70 text-base sm:text-lg max-w-xl mx-auto md:mx-0">
-                {description}
-              </motion.div>
-            )}
-            
-            {(buttons && buttons.length > 0) && (
-              <motion.div 
-                variants={itemVariants}
-                className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start pt-4"
-              >
-                {buttons.map((button, index) => (
-                  <Button
-                    key={index}
-                    onClick={button.onClick}
-                    className={cn(
-                      getButtonClassName(button.variant),
-                      "hover:scale-[1.03] transition-transform font-bold py-2 px-6 rounded-xl shadow-md",
-                      "sm:w-auto w-full",
-                      button.className
-                    )}
-                    size="lg"
-                  >
-                    {button.icon && <span className="mr-2">{button.icon}</span>}
-                    {button.label}
-                  </Button>
-                ))}
-              </motion.div>
-            )}
-            
-            {children && (
-              <motion.div variants={itemVariants} className="pt-4">
-                {children}
-              </motion.div>
-            )}
-          </div>
-
-          {/* Image container */}
-          <motion.div 
-            className="w-full md:w-1/2 flex justify-center order-1 md:order-2"
-            variants={imageVariants}
-          >
-            <div className="relative">
-              {/* Glowing backlight effect for the image */}
-              <div className="absolute inset-0 -z-10 rounded-full bg-gradient-to-r from-purple-500/20 via-coral-500/20 to-purple-500/20 blur-2xl"></div>
-              
-              {/* Subtle animated rings */}
-              <div className="absolute inset-0 -z-5 rounded-full border border-coral-400/10 animate-pulse-glow"></div>
-              <div className="absolute inset-2 -z-5 rounded-full border border-purple-400/5"></div>
-              
-              {/* The image */}
-              <OptimizedImage 
-                src={image.src} 
-                alt={image.alt || "Olivia AI Fashion Assistant"}
-                className={cn(
-                  "drop-shadow-lg animate-float",
-                  image.variant === 'portrait' ? "max-h-[300px] md:max-h-[400px]" : 
-                  image.variant === 'headshot' ? "max-h-[250px] md:max-h-[350px]" : "max-h-[350px] md:max-h-[550px]"
-                )}
-                objectFit="contain"
-              />
-              
-              {/* Subtle light effect */}
-              <div className="absolute top-0 right-1/4 w-10 h-10 bg-white/10 rounded-full blur-xl"></div>
-            </div>
-          </motion.div>
+            </p>
+          )}
         </div>
       </div>
-    </motion.section>
+      
+      {/* Image section */}
+      {image && (
+        <div className="relative pb-[40%] md:pb-[30%] lg:pb-[25%] overflow-hidden border-t border-white/5">
+          <img
+            src={image.src}
+            alt={image.alt}
+            className={cn(
+              "absolute inset-0 w-full h-full object-cover",
+              image.variant === 'portrait' && "object-[50%_30%]",
+              image.variant === 'landscape' && "object-[50%_50%]",
+              image.variant === 'standing' && "object-[50%_25%]"
+            )}
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-900/70 to-purple-900/30 mix-blend-multiply" />
+        </div>
+      )}
+      
+      {/* Buttons section - positioned below the image */}
+      {buttons.length > 0 && (
+        <div className="container mx-auto px-4 py-4 relative z-10">
+          <div className="flex flex-wrap justify-center gap-4">
+            {buttons.map((button, index) => (
+              <Button
+                key={index}
+                onClick={button.onClick}
+                className={cn(
+                  button.variant === 'primary' && "bg-purple-600 hover:bg-purple-700",
+                  button.variant === 'secondary' && "bg-transparent border border-white/20 hover:bg-white/10",
+                  button.variant === 'lavender' && "bg-gradient-to-r from-purple-500 to-indigo-500 hover:opacity-90",
+                  button.className
+                )}
+              >
+                {button.icon && <span className="mr-2">{button.icon}</span>}
+                {button.label}
+              </Button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 
