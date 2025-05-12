@@ -1,161 +1,198 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Shirt, Check } from 'lucide-react';
+import { 
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import { Button } from '@/components/ui/button';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
+import { Eye, ArrowRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Outfit } from '@/lib/types';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface OutfitCarouselProps {
   outfits: Outfit[];
   onPreview: (outfit: Outfit) => void;
-  title: string;
+  title?: string;
   disabled?: boolean;
 }
 
-const OutfitCarousel: React.FC<OutfitCarouselProps> = ({ 
-  outfits, 
-  onPreview,
-  title,
-  disabled = false
-}) => {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
+const OutfitCarousel = ({ outfits, onPreview, title = "Outfits", disabled = false }: OutfitCarouselProps) => {
+  const isMobile = useIsMobile();
   
-  const visibleCount = window.innerWidth < 640 ? 1 :
-                       window.innerWidth < 768 ? 2 :
-                       window.innerWidth < 1024 ? 3 : 4;
-  
-  const maxIndex = Math.max(0, outfits.length - visibleCount);
-  
-  const next = () => {
-    if (isTransitioning || activeIndex >= maxIndex) return;
-    setIsTransitioning(true);
-    setActiveIndex(prev => Math.min(prev + 1, maxIndex));
-    setTimeout(() => setIsTransitioning(false), 300);
+  // Outfit descriptions that reflect Olivia's voice - friendly, feminine, confident
+  const outfitDescriptions: Record<string, string> = {
+    'Spring Elegance': 'Perfect for garden parties and afternoon tea',
+    'Summer Vibes': 'Light and fresh for warm beach days',
+    'Fall Classic': 'Cozy layers for crisp autumn air',
+    'Winter Chic': 'Sophisticated warmth for holiday gatherings',
+    'Trending Style': 'What everyone's wearing right now',
+    'Office Ready': 'Polished looks that mean business',
+    'Date Night': 'Turning heads while staying true to you',
+    'Weekend Casual': 'Effortless style for your days off'
   };
-  
-  const prev = () => {
-    if (isTransitioning || activeIndex <= 0) return;
-    setIsTransitioning(true);
-    setActiveIndex(prev => Math.max(prev - 1, 0));
-    setTimeout(() => setIsTransitioning(false), 300);
+
+  // Real clothing items per outfit - these would normally come from the database
+  const outfitItems: Record<string, Array<{image: string, name: string}>> = {
+    'Spring Elegance': [
+      {image: '/lovable-uploads/c937b60e-901e-48ae-b01d-28d901a11503.png', name: 'Floral Blouse'},
+      {image: '/lovable-uploads/28e5664c-3c8a-4b7e-9c99-065ad489583f.png', name: 'White Midi Skirt'},
+      {image: '/lovable-uploads/547609e6-3e31-4592-9c0c-a9a94e8e4996.png', name: 'Strappy Sandals'},
+      {image: '/lovable-uploads/db51966b-4679-4d51-81f2-8844a7a57817.png', name: 'Straw Hat'}
+    ],
+    'Summer Vibes': [
+      {image: '/lovable-uploads/e8fc1e11-c29c-400b-8e33-2577a311b453.png', name: 'Blue Tank Top'},
+      {image: '/lovable-uploads/5c9492c5-2df1-4f02-8d61-70fd1e57a6af.png', name: 'Denim Shorts'},
+      {image: '/lovable-uploads/547609e6-3e31-4592-9c0c-a9a94e8e4996.png', name: 'White Sneakers'},
+      {image: '/lovable-uploads/075a98ab-d879-4919-8898-87590f8f919a.png', name: 'Tote Bag'}
+    ],
+    'Fall Classic': [
+      {image: '/lovable-uploads/f0afcad3-9696-4e23-a118-04525585d72a.png', name: 'Knit Sweater'},
+      {image: '/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png', name: 'Skinny Jeans'},
+      {image: '/lovable-uploads/86bf74b8-b311-4e3c-bfd6-53819add3df8.png', name: 'Ankle Boots'},
+      {image: '/lovable-uploads/f29b0fb8-330c-409a-8488-2e7ae2b351ed.png', name: 'Wool Scarf'}
+    ],
+    'Winter Chic': [
+      {image: '/lovable-uploads/c26c0c8c-7ff3-432a-b79b-1d22494daba6.png', name: 'Cashmere Cardigan'},
+      {image: '/lovable-uploads/e29a1d16-e806-4664-a744-c1f7b25262ed.png', name: 'Plaid Skirt'},
+      {image: '/lovable-uploads/e41d700a-84eb-4544-9ffc-b68b82f30f7e.png', name: 'Knee-high Boots'},
+      {image: '/lovable-uploads/6d16aa51-bd78-4fb4-a783-8d27a089e19f.png', name: 'Statement Earrings'}
+    ],
+    'Trending Style': [
+      {image: '/lovable-uploads/f19c0a23-eb9d-4387-b2cf-7cfa1c908099.png', name: 'Oversized Blazer'},
+      {image: '/lovable-uploads/05c430e3-091c-4f96-a77b-c360610435d3.png', name: 'Wide Leg Pants'},
+      {image: '/lovable-uploads/e4bf2134-0936-46f8-8d70-adcc220e50be.png', name: 'Platform Loafers'},
+      {image: '/lovable-uploads/f1154816-6766-4478-ba89-6342580bc85b.png', name: 'Gold Hoops'}
+    ],
+    'Office Ready': [
+      {image: '/lovable-uploads/45448793-cb34-4e4c-9dd8-de95f86f25ca.png', name: 'Button-up Shirt'},
+      {image: '/lovable-uploads/7fc023d8-bd78-47c7-8725-d8cb48855e20.png', name: 'Tailored Trousers'},
+      {image: '/lovable-uploads/e41d700a-84eb-4544-9ffc-b68b82f30f7e.png', name: 'Leather Pumps'},
+      {image: '/lovable-uploads/2551cee7-6f38-4c04-b656-16c188b19ace.png', name: 'Structured Bag'}
+    ],
+    'Date Night': [
+      {image: '/lovable-uploads/44448809-be5b-44da-a910-3f9b0e36264b.png', name: 'Satin Cami'},
+      {image: '/lovable-uploads/d39047b3-c0ad-4b2c-9d73-c654479f56c4.png', name: 'Leather Skirt'},
+      {image: '/lovable-uploads/e41d700a-84eb-4544-9ffc-b68b82f30f7e.png', name: 'Strappy Heels'},
+      {image: '/lovable-uploads/f1154816-6766-4478-ba89-6342580bc85b.png', name: 'Layered Necklace'}
+    ],
+    'Weekend Casual': [
+      {image: '/lovable-uploads/c0be3b58-4cc0-4277-8c62-da17547e44ff.png', name: 'Graphic Tee'},
+      {image: '/lovable-uploads/9d6d8627-f9d3-4af3-a5ec-7b2498799ab2.png', name: 'Boyfriend Jeans'},
+      {image: '/lovable-uploads/547609e6-3e31-4592-9c0c-a9a94e8e4996.png', name: 'Canvas Sneakers'},
+      {image: '/lovable-uploads/352f9956-7bac-4f42-a91b-d20e04157b0d.png', name: 'Baseball Cap'}
+    ]
   };
-  
+
   return (
     <div className="relative">
-      {title && (
-        <h3 className="text-lg font-medium mb-4 text-white/90">{title}</h3>
-      )}
+      {title && <h3 className="text-lg font-medium mb-3 text-white/90">{title}</h3>}
       
-      <div className="relative">
-        <div className="overflow-hidden">
-          <div 
-            className="flex transition-transform duration-300 ease-out"
-            style={{ 
-              transform: `translateX(-${activeIndex * (100 / visibleCount)}%)`,
-              width: `${outfits.length * (100 / visibleCount)}%`
-            }}
-          >
-            {outfits.map((outfit) => (
-              <div 
-                key={outfit.id} 
-                className="px-2" 
-                style={{ width: `${100 / outfits.length * visibleCount}%` }}
-              >
-                <OutfitCard 
-                  outfit={outfit} 
-                  onPreview={onPreview}
-                  disabled={disabled}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-        
-        {/* Navigation arrows */}
-        {activeIndex > 0 && (
-          <motion.button
-            className="absolute left-0 top-1/2 -translate-y-1/2 bg-black/50 rounded-full p-2 text-white z-10 -ml-3 hover:bg-black/70 transition-colors"
-            onClick={prev}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <ChevronLeft className="h-6 w-6" />
-          </motion.button>
-        )}
-        
-        {activeIndex < maxIndex && (
-          <motion.button
-            className="absolute right-0 top-1/2 -translate-y-1/2 bg-black/50 rounded-full p-2 text-white z-10 -mr-3 hover:bg-black/70 transition-colors"
-            onClick={next}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <ChevronRight className="h-6 w-6" />
-          </motion.button>
-        )}
-      </div>
-    </div>
-  );
-};
-
-interface OutfitCardProps {
-  outfit: Outfit;
-  onPreview: (outfit: Outfit) => void;
-  disabled: boolean;
-}
-
-const OutfitCard: React.FC<OutfitCardProps> = ({ outfit, onPreview, disabled }) => {
-  return (
-    <motion.div
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-      className="bg-white/5 rounded-lg border border-white/10 overflow-hidden hover:border-purple-400/30 transition-colors"
-    >
-      <div className="aspect-square relative bg-slate-800/80">
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex flex-col justify-end p-4">
-          <h3 className="text-lg font-medium text-white">{outfit.name}</h3>
-          <div className="flex flex-wrap gap-1 mt-1">
-            {outfit.occasions?.slice(0, 1).map(occasion => (
-              <Badge key={occasion} className="bg-slate-700/70 text-white border-none capitalize">
-                {occasion}
-              </Badge>
-            ))}
-            {outfit.seasons?.slice(0, 1).map(season => (
-              <Badge key={season} className="bg-blue-700/70 text-white border-none capitalize">
-                {season}
-              </Badge>
-            ))}
-          </div>
-        </div>
-        
-        <div className="absolute top-0 left-0 w-full h-full grid grid-cols-2 gap-1 p-2">
-          {Array.isArray(outfit.items) && outfit.items.slice(0, 4).map((itemId, index) => (
-            <div 
-              key={`${itemId}-${index}`}
-              className="w-full h-full"
+      <Carousel 
+        opts={{
+          align: "start",
+          loop: true,
+        }}
+        className="w-full"
+      >
+        <CarouselContent className="-ml-2 md:-ml-4">
+          {outfits.map((outfit) => (
+            <CarouselItem 
+              key={outfit.id} 
+              className={`pl-2 md:pl-4 ${isMobile ? 'basis-full' : 'basis-1/2 lg:basis-1/3 xl:basis-1/4'}`}
             >
-              <div className="aspect-square w-full h-full rounded-md bg-slate-700/50 border border-white/5 overflow-hidden">
-                <div className="w-full h-full flex items-center justify-center text-white/20">
-                  <Shirt className="h-6 w-6 opacity-40" />
+              <motion.div
+                whileHover={{ 
+                  scale: 1.02,
+                  boxShadow: '0 8px 32px -4px rgba(155, 135, 245, 0.3)'
+                }}
+                transition={{ duration: 0.2 }}
+                className="rounded-xl overflow-hidden bg-gradient-to-b from-slate-800/80 to-slate-900/90 border border-white/10 h-full"
+              >
+                <div className="p-4">
+                  <h4 className="text-white font-medium text-lg">{outfit.name}</h4>
+                  <p className="text-white/70 text-sm italic mb-3">
+                    {outfitDescriptions[outfit.name] || "Olivia's curated selection"}
+                  </p>
+                  
+                  <div className="grid grid-cols-2 gap-2 mb-3">
+                    {(outfitItems[outfit.name] || []).slice(0, 4).map((item, index) => (
+                      <div 
+                        key={index} 
+                        className="aspect-square rounded-lg overflow-hidden border border-white/10 relative group"
+                      >
+                        <motion.div
+                          whileHover={{ scale: 1.05 }}
+                          className="w-full h-full bg-slate-800"
+                        >
+                          <img 
+                            src={item.image} 
+                            alt={item.name} 
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end justify-center p-2">
+                            <span className="text-white text-xs font-medium">{item.name}</span>
+                          </div>
+                        </motion.div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-1.5 mb-4">
+                    {outfit.seasons?.map((season) => (
+                      <Badge 
+                        key={`season-${season}`} 
+                        variant="outline" 
+                        className="text-xs bg-blue-500/20 border-blue-500/30 text-blue-200"
+                      >
+                        {season}
+                      </Badge>
+                    ))}
+                    
+                    {outfit.occasions?.map((occasion) => (
+                      <Badge 
+                        key={`occasion-${occasion}`} 
+                        variant="outline" 
+                        className="text-xs bg-purple-500/20 border-purple-500/30 text-purple-200"
+                      >
+                        {occasion}
+                      </Badge>
+                    ))}
+                  </div>
+                  
+                  <Button
+                    onClick={() => onPreview(outfit)}
+                    disabled={disabled}
+                    variant="outline"
+                    size="sm"
+                    className="w-full bg-gradient-to-r from-purple-500/30 to-pink-500/30 border-white/10 text-white hover:bg-white/10 hover:text-white transition-all duration-300 hover:border-purple-300/30 group"
+                  >
+                    <motion.div
+                      className="flex items-center"
+                      whileHover={{ x: 5 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Eye className="mr-2 h-3.5 w-3.5 text-white/80 group-hover:text-white" />
+                      <span>Try This Look</span>
+                      <ArrowRight className="ml-2 h-3.5 w-3.5 text-white/70 group-hover:text-white" />
+                    </motion.div>
+                  </Button>
                 </div>
-              </div>
-            </div>
+              </motion.div>
+            </CarouselItem>
           ))}
+        </CarouselContent>
+        <div className="flex items-center justify-end gap-2 mt-2">
+          <CarouselPrevious className="static mx-0 translate-y-0 border-white/20 bg-slate-800/80 text-white hover:bg-slate-700/90 hover:border-white/30" />
+          <CarouselNext className="static mx-0 translate-y-0 border-white/20 bg-slate-800/80 text-white hover:bg-slate-700/90 hover:border-white/30" />
         </div>
-      </div>
-      
-      <div className="p-4">
-        <Button 
-          className="w-full bg-purple-600 hover:bg-purple-700 text-white"
-          onClick={() => onPreview(outfit)}
-          disabled={disabled}
-        >
-          <Check className="mr-2 h-4 w-4" /> Try This Look
-        </Button>
-      </div>
-    </motion.div>
+      </Carousel>
+    </div>
   );
 };
 
