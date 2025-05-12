@@ -3,27 +3,20 @@ import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
 /**
- * Component that scrolls to the top of the page ONLY when the route path changes
- * This prevents unnecessary scrolling during internal navigation
+ * Component that scrolls to the top of the page when the route path changes
+ * This ensures users always start at the top when navigating to a new page
  */
 export default function ScrollToTop() {
   const location = useLocation();
-  const { pathname, state } = location;
+  const { pathname } = location;
 
   useEffect(() => {
-    // Don't scroll on auth redirects or when state contains fromAuth flag
-    // Also don't scroll when state contains noScroll or other scroll-disabling flags
-    if ((pathname === '/' && (state?.fromAuth || state?.noScroll)) || 
-        state?.selectedOutfit || state?.noScroll || state?.keepPosition) {
-      return;
-    }
-    
-    // Only scroll to top when the path changes and there's no specific state parameter
+    // Scroll to top whenever the pathname changes
     window.scrollTo({
       top: 0,
       behavior: "smooth" // Use smooth scrolling for better UX
     });
-  }, [pathname, state]); // Trigger on pathname and state changes
+  }, [pathname]); // Only trigger on pathname changes
 
   return null;
 }
