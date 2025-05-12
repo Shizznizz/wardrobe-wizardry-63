@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import EnhancedHeroSection from '@/components/shared/EnhancedHeroSection';
@@ -6,15 +5,13 @@ import { Container } from '@/components/ui/container';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import PremiumFeaturesSection from '@/components/showroom/PremiumFeaturesSection';
-import OutfitPreviewSection from '@/components/showroom/OutfitPreviewSection';
-import ResultSection from '@/components/showroom/ResultSection';
 import { useAuth } from '@/hooks/useAuth';
 import { useShowroom } from '@/hooks/useShowroom';
 import HowItWorksSection from '@/components/fitting-room/HowItWorksSection';
-import PhotoUploadSection from '@/components/fitting-room/PhotoUploadSection';
-import OutfitSelectionTabs from '@/components/fitting-room/OutfitSelectionTabs';
-import OliviaRatingSection from '@/components/fitting-room/OliviaRatingSection';
-import OutfitItemReplacement from '@/components/outfits/mix-match/OutfitItemReplacement';
+import ModelSelectionSection from '@/components/fitting-room/ModelSelectionSection';
+import OutfitSelectionSection from '@/components/fitting-room/OutfitSelectionSection';
+import ResultPreviewSection from '@/components/fitting-room/ResultPreviewSection';
+import OutfitCustomizationSection from '@/components/fitting-room/OutfitCustomizationSection';
 
 const FittingRoom = () => {
   const { isAuthenticated, isPremiumUser } = useAuth();
@@ -36,7 +33,8 @@ const FittingRoom = () => {
     handleSaveLook,
     handleSuggestAnotherOutfit,
     handleUpgradeToPremium,
-    setSelectedOutfit
+    setSelectedOutfit,
+    handleClearUserPhoto
   } = useShowroom();
 
   // Handle replacing an item in the current outfit
@@ -58,6 +56,22 @@ const FittingRoom = () => {
     handleSelectOutfit(updatedOutfit);
   };
 
+  const handleStartOver = () => {
+    // Clear photo and outfit selection
+    handleClearUserPhoto();
+    setSelectedOutfit(null);
+  };
+
+  const handleTryDifferentOutfit = () => {
+    // Keep photo but clear outfit selection
+    setSelectedOutfit(null);
+    
+    // Scroll to outfit selection section
+    document.getElementById('outfit-selection-section')?.scrollIntoView({ 
+      behavior: 'smooth' 
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white pb-20">
       <EnhancedHeroSection
@@ -71,11 +85,13 @@ const FittingRoom = () => {
       />
       
       <Container className="space-y-16 px-4">
+        {/* Step 1: How It Works Section */}
         <HowItWorksSection />
         
-        <div id="photo-section">
-          <PhotoUploadSection 
-            userPhoto={userPhoto} 
+        {/* Step 2: Choose a Model Section */}
+        <div id="model-selection-section">
+          <ModelSelectionSection 
+            userPhoto={userPhoto}
             isUploading={isUploadLoading}
             isUsingOliviaImage={isUsingOliviaImage}
             onUserPhotoChange={handleUserPhotoUpload}
@@ -83,85 +99,56 @@ const FittingRoom = () => {
           />
         </div>
         
-        <div className="flex items-center justify-center my-12">
-          <div className="h-px bg-gradient-to-r from-transparent via-purple-500/30 to-transparent w-full max-w-2xl"></div>
-        </div>
+        {/* Divider */}
+        {userPhoto && (
+          <div className="flex items-center justify-center my-12">
+            <div className="h-px bg-gradient-to-r from-transparent via-purple-500/30 to-transparent w-full max-w-2xl"></div>
+          </div>
+        )}
         
-        <OutfitSelectionTabs 
-          fashionCollections={fashionCollections}
-          clothingItems={clothingItems}
-          selectedOutfit={selectedOutfit}
-          isPremiumUser={effectivePremiumUser}
-          onSelectOutfit={handleSelectOutfit}
-        />
-        
-        <div className="flex items-center justify-center my-12">
-          <div className="h-px bg-gradient-to-r from-transparent via-purple-500/30 to-transparent w-full max-w-2xl"></div>
-        </div>
-        
-        <div id="preview-section" className="mt-12">
-          <OutfitPreviewSection 
-            finalImage={finalImage}
-            selectedOutfit={selectedOutfit}
-            clothingItems={clothingItems}
-            isProcessingTryOn={isProcessingTryOn}
-            userPhoto={userPhoto}
-            isUsingOliviaImage={isUsingOliviaImage}
-            onSaveLook={handleSaveLook}
-            onChangePhoto={() => {
-              document.getElementById('photo-section')?.scrollIntoView({ behavior: 'smooth' });
-            }}
-          />
-          
-          {finalImage && selectedOutfit && (
-            <OliviaRatingSection 
-              outfit={selectedOutfit}
-              suggestion={oliviaSuggestion}
+        {/* Step 3: Outfit Selection Section - only shown after photo is selected */}
+        {userPhoto && (
+          <div id="outfit-selection-section">
+            <OutfitSelectionSection 
+              isPremiumUser={effectivePremiumUser}
+              onSelectOutfit={handleSelectOutfit}
             />
-          )}
-          
-          {finalImage && selectedOutfit && selectedOutfit.items && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-              className="mt-8"
-            >
-              <Card className="glass-dark border-white/10 overflow-hidden shadow-lg">
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-300 to-purple-300">
-                    Customize This Look
-                  </h3>
-                  <p className="text-white/70 mb-6">
-                    Replace individual items to create your perfect outfit
-                  </p>
-                  
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                    {selectedOutfit.items.map((itemId) => {
-                      const item = clothingItems.find(i => i.id === itemId);
-                      if (!item) return null;
-                      
-                      return (
-                        <OutfitItemReplacement
-                          key={item.id}
-                          item={item}
-                          onReplaceItem={handleReplaceItem}
-                          category={item.type}
-                        />
-                      );
-                    })}
-                  </div>
-                </div>
-              </Card>
-            </motion.div>
-          )}
-          
-          <ResultSection
-            finalImage={finalImage}
-            selectedOutfit={selectedOutfit}
-            onSuggestAnotherOutfit={handleSuggestAnotherOutfit}
-          />
-        </div>
+          </div>
+        )}
+        
+        {/* Divider */}
+        {userPhoto && selectedOutfit && (
+          <div className="flex items-center justify-center my-12">
+            <div className="h-px bg-gradient-to-r from-transparent via-purple-500/30 to-transparent w-full max-w-2xl"></div>
+          </div>
+        )}
+        
+        {/* Step 4: Result Preview Section - only shown after both photo and outfit are selected */}
+        {userPhoto && selectedOutfit && (
+          <div id="result-preview-section">
+            <ResultPreviewSection 
+              finalImage={finalImage}
+              userPhoto={userPhoto}
+              selectedOutfit={selectedOutfit}
+              isProcessingTryOn={isProcessingTryOn}
+              isUsingOliviaImage={isUsingOliviaImage}
+              onSaveLook={handleSaveLook}
+              onTryDifferentOutfit={handleTryDifferentOutfit}
+              onStartOver={handleStartOver}
+              oliviaSuggestion={oliviaSuggestion}
+            />
+          </div>
+        )}
+        
+        {/* Step 5: Outfit Customization Section - only shown after result is visible */}
+        {finalImage && selectedOutfit && (
+          <div id="outfit-customization-section">
+            <OutfitCustomizationSection
+              selectedOutfit={selectedOutfit}
+              onReplaceItem={handleReplaceItem}
+            />
+          </div>
+        )}
         
         {!effectivePremiumUser && (
           <PremiumFeaturesSection 

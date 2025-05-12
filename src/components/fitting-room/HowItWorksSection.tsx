@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Upload, Shirt, Eye, ArrowUp } from 'lucide-react';
+import { Upload, Shirt, Eye } from 'lucide-react';
 
 const HowItWorksSection = () => {
   const steps = [
