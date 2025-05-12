@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -107,7 +106,7 @@ const MixAndMatch = () => {
           {
             label: "Let Olivia Style Me Today",
             onClick: handleStyleMe,
-            variant: "gradient"
+            variant: "lavender" // Changed from "gradient" to "lavender" (a valid variant)
           }
         ]}
       />

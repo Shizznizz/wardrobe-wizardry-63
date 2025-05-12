@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import EnhancedHeroSection from '@/components/shared/EnhancedHeroSection';
@@ -148,7 +147,7 @@ const Quizzes = () => {
         image={{
           src: `/lovable-uploads/${hoveredQuiz ? 'f1154816-6766-4478-ba89-6342580bc85b.png' : 'f0afcad3-9696-4e23-a118-04525585d72a.png'}`,
           alt: "Olivia headshot with ponytail and pink blouse",
-          variant: "headshot"
+          variant: "portrait"
         }}
       >
         <div className="mt-6 p-4 bg-white/10 backdrop-blur-sm rounded-xl border border-purple-500/20 max-w-xl mx-auto md:mx-0">
