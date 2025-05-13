@@ -14,7 +14,7 @@ const FinalCta: React.FC<FinalCtaProps> = ({ onGetStarted }) => {
 
   return (
     <motion.section
-      className="py-20 px-4 bg-gradient-to-r from-coral-500/20 to-purple-500/20 backdrop-blur-sm"
+      className="py-20 px-4 bg-gradient-to-r from-coral-500/20 to-purple-500/20 backdrop-blur-sm relative overflow-hidden"
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
@@ -39,23 +39,24 @@ const FinalCta: React.FC<FinalCtaProps> = ({ onGetStarted }) => {
             <p className="text-white/60 mt-4">No credit card required. Join 10,000+ happy users.</p>
           </div>
           
-          {/* Olivia head with speech bubble */}
+          {/* New Olivia image implementation */}
           <motion.div 
-            className="w-full md:w-1/3 mt-8 md:mt-0 flex justify-center md:justify-end relative"
+            className="w-full md:w-1/3 mt-8 md:mt-0 flex justify-center md:justify-end"
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ delay: 0.4, duration: 0.5 }}
           >
-            <div className="relative">
-              <div className="absolute -left-40 top-0 bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/10 speech-bubble-left max-w-[200px]">
-                <p className="text-white/90">You're just 60 seconds away from effortless style!</p>
-              </div>
-              <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-coral-500/30 shadow-lg shadow-purple-500/20">
+            <div className="relative h-full">
+              {/* Subtle glow effect behind Olivia */}
+              <div className="absolute inset-0 bg-gradient-to-tr from-purple-500/20 to-pink-500/20 rounded-full blur-xl -z-10"></div>
+              
+              {/* Olivia image with shadow */}
+              <div className="relative z-10 h-auto max-h-[400px]">
                 <img 
-                  src="/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png" 
+                  src="/lovable-uploads/1edb18e4-ac7b-451e-9d08-56330d47a937.png" 
                   alt="Olivia" 
-                  className="w-full h-full object-cover"
+                  className="h-full w-auto object-contain drop-shadow-[0_0_15px_rgba(168,85,247,0.3)]"
                 />
               </div>
             </div>
