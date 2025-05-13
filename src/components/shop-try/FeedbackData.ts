@@ -6,3 +6,14 @@ export interface FeedbackData {
   tags: string[];
   shareOnSocial: boolean;
 }
+
+export interface OutfitFeedbackData {
+  rating: number;
+  favorite: boolean;
+  tags: string[];
+  comment?: string;
+  outfitId: string;
+  items: string[];
+  occasion: string;
+  vibe: string;
+}
