@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -8,6 +9,7 @@ import EnhancedWeatherSection from '@/components/outfits/mix-match/EnhancedWeath
 import SuggestedOutfitsSection from '@/components/outfits/mix-match/SuggestedOutfitsSection';
 import OliviaRecommendationSection from '@/components/outfits/mix-match/OliviaRecommendationSection';
 import CreateOutfitSection from '@/components/outfits/mix-match/CreateOutfitSection';
+import ConfidenceSection from '@/components/outfits/mix-match/ConfidenceSection';
 import { useAuth } from '@/hooks/useAuth';
 import { useWardrobeData } from '@/hooks/useWardrobeData';
 import EnhancedHeroSection from '@/components/shared/EnhancedHeroSection';
@@ -163,6 +165,9 @@ const MixAndMatch = () => {
           </>
         )}
       </div>
+      
+      {/* New Confidence Section */}
+      <ConfidenceSection />
     </div>
   );
 };
