@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -356,8 +355,8 @@ const ShopAndTry = () => {
         title="Shop & Try Fashion"
         subtitle="Preview new trends, mix with your wardrobe, and get smart fashion recommendations."
         image={{
-          src: "/lovable-uploads/0e9ba14f-845b-4c56-a82c-5a616b0a3efb.png",
-          alt: "Olivia in cropped beige jacket and pants",
+          src: "/lovable-uploads/f4be744c-31b5-4099-93e8-67f51af83dae.png",
+          alt: "Olivia in pink crop top and skirt outfit",
           variant: "standing"
         }}
         buttons={[
