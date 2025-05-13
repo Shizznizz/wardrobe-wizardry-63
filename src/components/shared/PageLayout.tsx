@@ -10,6 +10,7 @@ interface PageLayoutProps {
 
 const PageLayout = ({ children }: PageLayoutProps) => {
   const location = useLocation();
+  const isPremiumPage = location.pathname === "/premium";
   
   // Removed useEffect that was showing toast notification for selected outfit
 
@@ -22,7 +23,7 @@ const PageLayout = ({ children }: PageLayoutProps) => {
       </main>
       
       <div className="mt-auto">
-        <PremiumExperience onUpgrade={() => {}} />
+        {!isPremiumPage && <PremiumExperience onUpgrade={() => {}} />}
         <Footer />
       </div>
     </div>

@@ -107,6 +107,7 @@ const PremiumPage = () => {
     }
   ];
 
+  // Updated FAQs with the two new questions
   const faqs = [
     {
       id: "cancel",
@@ -127,6 +128,16 @@ const PremiumPage = () => {
       id: "upgrade",
       question: "What happens when I upgrade?",
       answer: "Olivia instantly unlocks new features for you. No delay."
+    },
+    {
+      id: "change-mind",
+      question: "What if I change my mind?",
+      answer: "No worries! You can cancel anytime, no questions asked."
+    },
+    {
+      id: "try-week",
+      question: "Can I try it for just one week?",
+      answer: "Absolutely! That's what the weekly plan is for — instant access, total freedom."
     }
   ];
 
@@ -146,7 +157,7 @@ const PremiumPage = () => {
   return (
     <PageLayout>
       <div className="min-h-screen overflow-hidden bg-gradient-to-b from-slate-950 to-indigo-950 text-white">
-        {/* 1. Hero Section */}
+        {/* 1. Hero Section - Updated with enhanced animation */}
         <Container>
           <motion.section 
             className="py-16 md:py-24"
@@ -171,7 +182,7 @@ const PremiumPage = () => {
                     className="bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-500 hover:to-amber-600 text-black font-semibold shadow-lg shadow-amber-500/20 py-6 px-8 text-lg rounded-xl"
                     size="lg"
                   >
-                    <Crown className="mr-2 h-5 w-5" /> Upgrade to Premium
+                    <Crown className="mr-2 h-5 w-5" /> ✨ Unlock My Style Superpowers
                   </Button>
                 </motion.div>
               </div>
@@ -181,7 +192,11 @@ const PremiumPage = () => {
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.8, delay: 0.3 }}
+                  transition={{ 
+                    duration: 0.8, 
+                    delay: 0.3,
+                    ease: [0.25, 0.1, 0.25, 1] 
+                  }}
                   className="relative z-10"
                 >
                   <OptimizedImage
@@ -228,7 +243,7 @@ const PremiumPage = () => {
           </motion.section>
         </Container>
 
-        {/* 3. Olivia's Message */}
+        {/* 3. Olivia's Message - Updated quote */}
         <Container>
           <motion.section
             className="py-8 mb-16"
@@ -269,8 +284,9 @@ const PremiumPage = () => {
                   transition={{ delay: 0.4 }}
                 >
                   <p className="text-lg text-white/90 italic">
-                    "Hey you! 💛 I can't wait to help you find your signature style. Premium gives us superpowers, and it's all about YOU. Let's create something amazing together!"
+                    "Let's turn your wardrobe into a wow-drobe. Premium is where your real style story begins ✨"
                   </p>
+                  <p className="text-right text-white/70 mt-2">— Olivia</p>
                 </motion.div>
               </div>
             </div>
@@ -465,7 +481,7 @@ const PremiumPage = () => {
           </motion.section>
         </Container>
 
-        {/* 7. FAQ Section */}
+        {/* 7. FAQ Section - Updated with new FAQs */}
         <Container>
           <motion.section
             className="py-12 mb-16"
@@ -502,7 +518,7 @@ const PremiumPage = () => {
           </motion.section>
         </Container>
 
-        {/* 8. Final CTA */}
+        {/* 8. Final CTA - Updated button text */}
         <Container>
           <motion.section
             className="py-16 md:py-24 mb-10 text-center"
@@ -540,7 +556,7 @@ const PremiumPage = () => {
                   className="bg-gradient-to-r from-yellow-400 to-amber-500 hover:opacity-90 text-black font-semibold shadow-lg shadow-amber-500/20 py-6 px-8 text-lg rounded-xl"
                   size="lg"
                 >
-                  <Crown className="mr-2 h-5 w-5" /> Join Olivia Premium ✨
+                  <Crown className="mr-2 h-5 w-5" /> Join Olivia Premium ✨ – Style Awaits
                 </Button>
               </motion.div>
             </div>
