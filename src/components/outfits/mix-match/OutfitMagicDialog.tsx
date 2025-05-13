@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -301,6 +300,9 @@ const OutfitMagicDialog: React.FC<OutfitMagicDialogProps> = ({ open, onOpenChang
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-purple-950/95 border-purple-500/30 text-white max-w-lg p-0 overflow-hidden max-h-[90vh] flex flex-col">
+        {/* Add DialogTitle (hidden for screen readers) to fix accessibility warning */}
+        <DialogTitle className="sr-only">Outfit Magic</DialogTitle>
+        
         {/* Progress indicator */}
         <div className="flex justify-between p-4 bg-purple-900/50 border-b border-purple-500/20 flex-shrink-0">
           {[1, 2, 3, 4, 5].map((s) => (
@@ -674,83 +676,70 @@ const OutfitMagicDialog: React.FC<OutfitMagicDialogProps> = ({ open, onOpenChang
                       >
                         💜 View in Fitting Room
                       </Button>
-                    
+                      
                       <Button 
                         onClick={handleGenerateAnother}
                         variant="outline" 
-                        className="w-full border-purple-500/30 hover:bg-purple-800/30 text-purple-200"
+                        className="w-full border-purple-500/30 text-purple-200 hover:bg-purple-800/30 hover:text-white"
                       >
                         <RefreshCw className="h-4 w-4 mr-2" />
-                        Generate Another Outfit
+                        Generate Another Look
+                      </Button>
+                      
+                      <Button 
+                        onClick={handleSaveOutfit}
+                        variant="ghost" 
+                        className="w-full text-purple-200 hover:bg-purple-800/30 hover:text-white"
+                      >
+                        <Save className="h-4 w-4 mr-2" />
+                        Save to My Collection
                       </Button>
                     </div>
                   </>
-                ) : (
-                  <div className="text-center p-6 text-purple-300">
-                    <p>Ready to generate your outfit!</p>
-                  </div>
-                )}
+                ) : null}
               </motion.div>
             )}
           </div>
         </div>
         
-        {/* Navigation buttons */}
-        <div className="p-4 bg-purple-900/50 border-t border-purple-500/20 flex justify-between mt-auto">
+        {/* Controls */}
+        <div className="p-4 flex justify-between items-center border-t border-purple-500/20 bg-purple-900/50 flex-shrink-0">
           {step > 1 ? (
-            <Button 
-              variant="outline" 
+            <Button
               onClick={handleBack}
-              className="border-purple-500/30 text-white hover:bg-purple-800/50"
+              variant="ghost"
+              className="text-purple-200 hover:bg-purple-800/30 hover:text-white px-4"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back
             </Button>
           ) : (
-            <div></div>
+            <div></div> // Empty div to maintain flex spacing
           )}
           
           {step < 4 ? (
-            <Button 
+            <Button
               onClick={handleNext}
               disabled={
-                (step === 1 && !selectedVibe) || 
-                (step === 2 && !selectedOccasion) || 
-                (step === 3 && selectedItems.length === 0 && !surpriseMe)
+                (step === 1 && !selectedVibe) ||
+                (step === 2 && !selectedOccasion) ||
+                (step === 3 && !surpriseMe && selectedItems.length === 0)
               }
-              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+              variant="default"
+              className="bg-purple-600 hover:bg-purple-500 text-white px-6"
             >
-              Continue
+              Next
             </Button>
           ) : step === 4 ? (
-            <Button 
+            <Button
               onClick={handleGenerateOutfit}
-              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white px-6"
             >
-              <Wand2 className="h-4 w-4 mr-2" />
-              Generate Outfit
-            </Button>
-          ) : isGenerating ? (
-            <Button disabled className="bg-gradient-to-r from-purple-500 to-pink-500">
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              Creating...
-            </Button>
-          ) : !generatedOutfit ? (
-            <Button 
-              onClick={handleGenerateOutfit}
-              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
-            >
-              <Wand2 className="h-4 w-4 mr-2" />
+              <Wand2 className="h-5 w-5 mr-2" />
               Generate Outfit
             </Button>
           ) : (
-            <Button 
-              onClick={handleSaveOutfit}
-              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
-            >
-              <Save className="h-4 w-4 mr-2" />
-              Save to My Looks
-            </Button>
+            <div></div> // Empty div in final step
           )}
         </div>
       </DialogContent>

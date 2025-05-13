@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu } from 'lucide-react';
@@ -125,13 +126,14 @@ const Header = () => {
               variant="ghost"
               size="icon"
               className={cn(
-                "ml-2 transition-colors",
+                "ml-2 transition-colors relative z-50 pointer-events-auto",
                 isScrolled ? "text-white hover:text-white/80" : "text-white hover:bg-white/10"
               )}
               onClick={toggleMenu}
               aria-label="Toggle mobile menu"
               aria-expanded={isMenuOpen}
               aria-controls="mobile-menu"
+              style={{ pointerEvents: 'auto' }}
             >
               <Menu className="h-6 w-6" />
             </Button>
