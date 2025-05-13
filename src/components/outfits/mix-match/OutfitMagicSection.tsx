@@ -24,7 +24,7 @@ const OutfitMagicSection = () => {
           className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8"
         >
           {/* Olivia Image with Glow Effect */}
-          <div className="relative w-full md:w-2/5">
+          <div className="relative w-full md:w-2/5 order-2 md:order-1">
             <div className="absolute inset-0 bg-purple-500/20 blur-xl rounded-full"></div>
             <div className="relative z-10">
               <OptimizedImage
@@ -37,7 +37,7 @@ const OutfitMagicSection = () => {
           </div>
           
           {/* Text and CTA Content */}
-          <div className="w-full md:w-3/5 text-center md:text-left">
+          <div className="w-full md:w-3/5 text-center md:text-left order-1 md:order-2">
             <div className="inline-flex items-center justify-center mb-4">
               <div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 p-3 rounded-full">
                 <Wand2 className="h-8 w-8 text-purple-400" />
