@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu } from 'lucide-react';
@@ -9,7 +8,6 @@ import { useAuth } from '@/hooks/useAuth';
 import { UserMenu } from './header/UserMenu';
 import { MobileMenu } from './header/MobileMenu';
 import { DesktopNavigation } from './header/DesktopNavigation';
-import { toast } from 'sonner';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -50,10 +48,8 @@ const Header = () => {
     try {
       await signOut();
       navigate("/");
-      toast.success("Successfully signed out");
     } catch (error) {
       console.error("Error signing out:", error);
-      toast.error("Failed to sign out");
     }
   };
 

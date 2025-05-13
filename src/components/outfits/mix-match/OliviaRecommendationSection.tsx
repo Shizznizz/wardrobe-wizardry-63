@@ -1,8 +1,7 @@
 
 import { useState, useEffect } from 'react';
-import { Outfit, ClothingItem } from '@/lib/types';
+import { ClothingItem } from '@/lib/types';
 import OliviaRecommendation from '@/components/outfits/OliviaRecommendation';
-import { toast } from 'sonner';
 
 interface OliviaRecommendationSectionProps {
   weather: {
@@ -10,7 +9,7 @@ interface OliviaRecommendationSectionProps {
     condition: string;
   };
   situation: string;
-  clothingItems: ClothingItem[]; // Added clothingItems prop
+  clothingItems: ClothingItem[];
 }
 
 const OliviaRecommendationSection = ({ weather, situation, clothingItems }: OliviaRecommendationSectionProps) => {
@@ -20,7 +19,7 @@ const OliviaRecommendationSection = ({ weather, situation, clothingItems }: Oliv
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsGenerating(false);
-      toast.success("Olivia has created an outfit for you!");
+      // Removed automatic toast notification
     }, 1500);
 
     return () => clearTimeout(timer);

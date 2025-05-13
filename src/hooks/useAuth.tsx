@@ -42,14 +42,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         
         setLoading(false);
         
-        // Show toast notification for sign in/out events
-        if (event === 'SIGNED_IN') {
-          toast.success("Signed in successfully");
-        } else if (event === 'SIGNED_OUT') {
-          toast.success("Signed out successfully");
-        } else if (event === 'USER_UPDATED') {
-          toast.success("User profile updated");
-        }
+        // Removed automatic toast notifications for auth state changes
       }
     );
 
@@ -78,7 +71,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signOut = async () => {
     try {
       await supabase.auth.signOut();
-      toast.success("Signed out successfully");
+      toast.success("Signed out successfully"); // Keep this toast as it's manually triggered
     } catch (error) {
       console.error("Error signing out:", error);
       toast.error("Failed to sign out");

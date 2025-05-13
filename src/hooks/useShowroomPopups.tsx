@@ -1,6 +1,5 @@
 
 import { useState, useEffect } from 'react';
-import { toast } from 'sonner';
 
 export const useShowroomPopups = (isPremiumUser: boolean, isAuthenticated: boolean, userPhoto: string | null, finalImage: string | null) => {
   const [showTips, setShowTips] = useState(true);
@@ -23,7 +22,7 @@ export const useShowroomPopups = (isPremiumUser: boolean, isAuthenticated: boole
   }, [userPhoto, finalImage, isPremiumUser, isAuthenticated]);
 
   const handleUpgradeToPremium = () => {
-    toast.success('Redirecting to premium subscription page');
+    // Removed automatic toast notification
     setShowSubscriptionPopup(false);
   };
 

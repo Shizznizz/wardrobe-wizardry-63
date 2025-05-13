@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { WeatherInfo } from '@/lib/types';
@@ -54,9 +53,7 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({
       setWeatherData(data);
       onWeatherChange(data);
       
-      if (showToasts) {
-        toast.success(`Weather updated for ${city}, ${country}`);
-      }
+      // Removed automatic toast notification for weather update
       
       // Handle savePreferences if needed (not implemented in this component)
       if (savePreferences) {

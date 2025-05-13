@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react';
 import { ClothingItem, WeatherInfo } from '@/lib/types';
 import { generateRandomWeather } from '@/services/WeatherService';
-import { toast } from 'sonner';
 import StyleAlchemySection from './StyleAlchemySection';
 
 interface OliviaDailyRecommendationProps {
@@ -33,7 +32,7 @@ const OliviaDailyRecommendation = ({
         setWeatherInfo(weather);
       } catch (error) {
         console.error('Error fetching data:', error);
-        toast.error('Failed to load daily recommendations');
+        // Removed toast error notification
       } finally {
         setLoading(false);
       }

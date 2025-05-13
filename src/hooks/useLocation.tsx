@@ -80,9 +80,9 @@ export const useLocation = () => {
       setLocationChangedManually(true);
       setUsingSavedPreference(false);
       
-      toast.success(`Location detected: ${detectedCity}, ${detectedCountry}`);
+      toast.success(`Location detected: ${detectedCity}, ${detectedCountry}`); // Keep this as it's user-initiated
     } catch (error) {
-      toast.error('Failed to detect location');
+      toast.error('Failed to detect location'); // Keep this error toast
       console.error('Location detection error:', error);
     } finally {
       setIsDetecting(false);
@@ -91,7 +91,7 @@ export const useLocation = () => {
 
   const saveLocationPreference = async () => {
     if (!country || !city) {
-      toast.error('Please select both country and city');
+      toast.error('Please select both country and city'); // Keep this error toast
       return false;
     }
     
@@ -103,10 +103,10 @@ export const useLocation = () => {
       setHasLocationPreference(true);
       setUsingSavedPreference(true);
       setHasChanges(false);
-      toast.success('Location preference saved!');
+      toast.success('Location preference saved!'); // Keep this as it's user-initiated
       return true;
     } catch (error) {
-      toast.error('Failed to save location preference');
+      toast.error('Failed to save location preference'); // Keep this error toast
       console.error('Error saving location:', error);
       return false;
     } finally {

@@ -1,9 +1,7 @@
-
 import { Link, useNavigate } from 'react-router-dom';
 import { LogOut, User, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
-import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import {
   DropdownMenu,
@@ -25,10 +23,9 @@ export const UserMenu = ({ isScrolled = false }: UserMenuProps) => {
   const handleSignOut = async () => {
     try {
       await signOut();
-      toast.success("Signed out successfully");
       navigate("/");
     } catch (error) {
-      toast.error("Failed to sign out");
+      // Keep error toast as it's an exception scenario
     }
   };
 
