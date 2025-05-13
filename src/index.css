@@ -136,4 +136,31 @@
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
   }
+  
+  /* Speech bubble styles for the Premium page */
+  .speech-bubble-left {
+    position: relative;
+  }
+  
+  .speech-bubble-left:before {
+    content: '';
+    position: absolute;
+    left: -10px;
+    top: 20px;
+    border-style: solid;
+    border-width: 10px 10px 10px 0;
+    border-color: transparent rgba(255, 255, 255, 0.1) transparent transparent;
+    z-index: 1;
+  }
+  
+  .speech-bubble-left:after {
+    content: '';
+    position: absolute;
+    left: -8px;
+    top: 20px;
+    border-style: solid;
+    border-width: 10px 10px 10px 0;
+    border-color: transparent rgba(67, 56, 202, 0.3) transparent transparent;
+    z-index: 2;
+  }
 }

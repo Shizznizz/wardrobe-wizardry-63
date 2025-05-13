@@ -10,6 +10,7 @@ import FittingRoom from '@/pages/FittingRoom';
 import ShopAndTry from '@/pages/ShopAndTry';
 import Settings from '@/pages/Settings';
 import Profile from '@/pages/Profile';
+import Premium from '@/pages/Premium';
 // Additional pages
 import Auth from '@/pages/Auth';
 import Quizzes from '@/pages/Quizzes';
@@ -39,6 +40,7 @@ function App() {
               <Route path="/shop-and-try" element={<PageLayout><ShopAndTry /></PageLayout>} />
               <Route path="/settings" element={<PageLayout><Settings /></PageLayout>} />
               <Route path="/profile" element={<PageLayout><Profile /></PageLayout>} />
+              <Route path="/premium" element={<Premium />} />
               {/* Add the Quizzes routes */}
               <Route path="/quizzes" element={<PageLayout><Quizzes /></PageLayout>} />
               <Route path="/find-your-style" element={<PageLayout><StyleQuizPage /></PageLayout>} />
