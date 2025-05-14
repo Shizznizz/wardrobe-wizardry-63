@@ -17,7 +17,6 @@ import { useOnboardingState } from '@/hooks/useOnboardingState';
 import VirtualTryOnSteps from '@/components/home/VirtualTryOnSteps';
 import OliviasWeeklyTip from '@/components/home/OliviasWeeklyTip';
 import OliviasLookOfTheWeek from '@/components/home/OliviasLookOfTheWeek';
-import PremiumTeaserSection from '@/components/home/PremiumTeaserSection';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -71,7 +70,7 @@ const Home = () => {
         {/* 3. Core Features Section with Meet Olivia button from home.tsx */}
         <CoreFeaturesSection onMeetOlivia={handleMeetOlivia} />
         
-        {/* 4. Virtual Try-On Steps from index.tsx */}
+        {/* 4. Virtual Try-On Steps from index.tsx - Enhanced version */}
         <VirtualTryOnSteps />
 
         {/* 5. Olivia's Look of the Week from index.tsx */}
@@ -85,9 +84,6 @@ const Home = () => {
 
         {/* 8. Final CTA Section from home.tsx */}
         <FinalCta onGetStarted={() => navigate('/auth')} />
-        
-        {/* 9. Premium Teaser Section from index.tsx */}
-        <PremiumTeaserSection />
 
         {/* Premium Sticky Footer */}
         <HomepagePremiumTeaser />
