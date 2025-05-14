@@ -14,6 +14,10 @@ import GetOliviasLook from '@/components/home/GetOliviasLook';
 import MeetOliviaDialog from '@/components/home/MeetOliviaDialog';
 import OnboardingFlow from '@/components/onboarding/OnboardingFlow';
 import { useOnboardingState } from '@/hooks/useOnboardingState';
+import VirtualTryOnSteps from '@/components/home/VirtualTryOnSteps';
+import OliviasWeeklyTip from '@/components/home/OliviasWeeklyTip';
+import OliviasLookOfTheWeek from '@/components/home/OliviasLookOfTheWeek';
+import PremiumTeaserSection from '@/components/home/PremiumTeaserSection';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -38,13 +42,12 @@ const Home = () => {
     setShowOnboarding(true);
   };
   
-  // Home page already has the enhanced hero section via the HeroSection component
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#12002f] to-[#1b013c] text-white">
       <Header />
       
       <main className="pt-8 overflow-hidden">
-        {/* Hero Section with optimized mobile layout */}
+        {/* 1. Hero Section with optimized mobile layout from home.tsx */}
         <HeroSection
           title="The Future of Fashion"
           subtitle="Trusted by 10,000+ style-conscious women"
@@ -62,26 +65,32 @@ const Home = () => {
           hasSparkleEffect={true}
         />
         
-        {/* Trust Bar */}
+        {/* 2. Trust Bar from home.tsx */}
         <TrustBar />
         
-        {/* Core Features Section */}
+        {/* 3. Core Features Section with Meet Olivia button from home.tsx */}
         <CoreFeaturesSection onMeetOlivia={handleMeetOlivia} />
         
-        {/* Premium Teaser Section with Olivia */}
-        <HomepagePremiumTeaser />
-        
-        {/* Get Olivia's Look Section */}
-        <GetOliviasLook />
+        {/* 4. Virtual Try-On Steps from index.tsx */}
+        <VirtualTryOnSteps />
 
-        {/* How It Works Section */}
-        <HowItWorksSection />
+        {/* 5. Olivia's Look of the Week from index.tsx */}
+        <OliviasLookOfTheWeek />
 
-        {/* Testimonials Section */}
+        {/* 6. Olivia's Weekly Tip Section from index.tsx */}
+        <OliviasWeeklyTip />
+
+        {/* 7. Testimonials Section from index.tsx */}
         <TestimonialsSection />
 
-        {/* Final CTA Section */}
+        {/* 8. Final CTA Section from home.tsx */}
         <FinalCta onGetStarted={() => navigate('/auth')} />
+        
+        {/* 9. Premium Teaser Section from index.tsx */}
+        <PremiumTeaserSection />
+
+        {/* Premium Sticky Footer */}
+        <HomepagePremiumTeaser />
       </main>
       
       {/* Olivia Introduction Dialog */}
