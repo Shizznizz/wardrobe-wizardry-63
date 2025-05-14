@@ -2,7 +2,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 // Pages
-import Index from '@/pages/Index';
+import Home from '@/pages/Home';
 import MyWardrobe from '@/pages/MyWardrobe';
 import MixAndMatch from '@/pages/MixAndMatch';
 import StylePlanner from '@/pages/StylePlanner';
@@ -30,8 +30,8 @@ function App() {
         <OutfitProvider>
           <Router>
             <Routes>
-              {/* Use Index.tsx as the definitive homepage */}
-              <Route path="/" element={<PageLayout><Index /></PageLayout>} />
+              {/* Apply PageLayout to Home page as well */}
+              <Route path="/" element={<PageLayout><Home /></PageLayout>} />
               {/* Use PageLayout for authenticated pages to ensure Footer appears on all pages */}
               <Route path="/my-wardrobe" element={<PageLayout><MyWardrobe /></PageLayout>} />
               <Route path="/mix-and-match" element={<PageLayout><MixAndMatch /></PageLayout>} />
