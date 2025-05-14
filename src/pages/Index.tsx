@@ -86,6 +86,20 @@ const Index: React.FC = () => {
     }
   }, [isCounterInView, hasAnimated]);
 
+  // Handler functions for MeetOliviaDialog
+  const handleStartOnboarding = () => {
+    // Start onboarding logic here
+    console.log("Starting onboarding tour");
+    // For now, we'll just close the dialog
+    setIsOliviaMeetOpen(false);
+  };
+
+  const handleGetStarted = () => {
+    // Get started logic here  
+    console.log("Let's get started!");
+    // Navigation could be added here if needed
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white overflow-hidden">
       <BackgroundShapes />
@@ -349,8 +363,10 @@ const Index: React.FC = () => {
       
       {/* Meet Olivia Dialog */}
       <MeetOliviaDialog 
-        isOpen={isOliviaMeetOpen} 
-        onClose={() => setIsOliviaMeetOpen(false)} 
+        open={isOliviaMeetOpen} 
+        onOpenChange={setIsOliviaMeetOpen}
+        onStartOnboarding={handleStartOnboarding}
+        onGetStarted={handleGetStarted}
       />
     </div>
   );
