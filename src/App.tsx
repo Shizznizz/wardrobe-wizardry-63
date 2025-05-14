@@ -22,7 +22,6 @@ import { OutfitProvider } from '@/hooks/useOutfitContext';
 import { LocationProvider } from '@/hooks/useLocationStorage';
 import { AuthProvider } from '@/hooks/useAuth';
 import PageLayout from '@/components/shared/PageLayout';
-import './App.css';
 
 function App() {
   return (
@@ -51,18 +50,7 @@ function App() {
               <Route path="/auth" element={<PageLayout><Auth /></PageLayout>} />
             </Routes>
           </Router>
-          <Toaster 
-            position="top-center" 
-            richColors 
-            closeButton
-            toastOptions={{
-              className: "responsive-toast",
-              style: {
-                maxWidth: '90vw',
-                width: 'auto',
-              }
-            }}
-          />
+          <Toaster position="top-center" richColors closeButton />
         </OutfitProvider>
       </LocationProvider>
     </AuthProvider>
