@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { motion, useAnimation } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -19,10 +20,14 @@ import VirtualTryOnSteps from '@/components/home/VirtualTryOnSteps';
 import OliviasWeeklyTip from '@/components/home/OliviasWeeklyTip';
 import OliviasLookOfTheWeek from '@/components/home/OliviasLookOfTheWeek';
 import PremiumTeaserSection from '@/components/home/PremiumTeaserSection';
+import OnboardingFlow from '@/components/onboarding/OnboardingFlow';
+import { useOnboardingState } from '@/hooks/useOnboardingState';
 
 const Index: React.FC = () => {
   const navigate = useNavigate();
   const [isOliviaMeetOpen, setIsOliviaMeetOpen] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const { hasSeenOnboarding } = useOnboardingState();
   
   // Animations
   const fadeIn = {
@@ -90,14 +95,26 @@ const Index: React.FC = () => {
   const handleStartOnboarding = () => {
     // Start onboarding logic here
     console.log("Starting onboarding tour");
-    // For now, we'll just close the dialog
+    // Close the dialog and show onboarding
     setIsOliviaMeetOpen(false);
+    setShowOnboarding(true);
   };
 
   const handleGetStarted = () => {
     // Get started logic here  
     console.log("Let's get started!");
-    // Navigation could be added here if needed
+    // Navigate to wardrobe page
+    navigate('/my-wardrobe');
+  };
+
+  // Handler function for "Start Your Style Journey" button
+  const handleStartJourney = () => {
+    navigate('/my-wardrobe');
+  };
+  
+  // Handler function for "Take Style Quiz" button
+  const handleTakeStyleQuiz = () => {
+    navigate('/quizzes');
   };
 
   return (
@@ -367,6 +384,12 @@ const Index: React.FC = () => {
         onOpenChange={setIsOliviaMeetOpen}
         onStartOnboarding={handleStartOnboarding}
         onGetStarted={handleGetStarted}
+      />
+
+      {/* Olivia Onboarding Flow */}
+      <OnboardingFlow 
+        isOpen={showOnboarding} 
+        onClose={() => setShowOnboarding(false)} 
       />
     </div>
   );
