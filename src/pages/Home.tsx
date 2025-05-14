@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import HomepagePremiumTeaser from '@/components/HomepagePremiumTeaser';
 import HeroSection from '@/components/home/HeroSection';
 import CoreFeaturesSection from '@/components/home/CoreFeaturesSection';
 import HowItWorksSection from '@/components/home/HowItWorksSection';
@@ -17,6 +16,8 @@ import VirtualTryOnSteps from '@/components/home/VirtualTryOnSteps';
 import OliviasWeeklyTip from '@/components/home/OliviasWeeklyTip';
 import OliviasLookOfTheWeek from '@/components/home/OliviasLookOfTheWeek';
 import { CTAButton } from '@/components/ui/cta-button';
+import PremiumTeaserSection from '@/components/home/PremiumTeaserSection';
+import { Sparkles } from 'lucide-react';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -73,20 +74,6 @@ const Home = () => {
         {/* 4. Virtual Try-On Steps from index.tsx - Enhanced version */}
         <VirtualTryOnSteps />
 
-        {/* New Premium Button Section */}
-        <section className="py-20 bg-[#1b013c]">
-          <div className="container mx-auto px-4">
-            <div className="flex justify-center">
-              <CTAButton 
-                className="bg-gradient-to-r from-[#EC6FF1] to-[#FF8AF0] text-white font-semibold px-8 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
-                onClick={() => navigate('/premium')}
-              >
-                Let Me Show You What's Possible with Premium
-              </CTAButton>
-            </div>
-          </div>
-        </section>
-
         {/* 5. Olivia's Look of the Week from index.tsx */}
         <OliviasLookOfTheWeek />
 
@@ -98,9 +85,9 @@ const Home = () => {
 
         {/* 8. Final CTA Section from home.tsx */}
         <FinalCta onGetStarted={() => navigate('/auth')} />
-
-        {/* Premium Sticky Footer */}
-        <HomepagePremiumTeaser />
+        
+        {/* Premium Teaser Section with enhanced golden button */}
+        <PremiumTeaserSection />
       </main>
       
       {/* Olivia Introduction Dialog */}
