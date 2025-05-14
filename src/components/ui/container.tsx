@@ -5,22 +5,24 @@ import { cn } from "@/lib/utils";
 interface ContainerProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
   size?: "default" | "small" | "large";
+  noPadding?: boolean;
 }
 
 export function Container({ 
   children, 
   className, 
   size = "default", 
+  noPadding = false,
   ...props 
 }: ContainerProps) {
   return (
     <div
       className={cn(
-        "mx-auto px-4 md:px-6",
+        !noPadding && "px-4 sm:px-6 md:px-8",
         {
-          "max-w-6xl": size === "default",
-          "max-w-4xl": size === "small",
-          "max-w-7xl": size === "large",
+          "mx-auto max-w-6xl": size === "default",
+          "mx-auto max-w-4xl": size === "small",
+          "mx-auto max-w-7xl": size === "large",
         },
         className
       )}

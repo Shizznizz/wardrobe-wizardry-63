@@ -1,3 +1,4 @@
+
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -11,6 +12,14 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { Link } from 'react-router-dom';
+import { useIsMobile } from '@/hooks/use-mobile';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 interface PremiumExperienceProps {
   onUpgrade: () => void;
@@ -18,6 +27,7 @@ interface PremiumExperienceProps {
 
 const PremiumExperience = ({ onUpgrade }: PremiumExperienceProps) => {
   const { isAuthenticated, user } = useAuth();
+  const isMobile = useIsMobile();
   
   // If user is authenticated but it's the test user (danieldeurloo@hotmail.com), show the non-premium experience
   const isDanielDeurlooEmail = user?.email === 'danieldeurloo@hotmail.com';
@@ -106,43 +116,75 @@ const PremiumExperience = ({ onUpgrade }: PremiumExperienceProps) => {
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col items-center text-center mb-6">
           <div className="inline-flex items-center justify-center mb-4">
-            <Crown className="h-6 w-6 text-yellow-400 mr-2" />
-            <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 to-amber-300">
+            <Crown className="h-5 w-5 md:h-6 md:w-6 text-yellow-400 mr-2" />
+            <h2 className="text-xl md:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 to-amber-300">
               Unlock Your Ultimate Wardrobe Experience
             </h2>
           </div>
-          <p className="text-white/80 max-w-2xl">
+          <p className="text-white/80 max-w-2xl text-sm md:text-base">
             Exclusive access to Olivia's AI-powered styling, outfit generators, early drops, and more. 
             Take your style to the next level with the Premium Experience.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          {features.map((feature) => (
-            <motion.div
-              key={feature.id}
-              whileHover={{ scale: 1.02, backgroundColor: 'rgba(255, 255, 255, 0.08)' }}
-              className="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10 transition-all duration-300"
-            >
-              <div className="flex items-start group">
-                <div className="h-10 w-10 rounded-full flex items-center justify-center bg-white/10 backdrop-blur-sm group-hover:bg-white/15 transition-colors">
-                  {feature.icon}
+        {!isMobile && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">
+            {features.map((feature) => (
+              <motion.div
+                key={feature.id}
+                whileHover={{ scale: 1.02, backgroundColor: 'rgba(255, 255, 255, 0.08)' }}
+                className="bg-white/5 backdrop-blur-sm rounded-lg p-3 md:p-4 border border-white/10 transition-all duration-300"
+              >
+                <div className="flex items-start group">
+                  <div className="h-8 w-8 md:h-10 md:w-10 rounded-full flex items-center justify-center bg-white/10 backdrop-blur-sm group-hover:bg-white/15 transition-colors">
+                    {feature.icon}
+                  </div>
+                  <div className="ml-3">
+                    <h3 className="text-xs md:text-sm font-medium text-white mb-1">{feature.title}</h3>
+                    <p className="text-xs text-white/70">{feature.description}</p>
+                  </div>
                 </div>
-                <div className="ml-3">
-                  <h3 className="text-sm font-medium text-white mb-1">{feature.title}</h3>
-                  <p className="text-xs text-white/70">{feature.description}</p>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
 
-        <div className="flex flex-col md:flex-row justify-center items-center gap-4 mb-8">
+        {isMobile && (
+          <div className="mb-6">
+            <Carousel className="w-full">
+              <CarouselContent>
+                {features.map((feature) => (
+                  <CarouselItem key={feature.id} className="pl-4 basis-3/4">
+                    <motion.div
+                      className="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10 transition-all duration-300 h-full"
+                    >
+                      <div className="flex items-start group">
+                        <div className="h-8 w-8 rounded-full flex items-center justify-center bg-white/10 backdrop-blur-sm">
+                          {feature.icon}
+                        </div>
+                        <div className="ml-3">
+                          <h3 className="text-xs font-medium text-white mb-1">{feature.title}</h3>
+                          <p className="text-xs text-white/70">{feature.description}</p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <div className="flex justify-center gap-2 mt-4">
+                <CarouselPrevious className="relative static left-0 translate-y-0 mr-2 h-7 w-7" />
+                <CarouselNext className="relative static right-0 translate-y-0 h-7 w-7" />
+              </div>
+            </Carousel>
+          </div>
+        )}
+
+        <div className="flex flex-col md:flex-row justify-center items-center gap-4 mb-6 md:mb-8">
           {plans.map((plan) => (
             <motion.div
               key={plan.id}
               whileHover={{ scale: 1.02 }}
-              className={`relative p-6 rounded-xl backdrop-blur-sm border ${
+              className={`relative p-4 md:p-6 rounded-xl backdrop-blur-sm border ${
                 plan.popular 
                   ? 'border-yellow-400/30 bg-white/10' 
                   : 'border-white/10 bg-white/5'
@@ -151,16 +193,16 @@ const PremiumExperience = ({ onUpgrade }: PremiumExperienceProps) => {
               {plan.popular && (
                 <Badge 
                   variant="gradient" 
-                  className="absolute -top-3 left-1/2 -translate-x-1/2"
+                  className="absolute -top-3 left-1/2 -translate-x-1/2 text-xs"
                 >
                   Best Value
                 </Badge>
               )}
               <div className="text-center">
-                <h3 className="text-lg font-medium text-white mb-2">{plan.period}</h3>
+                <h3 className="text-base md:text-lg font-medium text-white mb-2">{plan.period}</h3>
                 <div className="flex items-baseline justify-center">
-                  <span className="text-3xl font-bold text-white">{plan.price}</span>
-                  <span className="text-sm text-white/70 ml-1">/{plan.interval}</span>
+                  <span className="text-2xl md:text-3xl font-bold text-white">{plan.price}</span>
+                  <span className="text-xs md:text-sm text-white/70 ml-1">/{plan.interval}</span>
                 </div>
               </div>
             </motion.div>
@@ -171,14 +213,15 @@ const PremiumExperience = ({ onUpgrade }: PremiumExperienceProps) => {
           <motion.div
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
+            className="w-full md:w-auto"
           >
             <Button
               onClick={onUpgrade}
               size="lg"
-              className="bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-500 hover:to-amber-600 text-black font-semibold shadow-lg shadow-amber-500/20 py-6 px-8 border border-yellow-300/20"
+              className="bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-500 hover:to-amber-600 text-black font-semibold shadow-lg shadow-amber-500/20 py-4 md:py-6 px-6 md:px-8 border border-yellow-300/20 w-full md:w-auto"
             >
               <Crown className="mr-2 h-5 w-5" />
-              Upgrade to Premium Now
+              <span className="whitespace-nowrap">Upgrade to Premium</span>
             </Button>
           </motion.div>
 

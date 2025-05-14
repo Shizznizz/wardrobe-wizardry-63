@@ -1,3 +1,4 @@
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -211,29 +212,33 @@
   background: linear-gradient(to right, transparent, rgba(168, 85, 247, 0.5), transparent);
 }
 
-/* Mobile specific spacing improvements */
+/* Enhanced mobile specific improvements */
 @media (max-width: 768px) {
   .mobile-title-spacing {
     margin-bottom: 0.5rem !important;
   }
   
   .mobile-content-spacing {
-    margin-top: 3rem !important;
+    margin-top: 2rem !important;
   }
   
   .mobile-button-compact {
-    padding-top: 0.5rem !important;
-    padding-bottom: 0.5rem !important;
+    padding: 0.375rem 0.75rem !important;
     font-size: 0.875rem !important;
+    line-height: 1.5 !important;
+    min-height: 44px !important;
   }
   
   .avatar-content-gap {
-    margin-top: 2.5rem !important;
+    margin-top: 2rem !important;
   }
   
   .touch-target {
     min-height: 44px;
     min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   
   .mobile-padding {
@@ -246,7 +251,7 @@
   }
   
   .mobile-spacing > * {
-    margin-bottom: 1.25rem;
+    margin-bottom: 1rem;
   }
   
   button, 
@@ -256,34 +261,59 @@
   }
   
   .btn-mobile {
+    width: 100%;
     padding-left: 0.75rem !important;
     padding-right: 0.75rem !important;
     padding-top: 0.5rem !important;
     padding-bottom: 0.5rem !important;
     font-size: 0.875rem !important;
+    min-height: 44px;
   }
   
   .mobile-section-spacing {
-    margin-top: 2.5rem !important;
-    margin-bottom: 2.5rem !important;
+    margin-top: 2rem !important;
+    margin-bottom: 2rem !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
   }
   
-  /* Improved button paddings for mobile */
-  .preference-button-mobile {
-    width: 100% !important;
-    padding: 0.5rem 0.75rem !important;
+  /* Mobile toast positioning */
+  .mobile-toast {
+    max-width: 90vw !important;
+    width: 90vw !important;
+    left: 5vw !important;
+    padding: 0.75rem !important;
+    border-radius: 0.5rem !important;
   }
   
-  /* Improved touch targets for mobile buttons */
-  .mobile-button {
-    min-height: 44px !important;
-    padding-top: 0.5rem !important;
-    padding-bottom: 0.5rem !important;
-    font-size: 0.875rem !important;
+  /* Fixed button layouts on mobile */
+  .button-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+  }
+  
+  /* Better safe clickable area */
+  .safe-click-area {
+    padding: 0.5rem;
+  }
+  
+  /* Text ellipsis for long text */
+  .text-ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  /* Improved scrolling experience */
+  .smooth-scroll {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
   }
 }
 
-/* Added new classes for improved responsiveness */
+/* Extra-small screen improvements */
 @media (max-width: 480px) {
   .xs-text-center {
     text-align: center !important;
@@ -299,14 +329,17 @@
   }
   
   .xs-p-4 {
-    padding: 1rem !important;
+    padding: 0.75rem !important;
   }
   
   .xs-flex-col {
     flex-direction: column !important;
   }
   
-  /* Better button padding for extra small screens */
+  .xs-text-sm {
+    font-size: 0.75rem !important;
+  }
+  
   .xs-button-padding {
     padding-top: 0.375rem !important;
     padding-bottom: 0.375rem !important;
@@ -314,11 +347,39 @@
     padding-right: 0.5rem !important;
   }
   
-  /* More compact icons for mobile buttons */
   .xs-icon-compact {
-    width: 1rem !important;
-    height: 1rem !important;
+    width: 0.875rem !important;
+    height: 0.875rem !important;
     margin-right: 0.25rem !important;
+  }
+  
+  /* Fix content overflow */
+  .xs-overflow-hidden {
+    overflow: hidden !important;
+  }
+  
+  /* Ensure proper font size */
+  h1, .h1 {
+    font-size: 1.5rem !important;
+  }
+  
+  h2, .h2 {
+    font-size: 1.25rem !important;
+  }
+  
+  h3, .h3 {
+    font-size: 1.125rem !important;
+  }
+  
+  /* Optimize page spacing */
+  section {
+    padding-top: 1.5rem !important;
+    padding-bottom: 1.5rem !important;
+  }
+  
+  .container {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
   }
 }
 
@@ -336,9 +397,21 @@
     width: auto !important;
   }
   
-  /* Better button padding for tablet screens */
   .md-button-padding {
     padding: 0.5rem 0.75rem !important;
+  }
+  
+  .md-text-base {
+    font-size: 1rem !important;
+  }
+  
+  .md-p-6 {
+    padding: 1.5rem !important;
+  }
+  
+  /* Better spacing for tablet views */
+  .md-space-y-4 > * + * {
+    margin-top: 1rem !important;
   }
 }
 
@@ -351,5 +424,39 @@
   }
   100% {
     text-shadow: 0 0 40px rgba(167, 139, 250, 0.1);
+  }
+}
+
+/* Shiny gold effect for premium elements */
+.gold-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.gold-shine::after {
+  content: "";
+  position: absolute;
+  top: -100%;
+  left: -100%;
+  width: 300%;
+  height: 300%;
+  background: linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.1) 25%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0.1) 75%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: rotate(45deg);
+  animation: gold-shine-animation 4s linear infinite;
+}
+
+@keyframes gold-shine-animation {
+  from {
+    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+  }
+  to {
+    transform: translateX(100%) translateY(100%) rotate(45deg);
   }
 }

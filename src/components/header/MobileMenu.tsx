@@ -64,20 +64,20 @@ export const MobileMenu = ({
             onClick={onClose}
             aria-label="Close menu"
           >
-            <X className="h-6 w-6" />
+            <X className="h-5 w-5 md:h-6 md:w-6" />
           </Button>
         </div>
         
         <div className="flex-1 overflow-hidden h-full">
           <ScrollArea className="h-full px-4 py-4">
-            <nav className="space-y-2 mb-8">
+            <nav className="space-y-1 md:space-y-2 mb-8">
               {navItems.map((item) => (
                 <Link
                   key={item.path}
                   to={item.path}
                   onClick={onClose}
                   className={cn(
-                    "block py-4 px-5 rounded-lg text-lg font-medium transition-colors",
+                    "block py-3 md:py-4 px-4 md:px-5 rounded-lg text-base md:text-lg font-medium transition-colors",
                     currentPath === item.path
                       ? "bg-white/10 text-white"
                       : "text-white/80 hover:bg-white/5 hover:text-white"
@@ -99,7 +99,7 @@ export const MobileMenu = ({
                     onClose();
                   }}
                 >
-                  <LogOut className="mr-3 h-5 w-5" />
+                  <LogOut className="mr-3 h-4 w-4 md:h-5 md:w-5" />
                   Sign Out
                 </Button>
               </div>

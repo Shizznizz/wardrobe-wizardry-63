@@ -9,6 +9,7 @@ export interface CTAButtonProps extends ButtonProps {
   isActive?: boolean;
   iconPosition?: 'left' | 'right';
   glowColor?: string;
+  fullWidthOnMobile?: boolean;
 }
 
 const CTAButton = React.forwardRef<HTMLButtonElement, CTAButtonProps>(
@@ -19,21 +20,27 @@ const CTAButton = React.forwardRef<HTMLButtonElement, CTAButtonProps>(
     isActive = false,
     iconPosition = 'left',
     glowColor = 'rgba(147, 51, 234, 0.4)',
+    fullWidthOnMobile = true,
     ...props 
   }, ref) => {
     return (
       <motion.div
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
-        className={cn("relative", props.disabled && "opacity-60")}
+        className={cn(
+          "relative", 
+          props.disabled && "opacity-60",
+          fullWidthOnMobile && "w-full md:w-auto"
+        )}
         style={isActive ? { boxShadow: `0 0 20px ${glowColor}` } : {}}
       >
         <Button
           ref={ref}
           className={cn(
-            "h-[48px] px-6 rounded-lg font-semibold transition-all",
+            "h-[48px] px-4 md:px-6 rounded-lg font-semibold transition-all",
             "hover:shadow-lg disabled:opacity-60",
             iconPosition === 'right' ? "flex-row-reverse" : "flex-row",
+            fullWidthOnMobile && "w-full md:w-auto",
             className
           )}
           {...props}
@@ -46,7 +53,7 @@ const CTAButton = React.forwardRef<HTMLButtonElement, CTAButtonProps>(
               {icon}
             </span>
           )}
-          {children}
+          <span className="whitespace-normal md:whitespace-nowrap">{children}</span>
         </Button>
       </motion.div>
     );
