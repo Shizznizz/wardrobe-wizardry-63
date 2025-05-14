@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import Header from '@/components/Header';
 import HomepagePremiumTeaser from '@/components/HomepagePremiumTeaser';
 import HeroSection from '@/components/home/HeroSection';
 import CoreFeaturesSection from '@/components/home/CoreFeaturesSection';
@@ -44,7 +43,7 @@ const Home = () => {
   
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#12002f] to-[#1b013c] text-white">
-      <Header />
+      {/* Removing the duplicate Header component */}
       
       <main className="pt-8 overflow-hidden">
         {/* 1. Hero Section with optimized mobile layout from home.tsx */}
