@@ -1,317 +1,186 @@
 
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Upload, Shirt, Sparkles, ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, useAnimation } from 'framer-motion';
+import { ChevronDown, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { AspectRatio } from '@/components/ui/aspect-ratio';
-import { useToast } from '@/components/ui/use-toast';
+import { Slider } from '@/components/ui/slider';
 
 const VirtualTryOnSteps = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const { toast } = useToast();
-  const [activeSlide, setActiveSlide] = useState(0);
-  const [autoPlay, setAutoPlay] = useState(true);
+  const controls = useAnimation();
   
-  // Slide data with images, titles and descriptions
-  const slides = [
-    {
-      title: "Upload a Photo",
-      description: "Use a photo of yourself or choose Olivia as your model to begin your virtual try-on experience.",
-      icon: <Upload className="h-8 w-8 text-purple-400" />,
-      imageSrc: "/lovable-uploads/d547488e-9454-4c2c-a1a0-3d767b45357a.png",
-      imagePosition: "left", // image on left side
-      step: "1/3"
-    },
-    {
-      title: "Select Your Outfit",
-      description: "Choose from your digital wardrobe or explore trending items to preview your look instantly.",
-      icon: <Shirt className="h-8 w-8 text-pink-400" />,
-      imageSrc1: "/lovable-uploads/bfaef886-abbd-4207-a2de-99cfeb0aee94.png", // shorts
-      imageSrc2: "/lovable-uploads/5b4ac746-a6e4-4d29-8f41-3a8a6724b87d.png", // t-shirt
-      imagePosition: "right", // images on right side
-      step: "2/3"
-    },
-    {
-      title: "See Magic Happen",
-      description: "Olivia uses AI to show you wearing the outfit in seconds — no changing room needed!",
-      icon: <Sparkles className="h-8 w-8 text-blue-400" />,
-      imageSrc: "/lovable-uploads/b4fa68dc-984b-44fe-856e-2d5d9d22724f.png",
-      imagePosition: "left", // image on left side
-      step: "3/3",
-      hasAiBadge: true
+  // Slider value state (0-100)
+  const [sliderValue, setSliderValue] = useState(50);
+  const sliderRef = useRef<HTMLDivElement>(null);
+  const beforeImageRef = useRef<HTMLDivElement>(null);
+  
+  // Handle slider change
+  const handleSliderChange = (value: number[]) => {
+    setSliderValue(value[0]);
+    updateSliderPosition(value[0]);
+  };
+  
+  // Update the slider position and image clipping
+  const updateSliderPosition = (value: number) => {
+    if (beforeImageRef.current) {
+      // Calculate clip path based on slider value (0-100)
+      beforeImageRef.current.style.clipPath = `inset(0 ${100 - value}% 0 0)`;
     }
-  ];
-
-  // Setup autoplay - change slides every 5 seconds
-  useEffect(() => {
-    if (!autoPlay) return;
-    
-    const interval = setInterval(() => {
-      setActiveSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
-    }, 5000);
-    
-    return () => clearInterval(interval);
-  }, [autoPlay, slides.length]);
-
-  // Handle manual navigation
-  const goToNextSlide = () => {
-    setActiveSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
-    setAutoPlay(false); // Pause autoplay when manually navigating
   };
   
-  const goToPrevSlide = () => {
-    setActiveSlide((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
-    setAutoPlay(false); // Pause autoplay when manually navigating
-  };
-
-  // Resume autoplay after a period of inactivity
   useEffect(() => {
-    if (autoPlay) return;
+    // Setup intersection observer for animations
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          controls.start({ opacity: 1, y: 0, transition: { duration: 0.7 } });
+        }
+      },
+      { threshold: 0.2 }
+    );
     
-    const timeout = setTimeout(() => {
-      setAutoPlay(true);
-    }, 10000); // Resume autoplay after 10 seconds of inactivity
+    const section = document.getElementById('virtual-tryon-section');
+    if (section) observer.observe(section);
     
-    return () => clearTimeout(timeout);
-  }, [autoPlay]);
+    return () => {
+      if (section) observer.unobserve(section);
+    };
+  }, [controls]);
+  
+  // Update slider position on resize
+  useEffect(() => {
+    updateSliderPosition(sliderValue);
+    
+    const handleResize = () => updateSliderPosition(sliderValue);
+    window.addEventListener('resize', handleResize);
+    
+    return () => window.removeEventListener('resize', handleResize);
+  }, [sliderValue]);
 
   return (
-    <section className="py-24 relative overflow-hidden bg-[#1b013c]">
-      {/* Gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-purple-900/30 to-blue-900/30 pointer-events-none"></div>
-      
-      {/* Animated background elements */}
-      <div className="absolute top-0 left-0 w-64 h-64 bg-purple-500/10 rounded-full filter blur-3xl"></div>
-      <div className="absolute bottom-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full filter blur-3xl"></div>
-      
+    <section 
+      id="virtual-tryon-section" 
+      className="py-24 relative overflow-hidden bg-gradient-to-b from-white to-gray-50"
+    >
       <div className="container mx-auto px-4 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-14"
+          animate={controls}
+          className="text-center mb-14 max-w-3xl mx-auto"
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-300 via-pink-300 to-blue-300">
-            How Virtual Try-On Works
+          <h2 className="text-3xl md:text-4xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-600 via-pink-500 to-blue-500">
+            Experience the Magic of Virtual Try-On
           </h2>
           <div className="w-28 h-1.5 bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 rounded-full mx-auto"></div>
-          <p className="mt-6 text-lg text-white/80 max-w-2xl mx-auto">
-            Experience clothes on yourself before buying with our advanced AI technology
+          <p className="mt-6 text-lg text-gray-700 max-w-2xl mx-auto">
+            We gave Olivia a fashion makeover using our virtual fitting room. Want to see how a new top and shorts look on her? 
+            Swipe below to reveal the transformation — powered by our advanced AI fashion tech.
           </p>
         </motion.div>
         
-        {/* Interactive Carousel */}
-        <div className="relative">
-          <div className="max-w-6xl mx-auto">
-            {slides.map((slide, index) => (
-              <div
-                key={index}
-                className={`${activeSlide === index ? 'block' : 'hidden'} relative overflow-hidden rounded-xl shadow-lg`}
-              >
-                <div className={`flex flex-col ${isMobile ? '' : 'md:flex-row'} bg-gradient-to-br from-purple-900/40 to-indigo-900/40 backdrop-blur-sm border border-white/10`}>
-                  {/* Content arrangement based on slide specs and screen size */}
-                  {isMobile ? (
-                    <>
-                      {/* Mobile layout - always image first, then content */}
-                      <div className="w-full">
-                        {index === 1 ? (
-                          // Slide 2 - Two images side by side
-                          <div className="flex space-x-2 p-4 justify-center bg-gradient-to-br from-purple-900/70 to-indigo-900/70">
-                            <div className="w-1/2 transform rotate-[-3deg] shadow-lg shadow-pink-500/20">
-                              <AspectRatio ratio={1/1.5} className="relative overflow-hidden rounded-lg">
-                                <div className="absolute inset-0 bg-gradient-to-br from-pink-500/20 to-purple-500/20"></div>
-                                <img src={slide.imageSrc1} alt="Outfit piece 1" className="w-full h-full object-contain" />
-                              </AspectRatio>
-                            </div>
-                            <div className="w-1/2 transform rotate-[3deg] shadow-lg shadow-blue-500/20">
-                              <AspectRatio ratio={1/1.5} className="relative overflow-hidden rounded-lg">
-                                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20"></div>
-                                <img src={slide.imageSrc2} alt="Outfit piece 2" className="w-full h-full object-contain" />
-                              </AspectRatio>
-                            </div>
-                          </div>
-                        ) : (
-                          // Slide 1 and 3 - Single full-body image
-                          <div className="relative">
-                            <AspectRatio ratio={3/4} className="relative">
-                              <div className="absolute inset-0 bg-gradient-to-br from-pink-500/20 to-purple-500/20"></div>
-                              <img src={slide.imageSrc} alt={slide.title} className="w-full h-full object-contain" />
-                              {slide.hasAiBadge && (
-                                <div className="absolute bottom-4 right-4">
-                                  <div className="bg-gradient-to-r from-purple-500/80 to-pink-500/80 text-white text-xs font-medium px-3 py-1 rounded-full backdrop-blur-sm animate-pulse">
-                                    AI Generated
-                                  </div>
-                                </div>
-                              )}
-                            </AspectRatio>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Text content */}
-                      <div className="w-full p-6 md:p-8 flex flex-col justify-center">
-                        <div className="flex items-center mb-4">
-                          <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-purple-900/50 to-indigo-900/50 mr-4 border border-white/10">
-                            {slide.icon}
-                          </div>
-                          <h3 className="text-2xl font-bold text-white">{slide.title}</h3>
-                        </div>
-                        
-                        <p className="text-white/80 mb-4">{slide.description}</p>
-                        
-                        <div className="text-white/60 text-sm">
-                          Step {slide.step}
-                        </div>
-                      </div>
-                    </>
-                  ) : (
-                    // Desktop layout - alternating based on slide specs
-                    slide.imagePosition === "left" ? (
-                      <>
-                        {/* Image on left */}
-                        <div className="md:w-1/2 relative">
-                          <AspectRatio ratio={3/4} className="relative h-full">
-                            <div className="absolute inset-0 bg-gradient-to-br from-pink-500/20 to-purple-500/20"></div>
-                            <div className="absolute -inset-1 bg-gradient-to-r from-pink-500/10 via-purple-500/10 to-blue-500/10 rounded-xl blur-lg -z-10"></div>
-                            <img 
-                              src={slide.imageSrc} 
-                              alt={slide.title} 
-                              className="w-full h-full object-cover shadow-lg rounded-l-lg"
-                              style={{ filter: 'drop-shadow(0 0 15px rgba(168, 85, 247, 0.3))' }} 
-                            />
-                            {slide.hasAiBadge && (
-                              <div className="absolute bottom-4 right-4">
-                                <div className="bg-gradient-to-r from-purple-500/80 to-pink-500/80 text-white text-xs font-medium px-3 py-1 rounded-full backdrop-blur-sm animate-pulse">
-                                  AI Generated
-                                </div>
-                              </div>
-                            )}
-                          </AspectRatio>
-                        </div>
-                        
-                        {/* Text on right */}
-                        <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-center">
-                          <div className="flex items-center mb-4">
-                            <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-purple-900/50 to-indigo-900/50 mr-4 border border-white/10">
-                              {slide.icon}
-                            </div>
-                            <h3 className="text-2xl font-bold text-white">{slide.title}</h3>
-                          </div>
-                          
-                          <p className="text-white/80 mb-6">{slide.description}</p>
-                          
-                          <div className="text-white/60 text-sm mt-4">
-                            Step {slide.step}
-                          </div>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        {/* Text on left */}
-                        <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-center">
-                          <div className="flex items-center mb-4">
-                            <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-purple-900/50 to-indigo-900/50 mr-4 border border-white/10">
-                              {slide.icon}
-                            </div>
-                            <h3 className="text-2xl font-bold text-white">{slide.title}</h3>
-                          </div>
-                          
-                          <p className="text-white/80 mb-6">{slide.description}</p>
-                          
-                          <div className="text-white/60 text-sm mt-4">
-                            Step {slide.step}
-                          </div>
-                        </div>
-                        
-                        {/* Two images on right */}
-                        <div className="md:w-1/2 p-6 flex items-center justify-center">
-                          <div className="flex space-x-4 h-full items-center justify-center">
-                            <div className="transform rotate-[-5deg] shadow-lg shadow-pink-500/20">
-                              <div className="relative rounded-lg overflow-hidden">
-                                <div className="absolute -inset-1 bg-gradient-to-r from-pink-500/20 to-purple-500/20 rounded-xl blur-md -z-10"></div>
-                                <img 
-                                  src={slide.imageSrc1} 
-                                  alt="Outfit piece 1" 
-                                  className="w-full object-contain rounded-lg"
-                                  style={{ filter: 'drop-shadow(0 0 10px rgba(236, 72, 153, 0.3))' }}
-                                />
-                              </div>
-                            </div>
-                            <div className="transform rotate-[5deg] shadow-lg shadow-blue-500/20">
-                              <div className="relative rounded-lg overflow-hidden">
-                                <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl blur-md -z-10"></div>
-                                <img 
-                                  src={slide.imageSrc2} 
-                                  alt="Outfit piece 2" 
-                                  className="w-full object-contain rounded-lg"
-                                  style={{ filter: 'drop-shadow(0 0 10px rgba(96, 165, 250, 0.3))' }}
-                                />
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </>
-                    )
-                  )}
+        {/* Before/After Slider Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={controls}
+          transition={{ delay: 0.3 }}
+          className="max-w-4xl mx-auto mb-14 rounded-xl overflow-hidden shadow-xl"
+        >
+          <div className="relative w-full aspect-[3/4] md:aspect-[4/5] overflow-hidden">
+            {/* After Image (Background) */}
+            <div className="absolute inset-0 w-full h-full">
+              <img 
+                src="/lovable-uploads/035906c3-0580-4e7f-8266-6ba2686dba56.png" 
+                alt="After virtual try-on" 
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute top-4 right-4 bg-black/50 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm">
+                After
+              </div>
+            </div>
+            
+            {/* Before Image (Clipped) */}
+            <div 
+              ref={beforeImageRef} 
+              className="absolute inset-0 w-full h-full"
+              style={{ clipPath: 'inset(0 50% 0 0)' }}
+            >
+              <img 
+                src="/lovable-uploads/5e4cbd61-c50a-41d4-bdf0-21ca9306c976.png" 
+                alt="Before virtual try-on" 
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute top-4 left-4 bg-black/50 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm">
+                Before
+              </div>
+            </div>
+            
+            {/* Center Slider Handle */}
+            <div 
+              className="absolute top-0 bottom-0 w-1 bg-white shadow-lg left-1/2 transform -translate-x-1/2"
+              style={{ left: `${sliderValue}%` }}
+            >
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white shadow-lg flex items-center justify-center z-10">
+                <div className="w-6 h-6 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
+                  <ChevronDown className="h-4 w-4 text-white transform rotate-90" />
                 </div>
               </div>
-            ))}
+            </div>
+            
+            {/* Slider Control (Hidden visually but used for interaction) */}
+            <div className="absolute bottom-6 left-6 right-6 z-20" ref={sliderRef}>
+              <Slider
+                defaultValue={[50]}
+                max={100}
+                step={1}
+                value={[sliderValue]}
+                onValueChange={handleSliderChange}
+                className="absolute bottom-[-15px] left-0 right-0 z-20 opacity-0"
+              />
+            </div>
           </div>
-          
-          {/* Navigation buttons */}
-          <button 
-            onClick={goToPrevSlide}
-            className="absolute left-4 md:left-2 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-black/40 backdrop-blur-sm hover:bg-black/60 flex items-center justify-center z-20 border border-white/10"
-            aria-label="Previous slide"
-          >
-            <ChevronLeft className="h-6 w-6 text-white" />
-          </button>
-          
-          <button 
-            onClick={goToNextSlide}
-            className="absolute right-4 md:right-2 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-black/40 backdrop-blur-sm hover:bg-black/60 flex items-center justify-center z-20 border border-white/10"
-            aria-label="Next slide"
-          >
-            <ChevronRight className="h-6 w-6 text-white" />
-          </button>
-        </div>
+        </motion.div>
         
-        {/* Slide indicators */}
-        <div className="flex justify-center mt-6 gap-2">
-          {slides.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => {
-                setActiveSlide(index);
-                setAutoPlay(false);
-              }}
-              className={`h-2 rounded-full transition-all ${
-                activeSlide === index 
-                  ? 'w-8 bg-gradient-to-r from-purple-500 to-pink-500' 
-                  : 'w-2 bg-white/30 hover:bg-white/50'
-              }`}
-              aria-label={`Go to slide ${index + 1}`}
-            />
-          ))}
-        </div>
+        {/* Featured Items Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={controls}
+          transition={{ delay: 0.5 }}
+          className="mb-10 max-w-md mx-auto"
+        >
+          <div className="text-center mb-6">
+            <h3 className="text-xl font-semibold text-gray-800">Featured Outfit</h3>
+            <p className="text-gray-600">The perfect summer combination</p>
+          </div>
+          <div className="flex justify-center gap-6 p-4 rounded-xl bg-white/80 backdrop-blur shadow-md">
+            <div className="flex-1 text-center">
+              <div className="relative w-full aspect-square mb-3 rounded-lg overflow-hidden bg-gradient-to-br from-yellow-100/50 to-yellow-200/50 border border-yellow-200/30">
+                <img 
+                  src="/lovable-uploads/fdd3366f-1a61-4441-8e31-cb52a3d305ed.png" 
+                  alt="Yellow T-shirt and white shorts" 
+                  className="w-full h-full object-contain p-2"
+                />
+              </div>
+              <p className="text-sm font-medium text-gray-700">Summer Vibes Set</p>
+              <p className="text-xs text-gray-500">Yellow Tee + White Shorts</p>
+            </div>
+          </div>
+        </motion.div>
         
         {/* CTA Button */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.4 }}
+          animate={controls}
+          transition={{ delay: 0.7 }}
           className="text-center mt-12"
         >
           <Button 
             onClick={() => navigate('/shop-and-try')}
-            className="bg-gradient-to-r from-[#EC6FF1] to-[#FF8AF0] text-white px-8 py-6 text-lg rounded-lg font-semibold hover:shadow-lg hover:shadow-pink-500/20 transition-all group"
+            className="bg-gradient-to-r from-purple-600 to-pink-500 text-white px-8 py-6 text-lg rounded-lg font-semibold hover:shadow-lg hover:shadow-pink-500/20 transition-all group"
           >
-            Try it Now
+            Try It Yourself
             <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
           </Button>
         </motion.div>
