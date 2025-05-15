@@ -132,7 +132,7 @@ const VirtualTryOnSteps = () => {
             {/* After Image (Background) */}
             <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-purple-900/30 to-black/50">
               <img 
-                src="/lovable-uploads/035906c3-0580-4e7f-8266-6ba2686dba56.png" 
+                src="/lovable-uploads/9a8ee0e4-a024-4874-938c-ef52dc4e6f44.png" 
                 alt="After virtual try-on" 
                 className="w-full h-full object-cover"
                 loading="lazy"
@@ -149,7 +149,7 @@ const VirtualTryOnSteps = () => {
               style={{ clipPath: `inset(0 ${100 - sliderValue}% 0 0)` }}
             >
               <img 
-                src="/lovable-uploads/5e4cbd61-c50a-41d4-bdf0-21ca9306c976.png" 
+                src="/lovable-uploads/17a15329-e4ad-4eb0-a482-871a48774ecc.png" 
                 alt="Before virtual try-on" 
                 className="w-full h-full object-cover"
                 loading="lazy"
