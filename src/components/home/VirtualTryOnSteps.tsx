@@ -1,11 +1,10 @@
 
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Upload, Shirt, Sparkles, ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from '@/components/ui/carousel';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { useToast } from '@/components/ui/use-toast';
 
@@ -108,87 +107,39 @@ const VirtualTryOnSteps = () => {
         {/* Interactive Carousel */}
         <div className="relative">
           <div className="max-w-6xl mx-auto">
-            <AnimatePresence mode="wait">
-              {slides.map((slide, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0 }}
-                  animate={activeSlide === index ? { opacity: 1 } : { opacity: 0, display: 'none' }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.5 }}
-                  className={`${activeSlide === index ? 'block' : 'hidden'} relative overflow-hidden rounded-xl shadow-lg`}
-                >
-                  <div className={`flex flex-col ${isMobile ? '' : 'md:flex-row'} bg-gradient-to-br from-purple-900/40 to-indigo-900/40 backdrop-blur-sm border border-white/10`}>
-                    {/* Content arrangement based on slide specs and screen size */}
-                    {isMobile ? (
-                      <>
-                        {/* Mobile layout - always image first, then content */}
-                        <div className="w-full">
-                          {index === 1 ? (
-                            // Slide 2 - Two images side by side
-                            <div className="flex space-x-2 p-4 justify-center bg-gradient-to-br from-purple-900/70 to-indigo-900/70">
-                              <div className="w-1/2 transform rotate-[-3deg] shadow-lg shadow-pink-500/20">
-                                <AspectRatio ratio={1/1.5} className="relative overflow-hidden rounded-lg">
-                                  <div className="absolute inset-0 bg-gradient-to-br from-pink-500/20 to-purple-500/20"></div>
-                                  <img src={slide.imageSrc1} alt="Outfit piece 1" className="w-full h-full object-contain" />
-                                </AspectRatio>
-                              </div>
-                              <div className="w-1/2 transform rotate-[3deg] shadow-lg shadow-blue-500/20">
-                                <AspectRatio ratio={1/1.5} className="relative overflow-hidden rounded-lg">
-                                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20"></div>
-                                  <img src={slide.imageSrc2} alt="Outfit piece 2" className="w-full h-full object-contain" />
-                                </AspectRatio>
-                              </div>
-                            </div>
-                          ) : (
-                            // Slide 1 and 3 - Single full-body image
-                            <div className="relative">
-                              <AspectRatio ratio={3/4} className="relative">
+            {slides.map((slide, index) => (
+              <div
+                key={index}
+                className={`${activeSlide === index ? 'block' : 'hidden'} relative overflow-hidden rounded-xl shadow-lg`}
+              >
+                <div className={`flex flex-col ${isMobile ? '' : 'md:flex-row'} bg-gradient-to-br from-purple-900/40 to-indigo-900/40 backdrop-blur-sm border border-white/10`}>
+                  {/* Content arrangement based on slide specs and screen size */}
+                  {isMobile ? (
+                    <>
+                      {/* Mobile layout - always image first, then content */}
+                      <div className="w-full">
+                        {index === 1 ? (
+                          // Slide 2 - Two images side by side
+                          <div className="flex space-x-2 p-4 justify-center bg-gradient-to-br from-purple-900/70 to-indigo-900/70">
+                            <div className="w-1/2 transform rotate-[-3deg] shadow-lg shadow-pink-500/20">
+                              <AspectRatio ratio={1/1.5} className="relative overflow-hidden rounded-lg">
                                 <div className="absolute inset-0 bg-gradient-to-br from-pink-500/20 to-purple-500/20"></div>
-                                <img src={slide.imageSrc} alt={slide.title} className="w-full h-full object-contain" />
-                                {slide.hasAiBadge && (
-                                  <div className="absolute bottom-4 right-4">
-                                    <div className="bg-gradient-to-r from-purple-500/80 to-pink-500/80 text-white text-xs font-medium px-3 py-1 rounded-full backdrop-blur-sm animate-pulse">
-                                      AI Generated
-                                    </div>
-                                  </div>
-                                )}
+                                <img src={slide.imageSrc1} alt="Outfit piece 1" className="w-full h-full object-contain" />
                               </AspectRatio>
                             </div>
-                          )}
-                        </div>
-
-                        {/* Text content */}
-                        <div className="w-full p-6 md:p-8 flex flex-col justify-center">
-                          <div className="flex items-center mb-4">
-                            <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-purple-900/50 to-indigo-900/50 mr-4 border border-white/10">
-                              {slide.icon}
+                            <div className="w-1/2 transform rotate-[3deg] shadow-lg shadow-blue-500/20">
+                              <AspectRatio ratio={1/1.5} className="relative overflow-hidden rounded-lg">
+                                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20"></div>
+                                <img src={slide.imageSrc2} alt="Outfit piece 2" className="w-full h-full object-contain" />
+                              </AspectRatio>
                             </div>
-                            <h3 className="text-2xl font-bold text-white">{slide.title}</h3>
                           </div>
-                          
-                          <p className="text-white/80 mb-4">{slide.description}</p>
-                          
-                          <div className="text-white/60 text-sm">
-                            Step {slide.step}
-                          </div>
-                        </div>
-                      </>
-                    ) : (
-                      // Desktop layout - alternating based on slide specs
-                      slide.imagePosition === "left" ? (
-                        <>
-                          {/* Image on left */}
-                          <div className="md:w-1/2 relative">
+                        ) : (
+                          // Slide 1 and 3 - Single full-body image
+                          <div className="relative">
                             <AspectRatio ratio={3/4} className="relative">
                               <div className="absolute inset-0 bg-gradient-to-br from-pink-500/20 to-purple-500/20"></div>
-                              <div className="absolute -inset-1 bg-gradient-to-r from-pink-500/10 via-purple-500/10 to-blue-500/10 rounded-xl blur-lg -z-10"></div>
-                              <img 
-                                src={slide.imageSrc} 
-                                alt={slide.title} 
-                                className="w-full h-full object-contain shadow-lg rounded-l-lg"
-                                style={{ filter: 'drop-shadow(0 0 15px rgba(168, 85, 247, 0.3))' }} 
-                              />
+                              <img src={slide.imageSrc} alt={slide.title} className="w-full h-full object-contain" />
                               {slide.hasAiBadge && (
                                 <div className="absolute bottom-4 right-4">
                                   <div className="bg-gradient-to-r from-purple-500/80 to-pink-500/80 text-white text-xs font-medium px-3 py-1 rounded-full backdrop-blur-sm animate-pulse">
@@ -198,75 +149,117 @@ const VirtualTryOnSteps = () => {
                               )}
                             </AspectRatio>
                           </div>
-                          
-                          {/* Text on right */}
-                          <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-center">
-                            <div className="flex items-center mb-4">
-                              <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-purple-900/50 to-indigo-900/50 mr-4 border border-white/10">
-                                {slide.icon}
-                              </div>
-                              <h3 className="text-2xl font-bold text-white">{slide.title}</h3>
-                            </div>
-                            
-                            <p className="text-white/80 mb-6">{slide.description}</p>
-                            
-                            <div className="text-white/60 text-sm mt-4">
-                              Step {slide.step}
-                            </div>
+                        )}
+                      </div>
+
+                      {/* Text content */}
+                      <div className="w-full p-6 md:p-8 flex flex-col justify-center">
+                        <div className="flex items-center mb-4">
+                          <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-purple-900/50 to-indigo-900/50 mr-4 border border-white/10">
+                            {slide.icon}
                           </div>
-                        </>
-                      ) : (
-                        <>
-                          {/* Text on left */}
-                          <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-center">
-                            <div className="flex items-center mb-4">
-                              <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-purple-900/50 to-indigo-900/50 mr-4 border border-white/10">
-                                {slide.icon}
-                              </div>
-                              <h3 className="text-2xl font-bold text-white">{slide.title}</h3>
-                            </div>
-                            
-                            <p className="text-white/80 mb-6">{slide.description}</p>
-                            
-                            <div className="text-white/60 text-sm mt-4">
-                              Step {slide.step}
-                            </div>
-                          </div>
-                          
-                          {/* Two images on right */}
-                          <div className="md:w-1/2 p-6">
-                            <div className="flex space-x-4 h-full items-center justify-center">
-                              <div className="transform rotate-[-5deg] shadow-lg shadow-pink-500/20">
-                                <div className="relative rounded-lg overflow-hidden">
-                                  <div className="absolute -inset-1 bg-gradient-to-r from-pink-500/20 to-purple-500/20 rounded-xl blur-md -z-10"></div>
-                                  <img 
-                                    src={slide.imageSrc1} 
-                                    alt="Outfit piece 1" 
-                                    className="w-full object-contain rounded-lg"
-                                    style={{ filter: 'drop-shadow(0 0 10px rgba(236, 72, 153, 0.3))' }}
-                                  />
+                          <h3 className="text-2xl font-bold text-white">{slide.title}</h3>
+                        </div>
+                        
+                        <p className="text-white/80 mb-4">{slide.description}</p>
+                        
+                        <div className="text-white/60 text-sm">
+                          Step {slide.step}
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    // Desktop layout - alternating based on slide specs
+                    slide.imagePosition === "left" ? (
+                      <>
+                        {/* Image on left */}
+                        <div className="md:w-1/2 relative">
+                          <AspectRatio ratio={3/4} className="relative h-full">
+                            <div className="absolute inset-0 bg-gradient-to-br from-pink-500/20 to-purple-500/20"></div>
+                            <div className="absolute -inset-1 bg-gradient-to-r from-pink-500/10 via-purple-500/10 to-blue-500/10 rounded-xl blur-lg -z-10"></div>
+                            <img 
+                              src={slide.imageSrc} 
+                              alt={slide.title} 
+                              className="w-full h-full object-cover shadow-lg rounded-l-lg"
+                              style={{ filter: 'drop-shadow(0 0 15px rgba(168, 85, 247, 0.3))' }} 
+                            />
+                            {slide.hasAiBadge && (
+                              <div className="absolute bottom-4 right-4">
+                                <div className="bg-gradient-to-r from-purple-500/80 to-pink-500/80 text-white text-xs font-medium px-3 py-1 rounded-full backdrop-blur-sm animate-pulse">
+                                  AI Generated
                                 </div>
                               </div>
-                              <div className="transform rotate-[5deg] shadow-lg shadow-blue-500/20">
-                                <div className="relative rounded-lg overflow-hidden">
-                                  <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl blur-md -z-10"></div>
-                                  <img 
-                                    src={slide.imageSrc2} 
-                                    alt="Outfit piece 2" 
-                                    className="w-full object-contain rounded-lg"
-                                    style={{ filter: 'drop-shadow(0 0 10px rgba(96, 165, 250, 0.3))' }}
-                                  />
-                                </div>
+                            )}
+                          </AspectRatio>
+                        </div>
+                        
+                        {/* Text on right */}
+                        <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-center">
+                          <div className="flex items-center mb-4">
+                            <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-purple-900/50 to-indigo-900/50 mr-4 border border-white/10">
+                              {slide.icon}
+                            </div>
+                            <h3 className="text-2xl font-bold text-white">{slide.title}</h3>
+                          </div>
+                          
+                          <p className="text-white/80 mb-6">{slide.description}</p>
+                          
+                          <div className="text-white/60 text-sm mt-4">
+                            Step {slide.step}
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        {/* Text on left */}
+                        <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-center">
+                          <div className="flex items-center mb-4">
+                            <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-purple-900/50 to-indigo-900/50 mr-4 border border-white/10">
+                              {slide.icon}
+                            </div>
+                            <h3 className="text-2xl font-bold text-white">{slide.title}</h3>
+                          </div>
+                          
+                          <p className="text-white/80 mb-6">{slide.description}</p>
+                          
+                          <div className="text-white/60 text-sm mt-4">
+                            Step {slide.step}
+                          </div>
+                        </div>
+                        
+                        {/* Two images on right */}
+                        <div className="md:w-1/2 p-6 flex items-center justify-center">
+                          <div className="flex space-x-4 h-full items-center justify-center">
+                            <div className="transform rotate-[-5deg] shadow-lg shadow-pink-500/20">
+                              <div className="relative rounded-lg overflow-hidden">
+                                <div className="absolute -inset-1 bg-gradient-to-r from-pink-500/20 to-purple-500/20 rounded-xl blur-md -z-10"></div>
+                                <img 
+                                  src={slide.imageSrc1} 
+                                  alt="Outfit piece 1" 
+                                  className="w-full object-contain rounded-lg"
+                                  style={{ filter: 'drop-shadow(0 0 10px rgba(236, 72, 153, 0.3))' }}
+                                />
+                              </div>
+                            </div>
+                            <div className="transform rotate-[5deg] shadow-lg shadow-blue-500/20">
+                              <div className="relative rounded-lg overflow-hidden">
+                                <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl blur-md -z-10"></div>
+                                <img 
+                                  src={slide.imageSrc2} 
+                                  alt="Outfit piece 2" 
+                                  className="w-full object-contain rounded-lg"
+                                  style={{ filter: 'drop-shadow(0 0 10px rgba(96, 165, 250, 0.3))' }}
+                                />
                               </div>
                             </div>
                           </div>
-                        </>
-                      )
-                    )}
-                  </div>
-                </motion.div>
-              ))}
-            </AnimatePresence>
+                        </div>
+                      </>
+                    )
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
           
           {/* Navigation buttons */}
