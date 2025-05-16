@@ -250,12 +250,13 @@ const MyWardrobe = () => {
         <div className="text-center p-10 border border-dashed border-white/20 rounded-xl bg-slate-900/30 mt-6">
           <h3 className="text-xl font-medium text-white mb-2">Your Wardrobe is Empty</h3>
           <p className="text-white/70 mb-6">Add your first clothing item to get started.</p>
-          <Button 
-            onClick={handleUploadNew}
-            className="bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90"
-          >
-            <Plus className="mr-2 h-4 w-4" /> Add Your First Item
-          </Button>
+          <UploadModal onUpload={handleAddItem} buttonText="Add Your First Item">
+            <Button 
+              className="bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90"
+            >
+              <Plus className="mr-2 h-4 w-4" /> Add Your First Item
+            </Button>
+          </UploadModal>
         </div>
       );
     }
@@ -431,6 +432,26 @@ const MyWardrobe = () => {
     );
   };
   
+  // Render "Add More" section at bottom of grid
+  const renderAddMoreSection = () => {
+    if (!isAuthenticated || isLoadingItems || cachedItems.length === 0) {
+      return null;
+    }
+    
+    return (
+      <div className="mt-12 py-8 border-t border-white/10 text-center">
+        <h3 className="text-lg font-medium text-white mb-4">Want to add more to your wardrobe?</h3>
+        <UploadModal onUpload={handleAddItem}>
+          <Button
+            className="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90 text-white"
+          >
+            <Plus className="mr-2 h-4 w-4" /> Add Clothing Item
+          </Button>
+        </UploadModal>
+      </div>
+    );
+  };
+  
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white pb-20">
       <EnhancedHeroSection
@@ -445,7 +466,16 @@ const MyWardrobe = () => {
           {
             label: "Add Clothing Item",
             onClick: handleUploadNew,
-            variant: "primary"
+            variant: "primary",
+            component: (
+              <UploadModal onUpload={handleAddItem} buttonText="Add Clothing Item">
+                <Button
+                  className="bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90"
+                >
+                  <Plus className="mr-2 h-4 w-4" /> Add Clothing Item
+                </Button>
+              </UploadModal>
+            )
           }
         ]}
       />
@@ -504,37 +534,21 @@ const MyWardrobe = () => {
         {isLoadingItems && cachedItems.length === 0 ? (
           <div className="text-center text-gray-400 mt-10">Loading your wardrobe...</div>
         ) : cachedItems.length > 0 ? (
-          <WardrobeGrid 
-            items={filterApplied ? filteredItems : cachedItems} 
-            onDeleteItem={handleDeleteItem}
-            onToggleFavorite={handleToggleFavorite}
-            onMatchItem={handleMatchItem}
-            viewMode={viewMode}
-            compactView={showCompactView}
-          />
+          <div>
+            <WardrobeGrid 
+              items={filterApplied ? filteredItems : cachedItems} 
+              onDeleteItem={handleDeleteItem}
+              onToggleFavorite={handleToggleFavorite}
+              onMatchItem={handleMatchItem}
+              viewMode={viewMode}
+              compactView={showCompactView}
+            />
+            
+            {/* Add More section at bottom of grid */}
+            {renderAddMoreSection()}
+          </div>
         ) : null}
       </div>
-      
-      {/* Floating Add Item Button */}
-      <motion.div 
-        className="fixed bottom-6 inset-x-0 flex justify-center"
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.3 }}
-      >
-        <UploadModal 
-          onUpload={handleAddItem}
-          buttonText="Add Item"
-        >
-          <Button 
-            size="lg"
-            className="rounded-full h-14 w-14 bg-gradient-to-r from-purple-600 to-indigo-600 shadow-lg shadow-purple-600/20 hover:shadow-purple-600/40 transition-all duration-300"
-          >
-            <Plus className="h-6 w-6" />
-            <span className="sr-only">Add Item</span>
-          </Button>
-        </UploadModal>
-      </motion.div>
     </div>
   );
 };
