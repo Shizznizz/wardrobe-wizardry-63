@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -12,6 +11,7 @@ export interface HeroButtonProps {
   variant?: 'primary' | 'secondary' | 'neutral' | 'gradient' | 'lavender' | 'black';
   icon?: React.ReactNode;
   className?: string;
+  component?: React.ReactNode; // Added this new property to support custom button components
 }
 
 export interface EnhancedHeroSectionProps {
@@ -155,20 +155,28 @@ const EnhancedHeroSection = ({
                 className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start pt-4"
               >
                 {buttons.map((button, index) => (
-                  <Button
-                    key={index}
-                    onClick={button.onClick}
-                    className={cn(
-                      getButtonClassName(button.variant),
-                      "hover:scale-[1.03] transition-transform font-bold py-2 px-6 rounded-xl shadow-md",
-                      "sm:w-auto w-full",
-                      button.className
-                    )}
-                    size="lg"
-                  >
-                    {button.icon && <span className="mr-2">{button.icon}</span>}
-                    {button.label}
-                  </Button>
+                  button.component ? (
+                    // If a custom component is provided, render it directly
+                    <React.Fragment key={index}>
+                      {button.component}
+                    </React.Fragment>
+                  ) : (
+                    // Otherwise render the default button with props
+                    <Button
+                      key={index}
+                      onClick={button.onClick}
+                      className={cn(
+                        getButtonClassName(button.variant),
+                        "hover:scale-[1.03] transition-transform font-bold py-2 px-6 rounded-xl shadow-md",
+                        "sm:w-auto w-full",
+                        button.className
+                      )}
+                      size="lg"
+                    >
+                      {button.icon && <span className="mr-2">{button.icon}</span>}
+                      {button.label}
+                    </Button>
+                  )
                 ))}
               </motion.div>
             )}
