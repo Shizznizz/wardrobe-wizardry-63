@@ -17,6 +17,9 @@ import { useAuth } from '@/hooks/useAuth';
 import { useWardrobeData } from '@/hooks/useWardrobeData';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
+import WardrobeStats from '@/components/wardrobe/WardrobeStats';
+import OliviaSuggests from '@/components/wardrobe/OliviaSuggests';
+import WardrobeGaps from '@/components/wardrobe/WardrobeGaps';
 import { 
   Select,
   SelectContent,
@@ -262,6 +265,20 @@ const MyWardrobe = () => {
     return null;
   };
 
+  // Render search and stats section
+  const renderSearchAndStats = () => {
+    return (
+      <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+        <div className="flex-1">
+          <WardrobeSearch onSearch={handleSearch} />
+        </div>
+        <div className="flex-shrink-0">
+          <WardrobeStats />
+        </div>
+      </div>
+    );
+  };
+
   // Render filter bar
   const renderFilterBar = () => {
     const uniqueCategories = getUniqueCategories();
@@ -483,8 +500,8 @@ const MyWardrobe = () => {
         {renderAuthNotice()}
         
         <div className="space-y-4">
-          {/* Search Bar - New Component */}
-          <WardrobeSearch onSearch={handleSearch} />
+          {/* Search Bar and Stats Button */}
+          {renderSearchAndStats()}
           
           <WardrobeControls 
             viewMode={viewMode}
@@ -493,6 +510,11 @@ const MyWardrobe = () => {
             onCompactViewChange={setShowCompactView}
           />
         </div>
+        
+        {/* Olivia Suggests Section - Only shows if there's a relevant suggestion */}
+        {isAuthenticated && !isLoadingItems && cachedItems.length > 0 && (
+          <OliviaSuggests items={cachedItems} />
+        )}
         
         <motion.div 
           className="mt-6"
@@ -542,6 +564,9 @@ const MyWardrobe = () => {
               viewMode={viewMode}
               compactView={showCompactView}
             />
+            
+            {/* Wardrobe Gaps Section - Only shows if relevant */}
+            <WardrobeGaps items={cachedItems} />
             
             {/* Add More section at bottom of grid */}
             {renderAddMoreSection()}
