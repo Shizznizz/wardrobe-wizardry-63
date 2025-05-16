@@ -1,11 +1,12 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { Plus, Filter, Check, ArrowDown } from 'lucide-react';
 import { toast } from 'sonner';
 
 import WardrobeGrid from '@/components/WardrobeGrid';
+import WardrobeSearch from '@/components/wardrobe/WardrobeSearch';
 import WardrobeControls from '@/components/wardrobe/WardrobeControls';
 import { ClothingItem, ClothingSeason } from '@/lib/types';
 import UploadModal from '@/components/UploadModal';
@@ -58,6 +59,21 @@ const MyWardrobe = () => {
   const [seasonFilter, setSeasonFilter] = useState<ClothingSeason | null>(null);
   const [sortOrder, setSortOrder] = useState<string | null>(null);
   
+  // State to prevent unnecessary refreshes
+  const [cachedItems, setCachedItems] = useState<ClothingItem[]>([]);
+  const [cachedFilteredItems, setCachedFilteredItems] = useState<ClothingItem[]>([]);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
+  
+  // Cache clothing items whenever they change
+  useEffect(() => {
+    if (clothingItems.length > 0 && isInitialLoad) {
+      setCachedItems(clothingItems);
+      setIsInitialLoad(false);
+    } else if (!isLoadingItems && !isInitialLoad) {
+      setCachedItems(clothingItems);
+    }
+  }, [clothingItems, isLoadingItems, isInitialLoad]);
+
   const handleUploadNew = () => {
     if (!isAuthenticated) {
       toast.error("Please log in to add items to your wardrobe");
@@ -103,18 +119,36 @@ const MyWardrobe = () => {
   
   // Get unique values for filters
   const getUniqueCategories = () => {
-    const categories = clothingItems.map(item => item.type || item.category || '').filter(Boolean);
+    const categories = cachedItems.map(item => item.type || item.category || '').filter(Boolean);
     return [...new Set(categories)];
   };
   
   const getUniqueColors = () => {
-    const colors = clothingItems.map(item => item.color || '').filter(Boolean);
+    const colors = cachedItems.map(item => item.color || '').filter(Boolean);
     return [...new Set(colors)];
   };
   
-  // Apply filters to the clothing items
-  const applyFilters = () => {
-    let filtered = [...clothingItems];
+  // Handle search query changes
+  const handleSearch = useCallback((query: string) => {
+    setSearchQuery(query);
+  }, []);
+  
+  // Apply filters and search to the clothing items
+  const applyFilters = useCallback(() => {
+    let filtered = [...cachedItems];
+    
+    // Apply search filter
+    if (searchQuery.trim() !== '') {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(item => {
+        const nameMatch = item.name?.toLowerCase().includes(query);
+        const typeMatch = item.type?.toLowerCase().includes(query);
+        const colorMatch = item.color?.toLowerCase().includes(query);
+        const seasonMatch = item.season?.some(s => s.toLowerCase().includes(query));
+        
+        return nameMatch || typeMatch || colorMatch || seasonMatch;
+      });
+    }
     
     // Apply category filter
     if (categoryFilter) {
@@ -159,24 +193,28 @@ const MyWardrobe = () => {
       }
     }
     
-    setFilterApplied(!!categoryFilter || !!colorFilter || !!seasonFilter || !!sortOrder);
+    setFilterApplied(!!searchQuery || !!categoryFilter || !!colorFilter || !!seasonFilter || !!sortOrder);
+    setCachedFilteredItems(filtered);
     setFilteredItems(filtered);
-  };
+  }, [cachedItems, searchQuery, categoryFilter, colorFilter, seasonFilter, sortOrder]);
+  
+  // Apply filters when any filter option changes or search query changes
+  useEffect(() => {
+    if (cachedItems.length > 0) {
+      applyFilters();
+    }
+  }, [applyFilters, cachedItems, searchQuery, categoryFilter, colorFilter, seasonFilter, sortOrder]);
   
   // Reset all filters
   const clearAllFilters = () => {
+    setSearchQuery('');
     setCategoryFilter(null);
     setColorFilter(null);
     setSeasonFilter(null);
     setSortOrder(null);
     setFilterApplied(false);
-    setFilteredItems([]);
+    setFilteredItems(cachedItems);
   };
-  
-  // Apply filters when any filter option changes
-  React.useEffect(() => {
-    applyFilters();
-  }, [categoryFilter, colorFilter, seasonFilter, sortOrder, clothingItems]);
 
   // Convert our applyFilters function to match the expected WardrobeFilters interface
   const handleFilterChange = (filters: WardrobeFilters) => {
@@ -207,7 +245,7 @@ const MyWardrobe = () => {
   
   // Show empty state if authenticated but no items
   const renderEmptyState = () => {
-    if (isAuthenticated && !isLoadingItems && clothingItems.length === 0) {
+    if (isAuthenticated && !isLoadingItems && cachedItems.length === 0) {
       return (
         <div className="text-center p-10 border border-dashed border-white/20 rounded-xl bg-slate-900/30 mt-6">
           <h3 className="text-xl font-medium text-white mb-2">Your Wardrobe is Empty</h3>
@@ -415,12 +453,17 @@ const MyWardrobe = () => {
       <div className="container mx-auto px-4 pt-6">
         {renderAuthNotice()}
         
-        <WardrobeControls 
-          viewMode={viewMode}
-          showCompactView={showCompactView}
-          onViewModeChange={setViewMode}
-          onCompactViewChange={setShowCompactView}
-        />
+        <div className="space-y-4">
+          {/* Search Bar - New Component */}
+          <WardrobeSearch onSearch={handleSearch} />
+          
+          <WardrobeControls 
+            viewMode={viewMode}
+            showCompactView={showCompactView}
+            onViewModeChange={setViewMode}
+            onCompactViewChange={setShowCompactView}
+          />
+        </div>
         
         <motion.div 
           className="mt-6"
@@ -431,7 +474,7 @@ const MyWardrobe = () => {
           {showFilters && (
             <EnhancedWardrobeFilters
               onFilterChange={handleFilterChange}
-              totalItems={clothingItems.length}
+              totalItems={cachedItems.length}
               filteredCount={filteredItems.length}
             />
           )}
@@ -439,30 +482,30 @@ const MyWardrobe = () => {
           {renderFilterBar()}
         </motion.div>
         
-        {filterApplied && clothingItems.length > 0 && (
+        {filterApplied && cachedItems.length > 0 && (
           <div className="text-sm text-gray-400 mt-2 mb-4">
             {filteredItems.length} items match your filters.
           </div>
         )}
         
-        {showInsights && clothingItems.length > 0 && (
+        {showInsights && cachedItems.length > 0 && (
           <motion.div 
             className="mt-6"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <WardrobeInsights items={clothingItems} />
+            <WardrobeInsights items={cachedItems} />
           </motion.div>
         )}
         
         {renderEmptyState()}
         
-        {isLoadingItems ? (
+        {isLoadingItems && cachedItems.length === 0 ? (
           <div className="text-center text-gray-400 mt-10">Loading your wardrobe...</div>
-        ) : clothingItems.length > 0 ? (
+        ) : cachedItems.length > 0 ? (
           <WardrobeGrid 
-            items={filterApplied ? filteredItems : clothingItems} 
+            items={filterApplied ? filteredItems : cachedItems} 
             onDeleteItem={handleDeleteItem}
             onToggleFavorite={handleToggleFavorite}
             onMatchItem={handleMatchItem}
@@ -470,22 +513,28 @@ const MyWardrobe = () => {
             compactView={showCompactView}
           />
         ) : null}
-        
-        <div className="flex justify-center mt-10">
-          <Button 
-            onClick={handleUploadNew}
-            className="px-6 py-6 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:shadow-lg hover:shadow-purple-500/20 transition-all duration-300"
-          >
-            <Plus className="mr-2 h-5 w-5" /> Add Item
-          </Button>
-        </div>
       </div>
       
-      {/* Using UploadModal */}
-      <UploadModal 
-        onUpload={handleAddItem}
-        buttonText="Add Item"
-      />
+      {/* Floating Add Item Button */}
+      <motion.div 
+        className="fixed bottom-6 inset-x-0 flex justify-center"
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.3 }}
+      >
+        <UploadModal 
+          onUpload={handleAddItem}
+          buttonText="Add Item"
+        >
+          <Button 
+            size="lg"
+            className="rounded-full h-14 w-14 bg-gradient-to-r from-purple-600 to-indigo-600 shadow-lg shadow-purple-600/20 hover:shadow-purple-600/40 transition-all duration-300"
+          >
+            <Plus className="h-6 w-6" />
+            <span className="sr-only">Add Item</span>
+          </Button>
+        </UploadModal>
+      </motion.div>
     </div>
   );
 };
