@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
@@ -407,12 +408,6 @@ const MyWardrobe = () => {
             label: "Add Clothing Item",
             onClick: handleUploadNew,
             variant: "primary"
-          },
-          {
-            label: "Wardrobe Options",
-            onClick: handleToggleFilters,
-            variant: "neutral",
-            className: "bg-slate-800 hover:bg-slate-700"
           }
         ]}
       />

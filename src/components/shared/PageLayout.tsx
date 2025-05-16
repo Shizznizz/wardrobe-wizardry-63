@@ -10,9 +10,12 @@ interface PageLayoutProps {
 
 const PageLayout = ({ children }: PageLayoutProps) => {
   const location = useLocation();
-  const isPremiumPage = location.pathname === "/premium";
+  const currentPath = location.pathname;
   
-  // Removed useEffect that was showing toast notification for selected outfit
+  // Only show Premium Experience on Home, Premium, and Shop & Try pages
+  const showPremiumExperience = currentPath === '/' || 
+                                currentPath === '/premium' || 
+                                currentPath === '/shop-and-try';
 
   return (
     <div className="min-h-screen flex flex-col bg-fix-ios">
@@ -23,7 +26,7 @@ const PageLayout = ({ children }: PageLayoutProps) => {
       </main>
       
       <div className="mt-auto">
-        {!isPremiumPage && <PremiumExperience onUpgrade={() => {}} />}
+        {showPremiumExperience && <PremiumExperience onUpgrade={() => {}} />}
         <Footer />
       </div>
     </div>

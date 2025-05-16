@@ -14,7 +14,7 @@ interface BlurredSectionOverlayProps {
 const BlurredSectionOverlay: React.FC<BlurredSectionOverlayProps> = ({ 
   onClickChooseModel,
   customMessage,
-  buttonText = "Choose Your Model"
+  buttonText = "Choose Model" 
 }) => {
   return (
     <motion.div 

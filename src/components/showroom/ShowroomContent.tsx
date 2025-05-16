@@ -114,10 +114,16 @@ const ShowroomContent = ({
         />
       </div>
       
+      {/* Only show compact premium features prompt here */}
       {!effectivePremiumUser && (
-        <PremiumFeaturesSection 
-          onUpgradeToPremium={onUpgradeToPremium} 
-        />
+        <div className="text-center py-4">
+          <button 
+            onClick={onUpgradeToPremium} 
+            className="inline-flex items-center gap-1 px-3 py-1 text-sm bg-purple-900/50 hover:bg-purple-800/50 text-purple-100 rounded-full border border-purple-500/30 transition-all"
+          >
+            <span className="text-yellow-400 text-xs">✨</span> Unlock all premium features
+          </button>
+        </div>
       )}
     </div>
   );
