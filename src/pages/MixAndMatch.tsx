@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -13,12 +12,11 @@ import OutfitMagicSection from '@/components/outfits/mix-match/OutfitMagicSectio
 import CreateOutfitDialog from '@/components/outfits/mix-match/CreateOutfitDialog';
 import { useAuth } from '@/hooks/useAuth';
 import { useWardrobeData } from '@/hooks/useWardrobeData';
-import EnhancedHeroSection from '@/components/shared/EnhancedHeroSection';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle, RefreshCw } from 'lucide-react';
-import MixMatchActions from '@/components/outfits/mix-match/MixMatchActions';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
+import EnhancedPageHeader from '@/components/outfits/mix-match/EnhancedPageHeader';
 
 const MixAndMatch = () => {
   const { isAuthenticated, user } = useAuth();
@@ -168,24 +166,11 @@ const MixAndMatch = () => {
   
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white">
-      <EnhancedHeroSection
-        title="Your Daily Style, Curated by Olivia"
-        subtitle="Olivia creates outfits that reflect your vibe, wardrobe, and even the weather."
-        image={{
-          src: "/lovable-uploads/c1e6bf5e-6916-4ef2-b396-c00b6c7086f2.png",
-          alt: "Woman in beige linen two-piece with hat"
-        }}
-        buttons={[
-          {
-            label: "Let Olivia Style Me Today",
-            onClick: handleStyleMe,
-            variant: "lavender"
-          }
-        ]}
-        actions={<MixMatchActions 
-          onScrollToOutfits={scrollToOutfits} 
-          onOpenCreateOutfitDialog={() => setIsCreateOutfitDialogOpen(true)} 
-        />}
+      <EnhancedPageHeader
+        userName={user?.user_metadata?.name || user?.email}
+        onScrollToWeather={handleStyleMe}
+        onScrollToOutfits={scrollToOutfits}
+        onOpenCreateOutfitDialog={() => setIsCreateOutfitDialogOpen(true)}
       />
       
       <div className="container mx-auto px-4 space-y-10 pt-6 pb-20">
@@ -257,10 +242,8 @@ const MixAndMatch = () => {
         )}
       </div>
       
-      {/* New Magic Section - replaces the ConfidenceSection */}
       <OutfitMagicSection />
       
-      {/* Create Outfit Dialog */}
       <CreateOutfitDialog
         open={isCreateOutfitDialogOpen}
         onOpenChange={setIsCreateOutfitDialogOpen}

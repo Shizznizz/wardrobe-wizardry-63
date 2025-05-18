@@ -2,14 +2,22 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, ShirtIcon, PlusIcon, RibbonIcon } from 'lucide-react';
+import { CTAButton } from '@/components/ui/cta-button';
 
 interface EnhancedPageHeaderProps {
   userName?: string | null;
   onScrollToWeather: () => void;
+  onScrollToOutfits?: () => void;
+  onOpenCreateOutfitDialog?: () => void;
 }
 
-const EnhancedPageHeader = ({ userName, onScrollToWeather }: EnhancedPageHeaderProps) => {
+const EnhancedPageHeader = ({ 
+  userName, 
+  onScrollToWeather,
+  onScrollToOutfits,
+  onOpenCreateOutfitDialog
+}: EnhancedPageHeaderProps) => {
   const fadeUp = {
     hidden: { opacity: 0, y: 30 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.7 } }
@@ -101,15 +109,37 @@ const EnhancedPageHeader = ({ userName, onScrollToWeather }: EnhancedPageHeaderP
 
             <motion.div 
               variants={fadeUp}
-              className="flex flex-col items-center justify-center"
+              className="flex flex-wrap justify-center gap-4 mx-auto"
             >
-              <Button 
+              <CTAButton 
                 variant="hero-primary"
-                size="lg"
                 onClick={onScrollToWeather}
-                className="text-base md:text-lg px-6 py-6 h-auto bg-gradient-to-r from-pink-500 to-purple-500 hover:opacity-95 shadow-lg shadow-pink-500/20 hover:shadow-pink-500/30 transition-all duration-300"
+                className="flex items-center justify-center min-w-[180px] text-white hover:shadow-[0_0_15px_rgba(236,72,153,0.6)] transition-all duration-300 group"
+                icon={<RibbonIcon className="h-4 w-4" />}
+                iconPosition="left"
+                glowColor="rgba(236,72,153,0.6)"
               >
-                Let Olivia Style Me Today
+                <span>Let Olivia Style Me Today</span>
+              </CTAButton>
+              
+              <Button 
+                onClick={onScrollToOutfits}
+                variant="hero-secondary"
+                size="lg"
+                className="flex items-center justify-center min-w-[180px]"
+              >
+                <ShirtIcon className="h-4 w-4 mr-2" />
+                See My Outfits
+              </Button>
+              
+              <Button 
+                onClick={onOpenCreateOutfitDialog}
+                variant="hero-secondary"
+                size="lg"
+                className="flex items-center justify-center min-w-[180px]"
+              >
+                <PlusIcon className="h-4 w-4 mr-2" />
+                Add New Outfit
               </Button>
             </motion.div>
           </motion.div>
@@ -138,7 +168,7 @@ const EnhancedPageHeader = ({ userName, onScrollToWeather }: EnhancedPageHeaderP
               <img 
                 src="/lovable-uploads/1d4e81c7-dcef-4208-ba9f-77c0544f9e12.png" 
                 alt="Olivia Bloom"
-                className="rounded-full max-h-[400px] w-auto object-cover border-2 border-purple-300/30 shadow-lg shadow-purple-500/20"
+                className="rounded-full max-h-[460px] w-auto object-cover border-2 border-purple-300/30 shadow-lg shadow-purple-500/20"
                 style={{
                   filter: "drop-shadow(0 8px 20px rgba(159, 122, 234, 0.4))"
                 }}

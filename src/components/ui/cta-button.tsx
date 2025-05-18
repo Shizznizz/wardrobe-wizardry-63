@@ -23,10 +23,22 @@ const CTAButton = React.forwardRef<HTMLButtonElement, CTAButtonProps>(
   }, ref) => {
     return (
       <motion.div
-        whileHover={{ scale: 1.02 }}
+        whileHover={{ 
+          scale: 1.02,
+          boxShadow: `0 0 20px ${glowColor}`,
+        }}
+        animate={isActive ? {
+          boxShadow: [`0 0 5px ${glowColor}`, `0 0 20px ${glowColor}`, `0 0 5px ${glowColor}`],
+        } : {}}
+        transition={{
+          boxShadow: {
+            duration: 1.5,
+            repeat: Infinity,
+            repeatType: "reverse"
+          }
+        }}
         whileTap={{ scale: 0.98 }}
         className={cn("relative", props.disabled && "opacity-60")}
-        style={isActive ? { boxShadow: `0 0 20px ${glowColor}` } : {}}
       >
         <Button
           ref={ref}
