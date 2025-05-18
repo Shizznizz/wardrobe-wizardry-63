@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ClothingItem, Outfit } from '@/lib/types';
+import { ClothingItem, Outfit, ClothingSeason } from '@/lib/types';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -19,13 +19,13 @@ interface CreateOutfitDialogProps {
   onSave: (outfit: Outfit) => void;
 }
 
-const SEASONS = ['Spring', 'Summer', 'Autumn', 'Winter'];
+const SEASONS: ClothingSeason[] = ['spring', 'summer', 'autumn', 'winter'];
 const STYLES = ['Casual', 'Formal', 'Sporty', 'Business', 'Chic', 'Streetwear'];
 
 const CreateOutfitDialog = ({ open, onOpenChange, clothingItems, onSave }: CreateOutfitDialogProps) => {
   const [outfitName, setOutfitName] = useState('My New Outfit');
   const [selectedItems, setSelectedItems] = useState<ClothingItem[]>([]);
-  const [selectedSeasons, setSelectedSeasons] = useState<string[]>([]);
+  const [selectedSeasons, setSelectedSeasons] = useState<ClothingSeason[]>([]);
   const [selectedStyles, setSelectedStyles] = useState<string[]>(['Casual']);
   
   // Reset state when dialog opens
@@ -48,7 +48,7 @@ const CreateOutfitDialog = ({ open, onOpenChange, clothingItems, onSave }: Creat
     });
   };
   
-  const handleToggleSeason = (season: string) => {
+  const handleToggleSeason = (season: ClothingSeason) => {
     setSelectedSeasons(prev => {
       if (prev.includes(season)) {
         return prev.filter(s => s !== season);
@@ -79,7 +79,7 @@ const CreateOutfitDialog = ({ open, onOpenChange, clothingItems, onSave }: Creat
       id: uuidv4(),
       name: outfitName,
       items: selectedItems.map(item => item.id),
-      season: selectedSeasons.length > 0 ? selectedSeasons.map(s => s.toLowerCase()) : ['all'],
+      season: selectedSeasons.length > 0 ? selectedSeasons : ['all'],
       occasion: selectedStyles[0]?.toLowerCase() || 'casual',
       occasions: selectedStyles.map(s => s.toLowerCase()),
       favorite: false,
@@ -227,7 +227,7 @@ const CreateOutfitDialog = ({ open, onOpenChange, clothingItems, onSave }: Creat
                     }`}
                     onClick={() => handleToggleSeason(season)}
                   >
-                    {season}
+                    {season.charAt(0).toUpperCase() + season.slice(1)}
                   </Badge>
                 ))}
               </div>
@@ -279,3 +279,4 @@ const CreateOutfitDialog = ({ open, onOpenChange, clothingItems, onSave }: Creat
 };
 
 export default CreateOutfitDialog;
+
