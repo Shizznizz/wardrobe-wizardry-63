@@ -10,14 +10,17 @@ interface WardrobeEmptyStateProps {
   onUpload: (item: ClothingItem) => void;
   isAuthenticated: boolean;
   isLoadingItems: boolean;
+  itemCount: number; // Added itemCount prop
 }
 
 const WardrobeEmptyState = ({ 
   onUpload,
   isAuthenticated, 
-  isLoadingItems 
+  isLoadingItems,
+  itemCount // Use this to determine if we should show the empty state
 }: WardrobeEmptyStateProps) => {
-  if (!isAuthenticated || isLoadingItems) {
+  // Only show the empty state if authenticated, not loading, and have zero items
+  if (!isAuthenticated || isLoadingItems || itemCount > 0) {
     return null;
   }
 

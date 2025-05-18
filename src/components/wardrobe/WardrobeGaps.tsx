@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ClothingItem } from '@/lib/types';
 import { motion } from 'framer-motion';
-import { Shirt, TrousersIcon } from '@/components/ui/icons';
+import { Coat, Shoe, Dress } from 'lucide-react';
 
 interface WardrobeGapsProps {
   items: ClothingItem[];
@@ -63,6 +63,30 @@ const WardrobeGaps = ({ items }: WardrobeGapsProps) => {
       navigate(`/shop-and-try?category=${encodeURIComponent(gap.category)}`);
     }
   };
+
+  const handleShopForItem = () => {
+    // Navigate to Shop & Try with category filter
+    if (gap) {
+      navigate(`/shop-and-try?category=${encodeURIComponent(gap.category)}&action=shop`);
+    }
+  };
+  
+  // Get appropriate icon based on gap category
+  const renderGapIcon = () => {
+    if (!gap) return null;
+    
+    switch(gap.category.toLowerCase()) {
+      case 'coat':
+      case 'jacket':
+        return <Coat className="h-8 w-8 text-purple-300/70" />;
+      case 'shoes':
+        return <Shoe className="h-8 w-8 text-purple-300/70" />;
+      case 'dress':
+        return <Dress className="h-8 w-8 text-purple-300/70" />;
+      default:
+        return <Coat className="h-8 w-8 text-purple-300/70" />;
+    }
+  };
   
   if (!gap) return null;
   
@@ -72,24 +96,30 @@ const WardrobeGaps = ({ items }: WardrobeGapsProps) => {
       animate={{ opacity: 1, y: 0 }}
       className="mt-8 p-5 bg-purple-900/20 border border-purple-500/30 rounded-lg backdrop-blur-sm"
     >
-      <div className="flex items-center gap-4">
+      <div className="flex items-start gap-4">
         <div className="flex-shrink-0">
-          {gap.category === 'pants' || gap.category === 'formal' ? (
-            <TrousersIcon className="h-8 w-8 text-purple-300/70" />
-          ) : (
-            <Shirt className="h-8 w-8 text-purple-300/70" />
-          )}
+          {renderGapIcon()}
         </div>
         <div className="flex-1">
           <h3 className="text-lg font-medium text-white mb-1">Wardrobe Gap Detected</h3>
           <p className="text-sm text-white/80 mb-3">{gap.reason} Want Olivia to recommend something?</p>
-          <Button 
-            onClick={handleShowRecommendations} 
-            size="sm"
-            className="bg-white text-purple-800 hover:bg-white/90"
-          >
-            Show Recommendations
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <Button 
+              onClick={handleShowRecommendations} 
+              size="sm"
+              className="bg-white text-purple-800 hover:bg-white/90"
+            >
+              Show Recommendations
+            </Button>
+            <Button
+              onClick={handleShopForItem}
+              size="sm"
+              variant="outline"
+              className="border-white/20 hover:bg-purple-800/20"
+            >
+              Shop for this item
+            </Button>
+          </div>
         </div>
       </div>
     </motion.div>

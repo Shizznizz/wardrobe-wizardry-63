@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -250,11 +249,12 @@ const MyWardrobe = () => {
           </motion.div>
         )}
         
-        {/* Empty State */}
+        {/* Empty State - Updated to pass itemCount */}
         <WardrobeEmptyState 
           onUpload={handleAddItem}
           isAuthenticated={isAuthenticated}
           isLoadingItems={isLoadingItems}
+          itemCount={cachedItems.length}
         />
         
         {/* Main Content */}

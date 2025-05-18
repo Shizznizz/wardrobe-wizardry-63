@@ -38,10 +38,6 @@ const WardrobeMainContent = ({
     return <div className="text-center text-gray-400 mt-10">Loading your wardrobe...</div>;
   }
 
-  if (allItems.length === 0) {
-    return null; // Empty state is handled by WardrobeEmptyState component
-  }
-
   const displayItems = filterApplied ? filteredItems : allItems;
 
   return (
