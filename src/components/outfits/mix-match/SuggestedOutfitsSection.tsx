@@ -13,7 +13,7 @@ interface SuggestedOutfitsSectionProps {
     temperature?: number;
     condition?: string;
   };
-  isLoading?: boolean; // Added isLoading prop
+  isLoading?: boolean;
 }
 
 const SuggestedOutfitsSection = ({ outfits, clothingItems, weather, isLoading }: SuggestedOutfitsSectionProps) => {
@@ -42,9 +42,9 @@ const SuggestedOutfitsSection = ({ outfits, clothingItems, weather, isLoading }:
           <div>
             <div className="flex items-center gap-2 mb-2">
               <Sparkles className="h-5 w-5 text-amber-400" />
-              <h3 className="text-xl font-semibold text-white">Suggested For You</h3>
+              <h3 className="text-xl font-semibold text-white">Your Saved Outfits</h3>
             </div>
-            <p className="text-white/70 text-sm">Loading your personalized outfit suggestions...</p>
+            <p className="text-white/70 text-sm">Loading your outfits...</p>
           </div>
         </div>
         
@@ -65,29 +65,36 @@ const SuggestedOutfitsSection = ({ outfits, clothingItems, weather, isLoading }:
         <div>
           <div className="flex items-center gap-2 mb-2">
             <Sparkles className="h-5 w-5 text-amber-400" />
-            <h3 className="text-xl font-semibold text-white">Suggested For You</h3>
+            <h3 className="text-xl font-semibold text-white">Your Saved Outfits</h3>
           </div>
           <p className="text-white/70 text-sm">
-            Personalized outfit ideas based on your style, preferences, and the current weather
-            {weather?.temperature && weather?.condition && ` (${weather.temperature}°C, ${weather.condition})`}.
+            These are outfits you've created using your wardrobe. Tap to edit, try on, or build a new one.
           </p>
         </div>
       </div>
       
-      <OutfitGrid 
-        outfits={outfits}
-        clothingItems={clothingItems}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        onToggleFavorite={handleToggleFavorite}
-      />
+      {outfits.length > 0 ? (
+        <OutfitGrid 
+          outfits={outfits} 
+          clothingItems={clothingItems} 
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          onToggleFavorite={handleToggleFavorite}
+        />
+      ) : (
+        <div className="py-16 text-center">
+          <p className="text-white/60">Create your first outfit to see personalized recommendations</p>
+        </div>
+      )}
       
-      <div className="mt-8 text-center">
-        <p className="text-white/60 text-sm flex items-center justify-center gap-1">
-          <Star className="h-4 w-4 text-amber-400" />
-          Outfits are suggested based on your style preferences and past favorites
-        </p>
-      </div>
+      {outfits.length > 0 && (
+        <div className="mt-8 text-center">
+          <p className="text-white/60 text-sm flex items-center justify-center gap-1">
+            <Star className="h-4 w-4 text-amber-400" />
+            Use these saved outfits in the virtual fitting room or share with friends
+          </p>
+        </div>
+      )}
     </div>
   );
 };

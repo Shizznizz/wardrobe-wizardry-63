@@ -15,6 +15,7 @@ import { useWardrobeData } from '@/hooks/useWardrobeData';
 import EnhancedHeroSection from '@/components/shared/EnhancedHeroSection';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
+import MixMatchActions from '@/components/outfits/mix-match/MixMatchActions';
 
 const MixAndMatch = () => {
   const { isAuthenticated, user } = useAuth();
@@ -94,6 +95,14 @@ const MixAndMatch = () => {
     }
     return null;
   };
+
+  // Function to scroll to outfits section
+  const scrollToOutfits = () => {
+    const outfitsSection = document.querySelector('#saved-outfits-section');
+    if (outfitsSection) {
+      outfitsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
   
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white">
@@ -111,6 +120,7 @@ const MixAndMatch = () => {
             variant: "lavender" // Changed from "gradient" to "lavender" (a valid variant)
           }
         ]}
+        actions={<MixMatchActions onScrollToOutfits={scrollToOutfits} />}
       />
       
       <div className="container mx-auto px-4 space-y-10 pt-6 pb-20">
@@ -134,15 +144,17 @@ const MixAndMatch = () => {
               isLoading={isLoadingItems} 
             />
             
-            <SuggestedOutfitsSection 
-              clothingItems={clothingItems} 
-              outfits={outfits}
-              weather={{
-                temperature,
-                condition: weatherCondition
-              }}
-              isLoading={isLoadingOutfits}
-            />
+            <div id="saved-outfits-section">
+              <SuggestedOutfitsSection 
+                clothingItems={clothingItems} 
+                outfits={outfits}
+                weather={{
+                  temperature,
+                  condition: weatherCondition
+                }}
+                isLoading={isLoadingOutfits}
+              />
+            </div>
             
             {showRecommendation && (
               <div id="olivia-recommendation">
@@ -153,6 +165,7 @@ const MixAndMatch = () => {
                   }}
                   situation={situation}
                   clothingItems={clothingItems}
+                  enableShuffle={true}
                 />
               </div>
             )}
