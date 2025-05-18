@@ -1,10 +1,12 @@
 
 import React from 'react';
 import { Sparkles } from 'lucide-react';
-import { useSeasonalOutfits } from '@/hooks/useSeasonalOutfits';
 import { Outfit } from '@/lib/types';
 import { trackOutfitUsage } from '@/utils/outfitTracking';
 import StyleSection from './StyleSection';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
+import { useOliviaOutfitSuggestions } from '@/hooks/useOliviaOutfitSuggestions';
 
 interface OliviaStylesSectionProps {
   onPreviewOutfit: (outfit: Outfit) => void;
@@ -17,15 +19,15 @@ const OliviaStylesSection: React.FC<OliviaStylesSectionProps> = ({
   userPhoto, 
   onClickChooseModel 
 }) => {
+  const navigate = useNavigate();
   const { 
     outfits, 
     season, 
     isLoading, 
-    error,
-    lastUpdated,
+    weather,
     refreshOutfits,
-    isRefreshing
-  } = useSeasonalOutfits();
+    isGenerating
+  } = useOliviaOutfitSuggestions();
 
   // Handle outfit preview and track the usage
   const handlePreviewOutfit = async (outfit: Outfit) => {
@@ -72,10 +74,37 @@ const OliviaStylesSection: React.FC<OliviaStylesSectionProps> = ({
   
   // Choose theme based on current season
   const theme = seasonalTheme[season as keyof typeof seasonalTheme] || seasonalTheme.autumn;
-  const weatherInfo = {
+  
+  // Get weather info from current weather state
+  const weatherInfo = weather ? {
+    temperature: weather.temperature,
+    condition: weather.condition
+  } : {
     temperature: 22,
     condition: 'Sunny'
   };
+
+  // Handle navigation to wardrobe
+  const handleGoToWardrobe = () => {
+    navigate('/wardrobe');
+  };
+  
+  // Create fallback content when no outfits can be generated
+  const fallbackContent = (
+    <div className="flex flex-col items-center justify-center p-8 text-center">
+      <Sparkles className="h-8 w-8 text-purple-400 mb-3 opacity-50" />
+      <p className="text-white/80 mb-6">
+        Olivia couldn't find enough matching items to create seasonal outfits. 
+        Try adding a top, bottom, and shoes to your wardrobe.
+      </p>
+      <Button
+        onClick={handleGoToWardrobe}
+        className="bg-purple-600 hover:bg-purple-700 text-white"
+      >
+        Go to My Wardrobe
+      </Button>
+    </div>
+  );
   
   return (
     <StyleSection
@@ -94,8 +123,10 @@ const OliviaStylesSection: React.FC<OliviaStylesSectionProps> = ({
       isLoading={isLoading}
       userPhoto={userPhoto}
       onClickChooseModel={onClickChooseModel}
-      lastUpdated={lastUpdated}
-      isRefreshing={isRefreshing}
+      lastUpdated={new Date()}
+      isRefreshing={isGenerating}
+      fallbackContent={fallbackContent}
+      weatherInfo={weatherInfo}
     />
   );
 };

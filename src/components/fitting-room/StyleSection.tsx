@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, RefreshCw, Sparkles } from 'lucide-react';
-import { Outfit } from '@/lib/types';
+import { Outfit, WeatherInfo } from '@/lib/types';
 import OutfitCard from './OutfitCard';
 import BlurredSectionOverlay from './BlurredSectionOverlay';
 import { Badge } from '@/components/ui/badge';
@@ -31,6 +31,8 @@ interface StyleSectionProps {
   isRefreshing?: boolean;
   className?: string;
   showTrending?: boolean;
+  fallbackContent?: React.ReactNode;
+  weatherInfo?: WeatherInfo;
 }
 
 const StyleSection: React.FC<StyleSectionProps> = ({
@@ -49,7 +51,9 @@ const StyleSection: React.FC<StyleSectionProps> = ({
   lastUpdated,
   isRefreshing = false,
   className = '',
-  showTrending = false
+  showTrending = false,
+  fallbackContent,
+  weatherInfo
 }) => {
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
   
@@ -107,6 +111,12 @@ const StyleSection: React.FC<StyleSectionProps> = ({
     ? "Olivia's Current Faves" 
     : title;
   
+  // Determine if we should show the carousel or not
+  const showCarousel = !isLoading && displayOutfits.length > 0;
+  
+  // Determine weather-related info
+  const showWeatherInfo = weatherInfo && (weatherInfo.temperature !== undefined || weatherInfo.condition);
+  
   return (
     <div className={`mt-8 relative ${className}`}>
       <Card 
@@ -142,6 +152,17 @@ const StyleSection: React.FC<StyleSectionProps> = ({
             </h2>
             
             <div className="flex items-center gap-2">
+              {showWeatherInfo && (
+                <div className="text-xs text-white/60 flex items-center gap-1">
+                  {weatherInfo?.condition && (
+                    <span>{weatherInfo.condition}</span>
+                  )}
+                  {weatherInfo?.temperature !== undefined && (
+                    <span>{weatherInfo.temperature}°C</span>
+                  )}
+                </div>
+              )}
+              
               {outfits.length === 0 && showTrending && displayOutfits.length > 0 && (
                 <TooltipProvider>
                   <Tooltip>
@@ -189,80 +210,84 @@ const StyleSection: React.FC<StyleSectionProps> = ({
             </p>
           )}
           
-          <div className="relative">
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 z-10">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="rounded-full bg-black/30 backdrop-blur-sm hover:bg-black/50 text-white"
-                onClick={handleScrollLeft}
-              >
-                <ChevronLeft className="h-6 w-6" />
-              </Button>
-            </div>
-            
-            {isLoading ? (
-              <div className="flex items-center justify-center h-[420px]">
-                <div className="animate-pulse flex flex-col items-center">
-                  {icon && React.isValidElement(icon) ? 
-                    React.cloneElement(icon, { 
-                      className: "h-8 w-8 text-white/30 mb-3",
-                      style: {}
-                    } as React.HTMLAttributes<HTMLElement>) : 
-                    null
-                  }
-                  <p className="text-white/50">Loading styles for you...</p>
-                </div>
+          {isLoading ? (
+            <div className="flex items-center justify-center h-[420px]">
+              <div className="animate-pulse flex flex-col items-center">
+                {icon && React.isValidElement(icon) ? 
+                  React.cloneElement(icon, { 
+                    className: "h-8 w-8 text-white/30 mb-3",
+                    style: {}
+                  } as React.HTMLAttributes<HTMLElement>) : 
+                  null
+                }
+                <p className="text-white/50">Loading styles for you...</p>
               </div>
-            ) : (
+            </div>
+          ) : showCarousel ? (
+            <div className="relative">
+              <div className="absolute left-0 top-1/2 -translate-y-1/2 z-10">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="rounded-full bg-black/30 backdrop-blur-sm hover:bg-black/50 text-white"
+                  onClick={handleScrollLeft}
+                >
+                  <ChevronLeft className="h-6 w-6" />
+                </Button>
+              </div>
+              
               <div 
                 ref={scrollContainerRef}
                 className="flex gap-6 overflow-x-auto pb-4 pl-12 pr-12 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent"
                 style={{ scrollbarWidth: 'thin' }}
               >
-                {displayOutfits.length > 0 ? (
-                  displayOutfits.map((outfit, index) => (
-                    <div key={outfit.id || index} className="flex-shrink-0 w-[300px]">
-                      <OutfitCard
-                        outfit={outfit}
-                        onPreview={onPreviewOutfit}
-                        disabled={!userPhoto}
-                        isHighlighted={index === 0}
-                        isTrending={showTrending}
-                      />
-                    </div>
-                  ))
-                ) : (
-                  // Center content when no outfits
-                  <div className="mx-auto w-full flex items-center justify-center h-[420px] text-white/50">
-                    <div className="text-center">
-                      <p>No outfits available</p>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="mt-3 border-white/10 hover:border-white/20"
-                        onClick={onRefresh}
-                      >
-                        <RefreshCw className="mr-2 h-4 w-4" />
-                        Refresh
-                      </Button>
-                    </div>
+                {displayOutfits.map((outfit, index) => (
+                  <div key={outfit.id || index} className="flex-shrink-0 w-[300px]">
+                    <OutfitCard
+                      outfit={outfit}
+                      onPreview={onPreviewOutfit}
+                      disabled={!userPhoto}
+                      isHighlighted={index === 0}
+                      isTrending={showTrending}
+                    />
                   </div>
-                )}
+                ))}
               </div>
-            )}
-            
-            <div className="absolute right-0 top-1/2 -translate-y-1/2 z-10">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="rounded-full bg-black/30 backdrop-blur-sm hover:bg-black/50 text-white"
-                onClick={handleScrollRight}
-              >
-                <ChevronRight className="h-6 w-6" />
-              </Button>
+              
+              <div className="absolute right-0 top-1/2 -translate-y-1/2 z-10">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="rounded-full bg-black/30 backdrop-blur-sm hover:bg-black/50 text-white"
+                  onClick={handleScrollRight}
+                >
+                  <ChevronRight className="h-6 w-6" />
+                </Button>
+              </div>
             </div>
-          </div>
+          ) : (
+            // Center content when no outfits - use fallback content if provided
+            <div className="mx-auto w-full flex items-center justify-center h-[420px] text-white/50">
+              {fallbackContent ? (
+                fallbackContent
+              ) : (
+                <div className="text-center">
+                  <p>No outfits available</p>
+                  {onRefresh && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="mt-3 border-white/10 hover:border-white/20"
+                      onClick={onRefresh}
+                    >
+                      <RefreshCw className="mr-2 h-4 w-4" />
+                      Refresh
+                    </Button>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
         </div>
         
         {/* Overlay when no model is selected */}
