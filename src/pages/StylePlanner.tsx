@@ -332,7 +332,11 @@ const StylePlanner = () => {
             <p className="text-purple-200/80">Days where you had activities but didn't record an outfit</p>
           </div>
 
-          <MissedOpportunitiesSection outfits={outfits} outfitLogs={outfitLogs} />
+          <MissedOpportunitiesSection 
+            outfits={outfits} 
+            outfitLogs={outfitLogs} 
+            clothingItems={clothingItems}
+          />
         </motion.div>
       </section>
     </div>
