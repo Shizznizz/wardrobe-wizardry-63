@@ -2,14 +2,22 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Shirt, PlusCircle } from 'lucide-react';
+import { CTAButton } from '@/components/ui/cta-button';
 
 interface EnhancedPageHeaderProps {
   userName?: string | null;
   onScrollToWeather: () => void;
+  onSeeMyOutfits?: () => void;
+  onAddNewOutfit?: () => void;
 }
 
-const EnhancedPageHeader = ({ userName, onScrollToWeather }: EnhancedPageHeaderProps) => {
+const EnhancedPageHeader = ({ 
+  userName, 
+  onScrollToWeather, 
+  onSeeMyOutfits, 
+  onAddNewOutfit 
+}: EnhancedPageHeaderProps) => {
   const fadeUp = {
     hidden: { opacity: 0, y: 30 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.7 } }
@@ -101,16 +109,42 @@ const EnhancedPageHeader = ({ userName, onScrollToWeather }: EnhancedPageHeaderP
 
             <motion.div 
               variants={fadeUp}
-              className="flex flex-col items-center justify-center"
+              className="flex flex-wrap items-center justify-center gap-4"
             >
-              <Button 
-                variant="hero-primary"
+              <CTAButton 
+                variant="default"
                 size="lg"
                 onClick={onScrollToWeather}
-                className="text-base md:text-lg px-6 py-6 h-auto bg-gradient-to-r from-pink-500 to-purple-500 hover:opacity-95 shadow-lg shadow-pink-500/20 hover:shadow-pink-500/30 transition-all duration-300"
+                className="bg-gradient-to-r from-pink-500 to-purple-500 hover:opacity-95 shadow-lg shadow-pink-500/20 hover:shadow-pink-500/30 transition-all duration-300"
+                icon={<span className="text-xl">🎀</span>}
+                iconPosition="left"
+                pulseOnHover={true}
+                glowColor="rgba(219, 39, 119, 0.5)" // Pink glow
               >
                 Let Olivia Style Me Today
-              </Button>
+              </CTAButton>
+              
+              <CTAButton 
+                variant="outline"
+                size="lg"
+                onClick={onSeeMyOutfits}
+                className="text-white border-white/20 bg-white/5 hover:bg-white/10"
+                icon={<span className="text-xl">👗</span>}
+                iconPosition="left"
+              >
+                See My Outfits
+              </CTAButton>
+              
+              <CTAButton 
+                variant="outline"
+                size="lg"
+                onClick={onAddNewOutfit}
+                className="text-white border-white/20 bg-white/5 hover:bg-white/10"
+                icon={<span className="text-xl">➕</span>}
+                iconPosition="left"
+              >
+                Add New Outfit
+              </CTAButton>
             </motion.div>
           </motion.div>
           

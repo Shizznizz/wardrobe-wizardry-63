@@ -9,6 +9,7 @@ export interface CTAButtonProps extends ButtonProps {
   isActive?: boolean;
   iconPosition?: 'left' | 'right';
   glowColor?: string;
+  pulseOnHover?: boolean;
 }
 
 const CTAButton = React.forwardRef<HTMLButtonElement, CTAButtonProps>(
@@ -19,6 +20,7 @@ const CTAButton = React.forwardRef<HTMLButtonElement, CTAButtonProps>(
     isActive = false,
     iconPosition = 'left',
     glowColor = 'rgba(147, 51, 234, 0.4)',
+    pulseOnHover = false,
     ...props 
   }, ref) => {
     return (
@@ -28,6 +30,23 @@ const CTAButton = React.forwardRef<HTMLButtonElement, CTAButtonProps>(
         className={cn("relative", props.disabled && "opacity-60")}
         style={isActive ? { boxShadow: `0 0 20px ${glowColor}` } : {}}
       >
+        {pulseOnHover && (
+          <motion.div
+            className="absolute inset-0 rounded-lg opacity-0"
+            initial={{ opacity: 0, boxShadow: `0 0 0px ${glowColor}` }}
+            whileHover={{ 
+              opacity: 1,
+              boxShadow: [`0 0 5px ${glowColor}`, `0 0 15px ${glowColor}`, `0 0 5px ${glowColor}`],
+              transition: {
+                boxShadow: {
+                  repeat: Infinity,
+                  repeatType: "reverse",
+                  duration: 1.5
+                }
+              } 
+            }}
+          />
+        )}
         <Button
           ref={ref}
           className={cn(

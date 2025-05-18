@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
@@ -16,7 +17,6 @@ import MonthView from './calendar/MonthView';
 import WeekViewContainer from './calendar/WeekViewContainer';
 import OutfitLogForm from './calendar/OutfitLogForm';
 import OutfitStatsTab from './calendar/OutfitStatsTab';
-import OliviaAssistantSection from './OliviaAssistantSection';
 import DayDetailView from './calendar/DayDetailView';
 import DailyView from './calendar/DailyView';
 
@@ -80,6 +80,20 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog, location }: OutfitCa
     },
   });
 
+  // Reset the form when the dialog is opened or closed
+  useEffect(() => {
+    if (isLogDialogOpen) {
+      form.reset({
+        date: selectedDate,
+        outfitId: selectedLog?.outfitId || '',
+        timeOfDay: selectedLog?.timeOfDay || 'all-day',
+        notes: selectedLog?.notes || '',
+        weatherCondition: selectedLog?.weatherCondition || '',
+        temperature: selectedLog?.temperature || '',
+      });
+    }
+  }, [isLogDialogOpen, selectedDate, selectedLog, form]);
+
   const onSubmitLog = async (values: Omit<OutfitLog, 'id'>) => {
     if (!values.outfitId) {
       toast.error("Please select an outfit");
@@ -87,16 +101,24 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog, location }: OutfitCa
     }
     
     let result;
-    if (selectedLog) {
-      result = await updateOutfitLog(selectedLog.id, values);
-      if (result && onAddLog) {
-        onAddLog({...values, id: selectedLog.id} as any);
+    try {
+      if (selectedLog) {
+        result = await updateOutfitLog(selectedLog.id, values);
+        if (result && onAddLog) {
+          onAddLog({...values, id: selectedLog.id} as any);
+        }
+        toast.success("Outfit log updated successfully");
+      } else {
+        result = await addOutfitLog(values);
+        if (result && onAddLog) {
+          onAddLog(values);
+        }
+        toast.success("Outfit log added successfully");
       }
-    } else {
-      result = await addOutfitLog(values);
-      if (result && onAddLog) {
-        onAddLog(values);
-      }
+      handleCloseLogDialog();
+    } catch (error) {
+      console.error("Error saving outfit log", error);
+      toast.error("Failed to save outfit log. Please try again.");
     }
   };
 
@@ -126,9 +148,15 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog, location }: OutfitCa
       user_id: user?.id || ''
     };
     
-    await addOutfitLog(newLog);
-    if (onAddLog) {
-      onAddLog(newLog);
+    try {
+      await addOutfitLog(newLog);
+      if (onAddLog) {
+        onAddLog(newLog);
+      }
+      toast.success(`Outfit added for ${format(selectedDate, 'MMMM d')}`);
+    } catch (error) {
+      console.error("Error adding outfit", error);
+      toast.error("Failed to add outfit. Please try again.");
     }
   };
 
@@ -143,9 +171,15 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog, location }: OutfitCa
       user_id: user?.id || ''
     };
     
-    await addOutfitLog(newLog);
-    if (onAddLog) {
-      onAddLog(newLog);
+    try {
+      await addOutfitLog(newLog);
+      if (onAddLog) {
+        onAddLog(newLog);
+      }
+      toast.success(`Activity added for ${format(selectedDate, 'MMMM d')}`);
+    } catch (error) {
+      console.error("Error adding activity", error);
+      toast.error("Failed to add activity. Please try again.");
     }
   };
 
@@ -254,8 +288,6 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog, location }: OutfitCa
         editMode={!!selectedLog}
         initialData={selectedLog}
       />
-      
-      <OliviaAssistantSection onChatClick={() => console.log("Chat with Olivia clicked")} />
     </motion.section>
   );
 };
