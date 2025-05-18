@@ -1,166 +1,133 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
- 
+
 @layer base {
   :root {
-    --background: 224 71.4% 4.1%;
-    --foreground: 210 20% 98%;
-    --card: 224 71.4% 4.1%;
-    --card-foreground: 210 20% 98%;
-    --popover: 224 71.4% 4.1%;
-    --popover-foreground: 210 20% 98%;
-    --primary: 263.4 70% 50.4%;
-    --primary-foreground: 210 20% 98%;
-    --secondary: 215 27.9% 16.9%;
-    --secondary-foreground: 210 20% 98%;
-    --muted: 215 27.9% 16.9%;
-    --muted-foreground: 217.9 10.6% 64.9%;
-    --accent: 215 27.9% 16.9%;
-    --accent-foreground: 210 20% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 20% 98%;
-    --border: 215 27.9% 16.9%;
-    --input: 215 27.9% 16.9%;
-    --ring: 263.4 70% 50.4%;
-    --sidebar: 224 71% 4%;
-    --sidebar-foreground: 213 31% 91%;
-    --sidebar-muted-foreground: 215.4 16.3% 56.9%;
-    --sidebar-accent: 216 34% 17%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 215 27.9% 16.9%;
-    --sidebar-ring: 216 34% 17%;
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
 
     --radius: 0.5rem;
+
+    /* Custom color variables */
+    --coral-50: 3 100% 96%;
+    --coral-100: 2 100% 92%;
+    --coral-200: 1 95% 86%;
+    --coral-300: 1 89% 74%;
+    --coral-400: 1 91% 65%;
+    --coral-500: 1 85% 58%;
+    --coral-600: 0 70% 50%;
+    --coral-700: 358 55% 41%;
+    --coral-800: 355 46% 34%;
+    --coral-900: 353 43% 29%;
+    --coral-950: 350 45% 17%;
   }
 
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 48%;
+  }
+}
+
+@layer base {
   * {
     @apply border-border;
   }
   body {
     @apply bg-background text-foreground;
   }
+}
 
-  .bg-fix-ios {
-    @apply bg-purple-950;
-    background-color: #471968;
+/*
+  The CSS code is from an open-source project,
+  and has been modified to fit the specific needs of this template.
+  Original license: MIT
+*/
+@keyframes pulse-glow {
+  0% {
+    box-shadow: 0 0 5px rgba(168, 85, 247, 0.4);
   }
+  50% {
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.7);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(168, 85, 247, 0.4);
+  }
+}
 
-  /* Better touch targets */
-  .touch-target-large {
-    min-height: 48px;
-    min-width: 48px; 
-    touch-action: manipulation;
-    display: flex;
-    align-items: center;
-  }
+.animate-pulse-glow {
+  animation: pulse-glow 3s linear infinite;
+}
 
-  /* Fix blurry backdrop on iOS */
-  @supports (-webkit-backdrop-filter: blur(1px)) {
-    .backdrop-blur-md {
-      -webkit-backdrop-filter: blur(12px);
-      backdrop-filter: blur(12px);
-    }
+@keyframes float {
+  0% {
+    transform: translateY(0px);
   }
-  
-  /* Ensure buttons are clearly indicated as interactive */
-  button, 
-  [role="button"] {
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent; /* Remove tap highlight on iOS */
+  50% {
+    transform: translateY(-8px);
   }
+  100% {
+    transform: translateY(0px);
+  }
+}
 
-  /* Fix iOS issues */
-  .ios-fixed {
-    position: fixed !important;
-    width: 100% !important;
-  }
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
 
-  /* Mobile menu fixes */
-  .overflow-hidden-strict {
-    overflow: hidden !important;
-    position: relative !important;
-    height: 100% !important;
-  }
-
-  /* Glass effect for cards */
-  .glass {
-    @apply bg-white/5 backdrop-blur-lg border border-white/10 shadow-lg;
-  }
-
-  /* Text gradient utilities */
-  .text-gradient {
-    @apply bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent;
-  }
-
-  .text-gradient-primary {
-    @apply bg-gradient-to-r from-purple-400 to-pink-300 bg-clip-text text-transparent;
-  }
-
-  .card-gradient {
-    @apply bg-gradient-to-br from-purple-900/30 to-slate-900/80;
-  }
-
-  /* Improved z-index stacking */
-  .z-50 {
-    z-index: 50;
-  }
-  
-  .z-[1000] {
-    z-index: 1000;
-  }
-  
-  .z-[1001] {
-    z-index: 1001;
-  }
-
-  .z-[9999] {
-    z-index: 9999;
-  }
-  
-  .z-[10000] {
-    z-index: 10000;
-  }
-  
-  /* Mobile menu scroll area fixes */
-  .mobile-menu-container {
-    height: 100vh;
-    max-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .mobile-menu-content {
-    flex: 1;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-  
-  /* Speech bubble styles for the Premium page */
-  .speech-bubble-left {
-    position: relative;
-  }
-  
-  .speech-bubble-left:before {
-    content: '';
-    position: absolute;
-    left: -10px;
-    top: 20px;
-    border-style: solid;
-    border-width: 10px 10px 10px 0;
-    border-color: transparent rgba(255, 255, 255, 0.1) transparent transparent;
-    z-index: 1;
-  }
-  
-  .speech-bubble-left:after {
-    content: '';
-    position: absolute;
-    left: -8px;
-    top: 20px;
-    border-style: solid;
-    border-width: 10px 10px 10px 0;
-    border-color: transparent rgba(67, 56, 202, 0.3) transparent transparent;
-    z-index: 2;
-  }
+/* Button glow animation */
+@keyframes pulse {
+  0% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+  100% { opacity: 0.4; }
 }

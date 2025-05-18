@@ -2,14 +2,22 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Shirt, PlusCircle } from 'lucide-react';
+import { CTAButton } from '@/components/ui/cta-button';
 
 interface EnhancedPageHeaderProps {
   userName?: string | null;
   onScrollToWeather: () => void;
+  onScrollToOutfits: () => void;
+  onAddNewOutfit: () => void;
 }
 
-const EnhancedPageHeader = ({ userName, onScrollToWeather }: EnhancedPageHeaderProps) => {
+const EnhancedPageHeader = ({ 
+  userName, 
+  onScrollToWeather,
+  onScrollToOutfits,
+  onAddNewOutfit 
+}: EnhancedPageHeaderProps) => {
   const fadeUp = {
     hidden: { opacity: 0, y: 30 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.7 } }
@@ -101,16 +109,39 @@ const EnhancedPageHeader = ({ userName, onScrollToWeather }: EnhancedPageHeaderP
 
             <motion.div 
               variants={fadeUp}
-              className="flex flex-col items-center justify-center"
+              className="flex flex-wrap justify-center gap-4 mx-auto max-w-4xl"
             >
-              <Button 
+              <CTAButton 
                 variant="hero-primary"
                 size="lg"
                 onClick={onScrollToWeather}
-                className="text-base md:text-lg px-6 py-6 h-auto bg-gradient-to-r from-pink-500 to-purple-500 hover:opacity-95 shadow-lg shadow-pink-500/20 hover:shadow-pink-500/30 transition-all duration-300"
+                className="text-base md:text-lg px-6 py-6 h-auto bg-gradient-to-r from-pink-500 to-purple-500 hover:opacity-95 shadow-lg shadow-pink-500/20"
+                icon={<Sparkles className="h-5 w-5" />}
+                pulseGlow={true}
+                glowColor="rgba(219, 39, 119, 0.5)"
               >
                 Let Olivia Style Me Today
-              </Button>
+              </CTAButton>
+
+              <CTAButton
+                variant="hero-secondary"
+                size="lg"
+                onClick={onScrollToOutfits}
+                className="text-base md:text-lg"
+                icon={<Shirt className="h-5 w-5" />}
+              >
+                See My Outfits
+              </CTAButton>
+
+              <CTAButton
+                variant="hero-secondary"
+                size="lg"
+                onClick={onAddNewOutfit}
+                className="text-base md:text-lg"
+                icon={<PlusCircle className="h-5 w-5" />}
+              >
+                Add New Outfit
+              </CTAButton>
             </motion.div>
           </motion.div>
           
