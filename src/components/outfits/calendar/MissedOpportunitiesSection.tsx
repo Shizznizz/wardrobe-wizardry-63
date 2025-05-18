@@ -2,19 +2,19 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { format, subDays, isSameDay } from 'date-fns';
-import { Cloud, CloudRain, Sun, Calendar } from 'lucide-react';
+import { Cloud, CloudRain, Sun, Calendar, Check, Edit } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Outfit, ClothingItem } from '@/lib/types';
 import { OutfitLog } from '@/components/outfits/OutfitLogItem';
 import { useAuth } from '@/hooks/useAuth';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogAction, AlertDialogCancel, AlertDialogFooter } from '@/components/ui/alert-dialog';
 import { CTAButton } from '@/components/ui/cta-button';
-import WardrobeDrawer from '@/components/outfits/mix-match/outfit-builder/WardrobeDrawer';
-import AdditionalItemsSelector from '@/components/outfits/AdditionalItemsSelector';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
+import OutfitSelector from '@/components/OutfitSelector';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface MissedOpportunitiesProps {
   outfitLogs: OutfitLog[];
@@ -27,16 +27,17 @@ interface MissedOpportunity {
   weather?: string;
   temperature?: string;
   activity?: string;
+  outfitId?: string;
 }
 
 const MissedOpportunitiesSection = ({ outfitLogs, outfits, clothingItems = [] }: MissedOpportunitiesProps) => {
   const [missedOpportunities, setMissedOpportunities] = useState<MissedOpportunity[]>([]);
-  const [isSelectionOpen, setIsSelectionOpen] = useState(false);
-  const [isNoWardrobeAlertOpen, setIsNoWardrobeAlertOpen] = useState(false);
+  const [isAssignOutfitOpen, setIsAssignOutfitOpen] = useState(false);
+  const [isEmptyWarningOpen, setIsEmptyWarningOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedOpportunity, setSelectedOpportunity] = useState<MissedOpportunity | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [selectedItems, setSelectedItems] = useState<ClothingItem[]>([]);
+  const [selectedOutfitId, setSelectedOutfitId] = useState<string>('');
+  const [filterTag, setFilterTag] = useState<string>('all');
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -75,44 +76,49 @@ const MissedOpportunitiesSection = ({ outfitLogs, outfits, clothingItems = [] }:
   }, [outfitLogs]);
 
   const handleAssignOutfit = (opportunity: MissedOpportunity) => {
-    if (!clothingItems || clothingItems.length === 0) {
-      setIsNoWardrobeAlertOpen(true);
+    if (!outfits || outfits.length === 0) {
+      setIsEmptyWarningOpen(true);
       return;
     }
     
     setSelectedDate(opportunity.date);
     setSelectedOpportunity(opportunity);
-    setIsSelectionOpen(true);
+    setSelectedOutfitId(opportunity.outfitId || '');
+    setIsAssignOutfitOpen(true);
   };
 
-  const handleOutfitSelection = (item: ClothingItem) => {
-    // Check if item already in selection
-    if (selectedItems.some(selectedItem => selectedItem.id === item.id)) {
-      // Remove item if already selected
-      setSelectedItems(prev => prev.filter(i => i.id !== item.id));
-    } else {
-      // Add item if not already selected
-      setSelectedItems(prev => [...prev, item]);
-    }
+  const handleOutfitSelection = (outfit: Outfit) => {
+    setSelectedOutfitId(outfit.id);
   };
 
   const handleSaveOutfit = () => {
-    if (selectedItems.length === 0) {
-      toast.error("Please select at least one item for your outfit");
+    if (!selectedOutfitId) {
+      toast.error("Please select an outfit");
       return;
     }
     
-    // In a real app, this would call a function to create a log entry
-    // addOutfitLog({ items: selectedItems.map(item => item.id), date: selectedDate, ... })
+    if (!selectedDate || !selectedOpportunity) {
+      toast.error("Something went wrong. Please try again.");
+      return;
+    }
     
-    toast.success(`Outfit assigned to ${format(selectedDate!, 'MMMM d, yyyy')}`);
-    setIsSelectionOpen(false);
-    setSelectedItems([]);
+    // Update the missed opportunity with the selected outfit
+    setMissedOpportunities(prev => 
+      prev.map(item => {
+        if (isSameDay(item.date, selectedDate)) {
+          return { ...item, outfitId: selectedOutfitId };
+        }
+        return item;
+      })
+    );
+    
+    toast.success(`Outfit assigned to ${format(selectedDate, 'MMMM d, yyyy')}`);
+    setIsAssignOutfitOpen(false);
   };
 
-  const handleGoToWardrobe = () => {
-    setIsNoWardrobeAlertOpen(false);
-    navigate('/wardrobe');
+  const handleGoToMixAndMatch = () => {
+    setIsEmptyWarningOpen(false);
+    navigate('/mix-and-match');
   };
 
   const getWeatherIcon = (weather?: string) => {
@@ -127,14 +133,30 @@ const MissedOpportunitiesSection = ({ outfitLogs, outfits, clothingItems = [] }:
     }
   };
 
-  const categoryOptions = [
-    { value: 'all', label: 'All Items' },
-    { value: 'tops', label: 'Tops' },
-    { value: 'bottoms', label: 'Bottoms' },
-    { value: 'shoes', label: 'Shoes' },
-    { value: 'outerwear', label: 'Outerwear' },
-    { value: 'accessories', label: 'Accessories' }
-  ];
+  const getFilteredOutfits = () => {
+    if (filterTag === 'all') return outfits;
+    
+    return outfits.filter(outfit => 
+      outfit.occasions && outfit.occasions.some(occasion => 
+        occasion.toLowerCase() === filterTag.toLowerCase()
+      )
+    );
+  };
+
+  const getOutfitById = (id: string) => {
+    return outfits.find(outfit => outfit.id === id);
+  };
+
+  const getOutfitImage = (outfitId: string) => {
+    const outfit = getOutfitById(outfitId);
+    if (!outfit || !outfit.items || outfit.items.length === 0) return null;
+    
+    // Get the first item's image
+    const firstItemId = outfit.items[0];
+    const firstItem = clothingItems.find(item => item.id === firstItemId);
+    
+    return firstItem?.imageUrl || '/placeholder.svg';
+  };
 
   // If no missed opportunities, show a message
   if (missedOpportunities.length === 0) {
@@ -171,28 +193,60 @@ const MissedOpportunitiesSection = ({ outfitLogs, outfits, clothingItems = [] }:
               </div>
               
               {opportunity.activity && (
-                <div className="mb-4">
+                <div className="mb-3">
                   <span className="text-xs text-purple-300 font-medium uppercase tracking-wide">Activity</span>
                   <p className="text-white/90">{opportunity.activity}</p>
                 </div>
               )}
               
-              <Button 
-                variant="secondary" 
-                size="sm"
-                className="w-full mt-2 bg-purple-800/30 hover:bg-purple-700/40"
-                onClick={() => handleAssignOutfit(opportunity)}
-              >
-                Assign Outfit Retroactively
-              </Button>
+              {opportunity.outfitId ? (
+                <div>
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-12 h-12 rounded-md overflow-hidden border border-purple-500/30">
+                      <img 
+                        src={getOutfitImage(opportunity.outfitId)} 
+                        alt="Outfit preview" 
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm text-white flex items-center gap-1 mb-1">
+                        <Check className="h-4 w-4 text-green-400" />
+                        <span>Outfit Assigned</span>
+                      </p>
+                      <p className="text-xs text-purple-300/80">
+                        {getOutfitById(opportunity.outfitId)?.name || "Outfit"}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className="w-full border-purple-500/20 hover:bg-purple-700/30 hover:border-purple-500/40 text-white"
+                    onClick={() => handleAssignOutfit(opportunity)}
+                  >
+                    <Edit className="h-3 w-3 mr-1" /> Edit Outfit
+                  </Button>
+                </div>
+              ) : (
+                <Button 
+                  variant="secondary" 
+                  size="sm"
+                  className="w-full mt-2 bg-purple-800/30 hover:bg-purple-700/40"
+                  onClick={() => handleAssignOutfit(opportunity)}
+                >
+                  Assign Outfit Retroactively
+                </Button>
+              )}
             </CardContent>
           </Card>
         ))}
       </div>
 
-      {/* Outfit Assignment Modal */}
-      <Dialog open={isSelectionOpen} onOpenChange={setIsSelectionOpen}>
-        <DialogContent className="bg-slate-900 border-purple-500/20 text-white max-w-3xl">
+      {/* Assign Outfit Dialog */}
+      <Dialog open={isAssignOutfitOpen} onOpenChange={setIsAssignOutfitOpen}>
+        <DialogContent className="bg-slate-900 border-purple-500/20 text-white max-w-4xl">
           <DialogHeader>
             <DialogTitle className="text-xl">
               Assign Outfit for {selectedDate ? format(selectedDate, 'MMMM d, yyyy') : ''} 
@@ -207,78 +261,34 @@ const MissedOpportunitiesSection = ({ outfitLogs, outfits, clothingItems = [] }:
             </DialogDescription>
           </DialogHeader>
           
-          <div className="space-y-6 py-4">
-            {/* Wardrobe Selector */}
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-medium text-white">Create Outfit</h3>
-                <div className="flex gap-2">
-                  {categoryOptions.map(option => (
-                    <Button 
-                      key={option.value}
-                      variant={selectedCategory === option.value ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setSelectedCategory(option.value)}
-                      className={selectedCategory === option.value 
-                        ? "bg-purple-600 hover:bg-purple-700" 
-                        : "border-white/20 bg-white/5 hover:bg-white/10 text-white"
-                      }
-                    >
-                      {option.label}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-              
-              {/* Selected Items Preview */}
-              {selectedItems.length > 0 && (
-                <div className="bg-slate-800/50 rounded-xl border border-white/10 p-4">
-                  <h4 className="text-sm font-medium text-white/80 mb-2">Selected Items</h4>
-                  <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
-                    {selectedItems.map(item => (
-                      <div 
-                        key={item.id} 
-                        className="aspect-square rounded overflow-hidden border border-purple-500/50 relative group"
-                      >
-                        <img 
-                          src={item.imageUrl || item.image || '/placeholder.svg'} 
-                          alt={item.name}
-                          className="w-full h-full object-cover"
-                        />
-                        <div 
-                          className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-                          onClick={() => handleOutfitSelection(item)}
-                        >
-                          <span className="text-white text-xs">Remove</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-              
-              {/* Wardrobe Items */}
-              <WardrobeDrawer
-                items={clothingItems}
-                selectedCategory={selectedCategory}
-                onSelectItem={handleOutfitSelection}
-                selectedItems={selectedItems}
-              />
-              
-              {/* Additional Items Selector */}
-              <AdditionalItemsSelector
-                onAddItem={handleOutfitSelection}
-                onPremiumClick={() => {}}
-                isPremium={false}
-                className="mt-6"
-              />
+          <div className="space-y-5 py-4">
+            <Tabs defaultValue="all" className="w-full" onValueChange={setFilterTag}>
+              <TabsList className="bg-slate-800/80 border border-white/10">
+                <TabsTrigger value="all" className="data-[state=active]:bg-purple-600">All</TabsTrigger>
+                <TabsTrigger value="casual" className="data-[state=active]:bg-purple-600">Casual</TabsTrigger>
+                <TabsTrigger value="work" className="data-[state=active]:bg-purple-600">Work</TabsTrigger>
+                <TabsTrigger value="formal" className="data-[state=active]:bg-purple-600">Formal</TabsTrigger>
+                <TabsTrigger value="sport" className="data-[state=active]:bg-purple-600">Sport</TabsTrigger>
+              </TabsList>
+            </Tabs>
+            
+            <div className="outfits-container">
+              <ScrollArea className="h-[350px] rounded-md border border-white/10 p-4">
+                <OutfitSelector
+                  outfits={getFilteredOutfits()}
+                  clothingItems={clothingItems}
+                  onSelect={handleOutfitSelection}
+                  selectedOutfitId={selectedOutfitId}
+                  autoTryOn={false}
+                />
+              </ScrollArea>
             </div>
           </div>
           
-          <div className="flex justify-end gap-3 mt-4">
+          <DialogFooter className="flex justify-end gap-3 mt-4">
             <Button 
               variant="outline" 
-              onClick={() => setIsSelectionOpen(false)}
+              onClick={() => setIsAssignOutfitOpen(false)}
               className="border-white/20 bg-white/5 hover:bg-white/10 text-white"
             >
               Cancel
@@ -287,20 +297,21 @@ const MissedOpportunitiesSection = ({ outfitLogs, outfits, clothingItems = [] }:
               onClick={handleSaveOutfit}
               className="bg-gradient-to-r from-pink-500 to-purple-500 hover:opacity-95 shadow-lg shadow-pink-500/20"
               icon={<Calendar className="h-4 w-4" />}
+              disabled={!selectedOutfitId}
             >
               Save Outfit to {selectedDate ? format(selectedDate, 'MMMM d') : ''}
             </CTAButton>
-          </div>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
       
-      {/* No Wardrobe Items Alert */}
-      <AlertDialog open={isNoWardrobeAlertOpen} onOpenChange={setIsNoWardrobeAlertOpen}>
+      {/* No Outfits Alert */}
+      <AlertDialog open={isEmptyWarningOpen} onOpenChange={setIsEmptyWarningOpen}>
         <AlertDialogContent className="bg-slate-900 text-white border-white/10">
           <AlertDialogHeader>
-            <AlertDialogTitle>Wardrobe Empty</AlertDialogTitle>
+            <AlertDialogTitle>No Outfits Available</AlertDialogTitle>
             <AlertDialogDescription className="text-white/70">
-              You need to add items to your wardrobe before assigning an outfit.
+              You currently have no outfits available. Please create an outfit first before assigning it to this day.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="pt-4">
@@ -308,10 +319,10 @@ const MissedOpportunitiesSection = ({ outfitLogs, outfits, clothingItems = [] }:
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction 
-              onClick={handleGoToWardrobe}
+              onClick={handleGoToMixAndMatch}
               className="bg-purple-600 hover:bg-purple-700 text-white"
             >
-              Go to My Wardrobe
+              Go to Mix & Match
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
