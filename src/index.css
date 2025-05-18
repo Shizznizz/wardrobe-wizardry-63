@@ -163,18 +163,4 @@
     border-color: transparent rgba(67, 56, 202, 0.3) transparent transparent;
     z-index: 2;
   }
-
-  /* Custom animation for slow pulse */
-  .animate-pulse-slow {
-    animation: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  }
-
-  @keyframes pulse-slow {
-    0%, 100% {
-      opacity: 0.3;
-    }
-    50% {
-      opacity: 0.8;
-    }
-  }
 }

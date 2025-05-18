@@ -9,7 +9,6 @@ export interface CTAButtonProps extends ButtonProps {
   isActive?: boolean;
   iconPosition?: 'left' | 'right';
   glowColor?: string;
-  enableGlow?: boolean;
 }
 
 const CTAButton = React.forwardRef<HTMLButtonElement, CTAButtonProps>(
@@ -20,25 +19,20 @@ const CTAButton = React.forwardRef<HTMLButtonElement, CTAButtonProps>(
     isActive = false,
     iconPosition = 'left',
     glowColor = 'rgba(147, 51, 234, 0.4)',
-    enableGlow = false,
     ...props 
   }, ref) => {
     return (
       <motion.div
-        whileHover={{ scale: enableGlow ? 1.02 : 1 }}
+        whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         className={cn("relative", props.disabled && "opacity-60")}
         style={isActive ? { boxShadow: `0 0 20px ${glowColor}` } : {}}
       >
-        {enableGlow && (
-          <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-500/0 via-pink-500/0 to-purple-500/0 hover:from-purple-500/20 hover:via-pink-500/30 hover:to-purple-500/20 opacity-0 hover:opacity-100 transition-opacity duration-300 -z-10 blur-md animate-pulse-slow"></div>
-        )}
         <Button
           ref={ref}
           className={cn(
             "h-[48px] px-6 rounded-lg font-semibold transition-all",
             "hover:shadow-lg disabled:opacity-60",
-            enableGlow && "hover:border-pink-500/30 hover:border",
             iconPosition === 'right' ? "flex-row-reverse" : "flex-row",
             className
           )}

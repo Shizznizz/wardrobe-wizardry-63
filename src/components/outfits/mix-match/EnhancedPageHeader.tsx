@@ -3,22 +3,13 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Sparkles } from 'lucide-react';
-import { CTAButton } from '@/components/ui/cta-button';
-import { Shirt, PlusCircle } from 'lucide-react';
 
 interface EnhancedPageHeaderProps {
   userName?: string | null;
   onScrollToWeather: () => void;
-  onScrollToOutfits?: () => void;
-  onOpenCreateOutfitDialog?: () => void;
 }
 
-const EnhancedPageHeader = ({ 
-  userName, 
-  onScrollToWeather,
-  onScrollToOutfits,
-  onOpenCreateOutfitDialog
-}: EnhancedPageHeaderProps) => {
+const EnhancedPageHeader = ({ userName, onScrollToWeather }: EnhancedPageHeaderProps) => {
   const fadeUp = {
     hidden: { opacity: 0, y: 30 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.7 } }
@@ -110,39 +101,16 @@ const EnhancedPageHeader = ({
 
             <motion.div 
               variants={fadeUp}
-              className="flex flex-wrap sm:flex-row justify-center gap-4 mt-6"
+              className="flex flex-col items-center justify-center"
             >
-              <CTAButton 
+              <Button 
                 variant="hero-primary"
                 size="lg"
                 onClick={onScrollToWeather}
-                enableGlow={true}
-                glowColor="rgba(236, 72, 153, 0.4)"
-                icon={<span className="text-xl mr-1">🎀</span>}
-                className="min-w-48 text-base font-medium"
+                className="text-base md:text-lg px-6 py-6 h-auto bg-gradient-to-r from-pink-500 to-purple-500 hover:opacity-95 shadow-lg shadow-pink-500/20 hover:shadow-pink-500/30 transition-all duration-300"
               >
                 Let Olivia Style Me Today
-              </CTAButton>
-              
-              <CTAButton
-                variant="hero-secondary"
-                size="lg"
-                onClick={onScrollToOutfits}
-                icon={<span className="text-xl mr-1">👗</span>}
-                className="min-w-40 text-base font-medium"
-              >
-                See My Outfits
-              </CTAButton>
-              
-              <CTAButton
-                variant="hero-secondary"
-                size="lg"
-                onClick={onOpenCreateOutfitDialog}
-                icon={<span className="text-xl mr-1">➕</span>}
-                className="min-w-40 text-base font-medium"
-              >
-                Add New Outfit
-              </CTAButton>
+              </Button>
             </motion.div>
           </motion.div>
           
