@@ -44,10 +44,12 @@ const OliviaRecommendationSection = ({
         const isTemperatureAppropriate = checkTemperatureAppropriate(item, weather.temperature || 70);
         
         // Check if the item is appropriate for the current situation
-        // Convert string to the appropriate type or check if it includes the situation as a string
         const itemOccasions = item.occasions || [];
+        
+        // Fix: compare strings to avoid type mismatch with 'all'
+        // We're checking if any occasion matches the situation string or includes 'all'
         const isSituationAppropriate = itemOccasions.some(
-          occasion => occasion === situation || occasion === 'all'
+          occasion => String(occasion) === situation || String(occasion) === 'all'
         );
         
         return isTemperatureAppropriate && isSituationAppropriate;
