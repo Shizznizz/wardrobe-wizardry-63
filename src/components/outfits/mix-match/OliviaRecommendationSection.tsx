@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ClothingItem } from '@/lib/types';
+import { ClothingItem, ClothingOccasion } from '@/lib/types';
 import { Sparkles, Shuffle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -44,8 +44,11 @@ const OliviaRecommendationSection = ({
         const isTemperatureAppropriate = checkTemperatureAppropriate(item, weather.temperature || 70);
         
         // Check if the item is appropriate for the current situation
-        const isSituationAppropriate = item.occasions && 
-          (item.occasions.includes(situation) || item.occasions.includes('all'));
+        // Convert string to the appropriate type or check if it includes the situation as a string
+        const itemOccasions = item.occasions || [];
+        const isSituationAppropriate = itemOccasions.some(
+          occasion => occasion === situation || occasion === 'all'
+        );
         
         return isTemperatureAppropriate && isSituationAppropriate;
       });

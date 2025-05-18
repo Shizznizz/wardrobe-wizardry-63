@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -27,6 +28,7 @@ export interface EnhancedHeroSectionProps {
   className?: string;
   children?: React.ReactNode;
   hasSparkleEffect?: boolean;
+  actions?: React.ReactNode; // Added prop for actions
 }
 
 const EnhancedHeroSection = ({
@@ -38,6 +40,7 @@ const EnhancedHeroSection = ({
   className,
   children,
   hasSparkleEffect = false,
+  actions, // Added to component props
 }: EnhancedHeroSectionProps) => {
   // Animation variants
   const containerVariants = {
@@ -178,6 +181,12 @@ const EnhancedHeroSection = ({
                     </Button>
                   )
                 ))}
+              </motion.div>
+            )}
+            
+            {actions && (
+              <motion.div variants={itemVariants} className="pt-4">
+                {actions}
               </motion.div>
             )}
             
