@@ -1,7 +1,6 @@
-
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { ClothingItem, ClothingOccasion } from '@/lib/types';
+import { ClothingItem, ClothingSeason } from '@/lib/types';
 import { Sparkles, Shuffle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -24,6 +23,8 @@ const OliviaRecommendationSection = ({
 }: OliviaRecommendationSectionProps) => {
   const [selectedItems, setSelectedItems] = useState<ClothingItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const recentOutfitHistoryRef = useRef<Array<string[]>>([]);
+  const maxRetries = 3;
   
   // Generate a recommendation when the component mounts
   useEffect(() => {
@@ -33,7 +34,7 @@ const OliviaRecommendationSection = ({
   }, [clothingItems, weather, situation]);
   
   // Function to generate recommendation based on weather and situation
-  const generateRecommendation = () => {
+  const generateRecommendation = (isShuffling: boolean = false) => {
     setIsLoading(true);
     
     // Simulate API call delay
@@ -72,21 +73,62 @@ const OliviaRecommendationSection = ({
         ['accessory', 'hat', 'jewelry', 'bag', 'scarf', 'watch'].includes(item.type.toLowerCase())
       );
       
-      // Pick one of each if available
-      const selectedTop = tops.length > 0 ? tops[Math.floor(Math.random() * tops.length)] : null;
-      const selectedBottom = bottoms.length > 0 ? bottoms[Math.floor(Math.random() * bottoms.length)] : null;
-      const selectedShoes = shoes.length > 0 ? shoes[Math.floor(Math.random() * shoes.length)] : null;
+      // Function to get a random item from a category, but try to avoid recently used items
+      const getRandomItem = <T extends ClothingItem>(items: T[], currentItems: T[]) => {
+        if (items.length === 0) return null;
+        
+        // Try to find an item that wasn't in current outfit
+        const availableItems = items.filter(
+          item => !currentItems.some(current => current.id === item.id)
+        );
+        
+        // If we have available items that weren't in current outfit, pick from them
+        if (availableItems.length > 0) {
+          return availableItems[Math.floor(Math.random() * availableItems.length)];
+        }
+        
+        // Otherwise just pick randomly from all items
+        return items[Math.floor(Math.random() * items.length)];
+      };
+      
+      // Generate a new outfit
+      const selectedTop = getRandomItem(tops, selectedItems);
+      const selectedBottom = getRandomItem(bottoms, selectedItems);
+      const selectedShoes = getRandomItem(shoes, selectedItems);
       
       // Accessories are optional
       const selectedAccessory = accessories.length > 0 && Math.random() > 0.5 ? 
-        accessories[Math.floor(Math.random() * accessories.length)] : null;
+        getRandomItem(accessories, selectedItems) : null;
       
-      const selectedOutfit = [selectedTop, selectedBottom, selectedShoes, selectedAccessory]
+      const newOutfit = [selectedTop, selectedBottom, selectedShoes, selectedAccessory]
         .filter(Boolean) as ClothingItem[];
       
-      setSelectedItems(selectedOutfit);
+      // Check if the new outfit is different from the current one or recent history
+      const shouldRetry = isShuffling && isDuplicateOutfit(newOutfit);
+      
+      if (shouldRetry && maxRetries > 0) {
+        console.log("Generated a duplicate outfit, trying again...");
+        // Try again to generate a different outfit (up to maxRetries times)
+        generateRecommendation(true);
+        return;
+      }
+      
+      // If we got here, either the outfit is unique or we've exhausted our retries
+      // Update the state with the new outfit and add it to recent history
+      setSelectedItems(newOutfit);
+      
+      // Add to recent history
+      if (isShuffling) {
+        updateOutfitHistory(newOutfit);
+      }
+      
       setIsLoading(false);
-    }, 1500); // Simulate delay
+      
+      // If we have a small wardrobe and can't generate a unique outfit after retries
+      if (shouldRetry && isShuffling) {
+        toast.info("You've seen all possible combinations for this weather and activity. Try changing your activity or add more wardrobe items.");
+      }
+    }, isShuffling ? 800 : 1500); // Faster delay when shuffling
   };
   
   // Utility function to check if an item is appropriate for the current temperature
@@ -104,10 +146,49 @@ const OliviaRecommendationSection = ({
     }
   };
 
+  // Check if new outfit is a duplicate of current or recent outfits
+  const isDuplicateOutfit = (newOutfit: ClothingItem[]) => {
+    // If the outfit has different number of items, it's definitely different
+    if (selectedItems.length !== newOutfit.length) return false;
+    
+    // Convert current outfit to IDs for easy comparison
+    const currentOutfitIds = selectedItems.map(item => item.id).sort();
+    const newOutfitIds = newOutfit.map(item => item.id).sort();
+    
+    // Check if the new outfit is the same as current
+    const isSameAsCurrent = 
+      currentOutfitIds.length === newOutfitIds.length && 
+      currentOutfitIds.every((id, index) => id === newOutfitIds[index]);
+    
+    if (isSameAsCurrent) return true;
+    
+    // Check recent history
+    return recentOutfitHistoryRef.current.some(historyOutfit => {
+      return historyOutfit.length === newOutfitIds.length && 
+        historyOutfit.every((id, index) => id === newOutfitIds[index]);
+    });
+  };
+  
+  // Update outfit history, keeping last 3 outfits
+  const updateOutfitHistory = (newOutfit: ClothingItem[]) => {
+    const newOutfitIds = newOutfit.map(item => item.id).sort();
+    
+    // Add current outfit to history before setting the new one
+    if (selectedItems.length > 0) {
+      const currentOutfitIds = selectedItems.map(item => item.id).sort();
+      recentOutfitHistoryRef.current = [
+        ...recentOutfitHistoryRef.current.slice(-2), // Keep most recent 2
+        currentOutfitIds
+      ];
+    }
+    
+    console.log("Updated outfit history:", recentOutfitHistoryRef.current);
+  };
+
   // Handle the shuffle button click
   const handleShuffleOutfit = () => {
     toast.info("Shuffling outfit...");
-    generateRecommendation();
+    generateRecommendation(true);
   };
   
   return (
