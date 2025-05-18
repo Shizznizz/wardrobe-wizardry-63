@@ -10,22 +10,26 @@ import SuggestedOutfitsSection from '@/components/outfits/mix-match/SuggestedOut
 import OliviaRecommendationSection from '@/components/outfits/mix-match/OliviaRecommendationSection';
 import CreateOutfitSection from '@/components/outfits/mix-match/CreateOutfitSection';
 import OutfitMagicSection from '@/components/outfits/mix-match/OutfitMagicSection';
+import CreateOutfitDialog from '@/components/outfits/mix-match/CreateOutfitDialog';
 import { useAuth } from '@/hooks/useAuth';
 import { useWardrobeData } from '@/hooks/useWardrobeData';
 import EnhancedHeroSection from '@/components/shared/EnhancedHeroSection';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, RefreshCw } from 'lucide-react';
 import MixMatchActions from '@/components/outfits/mix-match/MixMatchActions';
+import { Button } from '@/components/ui/button';
+import { supabase } from '@/integrations/supabase/client';
 
 const MixAndMatch = () => {
   const { isAuthenticated, user } = useAuth();
-  const { clothingItems, outfits, isLoadingItems, isLoadingOutfits } = useWardrobeData();
+  const { clothingItems, outfits, isLoadingItems, isLoadingOutfits, refreshOutfits } = useWardrobeData();
   
   const [currentOutfit, setCurrentOutfit] = useState<Outfit | null>(null);
   const [showRecommendation, setShowRecommendation] = useState(false);
   const [temperature, setTemperature] = useState(72);
   const [weatherCondition, setWeatherCondition] = useState('clear');
   const [situation, setSituation] = useState('casual');
+  const [isCreateOutfitDialogOpen, setIsCreateOutfitDialogOpen] = useState(false);
   
   const handleStyleMe = () => {
     if (!isAuthenticated) {
@@ -63,6 +67,72 @@ const MixAndMatch = () => {
   const handleSituationChange = (newSituation: string) => {
     setSituation(newSituation);
   };
+
+  const handleSaveOutfit = async (outfit: Outfit) => {
+    try {
+      // Save to Supabase if authenticated
+      if (user) {
+        await supabase
+          .from('outfits')
+          .insert({
+            id: outfit.id,
+            name: outfit.name,
+            items: outfit.items,
+            season: outfit.season,
+            occasion: outfit.occasion,
+            occasions: outfit.occasions,
+            favorite: outfit.favorite,
+            times_worn: outfit.timesWorn,
+            user_id: user.id,
+            date_added: new Date().toISOString()
+          });
+      }
+      
+      // Refresh outfits data
+      if (refreshOutfits) {
+        await refreshOutfits();
+      }
+      
+      toast.success("New outfit created!");
+      
+      // Scroll to outfits section
+      const outfitsSection = document.getElementById('saved-outfits-section');
+      if (outfitsSection) {
+        setTimeout(() => {
+          outfitsSection.scrollIntoView({ behavior: 'smooth' });
+        }, 300);
+      }
+    } catch (error) {
+      console.error('Error saving outfit:', error);
+      toast.error("Failed to save outfit. Please try again.");
+    }
+  };
+  
+  // Function to scroll to outfits section
+  const scrollToOutfits = () => {
+    const outfitsSection = document.querySelector('#saved-outfits-section');
+    if (outfitsSection) {
+      outfitsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  // Function to generate a new Olivia recommendation
+  const handleSuggestAnotherOutfit = () => {
+    setShowRecommendation(true);
+    toast.info('Creating a new outfit suggestion for you...');
+    
+    // Scroll to recommendation section or create it if it doesn't exist yet
+    setTimeout(() => {
+      if (!showRecommendation) {
+        setShowRecommendation(true);
+      }
+      
+      const recommendationSection = document.getElementById('olivia-recommendation');
+      if (recommendationSection) {
+        recommendationSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 300);
+  };
   
   // Show authentication notice if user is not logged in
   const renderAuthNotice = () => {
@@ -95,14 +165,6 @@ const MixAndMatch = () => {
     }
     return null;
   };
-
-  // Function to scroll to outfits section
-  const scrollToOutfits = () => {
-    const outfitsSection = document.querySelector('#saved-outfits-section');
-    if (outfitsSection) {
-      outfitsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  };
   
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white">
@@ -117,10 +179,13 @@ const MixAndMatch = () => {
           {
             label: "Let Olivia Style Me Today",
             onClick: handleStyleMe,
-            variant: "lavender" // Changed from "gradient" to "lavender" (a valid variant)
+            variant: "lavender"
           }
         ]}
-        actions={<MixMatchActions onScrollToOutfits={scrollToOutfits} />}
+        actions={<MixMatchActions 
+          onScrollToOutfits={scrollToOutfits} 
+          onOpenCreateOutfitDialog={() => setIsCreateOutfitDialogOpen(true)} 
+        />}
       />
       
       <div className="container mx-auto px-4 space-y-10 pt-6 pb-20">
@@ -154,6 +219,19 @@ const MixAndMatch = () => {
                 }}
                 isLoading={isLoadingOutfits}
               />
+              
+              {outfits && outfits.length > 0 && (
+                <div className="flex justify-center mt-6">
+                  <Button 
+                    onClick={handleSuggestAnotherOutfit}
+                    variant="outline"
+                    className="border-purple-500/30 text-white hover:bg-purple-800/20"
+                  >
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    Suggest Another Outfit
+                  </Button>
+                </div>
+              )}
             </div>
             
             {showRecommendation && (
@@ -181,6 +259,14 @@ const MixAndMatch = () => {
       
       {/* New Magic Section - replaces the ConfidenceSection */}
       <OutfitMagicSection />
+      
+      {/* Create Outfit Dialog */}
+      <CreateOutfitDialog
+        open={isCreateOutfitDialogOpen}
+        onOpenChange={setIsCreateOutfitDialogOpen}
+        clothingItems={clothingItems}
+        onSave={handleSaveOutfit}
+      />
     </div>
   );
 };

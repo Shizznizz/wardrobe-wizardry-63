@@ -7,9 +7,10 @@ import { useOutfitContext } from '@/hooks/useOutfitContext';
 
 interface MixMatchActionsProps {
   onScrollToOutfits?: () => void;
+  onOpenCreateOutfitDialog?: () => void;
 }
 
-const MixMatchActions = ({ onScrollToOutfits }: MixMatchActionsProps) => {
+const MixMatchActions = ({ onScrollToOutfits, onOpenCreateOutfitDialog }: MixMatchActionsProps) => {
   const navigate = useNavigate();
   const { 
     setIsBuilderOpen, 
@@ -19,14 +20,18 @@ const MixMatchActions = ({ onScrollToOutfits }: MixMatchActionsProps) => {
   } = useOutfitContext();
 
   const handleAddOutfit = () => {
-    console.log("Opening outfit builder to create a new outfit");
-    // Reset all outfit selection and editing state to ensure we're creating, not editing
-    setSelectedOutfitId(null);
-    setSelectedOutfit(null);
-    setIsCreatingNewOutfit(true); // Set creation mode to true
-    // Most importantly, make sure we open the builder modal
-    setIsBuilderOpen(true); 
-    toast.info("Creating a new outfit");
+    if (onOpenCreateOutfitDialog) {
+      onOpenCreateOutfitDialog();
+    } else {
+      console.log("Opening outfit builder to create a new outfit");
+      // Reset all outfit selection and editing state to ensure we're creating, not editing
+      setSelectedOutfitId(null);
+      setSelectedOutfit(null);
+      setIsCreatingNewOutfit(true); // Set creation mode to true
+      // Most importantly, make sure we open the builder modal
+      setIsBuilderOpen(true); 
+      toast.info("Creating a new outfit");
+    }
   };
 
   return (
