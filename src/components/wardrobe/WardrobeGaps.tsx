@@ -4,7 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ClothingItem } from '@/lib/types';
 import { motion } from 'framer-motion';
-import { Coat, Shoe, Dress } from 'lucide-react';
+import { Shirt, ShirtIcon, TrousersIcon } from '@/components/ui/icons'; // Use our custom icons
+import { Cat } from 'lucide-react'; // Cat is available in lucide-react
 
 interface WardrobeGapsProps {
   items: ClothingItem[];
@@ -78,13 +79,13 @@ const WardrobeGaps = ({ items }: WardrobeGapsProps) => {
     switch(gap.category.toLowerCase()) {
       case 'coat':
       case 'jacket':
-        return <Coat className="h-8 w-8 text-purple-300/70" />;
+        return <Shirt className="h-8 w-8 text-purple-300/70" />;
       case 'shoes':
-        return <Shoe className="h-8 w-8 text-purple-300/70" />;
+        return <Cat className="h-8 w-8 text-purple-300/70" />; // Using Cat as a replacement for Shoe
       case 'dress':
-        return <Dress className="h-8 w-8 text-purple-300/70" />;
+        return <TrousersIcon className="h-8 w-8 text-purple-300/70" />;
       default:
-        return <Coat className="h-8 w-8 text-purple-300/70" />;
+        return <ShirtIcon className="h-8 w-8 text-purple-300/70" />;
     }
   };
   
