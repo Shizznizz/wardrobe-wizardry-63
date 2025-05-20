@@ -94,13 +94,15 @@ const OutfitSelectorDialog = ({ isOpen, onClose, onSubmit, outfits }: OutfitSele
         <div className="space-y-4 py-3">
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="flex-1">
-              <Input
-                placeholder="Search outfits..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-slate-800 border-slate-700 text-white"
-                prefix={<Search className="h-4 w-4 text-slate-400" />}
-              />
+              <div className="relative">
+                <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <Input
+                  placeholder="Search outfits..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="bg-slate-800 border-slate-700 text-white pl-8"
+                />
+              </div>
             </div>
             <div className="w-full sm:w-1/3">
               <Select
