@@ -86,7 +86,7 @@ const PersonalDetailsSection = ({ preferences, setPreferences }: PersonalDetails
     });
   };
   
-  // Handle avatar upload
+  // Handle avatar upload with improved error handling
   const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!event.target.files || event.target.files.length === 0 || !user) {
       return;
@@ -94,32 +94,22 @@ const PersonalDetailsSection = ({ preferences, setPreferences }: PersonalDetails
     
     const file = event.target.files[0];
     const fileExt = file.name.split('.').pop();
-    const fileName = `${user.id}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-    const filePath = `${fileName}`;
+    const fileName = `${user.id}/${Math.random().toString(36).substring(2)}.${fileExt}`;
     
     setUploading(true);
     
     try {
-      // Create avatars bucket if it doesn't exist
-      const { data: buckets } = await supabase
-        .storage
-        .listBuckets();
-      
-      const avatarBucketExists = buckets?.some(bucket => bucket.name === 'avatars');
-      
-      if (!avatarBucketExists) {
-        console.log('Creating avatars bucket');
-        // Note: Users can't create buckets via the client, this would need admin privileges
-        // The bucket should be created via SQL migration instead
-      }
-      
-      // Upload the file
+      // Upload the file to the avatars bucket
       const { error: uploadError, data } = await supabase
         .storage
         .from('avatars')
-        .upload(filePath, file);
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: true
+        });
       
       if (uploadError) {
+        console.error('Error uploading avatar:', uploadError);
         throw uploadError;
       }
       
@@ -127,7 +117,7 @@ const PersonalDetailsSection = ({ preferences, setPreferences }: PersonalDetails
       const { data: urlData } = supabase
         .storage
         .from('avatars')
-        .getPublicUrl(filePath);
+        .getPublicUrl(fileName);
       
       const publicUrl = urlData.publicUrl;
       
@@ -138,15 +128,16 @@ const PersonalDetailsSection = ({ preferences, setPreferences }: PersonalDetails
         .eq('id', user.id);
       
       if (updateError) {
+        console.error('Error updating profile with avatar URL:', updateError);
         throw updateError;
       }
       
       setAvatarUrl(publicUrl);
-      toast.success('Profile photo updated');
+      toast.success('Profile photo updated successfully');
       
-    } catch (error) {
-      console.error('Error uploading avatar:', error);
-      toast.error('Failed to upload profile photo');
+    } catch (error: any) {
+      console.error('Error in avatar upload process:', error);
+      toast.error(`Failed to upload profile photo: ${error.message || 'Unknown error'}`);
     } finally {
       setUploading(false);
     }

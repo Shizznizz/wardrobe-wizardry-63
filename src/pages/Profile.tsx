@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Container } from '@/components/ui/container';
 import { useAuth } from '@/hooks/useAuth';
@@ -127,6 +128,26 @@ const Profile = () => {
           setOriginalPreferences(JSON.parse(JSON.stringify(defaults))); // Deep copy for comparison
         }
       }
+      
+      // Also get profile details (first name, last name)
+      if (user) {
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('first_name, last_name, avatar_url')
+          .eq('id', user.id)
+          .single();
+        
+        if (!profileError && profileData) {
+          setUserPreferences(prev => {
+            if (!prev) return prev;
+            return {
+              ...prev,
+              firstName: profileData.first_name || '',
+              lastName: profileData.last_name || ''
+            };
+          });
+        }
+      }
     } catch (error) {
       console.error("Error in fetchUserPreferences:", error);
       toast.error("Something went wrong loading your profile");
@@ -144,14 +165,20 @@ const Profile = () => {
   const saveProfile = async (updatedPreferences: UserPreferences) => {
     if (!user) return false;
     
-    // Basic validation
-    if (updatedPreferences.firstName === '' || updatedPreferences.lastName === '') {
-      toast.error('Please fill in your name');
+    // Validation for required fields
+    if (updatedPreferences.firstName === '') {
+      toast.error('Please enter your first name');
       return false;
     }
     
     setIsSaving(true);
     try {
+      // Normalize data to prevent duplicates (case-insensitive)
+      updatedPreferences.favoriteColors = normalizeTags(updatedPreferences.favoriteColors || []);
+      updatedPreferences.favoriteStyles = normalizeTags(updatedPreferences.favoriteStyles || []);
+      updatedPreferences.personalityTags = normalizeTags(updatedPreferences.personalityTags || []);
+      updatedPreferences.occasionPreferences = normalizeTags(updatedPreferences.occasionPreferences || []);
+      
       // Convert preferences to database format
       const preferencesData = {
         user_id: user.id,
@@ -237,6 +264,22 @@ const Profile = () => {
     }
   };
   
+  // Helper function to normalize tags and remove duplicates (case-insensitive)
+  const normalizeTags = (tags: string[]): string[] => {
+    const normalizedTags: string[] = [];
+    const lowercaseTags = new Set<string>();
+    
+    for (const tag of tags) {
+      const lowerTag = tag.toLowerCase();
+      if (!lowercaseTags.has(lowerTag)) {
+        lowercaseTags.add(lowerTag);
+        normalizedTags.push(tag); // Keep original case but avoid duplicates
+      }
+    }
+    
+    return normalizedTags;
+  };
+  
   const renderProfileContent = () => {
     if (!userPreferences) return null;
     
@@ -299,8 +342,8 @@ const Profile = () => {
         <Accordion type="single" collapsible className="w-full">
           {profileSections.map((section) => (
             <AccordionItem key={section.id} value={section.id}>
-              <AccordionTrigger>{section.title}</AccordionTrigger>
-              <AccordionContent className="p-4 space-y-4">
+              <AccordionTrigger className="px-4 py-2">{section.title}</AccordionTrigger>
+              <AccordionContent className="p-4 space-y-4 pb-8">
                 {section.content}
               </AccordionContent>
             </AccordionItem>
