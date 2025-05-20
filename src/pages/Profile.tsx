@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container } from '@/components/ui/container';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
@@ -40,9 +39,20 @@ const Profile = () => {
   const isMobile = useIsMobile();
   
   // Get user preferences from database
-  const fetchUserPreferences = useCallback(async () => {
-    if (!user) return;
-    
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      fetchUserPreferences();
+    }
+  }, [isAuthenticated, user]);
+  
+  // If user is not authenticated and not loading, show auth modal
+  useEffect(() => {
+    if (!loading && !isAuthenticated) {
+      setShowAuthModal(true);
+    }
+  }, [loading, isAuthenticated]);
+  
+  const fetchUserPreferences = async () => {
     try {
       setIsLoading(true);
       
@@ -50,7 +60,7 @@ const Profile = () => {
       const { data, error } = await supabase
         .from('user_preferences')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('user_id', user!.id)
         .single();
       
       if (error && error.code !== 'PGRST116') {
@@ -147,21 +157,7 @@ const Profile = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [user]);
-  
-  // Get user preferences from database
-  useEffect(() => {
-    if (isAuthenticated && user) {
-      fetchUserPreferences();
-    }
-  }, [isAuthenticated, user, fetchUserPreferences]);
-  
-  // If user is not authenticated and not loading, show auth modal
-  useEffect(() => {
-    if (!loading && !isAuthenticated) {
-      setShowAuthModal(true);
-    }
-  }, [loading, isAuthenticated]);
+  };
   
   // Check if preferences have changed
   const hasChanges = (): boolean => {
@@ -169,27 +165,11 @@ const Profile = () => {
     return JSON.stringify(userPreferences) !== JSON.stringify(originalPreferences);
   };
   
-  // Helper function to normalize tags and remove duplicates (case-insensitive)
-  const normalizeTags = (tags: string[]): string[] => {
-    const normalizedTags: string[] = [];
-    const lowercaseTags = new Set<string>();
-    
-    for (const tag of tags) {
-      const lowerTag = tag.toLowerCase();
-      if (!lowercaseTags.has(lowerTag)) {
-        lowercaseTags.add(lowerTag);
-        normalizedTags.push(tag); // Keep original case but avoid duplicates
-      }
-    }
-    
-    return normalizedTags;
-  };
-  
-  const saveProfile = async () => {
-    if (!user || !userPreferences) return false;
+  const saveProfile = async (updatedPreferences: UserPreferences) => {
+    if (!user) return false;
     
     // Validation for required fields
-    if (userPreferences.firstName === '') {
+    if (updatedPreferences.firstName === '') {
       toast.error('Please enter your first name');
       return false;
     }
@@ -197,7 +177,6 @@ const Profile = () => {
     setIsSaving(true);
     try {
       // Normalize data to prevent duplicates (case-insensitive)
-      const updatedPreferences = { ...userPreferences };
       updatedPreferences.favoriteColors = normalizeTags(updatedPreferences.favoriteColors || []);
       updatedPreferences.favoriteStyles = normalizeTags(updatedPreferences.favoriteStyles || []);
       updatedPreferences.personalityTags = normalizeTags(updatedPreferences.personalityTags || []);
@@ -274,9 +253,9 @@ const Profile = () => {
         return false;
       }
       
-      // Update state with normalized preferences
       setUserPreferences(updatedPreferences);
       setOriginalPreferences(JSON.parse(JSON.stringify(updatedPreferences))); // Update original for change comparison
+      toast.success('Profile updated successfully!');
       
       return true;
     } catch (error) {
@@ -287,7 +266,23 @@ const Profile = () => {
       setIsSaving(false);
     }
   };
-
+  
+  // Helper function to normalize tags and remove duplicates (case-insensitive)
+  const normalizeTags = (tags: string[]): string[] => {
+    const normalizedTags: string[] = [];
+    const lowercaseTags = new Set<string>();
+    
+    for (const tag of tags) {
+      const lowerTag = tag.toLowerCase();
+      if (!lowercaseTags.has(lowerTag)) {
+        lowercaseTags.add(lowerTag);
+        normalizedTags.push(tag); // Keep original case but avoid duplicates
+      }
+    }
+    
+    return normalizedTags;
+  };
+  
   const renderProfileContent = () => {
     if (!userPreferences) return null;
     
@@ -342,6 +337,7 @@ const Profile = () => {
           />
         )
       },
+      // New sections migrated from Settings
       {
         id: "account",
         title: "Account",
@@ -421,7 +417,7 @@ const Profile = () => {
         {userPreferences && (
           <ProfileFooter
             isSaving={isSaving}
-            onSave={saveProfile}
+            onSave={() => saveProfile(userPreferences)}
             hasChanges={hasChanges()}
           />
         )}
