@@ -84,7 +84,7 @@ export const MobileMenu = ({
 
           {/* Menu */}
           <motion.div
-            className="fixed top-0 right-0 bottom-0 w-[80%] max-w-[300px] bg-gradient-to-b from-purple-900 to-slate-900 z-50 flex flex-col shadow-xl"
+            className="fixed top-0 right-0 bottom-0 w-[80%] max-w-[300px] bg-gradient-to-b from-purple-900 to-slate-900 z-[60] flex flex-col shadow-xl pointer-events-auto"
             variants={menuVariants}
             initial="closed"
             animate={isOpen ? 'open' : 'closed'}
@@ -97,7 +97,7 @@ export const MobileMenu = ({
                 variant="ghost"
                 size="icon"
                 onClick={onClose}
-                className="text-white hover:bg-white/10"
+                className="text-white hover:bg-white/10 pointer-events-auto"
               >
                 <X className="h-6 w-6" />
               </Button>
@@ -137,13 +137,30 @@ export const MobileMenu = ({
                         currentPath === item.path
                           ? 'bg-white/20 font-medium'
                           : 'hover:bg-white/10'
-                      }`}
+                      } pointer-events-auto`}
                       onClick={onClose}
                     >
                       {item.name}
                     </Link>
                   </motion.li>
                 ))}
+                
+                {/* For mobile, we'll place the Profile link here */}
+                {user && (
+                  <motion.li variants={itemVariants}>
+                    <Link
+                      to="/profile"
+                      className={`block px-4 py-2 rounded-md text-white ${
+                        currentPath === '/profile'
+                          ? 'bg-white/20 font-medium'
+                          : 'hover:bg-white/10'
+                      } pointer-events-auto`}
+                      onClick={onClose}
+                    >
+                      My Profile
+                    </Link>
+                  </motion.li>
+                )}
               </ul>
             </nav>
 
@@ -155,7 +172,7 @@ export const MobileMenu = ({
               >
                 <Button
                   variant="ghost"
-                  className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-900/20"
+                  className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-900/20 pointer-events-auto"
                   onClick={onSignOut}
                 >
                   <LogOut className="mr-2 h-4 w-4" />

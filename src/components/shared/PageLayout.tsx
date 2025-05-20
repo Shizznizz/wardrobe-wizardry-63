@@ -14,18 +14,18 @@ const PageLayout = ({ children }: PageLayoutProps) => {
   
   // Only show Premium Experience on Home, Premium, and Shop & Try pages
   const showPremiumExperience = currentPath === '/' || 
-                                currentPath === '/premium' || 
-                                currentPath === '/shop-and-try';
+                               currentPath === '/premium' || 
+                               currentPath === '/shop-and-try';
 
   return (
     <div className="min-h-screen flex flex-col bg-fix-ios">
       <Header />
       
-      <main className="flex-grow pt-8 sm:pt-10">
+      <main className="flex-grow pt-16 sm:pt-20 relative z-10">
         {children}
       </main>
       
-      <div className="mt-auto">
+      <div className="mt-auto relative z-10">
         {showPremiumExperience && <PremiumExperience onUpgrade={() => {}} />}
         <Footer />
       </div>
