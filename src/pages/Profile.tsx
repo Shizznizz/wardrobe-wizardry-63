@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Container } from '@/components/ui/container';
 import { useAuth } from '@/hooks/useAuth';
@@ -24,10 +23,10 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import AccountSettings from '@/components/settings/AccountSettings';
-import AppearanceSettings from '@/components/settings/AppearanceSettings';
-import LegalInformationSettings from '@/components/settings/LegalInformationSettings';
-import DataManagementSettings from '@/components/settings/DataManagementSettings';
+import AccountSettings from '@/components/profile/AccountSettings';
+import AppearanceSettings from '@/components/profile/AppearanceSettings';
+import LegalInformationSettings from '@/components/profile/LegalInformationSettings';
+import DataManagementSettings from '@/components/profile/DataManagementSettings';
 
 const Profile = () => {
   const { user, isAuthenticated, loading } = useAuth();
