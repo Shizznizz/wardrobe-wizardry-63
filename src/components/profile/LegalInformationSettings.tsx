@@ -18,49 +18,59 @@ const LegalInformationSettings = () => {
         <CardContent className="p-6">
           <ul className="space-y-4">
             <li>
-              <Link 
-                to="#" 
+              <a 
+                href="#" 
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex items-center justify-between text-white hover:text-purple-300 transition-colors"
               >
                 <span>Terms of Service</span>
                 <ExternalLink className="h-4 w-4" />
-              </Link>
+              </a>
             </li>
             <li>
-              <Link 
-                to="#" 
+              <a 
+                href="#" 
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex items-center justify-between text-white hover:text-purple-300 transition-colors"
               >
                 <span>Privacy Policy</span>
                 <ExternalLink className="h-4 w-4" />
-              </Link>
+              </a>
             </li>
             <li>
-              <Link 
-                to="#" 
+              <a 
+                href="#" 
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex items-center justify-between text-white hover:text-purple-300 transition-colors"
               >
                 <span>Cookie Policy</span>
                 <ExternalLink className="h-4 w-4" />
-              </Link>
+              </a>
             </li>
             <li>
-              <Link 
-                to="#" 
+              <a 
+                href="#" 
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex items-center justify-between text-white hover:text-purple-300 transition-colors"
               >
                 <span>GDPR Compliance</span>
                 <ExternalLink className="h-4 w-4" />
-              </Link>
+              </a>
             </li>
             <li>
-              <Link 
-                to="#" 
+              <a 
+                href="#" 
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex items-center justify-between text-white hover:text-purple-300 transition-colors"
               >
                 <span>Accessibility Statement</span>
                 <ExternalLink className="h-4 w-4" />
-              </Link>
+              </a>
             </li>
           </ul>
         </CardContent>

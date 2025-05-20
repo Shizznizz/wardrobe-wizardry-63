@@ -5,6 +5,7 @@ import { Switch } from '@/components/ui/switch';
 import { UserPreferences } from '@/lib/types';
 import { Card, CardContent, CardDescription } from '@/components/ui/card';
 import { BellIcon, Mail, CloudLightning } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface NotificationSectionProps {
   preferences: UserPreferences;
@@ -16,9 +17,24 @@ const NotificationSection = ({ preferences, setPreferences }: NotificationSectio
   const handleToggleNotification = (setting: 'weeklyEmailUpdates' | 'notifyNewOutfits' | 'notifyWeatherChanges') => {
     setPreferences(prev => {
       if (!prev) return prev;
+      
+      const newValue = !prev[setting];
+      
+      // Show feedback toast
+      const settingLabels = {
+        weeklyEmailUpdates: 'Weekly outfit ideas via email',
+        notifyNewOutfits: 'New outfit notifications',
+        notifyWeatherChanges: 'Weather change alerts'
+      };
+      
+      toast.success(`${settingLabels[setting]} ${newValue ? 'enabled' : 'disabled'}`, {
+        duration: 2000,
+        position: 'bottom-center'
+      });
+      
       return {
         ...prev,
-        [setting]: !prev[setting]
+        [setting]: newValue
       };
     });
   };

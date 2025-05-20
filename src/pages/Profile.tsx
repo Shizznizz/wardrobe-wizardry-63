@@ -96,7 +96,12 @@ const Profile = () => {
             weeklyEmailUpdates: data.weekly_email_updates !== undefined ? data.weekly_email_updates : false,
             notifyNewOutfits: data.notify_new_outfits !== undefined ? data.notify_new_outfits : true,
             notifyWeatherChanges: data.notify_weather_changes !== undefined ? data.notify_weather_changes : true,
-            pronouns: data.pronouns || 'not-specified'
+            pronouns: data.pronouns || 'not-specified',
+            appearanceSettings: data.appearance_settings || {
+              theme: 'system',
+              reduceMotion: false,
+              highContrast: false
+            }
           };
           setUserPreferences(preferences);
           setOriginalPreferences(JSON.parse(JSON.stringify(preferences))); // Deep copy for comparison
@@ -125,7 +130,12 @@ const Profile = () => {
             weeklyEmailUpdates: false,
             notifyNewOutfits: true,
             notifyWeatherChanges: true,
-            pronouns: 'not-specified'
+            pronouns: 'not-specified',
+            appearanceSettings: {
+              theme: 'system',
+              reduceMotion: false,
+              highContrast: false
+            }
           };
           setUserPreferences(defaults);
           setOriginalPreferences(JSON.parse(JSON.stringify(defaults))); // Deep copy for comparison
@@ -159,17 +169,34 @@ const Profile = () => {
     }
   };
   
+  // Helper function to normalize tags and remove duplicates (case-insensitive)
+  const normalizeTags = (tags: string[]): string[] => {
+    const normalizedTags: string[] = [];
+    const lowercaseTags = new Set<string>();
+    
+    for (const tag of tags) {
+      const lowerTag = tag.toLowerCase();
+      if (!lowercaseTags.has(lowerTag)) {
+        lowercaseTags.add(lowerTag);
+        // Keep original case but capitalize first letter
+        normalizedTags.push(tag.charAt(0).toUpperCase() + tag.slice(1)); 
+      }
+    }
+    
+    return normalizedTags;
+  };
+  
   // Check if preferences have changed
   const hasChanges = (): boolean => {
     if (!userPreferences || !originalPreferences) return false;
     return JSON.stringify(userPreferences) !== JSON.stringify(originalPreferences);
   };
   
-  const saveProfile = async (updatedPreferences: UserPreferences) => {
-    if (!user) return false;
+  const saveProfile = async () => {
+    if (!user || !userPreferences) return false;
     
     // Validation for required fields
-    if (updatedPreferences.firstName === '') {
+    if (userPreferences.firstName === '') {
       toast.error('Please enter your first name');
       return false;
     }
@@ -177,10 +204,13 @@ const Profile = () => {
     setIsSaving(true);
     try {
       // Normalize data to prevent duplicates (case-insensitive)
-      updatedPreferences.favoriteColors = normalizeTags(updatedPreferences.favoriteColors || []);
-      updatedPreferences.favoriteStyles = normalizeTags(updatedPreferences.favoriteStyles || []);
-      updatedPreferences.personalityTags = normalizeTags(updatedPreferences.personalityTags || []);
-      updatedPreferences.occasionPreferences = normalizeTags(updatedPreferences.occasionPreferences || []);
+      const updatedPreferences = {
+        ...userPreferences,
+        favoriteColors: normalizeTags(userPreferences.favoriteColors || []),
+        favoriteStyles: normalizeTags(userPreferences.favoriteStyles || []),
+        personalityTags: normalizeTags(userPreferences.personalityTags || []),
+        occasionPreferences: normalizeTags(userPreferences.occasionPreferences || [])
+      };
       
       // Convert preferences to database format
       const preferencesData = {
@@ -203,7 +233,12 @@ const Profile = () => {
         weekly_email_updates: updatedPreferences.weeklyEmailUpdates,
         notify_new_outfits: updatedPreferences.notifyNewOutfits,
         notify_weather_changes: updatedPreferences.notifyWeatherChanges,
-        pronouns: updatedPreferences.pronouns || 'not-specified'
+        pronouns: updatedPreferences.pronouns || 'not-specified',
+        appearance_settings: updatedPreferences.appearanceSettings || {
+          theme: 'system',
+          reduceMotion: false,
+          highContrast: false
+        }
       };
 
       // Check if user has preferences record
@@ -255,7 +290,6 @@ const Profile = () => {
       
       setUserPreferences(updatedPreferences);
       setOriginalPreferences(JSON.parse(JSON.stringify(updatedPreferences))); // Update original for change comparison
-      toast.success('Profile updated successfully!');
       
       return true;
     } catch (error) {
@@ -265,22 +299,6 @@ const Profile = () => {
     } finally {
       setIsSaving(false);
     }
-  };
-  
-  // Helper function to normalize tags and remove duplicates (case-insensitive)
-  const normalizeTags = (tags: string[]): string[] => {
-    const normalizedTags: string[] = [];
-    const lowercaseTags = new Set<string>();
-    
-    for (const tag of tags) {
-      const lowerTag = tag.toLowerCase();
-      if (!lowercaseTags.has(lowerTag)) {
-        lowercaseTags.add(lowerTag);
-        normalizedTags.push(tag); // Keep original case but avoid duplicates
-      }
-    }
-    
-    return normalizedTags;
   };
   
   const renderProfileContent = () => {
@@ -337,7 +355,7 @@ const Profile = () => {
           />
         )
       },
-      // New sections migrated from Settings
+      // Settings sections
       {
         id: "account",
         title: "Account",
@@ -417,7 +435,7 @@ const Profile = () => {
         {userPreferences && (
           <ProfileFooter
             isSaving={isSaving}
-            onSave={() => saveProfile(userPreferences)}
+            onSave={saveProfile}
             hasChanges={hasChanges()}
           />
         )}
