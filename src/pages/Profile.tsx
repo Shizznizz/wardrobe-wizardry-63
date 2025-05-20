@@ -24,6 +24,10 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import AccountSettings from '@/components/settings/AccountSettings';
+import AppearanceSettings from '@/components/settings/AppearanceSettings';
+import LegalInformationSettings from '@/components/settings/LegalInformationSettings';
+import DataManagementSettings from '@/components/settings/DataManagementSettings';
 
 const Profile = () => {
   const { user, isAuthenticated, loading } = useAuth();
@@ -333,6 +337,27 @@ const Profile = () => {
             setPreferences={setUserPreferences}
           />
         )
+      },
+      // New sections migrated from Settings
+      {
+        id: "account",
+        title: "Account",
+        content: <AccountSettings />
+      },
+      {
+        id: "appearance",
+        title: "Appearance",
+        content: <AppearanceSettings />
+      },
+      {
+        id: "data",
+        title: "Data Management",
+        content: <DataManagementSettings />
+      },
+      {
+        id: "legal",
+        title: "Legal Information",
+        content: <LegalInformationSettings />
       }
     ];
     

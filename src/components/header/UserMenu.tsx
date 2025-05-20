@@ -1,5 +1,6 @@
+
 import { Link, useNavigate } from 'react-router-dom';
-import { LogOut, User, Settings } from 'lucide-react';
+import { LogOut, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
@@ -63,16 +64,16 @@ export const UserMenu = ({ isScrolled = false }: UserMenuProps) => {
           <User className="h-5 w-5" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border border-gray-200 dark:border-gray-700 shadow-lg">
+      <DropdownMenuContent 
+        align="end" 
+        className="bg-slate-900/90 backdrop-blur-md border border-slate-700 shadow-lg text-white"
+      >
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem asChild className="hover:bg-accent/5 hover:text-accent cursor-pointer">
+        <DropdownMenuSeparator className="bg-slate-700/50" />
+        <DropdownMenuItem asChild className="hover:bg-white/10 hover:text-purple-300 cursor-pointer">
           <Link to="/profile">My Profile</Link>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild className="hover:bg-accent/5 hover:text-accent cursor-pointer">
-          <Link to="/settings">Settings</Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={handleSignOut} className="text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 cursor-pointer">
+        <DropdownMenuItem onClick={handleSignOut} className="text-red-400 hover:bg-red-900/20 hover:text-red-300 cursor-pointer">
           <LogOut className="mr-2 h-4 w-4" />
           Sign out
         </DropdownMenuItem>

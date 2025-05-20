@@ -78,7 +78,7 @@ const Header = () => {
       { name: 'Fitting Room', path: '/fitting-room' },
       { name: 'Shop & Try', path: '/shop-and-try' },
       { name: 'Quizzes', path: '/quizzes' },
-      { name: 'Settings', path: '/settings' },
+      { name: 'Profile', path: '/profile' },
     ];
   } else {
     navItems = [
