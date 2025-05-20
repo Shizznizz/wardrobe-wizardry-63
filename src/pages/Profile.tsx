@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Container } from '@/components/ui/container';
 import { useAuth } from '@/hooks/useAuth';
@@ -66,17 +65,17 @@ const Profile = () => {
       } else {
         if (data) {
           // Transform database format to app format
-          const preferences = {
+          const preferences: UserPreferences = {
             favoriteColors: data.favorite_colors || [],
             favoriteStyles: data.favorite_styles || [],
             personalityTags: data.personality_tags || [],
             bodyType: data.body_type || 'not-specified',
             seasonalPreferences: data.seasonal_preferences || {
-              spring: { enabled: true, temperatureRange: [10, 22] },
-              summer: { enabled: true, temperatureRange: [20, 35] },
-              autumn: { enabled: true, temperatureRange: [8, 20] },
-              winter: { enabled: true, temperatureRange: [-5, 10] },
-              all: { enabled: true, temperatureRange: [-10, 40] }
+              spring: { enabled: true, temperatureRange: [10, 22] as [number, number] },
+              summer: { enabled: true, temperatureRange: [20, 35] as [number, number] },
+              autumn: { enabled: true, temperatureRange: [8, 20] as [number, number] },
+              winter: { enabled: true, temperatureRange: [-5, 10] as [number, number] },
+              all: { enabled: true, temperatureRange: [-10, 40] as [number, number] }
             },
             outfitReminders: data.reminder_enabled || false,
             reminderTime: data.reminder_time || '08:00',
@@ -99,17 +98,17 @@ const Profile = () => {
           setOriginalPreferences(JSON.parse(JSON.stringify(preferences))); // Deep copy for comparison
         } else {
           // Set defaults if no preferences exist
-          const defaults = {
+          const defaults: UserPreferences = {
             favoriteColors: [],
             favoriteStyles: [],
             personalityTags: [],
             bodyType: 'not-specified',
             seasonalPreferences: {
-              spring: { enabled: true, temperatureRange: [10, 22] },
-              summer: { enabled: true, temperatureRange: [20, 35] },
-              autumn: { enabled: true, temperatureRange: [8, 20] },
-              winter: { enabled: true, temperatureRange: [-5, 10] },
-              all: { enabled: true, temperatureRange: [-10, 40] }
+              spring: { enabled: true, temperatureRange: [10, 22] as [number, number] },
+              summer: { enabled: true, temperatureRange: [20, 35] as [number, number] },
+              autumn: { enabled: true, temperatureRange: [8, 20] as [number, number] },
+              winter: { enabled: true, temperatureRange: [-5, 10] as [number, number] },
+              all: { enabled: true, temperatureRange: [-10, 40] as [number, number] }
             },
             outfitReminders: false,
             reminderTime: '08:00',

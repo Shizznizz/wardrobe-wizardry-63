@@ -49,23 +49,27 @@ const SeasonalPreferences = ({ value, onChange }: SeasonalPreferencesProps) => {
   };
 
   const handleTemperatureRangeChange = (season: ClothingSeason, newRange: number[]) => {
-    onChange({
-      ...value,
-      [season]: {
-        ...value[season],
-        temperatureRange: [newRange[0], newRange[1]] as [number, number]
-      }
-    });
+    if (newRange.length >= 2) {
+      onChange({
+        ...value,
+        [season]: {
+          ...value[season],
+          temperatureRange: [newRange[0], newRange[1]] as [number, number]
+        }
+      });
+    }
   };
   
   const handleTimeOfYearChange = (season: ClothingSeason, newRange: number[]) => {
-    onChange({
-      ...value,
-      [season]: {
-        ...value[season],
-        timeOfYear: [newRange[0], newRange[1]] as [number, number]
-      }
-    });
+    if (newRange.length >= 2) {
+      onChange({
+        ...value,
+        [season]: {
+          ...value[season],
+          timeOfYear: [newRange[0], newRange[1]] as [number, number]
+        }
+      });
+    }
   };
   
   const getTimeOfYearLabel = (value: number) => {
