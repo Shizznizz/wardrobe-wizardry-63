@@ -160,7 +160,7 @@ const OutfitSelectorDialog = ({ isOpen, onClose, onSubmit, outfits }: OutfitSele
                               </Badge>
                             ))}
                             {outfit.favorite && (
-                              <Badge variant="gradient" className="text-[10px] py-0">
+                              <Badge variant="default" className="text-[10px] py-0 bg-gradient-to-r from-blue-500 to-purple-500">
                                 Favorite
                               </Badge>
                             )}
