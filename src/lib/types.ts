@@ -243,6 +243,13 @@ export interface UserPreferences {
   weeklyEmailUpdates?: boolean;
   notifyNewOutfits?: boolean;
   notifyWeatherChanges?: boolean;
+  // Add the missing properties
+  appearanceSettings?: {
+    theme: string;
+    highContrast: boolean;
+    reduceMotion: boolean;
+  };
+  styleQuizResult?: any; // Using 'any' for now, can be replaced with a more specific type later
 }
 
 export interface Outfit {
