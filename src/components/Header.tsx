@@ -16,7 +16,7 @@ const Header = () => {
   const location = useLocation();
   const isMobile = useIsMobile();
   const navigate = useNavigate();
-  const { user, signOut, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   // Enhanced scroll detection with throttling
   useEffect(() => {
@@ -45,18 +45,8 @@ const Header = () => {
     };
   }, []);
 
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-      navigate("/");
-    } catch (error) {
-      console.error("Error signing out:", error);
-    }
-  };
-
   const toggleMenu = () => {
     setIsMenuOpen(prevState => !prevState);
-    console.log("Toggle menu clicked. New state:", !isMenuOpen);
   };
 
   // Close mobile menu when location changes
@@ -78,7 +68,7 @@ const Header = () => {
       { name: 'Fitting Room', path: '/fitting-room' },
       { name: 'Shop & Try', path: '/shop-and-try' },
       { name: 'Quizzes', path: '/quizzes' },
-      { name: 'Profile', path: '/profile' }, // Direct profile link
+      { name: 'Profile', path: '/profile' },
     ];
   } else {
     navItems = [
@@ -133,7 +123,6 @@ const Header = () => {
               aria-label="Toggle mobile menu"
               aria-expanded={isMenuOpen}
               aria-controls="mobile-menu"
-              style={{ pointerEvents: 'auto' }}
             >
               <Menu className="h-6 w-6" />
             </Button>
@@ -145,7 +134,7 @@ const Header = () => {
           onClose={() => setIsMenuOpen(false)}
           navItems={navItems}
           currentPath={location.pathname}
-          onSignOut={handleSignOut}
+          onSignOut={async () => {}}
         />
       </div>
     </header>

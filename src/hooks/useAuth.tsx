@@ -2,7 +2,6 @@
 import { useState, useEffect, createContext, useContext } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 
 type AuthContextType = {
   session: Session | null;
@@ -69,10 +68,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signOut = async () => {
     try {
       await supabase.auth.signOut();
-      toast.success("Signed out successfully");
     } catch (error) {
       console.error("Error signing out:", error);
-      toast.error("Failed to sign out");
       throw error; // Rethrow to handle in the component
     }
   };

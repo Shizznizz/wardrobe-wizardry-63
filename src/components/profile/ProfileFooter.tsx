@@ -2,7 +2,6 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Loader2, Save } from 'lucide-react';
-import { toast } from 'sonner';
 
 interface ProfileFooterProps {
   isSaving: boolean;
@@ -15,14 +14,11 @@ const ProfileFooter = ({ isSaving, onSave, hasChanges }: ProfileFooterProps) => 
     if (isSaving) return;
     
     try {
-      const success = await onSave();
-      if (!success) {
-        // Error message is handled in the onSave function
-        return;
-      }
+      await onSave();
+      // Success is handled in the onSave function
     } catch (error) {
       console.error('Error saving profile:', error);
-      toast.error("Something went wrong while saving your profile");
+      // Error is handled in the onSave function
     }
   };
 
