@@ -24,6 +24,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import AccountSection from '@/components/profile/AccountSection';
 
 const Profile = () => {
   const { user, isAuthenticated, loading } = useAuth();
@@ -93,7 +94,12 @@ const Profile = () => {
             weeklyEmailUpdates: data.weekly_email_updates !== undefined ? data.weekly_email_updates : false,
             notifyNewOutfits: data.notify_new_outfits !== undefined ? data.notify_new_outfits : true,
             notifyWeatherChanges: data.notify_weather_changes !== undefined ? data.notify_weather_changes : true,
-            pronouns: data.pronouns || 'not-specified'
+            pronouns: data.pronouns || 'not-specified',
+            appearanceSettings: data.appearance_settings || {
+              theme: 'system',
+              highContrast: false,
+              reduceMotion: false
+            }
           };
           setUserPreferences(preferences);
           setOriginalPreferences(JSON.parse(JSON.stringify(preferences))); // Deep copy for comparison
@@ -122,7 +128,12 @@ const Profile = () => {
             weeklyEmailUpdates: false,
             notifyNewOutfits: true,
             notifyWeatherChanges: true,
-            pronouns: 'not-specified'
+            pronouns: 'not-specified',
+            appearanceSettings: {
+              theme: 'system',
+              highContrast: false,
+              reduceMotion: false
+            }
           };
           setUserPreferences(defaults);
           setOriginalPreferences(JSON.parse(JSON.stringify(defaults))); // Deep copy for comparison
@@ -148,11 +159,62 @@ const Profile = () => {
           });
         }
       }
+
+      // Get quiz results
+      await fetchQuizResults();
     } catch (error) {
       console.error("Error in fetchUserPreferences:", error);
       toast.error("Something went wrong loading your profile");
     } finally {
       setIsLoading(false);
+    }
+  };
+  
+  // Fetch quiz results to include in preferences
+  const fetchQuizResults = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('user_quiz_results')
+        .select('*')
+        .eq('user_id', user.id);
+      
+      if (error) {
+        console.error('Error fetching quiz results:', error);
+        return;
+      }
+      
+      if (data && data.length > 0) {
+        // Update preferences with quiz results
+        setUserPreferences(prev => {
+          if (!prev) return prev;
+          
+          const updatedPrefs = { ...prev };
+          
+          // Process each quiz result
+          data.forEach(result => {
+            // This is just sample logic - adjust based on the actual data structure
+            if (result.quiz_id === 'find-your-style' && result.result_value) {
+              updatedPrefs.styleQuizResult = result.result_value;
+              
+              // Extract and merge personality tags if available
+              if (result.result_value.personalityTags) {
+                updatedPrefs.personalityTags = [
+                  ...(updatedPrefs.personalityTags || []),
+                  ...result.result_value.personalityTags
+                ];
+              }
+            }
+            
+            // Add other quiz types as needed
+          });
+          
+          return updatedPrefs;
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching quiz results:", error);
     }
   };
   
@@ -162,11 +224,11 @@ const Profile = () => {
     return JSON.stringify(userPreferences) !== JSON.stringify(originalPreferences);
   };
   
-  const saveProfile = async (updatedPreferences: UserPreferences) => {
-    if (!user) return false;
+  const saveProfile = async () => {
+    if (!user || !userPreferences) return false;
     
     // Validation for required fields
-    if (updatedPreferences.firstName === '') {
+    if (userPreferences.firstName === '') {
       toast.error('Please enter your first name');
       return false;
     }
@@ -174,33 +236,38 @@ const Profile = () => {
     setIsSaving(true);
     try {
       // Normalize data to prevent duplicates (case-insensitive)
-      updatedPreferences.favoriteColors = normalizeTags(updatedPreferences.favoriteColors || []);
-      updatedPreferences.favoriteStyles = normalizeTags(updatedPreferences.favoriteStyles || []);
-      updatedPreferences.personalityTags = normalizeTags(updatedPreferences.personalityTags || []);
-      updatedPreferences.occasionPreferences = normalizeTags(updatedPreferences.occasionPreferences || []);
+      userPreferences.favoriteColors = normalizeTags(userPreferences.favoriteColors || []);
+      userPreferences.favoriteStyles = normalizeTags(userPreferences.favoriteStyles || []);
+      userPreferences.personalityTags = normalizeTags(userPreferences.personalityTags || []);
+      userPreferences.occasionPreferences = normalizeTags(userPreferences.occasionPreferences || []);
       
       // Convert preferences to database format
       const preferencesData = {
         user_id: user.id,
-        favorite_colors: updatedPreferences.favoriteColors || [],
-        favorite_styles: updatedPreferences.favoriteStyles || [],
-        personality_tags: updatedPreferences.personalityTags || [],
-        body_type: updatedPreferences.bodyType || 'not-specified',
-        seasonal_preferences: updatedPreferences.seasonalPreferences || {},
-        reminder_enabled: updatedPreferences.outfitReminders || false,
-        reminder_time: updatedPreferences.reminderTime || '08:00',
-        occasions_preferences: updatedPreferences.occasionPreferences || [],
-        climate_preferences: updatedPreferences.climatePreferences || [],
-        preferred_city: updatedPreferences.weatherLocation?.city,
-        preferred_country: updatedPreferences.weatherLocation?.country,
-        use_trends_global: updatedPreferences.useTrendsGlobal,
-        use_trends_local: updatedPreferences.useTrendsLocal,
-        use_only_wardrobe: updatedPreferences.useOnlyWardrobe,
-        temperature_unit: updatedPreferences.temperatureUnit || 'C',
-        weekly_email_updates: updatedPreferences.weeklyEmailUpdates,
-        notify_new_outfits: updatedPreferences.notifyNewOutfits,
-        notify_weather_changes: updatedPreferences.notifyWeatherChanges,
-        pronouns: updatedPreferences.pronouns || 'not-specified'
+        favorite_colors: userPreferences.favoriteColors || [],
+        favorite_styles: userPreferences.favoriteStyles || [],
+        personality_tags: userPreferences.personalityTags || [],
+        body_type: userPreferences.bodyType || 'not-specified',
+        seasonal_preferences: userPreferences.seasonalPreferences || {},
+        reminder_enabled: userPreferences.outfitReminders || false,
+        reminder_time: userPreferences.reminderTime || '08:00',
+        occasions_preferences: userPreferences.occasionPreferences || [],
+        climate_preferences: userPreferences.climatePreferences || [],
+        preferred_city: userPreferences.weatherLocation?.city,
+        preferred_country: userPreferences.weatherLocation?.country,
+        use_trends_global: userPreferences.useTrendsGlobal,
+        use_trends_local: userPreferences.useTrendsLocal,
+        use_only_wardrobe: userPreferences.useOnlyWardrobe,
+        temperature_unit: userPreferences.temperatureUnit || 'C',
+        weekly_email_updates: userPreferences.weeklyEmailUpdates,
+        notify_new_outfits: userPreferences.notifyNewOutfits,
+        notify_weather_changes: userPreferences.notifyWeatherChanges,
+        pronouns: userPreferences.pronouns || 'not-specified',
+        appearance_settings: userPreferences.appearanceSettings || {
+          theme: 'system',
+          highContrast: false,
+          reduceMotion: false
+        }
       };
 
       // Check if user has preferences record
@@ -238,9 +305,9 @@ const Profile = () => {
       const { error: profileError } = await supabase
         .from('profiles')
         .update({
-          first_name: updatedPreferences.firstName,
-          last_name: updatedPreferences.lastName,
-          pronouns: updatedPreferences.pronouns
+          first_name: userPreferences.firstName,
+          last_name: userPreferences.lastName,
+          pronouns: userPreferences.pronouns
         })
         .eq('id', user.id);
       
@@ -250,8 +317,8 @@ const Profile = () => {
         return false;
       }
       
-      setUserPreferences(updatedPreferences);
-      setOriginalPreferences(JSON.parse(JSON.stringify(updatedPreferences))); // Update original for change comparison
+      setUserPreferences(userPreferences);
+      setOriginalPreferences(JSON.parse(JSON.stringify(userPreferences))); // Update original for change comparison
       toast.success('Profile updated successfully!');
       
       return true;
@@ -333,6 +400,16 @@ const Profile = () => {
             setPreferences={setUserPreferences}
           />
         )
+      },
+      {
+        id: "account",
+        title: "Account",
+        content: (
+          <AccountSection 
+            preferences={userPreferences}
+            setPreferences={setUserPreferences}
+          />
+        )
       }
     ];
     
@@ -393,7 +470,7 @@ const Profile = () => {
         {userPreferences && (
           <ProfileFooter
             isSaving={isSaving}
-            onSave={() => saveProfile(userPreferences)}
+            onSave={saveProfile}
             hasChanges={hasChanges()}
           />
         )}
