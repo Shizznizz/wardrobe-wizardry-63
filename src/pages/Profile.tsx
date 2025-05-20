@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Container } from '@/components/ui/container';
 import { useAuth } from '@/hooks/useAuth';
@@ -99,7 +100,8 @@ const Profile = () => {
               theme: 'system',
               highContrast: false,
               reduceMotion: false
-            }
+            },
+            styleQuizResult: null // Will be populated below if available
           };
           setUserPreferences(preferences);
           setOriginalPreferences(JSON.parse(JSON.stringify(preferences))); // Deep copy for comparison
@@ -133,7 +135,8 @@ const Profile = () => {
               theme: 'system',
               highContrast: false,
               reduceMotion: false
-            }
+            },
+            styleQuizResult: null
           };
           setUserPreferences(defaults);
           setOriginalPreferences(JSON.parse(JSON.stringify(defaults))); // Deep copy for comparison
@@ -178,7 +181,8 @@ const Profile = () => {
       const { data, error } = await supabase
         .from('user_quiz_results')
         .select('*')
-        .eq('user_id', user.id);
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
       
       if (error) {
         console.error('Error fetching quiz results:', error);
@@ -192,23 +196,31 @@ const Profile = () => {
           
           const updatedPrefs = { ...prev };
           
-          // Process each quiz result
-          data.forEach(result => {
-            // This is just sample logic - adjust based on the actual data structure
-            if (result.quiz_id === 'find-your-style' && result.result_value) {
-              updatedPrefs.styleQuizResult = result.result_value;
-              
-              // Extract and merge personality tags if available
-              if (result.result_value.personalityTags) {
-                updatedPrefs.personalityTags = [
-                  ...(updatedPrefs.personalityTags || []),
-                  ...result.result_value.personalityTags
-                ];
-              }
-            }
+          // Look for the style quiz result specifically
+          const styleQuiz = data.find(result => result.quiz_id === 'find-your-style');
+          
+          if (styleQuiz && styleQuiz.result_value) {
+            updatedPrefs.styleQuizResult = {
+              ...styleQuiz.result_value,
+              completedAt: styleQuiz.created_at,
+              styleSummary: styleQuiz.result_value.styleSummary || styleQuiz.result_label
+            };
             
-            // Add other quiz types as needed
-          });
+            // Extract and merge personality tags if available
+            if (styleQuiz.result_value.personalityTags && 
+                styleQuiz.result_value.personalityTags.length > 0) {
+              // Only add new personality tags that aren't already in the user preferences
+              const existingTags = new Set(updatedPrefs.personalityTags || []);
+              styleQuiz.result_value.personalityTags.forEach((tag: string) => {
+                if (!existingTags.has(tag)) {
+                  updatedPrefs.personalityTags = [
+                    ...(updatedPrefs.personalityTags || []),
+                    tag
+                  ];
+                }
+              });
+            }
+          }
           
           return updatedPrefs;
         });
@@ -317,7 +329,6 @@ const Profile = () => {
         return false;
       }
       
-      setUserPreferences(userPreferences);
       setOriginalPreferences(JSON.parse(JSON.stringify(userPreferences))); // Update original for change comparison
       toast.success('Profile updated successfully!');
       

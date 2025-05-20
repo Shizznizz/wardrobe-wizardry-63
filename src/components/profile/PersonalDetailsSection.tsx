@@ -18,8 +18,8 @@ interface PersonalDetailsSectionProps {
 
 const PersonalDetailsSection = ({ preferences, setPreferences }: PersonalDetailsSectionProps) => {
   const { user } = useAuth();
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+  const [firstName, setFirstName] = useState(preferences.firstName || '');
+  const [lastName, setLastName] = useState(preferences.lastName || '');
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   
@@ -99,6 +99,27 @@ const PersonalDetailsSection = ({ preferences, setPreferences }: PersonalDetails
     setUploading(true);
     
     try {
+      // Check if the avatars bucket exists, if not, create it
+      const { data: buckets, error: bucketsError } = await supabase
+        .storage
+        .listBuckets();
+      
+      const avatarsBucketExists = buckets?.find(bucket => bucket.name === 'avatars');
+      
+      if (!avatarsBucketExists && !bucketsError) {
+        // If the bucket doesn't exist, create it (requires admin rights)
+        const { error: createBucketError } = await supabase
+          .storage
+          .createBucket('avatars', {
+            public: true
+          });
+        
+        if (createBucketError) {
+          console.error('Error creating avatars bucket:', createBucketError);
+          throw new Error('Could not create storage for avatars');
+        }
+      }
+      
       // Upload the file to the avatars bucket
       const { error: uploadError, data } = await supabase
         .storage

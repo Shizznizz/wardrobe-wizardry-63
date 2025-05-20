@@ -12,10 +12,13 @@ interface ProfileFooterProps {
 
 const ProfileFooter = ({ isSaving, onSave, hasChanges }: ProfileFooterProps) => {
   const handleSave = async () => {
+    if (isSaving) return;
+    
     try {
       const success = await onSave();
-      if (success) {
-        toast.success("Your profile has been updated successfully!");
+      if (!success) {
+        // Error message is handled in the onSave function
+        return;
       }
     } catch (error) {
       console.error('Error saving profile:', error);
@@ -24,12 +27,12 @@ const ProfileFooter = ({ isSaving, onSave, hasChanges }: ProfileFooterProps) => 
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-slate-900 to-transparent md:sticky md:bottom-auto md:mt-8 md:pb-4 md:bg-transparent">
+    <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-slate-900 to-transparent md:sticky md:bottom-auto md:mt-8 md:pb-4 md:bg-transparent z-10">
       <div className="flex justify-end max-w-5xl mx-auto w-full">
         <Button
           onClick={handleSave}
           disabled={isSaving || !hasChanges}
-          className="bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 text-white shadow-md transition-all"
+          className={`bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 text-white shadow-md transition-all ${!hasChanges ? 'opacity-50 cursor-not-allowed' : ''}`}
           title={!hasChanges ? "No changes to save" : ""}
         >
           {isSaving ? (

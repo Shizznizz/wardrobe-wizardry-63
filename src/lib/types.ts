@@ -218,6 +218,19 @@ export interface TrendingClothingItem extends Omit<ClothingItem, 'season' | 'ima
   image?: string;
 }
 
+export interface AppearanceSettings {
+  theme: string;
+  highContrast: boolean;
+  reduceMotion: boolean;
+}
+
+export interface StyleQuizResult {
+  completedAt?: string | Date;
+  styleSummary?: string;
+  personalityTags?: string[];
+  [key: string]: any;
+}
+
 export interface UserPreferences {
   favoriteColors?: string[];
   favoriteStyles?: string[];
@@ -244,13 +257,10 @@ export interface UserPreferences {
   weeklyEmailUpdates?: boolean;
   notifyNewOutfits?: boolean;
   notifyWeatherChanges?: boolean;
-  // Add the missing properties
-  appearanceSettings?: {
-    theme: string;
-    highContrast: boolean;
-    reduceMotion: boolean;
-  };
-  styleQuizResult?: any; // Using 'any' for now, can be replaced with a more specific type later
+  // Add the appearance settings property
+  appearanceSettings?: AppearanceSettings;
+  // Add the style quiz result property
+  styleQuizResult?: StyleQuizResult | null;
 }
 
 export interface Outfit {

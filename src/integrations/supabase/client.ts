@@ -1,3 +1,4 @@
+
 import { createClient } from '@supabase/supabase-js';
 import { UserPreferences, Outfit, ClothingItem } from '@/lib/types';
 import { OutfitLog } from '@/components/outfits/OutfitLogItem';
@@ -7,7 +8,13 @@ const supabaseUrl = 'https://aaiyxtbovepseasghtth.supabase.co';
 const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFhaXl4dGJvdmVwc2Vhc2dodHRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI0NzcxNDMsImV4cCI6MjA1ODA1MzE0M30.Pq66ZdBT_ZEBnPbXkDe-SVMnMvqoNjcuTo05GcPabL0';
 
 // Create the Supabase client
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    storage: localStorage
+  }
+});
 
 export const saveUserPreferences = async (userId: string, preferences: UserPreferences) => {
   try {
@@ -47,7 +54,8 @@ export const saveUserPreferences = async (userId: string, preferences: UserPrefe
       weekly_email_updates: preferences.weeklyEmailUpdates,
       notify_new_outfits: preferences.notifyNewOutfits,
       notify_weather_changes: preferences.notifyWeatherChanges,
-      pronouns: preferences.pronouns
+      pronouns: preferences.pronouns,
+      appearance_settings: preferences.appearanceSettings
     };
     
     if (existingPrefs) {
@@ -125,13 +133,42 @@ export const getUserPreferences = async (userId: string) => {
       },
       outfitReminders: data.reminder_enabled || false,
       reminderTime: data.reminder_time || '08:00',
-      occasionPreferences: data.occasion_preferences || [],
+      occasionPreferences: data.occasions_preferences || [],
       climatePreferences: data.climate_preferences || [],
       weatherLocation: data.preferred_city ? {
         city: data.preferred_city,
         country: data.preferred_country || ''
-      } : undefined
+      } : undefined,
+      useTrendsGlobal: data.use_trends_global !== undefined ? data.use_trends_global : true,
+      useTrendsLocal: data.use_trends_local !== undefined ? data.use_trends_local : true,
+      useOnlyWardrobe: data.use_only_wardrobe !== undefined ? data.use_only_wardrobe : false,
+      temperatureUnit: data.temperature_unit || 'C',
+      weeklyEmailUpdates: data.weekly_email_updates !== undefined ? data.weekly_email_updates : false,
+      notifyNewOutfits: data.notify_new_outfits !== undefined ? data.notify_new_outfits : true,
+      notifyWeatherChanges: data.notify_weather_changes !== undefined ? data.notify_weather_changes : true,
+      pronouns: data.pronouns || 'not-specified',
+      appearanceSettings: data.appearance_settings || {
+        theme: 'system',
+        highContrast: false,
+        reduceMotion: false
+      }
     };
+    
+    // Also get profile information
+    try {
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('first_name, last_name')
+        .eq('id', userId)
+        .single();
+      
+      if (!profileError && profileData) {
+        preferences.firstName = profileData.first_name;
+        preferences.lastName = profileData.last_name;
+      }
+    } catch (profileLookupError) {
+      console.error('Error fetching profile data:', profileLookupError);
+    }
     
     return { success: true, data: preferences };
   } catch (error) {

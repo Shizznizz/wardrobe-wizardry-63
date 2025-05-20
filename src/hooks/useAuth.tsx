@@ -41,8 +41,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
         
         setLoading(false);
-        
-        // Removed automatic toast notifications for auth state changes
       }
     );
 
@@ -71,10 +69,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signOut = async () => {
     try {
       await supabase.auth.signOut();
-      toast.success("Signed out successfully"); // Keep this toast as it's manually triggered
+      toast.success("Signed out successfully");
     } catch (error) {
       console.error("Error signing out:", error);
       toast.error("Failed to sign out");
+      throw error; // Rethrow to handle in the component
     }
   };
 

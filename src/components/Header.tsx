@@ -78,7 +78,7 @@ const Header = () => {
       { name: 'Fitting Room', path: '/fitting-room' },
       { name: 'Shop & Try', path: '/shop-and-try' },
       { name: 'Quizzes', path: '/quizzes' },
-      { name: 'Profile', path: '/profile' }, // Add direct profile link to main nav
+      { name: 'Profile', path: '/profile' }, // Direct profile link
     ];
   } else {
     navItems = [
