@@ -1,3 +1,4 @@
+
 // src/lib/types.ts
 
 export type ClothingColor =
@@ -247,6 +248,7 @@ export interface UserPreferences {
   notifyNewOutfits?: boolean;
   notifyWeatherChanges?: boolean;
   pronouns?: string;
+  customPronouns?: string; // Added this field
   appearanceSettings?: {
     theme: 'light' | 'dark' | 'system';
     reduceMotion: boolean;
