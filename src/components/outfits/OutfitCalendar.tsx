@@ -66,6 +66,7 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog, location }: OutfitCa
     addOutfitLog,
     updateOutfitLog,
     deleteOutfitLog,
+    reassignOutfitLog,
     getLogsForDay,
     getRarelyWornOutfits,
     getFrequentlyWornOutfits,
@@ -183,6 +184,21 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog, location }: OutfitCa
     }
   };
 
+  const handleReassignOutfit = async (logId: string, newOutfitId: string) => {
+    try {
+      const success = await reassignOutfitLog(logId, newOutfitId);
+      if (success) {
+        toast.success("Outfit reassigned successfully");
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error("Error reassigning outfit", error);
+      toast.error("Failed to reassign outfit. Please try again.");
+      return false;
+    }
+  };
+
   const renderCalendarView = () => {
     return (
       <div className="space-y-6">
@@ -218,6 +234,7 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog, location }: OutfitCa
                   onAddActivity={handleAddActivity}
                   weatherLocation={location}
                   onDeleteLog={deleteOutfitLog}
+                  onReassignOutfit={handleReassignOutfit}
                 />
               )}
             </>
@@ -233,6 +250,7 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog, location }: OutfitCa
               setSelectedDate={setSelectedDate}
               onAddOutfit={handleAddOutfit}
               onAddActivity={handleAddActivity}
+              onReassignOutfit={handleReassignOutfit}
               weatherLocation={location}
             />
           ) : (
@@ -246,6 +264,7 @@ const OutfitCalendar = ({ outfits, clothingItems, onAddLog, location }: OutfitCa
               onLogDelete={deleteOutfitLog}
               onAddOutfit={handleAddOutfit}
               onAddActivity={handleAddActivity}
+              onReassignOutfit={handleReassignOutfit}
               weatherLocation={location}
             />
           )}

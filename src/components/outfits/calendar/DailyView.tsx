@@ -18,6 +18,7 @@ interface DailyViewProps {
   onLogDelete: (logId: string) => Promise<boolean>;
   onAddOutfit: (outfitId: string) => void;
   onAddActivity: (activity: string) => void;
+  onReassignOutfit?: (logId: string, newOutfitId: string) => Promise<boolean>;
   weatherLocation?: { city: string; country: string };
 }
 
@@ -31,6 +32,7 @@ const DailyView = ({
   onLogDelete,
   onAddOutfit,
   onAddActivity,
+  onReassignOutfit,
   weatherLocation
 }: DailyViewProps) => {
   // Filter logs for the selected date
@@ -41,6 +43,13 @@ const DailyView = ({
   const goToPreviousDay = () => setSelectedDate(subDays(selectedDate, 1));
   const goToNextDay = () => setSelectedDate(addDays(selectedDate, 1));
   const goToToday = () => setSelectedDate(new Date());
+
+  const handleReassignOutfit = async (logId: string, newOutfitId: string) => {
+    if (onReassignOutfit) {
+      return await onReassignOutfit(logId, newOutfitId);
+    }
+    return false;
+  };
 
   return (
     <motion.div
@@ -91,6 +100,7 @@ const DailyView = ({
         onAddActivity={onAddActivity}
         weatherLocation={weatherLocation}
         onDeleteLog={onLogDelete}
+        onReassignOutfit={handleReassignOutfit}
       />
     </motion.div>
   );

@@ -36,6 +36,7 @@ export function useCalendarState(initialOutfits: Outfit[], initialClothingItems:
             date: new Date(log.date)
           }));
           setOutfitLogs(formattedLogs);
+          console.log('Loaded outfit logs from Supabase:', formattedLogs.length);
         } else if (error) {
           console.error('Error loading outfit logs:', error);
           // Fallback to localStorage
@@ -65,6 +66,7 @@ export function useCalendarState(initialOutfits: Outfit[], initialClothingItems:
           date: new Date(log.date)
         }));
         setOutfitLogs(formattedLogs);
+        console.log('Loaded outfit logs from localStorage:', formattedLogs.length);
       }
     } catch (error) {
       console.error('Error loading outfit logs from localStorage:', error);
@@ -76,6 +78,7 @@ export function useCalendarState(initialOutfits: Outfit[], initialClothingItems:
     try {
       if (user) {
         // Add to Supabase
+        console.log('Saving outfit log to Supabase:', log);
         const { success, data, error } = await saveSBOutfitLog(user.id, log);
         
         if (!success || error) {
@@ -93,7 +96,7 @@ export function useCalendarState(initialOutfits: Outfit[], initialClothingItems:
           
           // Add to state
           setOutfitLogs(prev => [...prev, formattedData]);
-          toast.success(`Outfit logged for ${format(new Date(log.date), 'MMMM d, yyyy')}`);
+          console.log('Outfit log saved successfully to Supabase');
           return formattedData;
         }
       } else {
@@ -112,8 +115,7 @@ export function useCalendarState(initialOutfits: Outfit[], initialClothingItems:
           date: log.date instanceof Date ? log.date.toISOString() : log.date
         }));
         localStorage.setItem('outfitLogs', JSON.stringify(logsForStorage));
-        
-        toast.success(`Outfit logged for ${format(new Date(log.date), 'MMMM d, yyyy')}`);
+        console.log('Outfit log saved successfully to localStorage');
         return newLog;
       }
     } catch (error) {
@@ -128,6 +130,7 @@ export function useCalendarState(initialOutfits: Outfit[], initialClothingItems:
     try {
       if (user) {
         // Update in Supabase
+        console.log('Updating outfit log in Supabase:', id, updates);
         const { success, data, error } = await updateSBOutfitLog(user.id, id, updates);
         
         if (!success || error) {
@@ -145,7 +148,7 @@ export function useCalendarState(initialOutfits: Outfit[], initialClothingItems:
           
           // Update in state
           setOutfitLogs(prev => prev.map(log => log.id === id ? formattedData : log));
-          toast.success('Outfit log updated successfully');
+          console.log('Outfit log updated successfully in Supabase');
           return true;
         }
       } else {
@@ -165,13 +168,34 @@ export function useCalendarState(initialOutfits: Outfit[], initialClothingItems:
           date: log.date instanceof Date ? log.date.toISOString() : log.date
         }));
         localStorage.setItem('outfitLogs', JSON.stringify(logsForStorage));
-        
-        toast.success('Outfit log updated successfully');
+        console.log('Outfit log updated successfully in localStorage');
         return true;
       }
     } catch (error) {
       console.error('Failed to update outfit log:', error);
       toast.error('Failed to update outfit log');
+      return false;
+    }
+  };
+
+  // Reassign an outfit in a log
+  const reassignOutfitLog = async (id: string, newOutfitId: string) => {
+    try {
+      // Find the log to be updated
+      const logToUpdate = outfitLogs.find(log => log.id === id);
+      if (!logToUpdate) {
+        console.error('Log not found for reassignment');
+        return false;
+      }
+      
+      // Update with the new outfit ID
+      const updates = { outfitId: newOutfitId };
+      const success = await updateOutfitLog(id, updates);
+      
+      return success;
+    } catch (error) {
+      console.error('Failed to reassign outfit log:', error);
+      toast.error('Failed to reassign outfit');
       return false;
     }
   };
@@ -181,6 +205,7 @@ export function useCalendarState(initialOutfits: Outfit[], initialClothingItems:
     try {
       if (user) {
         // Delete from Supabase
+        console.log('Deleting outfit log from Supabase:', id);
         const { success, error } = await deleteSBOutfitLog(user.id, id);
         
         if (!success || error) {
@@ -205,7 +230,7 @@ export function useCalendarState(initialOutfits: Outfit[], initialClothingItems:
         localStorage.setItem('outfitLogs', JSON.stringify(logsForStorage));
       }
       
-      toast.success('Outfit log deleted successfully');
+      console.log('Outfit log deleted successfully');
       return true;
     } catch (error) {
       console.error('Failed to delete outfit log:', error);
@@ -318,6 +343,7 @@ export function useCalendarState(initialOutfits: Outfit[], initialClothingItems:
     addOutfitLog,
     updateOutfitLog,
     deleteOutfitLog,
+    reassignOutfitLog,
     getLogsForDay,
     getRarelyWornOutfits,
     getFrequentlyWornOutfits,

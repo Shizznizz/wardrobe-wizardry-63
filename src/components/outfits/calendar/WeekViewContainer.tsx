@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { addDays, format, startOfWeek, endOfWeek, isSameDay } from 'date-fns';
@@ -20,6 +21,7 @@ interface WeekViewContainerProps {
   onLogDelete: (logId: string) => Promise<boolean>;
   onAddOutfit: (outfitId: string) => void;
   onAddActivity: (activity: string) => void;
+  onReassignOutfit?: (logId: string, newOutfitId: string) => Promise<boolean>;
   weatherLocation?: { city: string; country: string };
 }
 
@@ -34,6 +36,7 @@ const WeekViewContainer = ({
   setSelectedDate,
   onAddOutfit,
   onAddActivity,
+  onReassignOutfit,
   weatherLocation
 }: WeekViewContainerProps) => {
   const weekStart = startOfWeek(currentDate, { weekStartsOn: 0 });
@@ -59,6 +62,13 @@ const WeekViewContainer = ({
       setSelectedDate(date);
     }
     onDateClick(date);
+  };
+
+  const handleReassignOutfit = async (logId: string, newOutfitId: string) => {
+    if (onReassignOutfit) {
+      return await onReassignOutfit(logId, newOutfitId);
+    }
+    return false;
   };
 
   return (
@@ -103,6 +113,7 @@ const WeekViewContainer = ({
             onAddActivity={onAddActivity}
             weatherLocation={weatherLocation}
             onDeleteLog={onLogDelete}
+            onReassignOutfit={handleReassignOutfit}
           />
         </div>
       )}

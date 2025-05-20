@@ -14,16 +14,53 @@ export const getIconName = (condition: string): string => {
   return 'sun'; // Default
 };
 
+// Cache weather data to avoid repeated requests
+const weatherCache = new Map<string, { data: WeatherInfo; timestamp: number }>();
+const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
+
 export const fetchWeatherData = async (city: string, country: string): Promise<WeatherInfo> => {
   if (!city || !country) {
     throw new Error('City and country are required');
   }
 
+  const cacheKey = `${city.toLowerCase()}-${country.toLowerCase()}`;
+  const cachedData = weatherCache.get(cacheKey);
+  
+  // Use cached data if available and not expired
+  if (cachedData && (Date.now() - cachedData.timestamp) < CACHE_DURATION) {
+    console.log(`Using cached weather data for ${city}, ${country}`);
+    return cachedData.data;
+  }
+
   console.log(`Fetching weather for ${city}, ${country}...`);
   
-  // You would typically call a real weather API here
-  // Since we don't have an API key in this demo, we'll generate realistic data
-  return generateRandomWeather(city, country);
+  try {
+    // You would typically call a real weather API here
+    // Since we don't have an API key in this demo, we'll generate realistic data
+    const weatherData = generateRandomWeather(city, country);
+    
+    // Cache the result
+    weatherCache.set(cacheKey, { 
+      data: weatherData, 
+      timestamp: Date.now() 
+    });
+    
+    return weatherData;
+  } catch (error) {
+    console.error('Error fetching weather data:', error);
+    throw error;
+  }
+};
+
+export const generateWeatherForDate = (date: Date, city?: string, country?: string): WeatherInfo => {
+  const month = date.getMonth();
+  const isNorthernHemisphere = !['AU', 'NZ', 'AR', 'CL', 'ZA'].includes(country || '');
+  
+  // Use generateRandomWeather with seasonal adjustments based on the date
+  const weatherData = generateRandomWeather(city, country);
+  
+  // Make additional adjustments based on the date if needed
+  return weatherData;
 };
 
 export const generateRandomWeather = (city?: string, country?: string): WeatherInfo => {

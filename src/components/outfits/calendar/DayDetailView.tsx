@@ -1,14 +1,18 @@
+
 import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Plus, Trash, CalendarDays, Pencil, Shirt, MapPin } from 'lucide-react';
+import { Plus, Trash, CalendarDays, Pencil, Shirt, MapPin, AlertCircle } from 'lucide-react';
 import { Outfit } from '@/lib/types';
 import { OutfitLog } from '@/components/outfits/OutfitLogItem';
 import CompactWeather from './CompactWeather';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import OutfitSelectorDialog from './OutfitSelectorDialog';
 
 interface DayDetailViewProps {
   selectedDate: Date;
@@ -19,6 +23,7 @@ interface DayDetailViewProps {
   weatherLocation?: { city: string; country: string };
   onDeleteLog?: (id: string) => Promise<boolean>;
   onWeatherChange?: (weather: any) => void;
+  onReassignOutfit?: (logId: string, oldOutfitId: string) => void;
 }
 
 const DayDetailView = ({ 
@@ -29,20 +34,23 @@ const DayDetailView = ({
   onAddActivity,
   weatherLocation,
   onDeleteLog,
-  onWeatherChange
+  onWeatherChange,
+  onReassignOutfit
 }: DayDetailViewProps) => {
   const [newActivity, setNewActivity] = useState('');
   const [isAddingActivity, setIsAddingActivity] = useState(false);
-
+  const [isOutfitSelectorOpen, setIsOutfitSelectorOpen] = useState(false);
+  const [currentReassignLogId, setCurrentReassignLogId] = useState<string | null>(null);
+  
   useEffect(() => {
     // Reset the activity input state when the selected date changes
     setNewActivity('');
     setIsAddingActivity(false);
   }, [selectedDate]);
 
-  const handleAddActivity = () => {
+  const handleAddActivity = async () => {
     if (newActivity.trim() !== '') {
-      onAddActivity?.(newActivity.trim());
+      await onAddActivity?.(newActivity.trim());
       setNewActivity('');
       setIsAddingActivity(false);
     } else {
@@ -59,7 +67,32 @@ const DayDetailView = ({
     }
   };
 
+  const handleOpenOutfitSelector = () => {
+    setIsOutfitSelectorOpen(true);
+  };
+
+  const handleReassignOutfit = (logId: string) => {
+    setCurrentReassignLogId(logId);
+    setIsOutfitSelectorOpen(true);
+  };
+
+  const handleOutfitSelected = (outfitId: string) => {
+    if (currentReassignLogId) {
+      // Handle reassignment of an outfit
+      const log = outfitLogs.find(log => log.id === currentReassignLogId);
+      if (log && onReassignOutfit) {
+        onReassignOutfit(currentReassignLogId, outfitId);
+      }
+      setCurrentReassignLogId(null);
+    } else {
+      // Handle adding a new outfit
+      onAddOutfit?.(outfitId);
+    }
+    setIsOutfitSelectorOpen(false);
+  };
+
   const favoriteOutfits = outfits.filter(outfit => outfit.favorite);
+  const hasOutfits = outfits && outfits.length > 0;
 
   return (
     <Card className="bg-slate-800/40 border-purple-500/20 shadow-lg backdrop-blur-sm">
@@ -111,7 +144,18 @@ const DayDetailView = ({
                         <span className="text-sm">{outfitDetails.name}</span>
                       </>
                     ) : (
-                      <span className="text-sm text-red-300">Unknown outfit</span>
+                      <div className="flex items-center gap-2">
+                        <AlertCircle className="h-4 w-4 text-red-400" />
+                        <span className="text-sm text-red-300">Outfit not found</span>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="text-xs py-0 h-6 ml-1"
+                          onClick={() => handleReassignOutfit(log.id)}
+                        >
+                          Reassign outfit
+                        </Button>
+                      </div>
                     )}
                   </div>
                   
@@ -138,41 +182,30 @@ const DayDetailView = ({
         <div className="flex items-center justify-between pt-2 border-t border-slate-600/30">
           {!isAddingActivity ? (
             <>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="ghost" size="sm" className="text-xs">
-                    <Plus className="h-4 w-4 mr-1" />
-                    Add Outfit
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-72 p-2 bg-slate-800 border-purple-500/30">
-                  <div className="space-y-2">
-                    <h4 className="text-sm font-medium mb-2">Quick add outfit:</h4>
-                    <div className="grid grid-cols-2 gap-2">
-                      {favoriteOutfits.length > 0 ? (
-                        favoriteOutfits.slice(0, 6).map(outfit => (
-                          <Button 
-                            key={outfit.id} 
-                            variant="outline" 
-                            size="sm"
-                            className="text-xs justify-start truncate"
-                            onClick={() => {
-                              onAddOutfit?.(outfit.id);
-                            }}>
-                            <Shirt className="h-3 w-3 mr-1 text-purple-400" />
-                            {outfit.name}
-                          </Button>
-                        ))
-                      ) : (
-                        <div className="col-span-2 text-center text-xs text-slate-400 p-2">
-                          No favorite outfits found
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </PopoverContent>
-              </Popover>
-          
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="text-xs"
+                        onClick={handleOpenOutfitSelector}
+                        disabled={!hasOutfits}
+                      >
+                        <Plus className="h-4 w-4 mr-1" />
+                        Add Outfit
+                      </Button>
+                    </span>
+                  </TooltipTrigger>
+                  {!hasOutfits && (
+                    <TooltipContent side="top" className="bg-slate-800 border-purple-500/20">
+                      <p className="text-xs">You need to create outfits in Mix & Match before using the planner.</p>
+                    </TooltipContent>
+                  )}
+                </Tooltip>
+              </TooltipProvider>
+
               <Button 
                 variant="ghost" 
                 size="sm" 
@@ -208,6 +241,16 @@ const DayDetailView = ({
           )}
         </div>
       </CardContent>
+
+      <OutfitSelectorDialog
+        isOpen={isOutfitSelectorOpen}
+        onClose={() => {
+          setIsOutfitSelectorOpen(false);
+          setCurrentReassignLogId(null);
+        }}
+        onSubmit={handleOutfitSelected}
+        outfits={outfits}
+      />
     </Card>
   );
 };

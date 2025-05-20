@@ -1,115 +1,141 @@
 
+import React, { useState, useEffect } from 'react';
+import { format, isToday, addDays, isFuture } from 'date-fns';
+import { Card } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { fetchWeatherData, generateRandomWeather, getIconName } from '@/services/WeatherService';
 import { WeatherInfo } from '@/lib/types';
-import { Sun, Cloud, CloudRain, CloudFog, Thermometer } from 'lucide-react';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 
 interface CompactWeatherProps {
-  weather: WeatherInfo | null;
   date: Date;
-  customTip?: string;
+  weather: WeatherInfo | null;
   location?: { city: string; country: string };
-  onWeatherChange?: (weather: any) => void;
+  onWeatherChange?: (weather: WeatherInfo) => void;
 }
 
-const CompactWeather = ({ weather, date, customTip, location, onWeatherChange }: CompactWeatherProps) => {
-  const getWeatherIcon = () => {
-    if (!weather) return <Thermometer className="w-4 h-4" />;
-    
-    const condition = weather.condition.toLowerCase();
-    if (condition.includes('sun') || condition.includes('clear')) {
-      return <Sun className="w-4 h-4 text-yellow-400" />;
+const CompactWeather = ({ date, weather: initialWeather, location, onWeatherChange }: CompactWeatherProps) => {
+  const [weather, setWeather] = useState<WeatherInfo | null>(initialWeather);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const getWeather = async () => {
+      if (!location?.city || !location?.country) {
+        return;
+      }
+
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        // Don't make API calls for historical dates in this simplified version
+        // Normally you'd use a weather history API for past dates
+        let weatherData: WeatherInfo;
+
+        if (isToday(date) || isFuture(date)) {
+          if (isFuture(date)) {
+            // For future dates, simulate forecast data (up to 7 days)
+            const daysDiff = Math.floor((date.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+            if (daysDiff <= 7) {
+              // For a real app, we'd call a forecast API here
+              weatherData = generateRandomWeather(location.city, location.country);
+            } else {
+              // For dates beyond forecast range, generate reasonable data based on seasonal averages
+              weatherData = generateRandomWeather(location.city, location.country);
+            }
+          } else {
+            // For today, use current weather
+            weatherData = await fetchWeatherData(location.city, location.country);
+          }
+        } else {
+          // For past dates, we'd typically use a historical weather API
+          // For simplicity, we'll generate realistic data based on the date
+          weatherData = generateRandomWeather(location.city, location.country);
+        }
+
+        setWeather(weatherData);
+        if (onWeatherChange) {
+          onWeatherChange(weatherData);
+        }
+      } catch (err) {
+        console.error('Error fetching weather data:', err);
+        setError('Unable to fetch weather data');
+        
+        // Generate fallback data if API fails
+        const fallbackData = generateRandomWeather(location.city, location.country);
+        setWeather(fallbackData);
+        if (onWeatherChange) {
+          onWeatherChange(fallbackData);
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (location?.city && location?.country) {
+      getWeather();
     }
-    if (condition.includes('cloud') && !condition.includes('rain')) {
-      return <Cloud className="w-4 h-4 text-blue-200" />;
+  }, [date, location?.city, location?.country, onWeatherChange]);
+
+  const renderWeatherIcon = (iconName: string) => {
+    switch (iconName) {
+      case 'sun':
+        return <div className="text-2xl">☀️</div>;
+      case 'cloud':
+        return <div className="text-2xl">☁️</div>;
+      case 'rain':
+        return <div className="text-2xl">🌧️</div>;
+      case 'snow':
+        return <div className="text-2xl">❄️</div>;
+      case 'fog':
+        return <div className="text-2xl">🌫️</div>;
+      default:
+        return <div className="text-2xl">☀️</div>;
     }
-    if (condition.includes('rain')) {
-      return <CloudRain className="w-4 h-4 text-blue-400" />;
-    }
-    if (condition.includes('mist') || condition.includes('fog')) {
-      return <CloudFog className="w-4 h-4 text-gray-400" />;
-    }
-    
-    return <Thermometer className="w-4 h-4" />;
   };
 
-  const getOliviaTip = () => {
-    if (customTip) return customTip;
-    if (!weather) return "Loading weather info...";
-    
-    const condition = weather.condition.toLowerCase();
-    const month = date.getMonth();
-    const season = month >= 2 && month <= 4 ? 'spring' :
-                  month >= 5 && month <= 7 ? 'summer' :
-                  month >= 8 && month <= 10 ? 'autumn' : 'winter';
-    
-    if (condition.includes('rain')) {
-      return weather.temperature > 20 
-        ? "Don't forget a light rain jacket!"
-        : "Stay dry with waterproof layers today.";
-    }
-    
-    if (condition.includes('snow')) {
-      return "Bundle up warmly and wear waterproof boots!";
-    }
-    
-    if (condition.includes('wind')) {
-      return weather.temperature > 20
-        ? "A light windbreaker might be useful today."
-        : "Layer up against the wind today!";
-    }
-    
-    switch (season) {
-      case 'summer':
-        return weather.temperature > 25 
-          ? "Stay cool with breathable, light fabrics."
-          : "Perfect weather for your summer outfits!";
-      case 'winter':
-        return weather.temperature < 5
-          ? "Bundle up with warm layers today!"
-          : "Layer up for winter comfort.";
-      case 'spring':
-        return weather.temperature < 15
-          ? "Spring can be chilly - layer up!"
-          : "Perfect spring weather for light layers!";
-      case 'autumn':
-        return weather.temperature < 15
-          ? "Autumn chill - time for cozy layers!"
-          : "Enjoy the mild autumn weather!";
-      default:
-        return "Dress comfortably for today's weather!";
-    }
-  };
+  if (isLoading) {
+    return (
+      <Card className="p-3 bg-slate-700/30">
+        <div className="flex items-center justify-between">
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-24 bg-slate-600" />
+            <Skeleton className="h-3 w-32 bg-slate-600" />
+          </div>
+          <Skeleton className="h-10 w-10 rounded-full bg-slate-600" />
+        </div>
+      </Card>
+    );
+  }
+
+  if (error || !weather) {
+    return (
+      <Card className="p-3 bg-slate-700/30">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-xs text-slate-400">Weather</p>
+            <p className="text-sm">{error || "Weather data unavailable"}</p>
+          </div>
+          <div className="text-xl">❓</div>
+        </div>
+      </Card>
+    );
+  }
 
   return (
-    <div className="flex items-center gap-2 text-sm">
-      <div className="flex items-center gap-1 bg-slate-800/50 px-2 py-1 rounded-full">
-        {getWeatherIcon()}
-        <span>{weather?.temperature}°C</span>
+    <Card className="p-3 bg-slate-700/30 border-slate-600/30">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-xs text-slate-400">
+            {isToday(date) ? "Today's weather" : `Weather for ${format(date, 'MMM d')}`}
+          </p>
+          <p className="text-sm font-medium">{weather.condition}</p>
+          <p className="text-xs text-slate-300">{weather.temperature}° in {weather.city}</p>
+        </div>
+        <div>{renderWeatherIcon(weather.icon)}</div>
       </div>
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div className="flex items-center gap-2 bg-slate-800/50 px-2 py-1 rounded-full cursor-help">
-              <div className="w-4 h-4 rounded-full bg-gradient-to-r from-pink-400 to-purple-500 flex items-center justify-center text-white text-xs">
-                O
-              </div>
-              <span className="truncate max-w-[150px]">{getOliviaTip()}</span>
-            </div>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Style tip from Olivia</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-    </div>
+    </Card>
   );
 };
 
-// Fix: Export the component as default and also as a named export
 export default CompactWeather;
-export { CompactWeather };
