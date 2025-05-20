@@ -1,4 +1,3 @@
-
 import { Link, useNavigate } from 'react-router-dom';
 import { LogOut, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -36,7 +35,7 @@ export const UserMenu = ({ isScrolled = false }: UserMenuProps) => {
         size="sm" 
         asChild 
         className={cn(
-          "ml-2 transition-all duration-300 pointer-events-auto",
+          "ml-2 transition-all duration-300",
           isScrolled 
             ? "bg-transparent border-white/30 text-white hover:bg-white/10 hover:text-white" 
             : "bg-white/10 border-white/20 text-white hover:bg-white/20"
@@ -54,7 +53,7 @@ export const UserMenu = ({ isScrolled = false }: UserMenuProps) => {
           variant="ghost" 
           size="icon" 
           className={cn(
-            "ml-2 rounded-full transition-all duration-300 z-[51] pointer-events-auto", // Increased z-index
+            "ml-2 rounded-full transition-all duration-300 z-[50]",
             isScrolled 
               ? "text-white hover:bg-white/10" 
               : "text-white hover:bg-white/10"
@@ -65,7 +64,7 @@ export const UserMenu = ({ isScrolled = false }: UserMenuProps) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent 
         align="end" 
-        className="bg-white/95 backdrop-blur-md border border-slate-200 shadow-lg text-slate-800 rounded-lg py-2 font-medium z-[60]" // Higher z-index
+        className="bg-white/95 backdrop-blur-md border border-slate-200 shadow-lg text-slate-800 rounded-lg py-2 font-medium"
         style={{ boxShadow: "0px 2px 12px rgba(0,0,0,0.15)" }}
       >
         <DropdownMenuItem asChild className="hover:bg-slate-100 hover:text-purple-700 font-medium cursor-pointer px-4 py-2.5">

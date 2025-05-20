@@ -23,7 +23,7 @@ export const DesktopNavigation = ({ navItems, currentPath, isScrolled }: Desktop
             <NavigationMenuLink
               asChild
               className={cn(
-                "inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-all duration-300 pointer-events-auto",
+                "inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-all duration-300",
                 currentPath === item.path
                   ? isScrolled 
                     ? "text-white bg-white/20 shadow-sm shadow-purple-300/20" 
