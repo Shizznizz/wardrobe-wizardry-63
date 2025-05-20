@@ -1,4 +1,3 @@
-
 import { createClient } from '@supabase/supabase-js';
 import { UserPreferences, Outfit, ClothingItem } from '@/lib/types';
 import { OutfitLog } from '@/components/outfits/OutfitLogItem';
@@ -48,9 +47,7 @@ export const saveUserPreferences = async (userId: string, preferences: UserPrefe
       weekly_email_updates: preferences.weeklyEmailUpdates,
       notify_new_outfits: preferences.notifyNewOutfits,
       notify_weather_changes: preferences.notifyWeatherChanges,
-      pronouns: preferences.pronouns,
-      custom_pronouns: preferences.customPronouns,
-      appearance_settings: preferences.appearanceSettings
+      pronouns: preferences.pronouns
     };
     
     if (existingPrefs) {

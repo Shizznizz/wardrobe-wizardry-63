@@ -1,11 +1,10 @@
 
-import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
 import { X, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useAuth } from '@/hooks/useAuth';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Link } from 'react-router-dom';
+import { cn } from '@/lib/utils';
+import { useEffect } from 'react';
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -22,150 +21,92 @@ export const MobileMenu = ({
   currentPath,
   onSignOut
 }: MobileMenuProps) => {
-  const { user } = useAuth();
-  const [animationComplete, setAnimationComplete] = useState(false);
-  const location = useLocation();
-
-  // Close menu when location changes
+  // Lock body scroll when menu is open
   useEffect(() => {
-    onClose();
-  }, [location, onClose]);
-
-  // Handle animation completion
-  const handleAnimationComplete = () => {
-    if (!isOpen) {
-      setAnimationComplete(true);
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+      document.body.classList.add('overflow-hidden-strict');
     } else {
-      setAnimationComplete(false);
+      document.body.style.overflow = '';
+      document.body.classList.remove('overflow-hidden-strict');
     }
-  };
-
-  // Variants for menu animation
-  const menuVariants = {
-    closed: {
-      x: '100%',
-      transition: {
-        type: 'spring',
-        stiffness: 400,
-        damping: 40
-      }
-    },
-    open: {
-      x: '0%',
-      transition: {
-        type: 'spring',
-        stiffness: 400,
-        damping: 40,
-        when: 'beforeChildren',
-        staggerChildren: 0.1
-      }
-    }
-  };
-
-  // Variants for menu items animation
-  const itemVariants = {
-    closed: { x: 20, opacity: 0 },
-    open: { x: 0, opacity: 1 }
-  };
-
+    
+    return () => {
+      document.body.style.overflow = '';
+      document.body.classList.remove('overflow-hidden-strict');
+    };
+  }, [isOpen]);
+  
+  if (!isOpen) return null;
+  
   return (
-    <AnimatePresence>
-      {(isOpen || !animationComplete) && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: isOpen ? 1 : 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 pointer-events-auto"
+    <div className="fixed inset-0 z-[9999] flex">
+      {/* Backdrop overlay */}
+      <div 
+        className="fixed inset-0 bg-black/80 backdrop-blur-sm" 
+        onClick={onClose}
+        aria-hidden="true"
+      />
+      
+      {/* Menu panel */}
+      <div 
+        className="fixed inset-y-0 right-0 w-[85%] max-w-sm bg-gradient-to-b from-purple-950 to-slate-950 border-l border-white/10 flex flex-col shadow-lg z-[10000] h-full"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Mobile navigation menu"
+        style={{ height: '100%', maxHeight: '100vh', display: 'flex', flexDirection: 'column' }}
+      >
+        <div className="sticky top-0 px-4 py-4 bg-gradient-to-b from-purple-950 to-purple-950/95 border-b border-white/10 flex justify-end z-10">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-white hover:bg-white/10"
             onClick={onClose}
-          />
-
-          {/* Menu */}
-          <motion.div
-            className="fixed top-0 right-0 bottom-0 w-[80%] max-w-[300px] bg-gradient-to-b from-purple-900 to-slate-900 z-50 flex flex-col shadow-xl pointer-events-auto"
-            variants={menuVariants}
-            initial="closed"
-            animate={isOpen ? 'open' : 'closed'}
-            exit="closed"
-            onAnimationComplete={handleAnimationComplete}
+            aria-label="Close menu"
           >
-            {/* Close button */}
-            <div className="flex justify-end p-4">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={onClose}
-                className="text-white hover:bg-white/10 pointer-events-auto"
-              >
-                <X className="h-6 w-6" />
-              </Button>
-            </div>
-
-            {/* User info if logged in */}
-            {user && (
-              <motion.div
-                variants={itemVariants}
-                className="px-6 py-4 border-b border-white/10 mb-4"
-              >
-                <div className="flex items-center gap-3">
-                  <Avatar className="h-10 w-10 border border-purple-500/30">
-                    <AvatarImage src={user.user_metadata?.avatar_url} />
-                    <AvatarFallback className="bg-gradient-to-tr from-purple-500 to-pink-500">
-                      {user.email?.charAt(0).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="font-medium text-white">
-                      {user.user_metadata?.full_name || user.email?.split('@')[0]}
-                    </p>
-                    <p className="text-xs text-white/60">{user.email}</p>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-
-            {/* Navigation items */}
-            <nav className="flex-1 overflow-y-auto">
-              <ul className="px-2 py-2 space-y-1">
-                {navItems.map((item) => (
-                  <motion.li key={item.path} variants={itemVariants}>
-                    <Link
-                      to={item.path}
-                      className={`block px-4 py-2 rounded-md text-white pointer-events-auto ${
-                        currentPath === item.path
-                          ? 'bg-white/20 font-medium'
-                          : 'hover:bg-white/10'
-                      }`}
-                      onClick={onClose}
-                    >
-                      {item.name}
-                    </Link>
-                  </motion.li>
-                ))}
-              </ul>
+            <X className="h-6 w-6" />
+          </Button>
+        </div>
+        
+        <div className="flex-1 overflow-hidden h-full">
+          <ScrollArea className="h-full px-4 py-4">
+            <nav className="space-y-2 mb-8">
+              {navItems.map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  onClick={onClose}
+                  className={cn(
+                    "block py-4 px-5 rounded-lg text-lg font-medium transition-colors",
+                    currentPath === item.path
+                      ? "bg-white/10 text-white"
+                      : "text-white/80 hover:bg-white/5 hover:text-white"
+                  )}
+                >
+                  {item.name}
+                </Link>
+              ))}
             </nav>
-
-            {/* Sign out button if logged in */}
-            {user && (
-              <motion.div
-                variants={itemVariants}
-                className="p-4 border-t border-white/10 mt-auto"
-              >
+            
+            {/* Only show sign out if user is authenticated */}
+            {navItems.some(item => item.name !== 'Login') && (
+              <div className="pt-4 border-t border-white/10">
                 <Button
                   variant="ghost"
-                  className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-900/20 pointer-events-auto"
-                  onClick={onSignOut}
+                  className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-900/20 py-3 px-5 text-base"
+                  onClick={() => {
+                    onSignOut();
+                    onClose();
+                  }}
                 >
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Sign out
+                  <LogOut className="mr-3 h-5 w-5" />
+                  Sign Out
                 </Button>
-              </motion.div>
+              </div>
             )}
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+          </ScrollArea>
+        </div>
+      </div>
+    </div>
   );
 };

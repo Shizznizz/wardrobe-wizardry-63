@@ -16,14 +16,14 @@ interface DesktopNavigationProps {
 
 export const DesktopNavigation = ({ navItems, currentPath, isScrolled }: DesktopNavigationProps) => {
   return (
-    <NavigationMenu className="flex pointer-events-auto">
+    <NavigationMenu className="flex">
       <NavigationMenuList className="gap-2">
         {navItems.map((item) => (
           <NavigationMenuItem key={item.path}>
             <NavigationMenuLink
               asChild
               className={cn(
-                "inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-all duration-300 pointer-events-auto",
+                "inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-all duration-300",
                 currentPath === item.path
                   ? isScrolled 
                     ? "text-white bg-white/20 shadow-sm shadow-purple-300/20" 
@@ -33,7 +33,7 @@ export const DesktopNavigation = ({ navItems, currentPath, isScrolled }: Desktop
                     : "text-white hover:text-white hover:bg-white/10 hover:scale-105"
               )}
             >
-              <Link to={item.path} className="pointer-events-auto">{item.name}</Link>
+              <Link to={item.path}>{item.name}</Link>
             </NavigationMenuLink>
           </NavigationMenuItem>
         ))}

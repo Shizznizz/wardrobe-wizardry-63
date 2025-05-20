@@ -24,10 +24,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import AccountSettings from '@/components/profile/AccountSettings';
-import AppearanceSettings from '@/components/profile/AppearanceSettings';
-import LegalInformationSettings from '@/components/profile/LegalInformationSettings';
-import DataManagementSettings from '@/components/profile/DataManagementSettings';
 
 const Profile = () => {
   const { user, isAuthenticated, loading } = useAuth();
@@ -97,13 +93,7 @@ const Profile = () => {
             weeklyEmailUpdates: data.weekly_email_updates !== undefined ? data.weekly_email_updates : false,
             notifyNewOutfits: data.notify_new_outfits !== undefined ? data.notify_new_outfits : true,
             notifyWeatherChanges: data.notify_weather_changes !== undefined ? data.notify_weather_changes : true,
-            pronouns: data.pronouns || 'not-specified',
-            customPronouns: data.custom_pronouns || '',
-            appearanceSettings: data.appearance_settings || {
-              theme: 'system',
-              reduceMotion: false,
-              highContrast: false
-            }
+            pronouns: data.pronouns || 'not-specified'
           };
           setUserPreferences(preferences);
           setOriginalPreferences(JSON.parse(JSON.stringify(preferences))); // Deep copy for comparison
@@ -132,13 +122,7 @@ const Profile = () => {
             weeklyEmailUpdates: false,
             notifyNewOutfits: true,
             notifyWeatherChanges: true,
-            pronouns: 'not-specified',
-            customPronouns: '',
-            appearanceSettings: {
-              theme: 'system',
-              reduceMotion: false,
-              highContrast: false
-            }
+            pronouns: 'not-specified'
           };
           setUserPreferences(defaults);
           setOriginalPreferences(JSON.parse(JSON.stringify(defaults))); // Deep copy for comparison
@@ -172,34 +156,17 @@ const Profile = () => {
     }
   };
   
-  // Helper function to normalize tags and remove duplicates (case-insensitive)
-  const normalizeTags = (tags: string[]): string[] => {
-    const normalizedTags: string[] = [];
-    const lowercaseTags = new Set<string>();
-    
-    for (const tag of tags) {
-      const lowerTag = tag.toLowerCase();
-      if (!lowercaseTags.has(lowerTag)) {
-        lowercaseTags.add(lowerTag);
-        // Keep original case but capitalize first letter
-        normalizedTags.push(tag.charAt(0).toUpperCase() + tag.slice(1)); 
-      }
-    }
-    
-    return normalizedTags;
-  };
-  
   // Check if preferences have changed
   const hasChanges = (): boolean => {
     if (!userPreferences || !originalPreferences) return false;
     return JSON.stringify(userPreferences) !== JSON.stringify(originalPreferences);
   };
   
-  const saveProfile = async () => {
-    if (!user || !userPreferences) return false;
+  const saveProfile = async (updatedPreferences: UserPreferences) => {
+    if (!user) return false;
     
     // Validation for required fields
-    if (userPreferences.firstName === '') {
+    if (updatedPreferences.firstName === '') {
       toast.error('Please enter your first name');
       return false;
     }
@@ -207,13 +174,10 @@ const Profile = () => {
     setIsSaving(true);
     try {
       // Normalize data to prevent duplicates (case-insensitive)
-      const updatedPreferences = {
-        ...userPreferences,
-        favoriteColors: normalizeTags(userPreferences.favoriteColors || []),
-        favoriteStyles: normalizeTags(userPreferences.favoriteStyles || []),
-        personalityTags: normalizeTags(userPreferences.personalityTags || []),
-        occasionPreferences: normalizeTags(userPreferences.occasionPreferences || [])
-      };
+      updatedPreferences.favoriteColors = normalizeTags(updatedPreferences.favoriteColors || []);
+      updatedPreferences.favoriteStyles = normalizeTags(updatedPreferences.favoriteStyles || []);
+      updatedPreferences.personalityTags = normalizeTags(updatedPreferences.personalityTags || []);
+      updatedPreferences.occasionPreferences = normalizeTags(updatedPreferences.occasionPreferences || []);
       
       // Convert preferences to database format
       const preferencesData = {
@@ -236,16 +200,8 @@ const Profile = () => {
         weekly_email_updates: updatedPreferences.weeklyEmailUpdates,
         notify_new_outfits: updatedPreferences.notifyNewOutfits,
         notify_weather_changes: updatedPreferences.notifyWeatherChanges,
-        pronouns: updatedPreferences.pronouns || 'not-specified',
-        custom_pronouns: updatedPreferences.customPronouns,
-        appearance_settings: updatedPreferences.appearanceSettings || {
-          theme: 'system',
-          reduceMotion: false,
-          highContrast: false
-        }
+        pronouns: updatedPreferences.pronouns || 'not-specified'
       };
-
-      console.log('Saving user preferences:', preferencesData);
 
       // Check if user has preferences record
       const { data: existingPrefs, error: checkError } = await supabase
@@ -296,8 +252,8 @@ const Profile = () => {
       
       setUserPreferences(updatedPreferences);
       setOriginalPreferences(JSON.parse(JSON.stringify(updatedPreferences))); // Update original for change comparison
+      toast.success('Profile updated successfully!');
       
-      toast.success('Profile saved successfully');
       return true;
     } catch (error) {
       console.error('Error saving preferences:', error);
@@ -306,6 +262,22 @@ const Profile = () => {
     } finally {
       setIsSaving(false);
     }
+  };
+  
+  // Helper function to normalize tags and remove duplicates (case-insensitive)
+  const normalizeTags = (tags: string[]): string[] => {
+    const normalizedTags: string[] = [];
+    const lowercaseTags = new Set<string>();
+    
+    for (const tag of tags) {
+      const lowerTag = tag.toLowerCase();
+      if (!lowercaseTags.has(lowerTag)) {
+        lowercaseTags.add(lowerTag);
+        normalizedTags.push(tag); // Keep original case but avoid duplicates
+      }
+    }
+    
+    return normalizedTags;
   };
   
   const renderProfileContent = () => {
@@ -361,27 +333,6 @@ const Profile = () => {
             setPreferences={setUserPreferences}
           />
         )
-      },
-      // Settings sections
-      {
-        id: "account",
-        title: "Account",
-        content: <AccountSettings />
-      },
-      {
-        id: "appearance",
-        title: "Appearance",
-        content: <AppearanceSettings />
-      },
-      {
-        id: "data",
-        title: "Data Management",
-        content: <DataManagementSettings />
-      },
-      {
-        id: "legal",
-        title: "Legal Information",
-        content: <LegalInformationSettings />
       }
     ];
     
@@ -442,7 +393,7 @@ const Profile = () => {
         {userPreferences && (
           <ProfileFooter
             isSaving={isSaving}
-            onSave={saveProfile}
+            onSave={() => saveProfile(userPreferences)}
             hasChanges={hasChanges()}
           />
         )}

@@ -347,7 +347,6 @@ export type Database = {
       }
       user_preferences: {
         Row: {
-          appearance_settings: Json | null
           body_type: string | null
           climate_preferences: string[] | null
           created_at: string | null
@@ -374,7 +373,6 @@ export type Database = {
           weekly_email_updates: boolean | null
         }
         Insert: {
-          appearance_settings?: Json | null
           body_type?: string | null
           climate_preferences?: string[] | null
           created_at?: string | null
@@ -401,7 +399,6 @@ export type Database = {
           weekly_email_updates?: boolean | null
         }
         Update: {
-          appearance_settings?: Json | null
           body_type?: string | null
           climate_preferences?: string[] | null
           created_at?: string | null

@@ -24,7 +24,7 @@ const ProfileFooter = ({ isSaving, onSave, hasChanges }: ProfileFooterProps) => 
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-slate-900/95 to-slate-900/30 md:sticky md:bottom-auto md:mt-8 md:pb-4 md:bg-transparent z-10 backdrop-blur-sm">
+    <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-slate-900 to-transparent md:sticky md:bottom-auto md:mt-8 md:pb-4 md:bg-transparent">
       <div className="flex justify-end max-w-5xl mx-auto w-full">
         <Button
           onClick={handleSave}

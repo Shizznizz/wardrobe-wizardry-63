@@ -1,4 +1,3 @@
-
 // src/lib/types.ts
 
 export type ClothingColor =
@@ -219,41 +218,31 @@ export interface TrendingClothingItem extends Omit<ClothingItem, 'season' | 'ima
 }
 
 export interface UserPreferences {
-  firstName?: string;
-  lastName?: string;
-  temperatureUnit?: 'C' | 'F';
-  weatherLocation?: {
-    city: string;
-    country: string;
-  };
   favoriteColors?: string[];
   favoriteStyles?: string[];
   personalityTags?: string[];
   bodyType?: string;
-  seasonalPreferences?: {
-    spring: SeasonPreference;
-    summer: SeasonPreference;
-    autumn: SeasonPreference;
-    winter: SeasonPreference;
-    all: SeasonPreference;
-  };
+  seasonalPreferences?: SeasonalPreferences;
   outfitReminders?: boolean;
   reminderTime?: string;
   occasionPreferences?: string[];
   climatePreferences?: string[];
+  weatherLocation?: {
+    city: string;
+    country: string;
+  };
+  // New fields for profile page
+  firstName?: string;
+  lastName?: string;
+  pronouns?: string;
+  customPronouns?: string;
+  temperatureUnit?: 'C' | 'F';
+  useOnlyWardrobe?: boolean;
   useTrendsGlobal?: boolean;
   useTrendsLocal?: boolean;
-  useOnlyWardrobe?: boolean;
   weeklyEmailUpdates?: boolean;
   notifyNewOutfits?: boolean;
   notifyWeatherChanges?: boolean;
-  pronouns?: string;
-  customPronouns?: string; // Added this field
-  appearanceSettings?: {
-    theme: 'light' | 'dark' | 'system';
-    reduceMotion: boolean;
-    highContrast: boolean;
-  };
 }
 
 export interface Outfit {
@@ -287,13 +276,11 @@ export interface ShopItem extends Omit<ClothingItem, 'price'> {
   isTrending?: boolean;
 }
 
-export type SeasonPreference = {
-  enabled: boolean;
-  temperatureRange: [number, number];
-  timeOfYear?: [number, number];
-  goToLook?: string;
-};
-
 export type SeasonalPreferences = {
-  [key in ClothingSeason]: SeasonPreference;
+  [key in ClothingSeason]: {
+    enabled: boolean;
+    temperatureRange: [number, number];
+    timeOfYear?: [number, number];
+    goToLook?: string;
+  };
 };

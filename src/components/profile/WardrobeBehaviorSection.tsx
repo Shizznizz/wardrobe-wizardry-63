@@ -4,7 +4,6 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { UserPreferences } from '@/lib/types';
 import { Card, CardContent, CardDescription } from '@/components/ui/card';
-import { toast } from 'sonner';
 
 interface WardrobeBehaviorSectionProps {
   preferences: UserPreferences;
@@ -16,24 +15,9 @@ const WardrobeBehaviorSection = ({ preferences, setPreferences }: WardrobeBehavi
   const handleToggleSetting = (setting: 'useOnlyWardrobe' | 'useTrendsGlobal' | 'useTrendsLocal') => {
     setPreferences(prev => {
       if (!prev) return prev;
-      
-      const newValue = !prev[setting];
-      
-      // Show feedback toast
-      const settingLabels = {
-        useOnlyWardrobe: 'Suggest outfits only from my wardrobe',
-        useTrendsGlobal: 'Include global trends',
-        useTrendsLocal: 'Include local trends'
-      };
-      
-      toast.success(`${settingLabels[setting]} ${newValue ? 'enabled' : 'disabled'}`, {
-        duration: 2000,
-        position: 'bottom-center'
-      });
-      
       return {
         ...prev,
-        [setting]: newValue
+        [setting]: !prev[setting]
       };
     });
   };

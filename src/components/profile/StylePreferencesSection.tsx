@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -9,76 +9,6 @@ import { UserPreferences } from '@/lib/types';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import SeasonalPreferences from '@/components/preferences/SeasonalPreferences';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Combobox } from '@/components/ui/combobox';
-
-// Common style tags for autocomplete
-const commonStyleTags = [
-  { value: 'casual', label: 'Casual' },
-  { value: 'elegant', label: 'Elegant' },
-  { value: 'bohemian', label: 'Bohemian' },
-  { value: 'vintage', label: 'Vintage' },
-  { value: 'streetwear', label: 'Streetwear' },
-  { value: 'preppy', label: 'Preppy' },
-  { value: 'minimalist', label: 'Minimalist' },
-  { value: 'sporty', label: 'Sporty' },
-  { value: 'glam', label: 'Glam' },
-  { value: 'athleisure', label: 'Athleisure' },
-  { value: 'retro', label: 'Retro' },
-  { value: 'grunge', label: 'Grunge' },
-  { value: 'punk', label: 'Punk' },
-  { value: 'hipster', label: 'Hipster' },
-  { value: 'business', label: 'Business' },
-  { value: 'formal', label: 'Formal' }
-];
-
-// Common colors for autocomplete
-const commonColors = [
-  { value: 'black', label: 'Black' },
-  { value: 'white', label: 'White' },
-  { value: 'red', label: 'Red' },
-  { value: 'blue', label: 'Blue' },
-  { value: 'green', label: 'Green' },
-  { value: 'yellow', label: 'Yellow' },
-  { value: 'purple', label: 'Purple' },
-  { value: 'pink', label: 'Pink' },
-  { value: 'orange', label: 'Orange' },
-  { value: 'brown', label: 'Brown' },
-  { value: 'gray', label: 'Gray' },
-  { value: 'navy', label: 'Navy' },
-  { value: 'teal', label: 'Teal' },
-  { value: 'maroon', label: 'Maroon' },
-  { value: 'olive', label: 'Olive' },
-  { value: 'beige', label: 'Beige' },
-  { value: 'turquoise', label: 'Turquoise' },
-  { value: 'magenta', label: 'Magenta' },
-  { value: 'lavender', label: 'Lavender' },
-  { value: 'coral', label: 'Coral' }
-];
-
-// Common occasions for autocomplete
-const commonOccasions = [
-  { value: 'work', label: 'Work' },
-  { value: 'date night', label: 'Date Night' },
-  { value: 'beach', label: 'Beach' },
-  { value: 'party', label: 'Party' },
-  { value: 'casual outing', label: 'Casual Outing' },
-  { value: 'wedding', label: 'Wedding' },
-  { value: 'interview', label: 'Interview' },
-  { value: 'formal event', label: 'Formal Event' },
-  { value: 'gym', label: 'Gym' },
-  { value: 'travel', label: 'Travel' },
-  { value: 'hiking', label: 'Hiking' },
-  { value: 'concert', label: 'Concert' },
-  { value: 'brunch', label: 'Brunch' },
-  { value: 'dinner', label: 'Dinner' },
-  { value: 'clubbing', label: 'Clubbing' },
-  { value: 'business meeting', label: 'Business Meeting' }
-];
-
-// Helper function to capitalize first letter
-const capitalizeFirstLetter = (string: string) => {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-};
 
 interface StylePreferencesSectionProps {
   preferences: UserPreferences;
@@ -92,39 +22,6 @@ const StylePreferencesSection = ({ preferences, setPreferences }: StylePreferenc
   const [tagError, setTagError] = useState('');
   const [colorError, setColorError] = useState('');
   const [occasionError, setOccasionError] = useState('');
-  
-  // Create filtered lists based on what's already selected
-  const [availableStyleTags, setAvailableStyleTags] = useState(commonStyleTags);
-  const [availableColors, setAvailableColors] = useState(commonColors);
-  const [availableOccasions, setAvailableOccasions] = useState(commonOccasions);
-
-  // Update available options when preferences change
-  useEffect(() => {
-    // Filter out already selected items
-    setAvailableStyleTags(
-      commonStyleTags.filter(
-        tag => !preferences.personalityTags?.some(
-          existingTag => existingTag.toLowerCase() === tag.value.toLowerCase()
-        )
-      )
-    );
-    
-    setAvailableColors(
-      commonColors.filter(
-        color => !preferences.favoriteColors?.some(
-          existingColor => existingColor.toLowerCase() === color.value.toLowerCase()
-        )
-      )
-    );
-    
-    setAvailableOccasions(
-      commonOccasions.filter(
-        occasion => !preferences.occasionPreferences?.some(
-          existingOccasion => existingOccasion.toLowerCase() === occasion.value.toLowerCase()
-        )
-      )
-    );
-  }, [preferences.personalityTags, preferences.favoriteColors, preferences.occasionPreferences]);
   
   const isTagDuplicate = (tag: string): boolean => {
     return preferences.personalityTags?.some(
@@ -160,7 +57,7 @@ const StylePreferencesSection = ({ preferences, setPreferences }: StylePreferenc
       if (!prev) return prev;
       return {
         ...prev,
-        personalityTags: [...(prev.personalityTags || []), capitalizeFirstLetter(newTag.trim())]
+        personalityTags: [...(prev.personalityTags || []), newTag.trim()]
       };
     });
     setNewTag('');
@@ -187,23 +84,12 @@ const StylePreferencesSection = ({ preferences, setPreferences }: StylePreferenc
       return;
     }
     
-    // Validate if it's in the common colors list or a custom entry
-    const isValidColor = commonColors.some(
-      color => color.value.toLowerCase() === newColor.toLowerCase()
-    );
-    
-    if (!isValidColor) {
-      setColorError("Please enter a valid color name");
-      setTimeout(() => setColorError(''), 3000);
-      return;
-    }
-    
     setColorError('');
     setPreferences(prev => {
       if (!prev) return prev;
       return {
         ...prev,
-        favoriteColors: [...(prev.favoriteColors || []), capitalizeFirstLetter(newColor.trim())]
+        favoriteColors: [...(prev.favoriteColors || []), newColor.trim()]
       };
     });
     setNewColor('');
@@ -235,7 +121,7 @@ const StylePreferencesSection = ({ preferences, setPreferences }: StylePreferenc
       if (!prev) return prev;
       return {
         ...prev,
-        occasionPreferences: [...(prev.occasionPreferences || []), capitalizeFirstLetter(newOccasion.trim())]
+        occasionPreferences: [...(prev.occasionPreferences || []), newOccasion.trim()]
       };
     });
     setNewOccasion('');
@@ -270,92 +156,45 @@ const StylePreferencesSection = ({ preferences, setPreferences }: StylePreferenc
       };
     });
   };
-
-  const handleTagSelect = (value: string) => {
-    if (value && !isTagDuplicate(value)) {
-      setPreferences(prev => {
-        if (!prev) return prev;
-        return {
-          ...prev,
-          personalityTags: [...(prev.personalityTags || []), capitalizeFirstLetter(value)]
-        };
-      });
-    }
-  };
-
-  const handleColorSelect = (value: string) => {
-    if (value && !isColorDuplicate(value)) {
-      setPreferences(prev => {
-        if (!prev) return prev;
-        return {
-          ...prev,
-          favoriteColors: [...(prev.favoriteColors || []), capitalizeFirstLetter(value)]
-        };
-      });
-    }
-  };
-
-  const handleOccasionSelect = (value: string) => {
-    if (value && !isOccasionDuplicate(value)) {
-      setPreferences(prev => {
-        if (!prev) return prev;
-        return {
-          ...prev,
-          occasionPreferences: [...(prev.occasionPreferences || []), capitalizeFirstLetter(value)]
-        };
-      });
-    }
-  };
   
   return (
     <div className="space-y-8">
       {/* Style Tags Section */}
       <div className="space-y-4">
         <Label>Favorite Style Tags</Label>
-        <div className="flex flex-col gap-2">
-          <Combobox
-            items={availableStyleTags}
-            value=""
-            onChange={handleTagSelect}
-            placeholder="Select or type a style tag (e.g. casual, elegant)"
-            searchPlaceholder="Search style tags..."
-            emptyMessage="No matching style tags found."
-            className="w-full bg-slate-950/50 border-white/10"
+        <div className="flex items-center">
+          <Input
+            placeholder="Add a style tag (e.g. casual, elegant, sporty)"
+            value={newTag}
+            onChange={(e) => setNewTag(e.target.value)}
+            className="bg-slate-950/50 border-white/10 flex-1"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                addTag();
+              }
+            }}
           />
-          <div className="flex items-center">
-            <Input
-              placeholder="Or add a custom style tag"
-              value={newTag}
-              onChange={(e) => setNewTag(e.target.value)}
-              className="bg-slate-950/50 border-white/10 flex-1"
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  addTag();
-                }
-              }}
-            />
-            <TooltipProvider>
-              <Tooltip open={!!tagError} delayDuration={0}>
-                <TooltipTrigger asChild>
-                  <Button
-                    onClick={addTag}
-                    className="ml-2 bg-purple-600 hover:bg-purple-700"
-                  >
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                {tagError && (
-                  <TooltipContent side="top" className="bg-red-500 border-red-600">
-                    <div className="flex items-center">
-                      <AlertCircle className="h-4 w-4 mr-2" />
-                      {tagError}
-                    </div>
-                  </TooltipContent>
-                )}
-              </Tooltip>
-            </TooltipProvider>
-          </div>
+          <TooltipProvider>
+            <Tooltip open={!!tagError} delayDuration={0}>
+              <TooltipTrigger asChild>
+                <Button
+                  onClick={addTag}
+                  className="ml-2 bg-purple-600 hover:bg-purple-700"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              {tagError && (
+                <TooltipContent side="top" className="bg-red-500 border-red-600">
+                  <div className="flex items-center">
+                    <AlertCircle className="h-4 w-4 mr-2" />
+                    {tagError}
+                  </div>
+                </TooltipContent>
+              )}
+            </Tooltip>
+          </TooltipProvider>
         </div>
         <div className="flex flex-wrap gap-2 mt-2">
           {preferences.personalityTags?.map((tag, index) => (
@@ -373,50 +212,39 @@ const StylePreferencesSection = ({ preferences, setPreferences }: StylePreferenc
       {/* Colors Section */}
       <div className="space-y-4">
         <Label>Favorite Colors</Label>
-        <div className="flex flex-col gap-2">
-          <Combobox
-            items={availableColors}
-            value=""
-            onChange={handleColorSelect}
-            placeholder="Select or type a color (e.g. blue, emerald green)"
-            searchPlaceholder="Search colors..."
-            emptyMessage="No matching colors found."
-            className="w-full bg-slate-950/50 border-white/10"
+        <div className="flex items-center">
+          <Input
+            placeholder="Add a color (e.g. blue, emerald green, pastel pink)"
+            value={newColor}
+            onChange={(e) => setNewColor(e.target.value)}
+            className="bg-slate-950/50 border-white/10 flex-1"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                addColor();
+              }
+            }}
           />
-          <div className="flex items-center">
-            <Input
-              placeholder="Or add a custom color"
-              value={newColor}
-              onChange={(e) => setNewColor(e.target.value)}
-              className="bg-slate-950/50 border-white/10 flex-1"
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  addColor();
-                }
-              }}
-            />
-            <TooltipProvider>
-              <Tooltip open={!!colorError} delayDuration={0}>
-                <TooltipTrigger asChild>
-                  <Button
-                    onClick={addColor}
-                    className="ml-2 bg-purple-600 hover:bg-purple-700"
-                  >
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                {colorError && (
-                  <TooltipContent side="top" className="bg-red-500 border-red-600">
-                    <div className="flex items-center">
-                      <AlertCircle className="h-4 w-4 mr-2" />
-                      {colorError}
-                    </div>
-                  </TooltipContent>
-                )}
-              </Tooltip>
-            </TooltipProvider>
-          </div>
+          <TooltipProvider>
+            <Tooltip open={!!colorError} delayDuration={0}>
+              <TooltipTrigger asChild>
+                <Button
+                  onClick={addColor}
+                  className="ml-2 bg-purple-600 hover:bg-purple-700"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              {colorError && (
+                <TooltipContent side="top" className="bg-red-500 border-red-600">
+                  <div className="flex items-center">
+                    <AlertCircle className="h-4 w-4 mr-2" />
+                    {colorError}
+                  </div>
+                </TooltipContent>
+              )}
+            </Tooltip>
+          </TooltipProvider>
         </div>
         <div className="flex flex-wrap gap-2 mt-2">
           {preferences.favoriteColors?.map((color, index) => (
@@ -437,50 +265,39 @@ const StylePreferencesSection = ({ preferences, setPreferences }: StylePreferenc
       {/* Occasions Section */}
       <div className="space-y-4">
         <Label>Occasions You Dress For</Label>
-        <div className="flex flex-col gap-2">
-          <Combobox
-            items={availableOccasions}
-            value=""
-            onChange={handleOccasionSelect}
-            placeholder="Select or type an occasion (e.g. work, date night)"
-            searchPlaceholder="Search occasions..."
-            emptyMessage="No matching occasions found."
-            className="w-full bg-slate-950/50 border-white/10"
+        <div className="flex items-center">
+          <Input
+            placeholder="Add an occasion (e.g. work, casual, formal)"
+            value={newOccasion}
+            onChange={(e) => setNewOccasion(e.target.value)}
+            className="bg-slate-950/50 border-white/10 flex-1"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                addOccasion();
+              }
+            }}
           />
-          <div className="flex items-center">
-            <Input
-              placeholder="Or add a custom occasion"
-              value={newOccasion}
-              onChange={(e) => setNewOccasion(e.target.value)}
-              className="bg-slate-950/50 border-white/10 flex-1"
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  addOccasion();
-                }
-              }}
-            />
-            <TooltipProvider>
-              <Tooltip open={!!occasionError} delayDuration={0}>
-                <TooltipTrigger asChild>
-                  <Button
-                    onClick={addOccasion}
-                    className="ml-2 bg-purple-600 hover:bg-purple-700"
-                  >
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                {occasionError && (
-                  <TooltipContent side="top" className="bg-red-500 border-red-600">
-                    <div className="flex items-center">
-                      <AlertCircle className="h-4 w-4 mr-2" />
-                      {occasionError}
-                    </div>
-                  </TooltipContent>
-                )}
-              </Tooltip>
-            </TooltipProvider>
-          </div>
+          <TooltipProvider>
+            <Tooltip open={!!occasionError} delayDuration={0}>
+              <TooltipTrigger asChild>
+                <Button
+                  onClick={addOccasion}
+                  className="ml-2 bg-purple-600 hover:bg-purple-700"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              {occasionError && (
+                <TooltipContent side="top" className="bg-red-500 border-red-600">
+                  <div className="flex items-center">
+                    <AlertCircle className="h-4 w-4 mr-2" />
+                    {occasionError}
+                  </div>
+                </TooltipContent>
+              )}
+            </Tooltip>
+          </TooltipProvider>
         </div>
         <div className="flex flex-wrap gap-2 mt-2">
           {preferences.occasionPreferences?.map((occasion, index) => (
