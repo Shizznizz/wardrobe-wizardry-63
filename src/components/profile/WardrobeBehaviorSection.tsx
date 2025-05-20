@@ -15,10 +15,16 @@ const WardrobeBehaviorSection = ({ preferences, setPreferences }: WardrobeBehavi
   const handleToggleSetting = (setting: 'useOnlyWardrobe' | 'useTrendsGlobal' | 'useTrendsLocal') => {
     setPreferences(prev => {
       if (!prev) return prev;
-      return {
+      
+      const updatedPreferences = {
         ...prev,
         [setting]: !prev[setting]
       };
+      
+      // Save to localStorage for immediate use in other components
+      localStorage.setItem(`wardrobePref_${setting}`, updatedPreferences[setting].toString());
+      
+      return updatedPreferences;
     });
   };
   

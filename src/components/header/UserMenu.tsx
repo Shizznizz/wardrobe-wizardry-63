@@ -1,8 +1,5 @@
-import { Link, useNavigate } from 'react-router-dom';
-import { LogOut, User } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useAuth } from '@/hooks/useAuth';
-import { cn } from '@/lib/utils';
+
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,72 +7,71 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/hooks/useAuth";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { LogOut, User } from "lucide-react";
+import { Link } from "react-router-dom";
+import { toast } from "sonner";
 
-interface UserMenuProps {
-  isScrolled?: boolean;
-}
-
-export const UserMenu = ({ isScrolled = false }: UserMenuProps) => {
-  const { user, signOut } = useAuth();
-  const navigate = useNavigate();
+export function UserMenu() {
+  const { user, signOut, isAuthenticated } = useAuth();
 
   const handleSignOut = async () => {
     try {
       await signOut();
-      navigate("/");
+      toast.success("Signed out successfully");
     } catch (error) {
-      // Keep error toast as it's an exception scenario
+      console.error("Error signing out:", error);
+      toast.error("Failed to sign out. Please try again.");
     }
   };
 
-  if (!user) {
-    return (
-      <Button 
-        variant="outline" 
-        size="sm" 
-        asChild 
-        className={cn(
-          "ml-2 transition-all duration-300",
-          isScrolled 
-            ? "bg-transparent border-white/30 text-white hover:bg-white/10 hover:text-white" 
-            : "bg-white/10 border-white/20 text-white hover:bg-white/20"
-        )}
-      >
-        <Link to="/auth">Sign In</Link>
-      </Button>
-    );
-  }
+  if (!isAuthenticated) return null;
+
+  // Get first letter of email for avatar fallback
+  const getAvatarFallback = () => {
+    if (!user?.email) return "?";
+    return user.email.charAt(0).toUpperCase();
+  };
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className={cn(
-            "ml-2 rounded-full transition-all duration-300 z-[50]",
-            isScrolled 
-              ? "text-white hover:bg-white/10" 
-              : "text-white hover:bg-white/10"
-          )}
-        >
-          <User className="h-5 w-5" />
+        <Button variant="ghost" className="relative h-9 w-9 rounded-full">
+          <Avatar className="h-9 w-9 border border-white/20">
+            <AvatarImage src="" alt="User" />
+            <AvatarFallback className="bg-gradient-to-br from-purple-500 to-purple-700 text-white">
+              {getAvatarFallback()}
+            </AvatarFallback>
+          </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent 
         align="end" 
-        className="bg-white/95 backdrop-blur-md border border-slate-200 shadow-lg text-slate-800 rounded-lg py-2 font-medium"
-        style={{ boxShadow: "0px 2px 12px rgba(0,0,0,0.15)" }}
+        className="w-48 bg-slate-800 border border-slate-700 shadow-lg shadow-black/25 text-white"
+        sideOffset={8}
       >
-        <DropdownMenuItem asChild className="hover:bg-slate-100 hover:text-purple-700 font-medium cursor-pointer px-4 py-2.5">
-          <Link to="/profile">My Profile</Link>
+        <div className="px-2 py-1.5 text-sm font-medium text-slate-400">
+          {user?.email}
+        </div>
+        <DropdownMenuSeparator className="bg-slate-700" />
+        <DropdownMenuItem asChild className="cursor-pointer hover:bg-slate-700 focus:bg-slate-700 font-medium">
+          <Link to="/profile" className="flex items-center gap-2">
+            <User className="w-4 h-4" />
+            My Profile
+          </Link>
         </DropdownMenuItem>
-        <DropdownMenuSeparator className="bg-slate-200/70 mx-2" />
-        <DropdownMenuItem onClick={handleSignOut} className="text-red-600 hover:bg-red-50 hover:text-red-700 font-medium cursor-pointer px-4 py-2.5">
-          <LogOut className="mr-2 h-4 w-4" />
-          Sign out
+        <DropdownMenuSeparator className="bg-slate-700" />
+        <DropdownMenuItem 
+          onClick={handleSignOut} 
+          className="cursor-pointer text-red-400 hover:text-red-300 hover:bg-slate-700 focus:bg-slate-700 font-medium"
+        >
+          <LogOut className="w-4 h-4 mr-2" />
+          Sign Out
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
-};
+}
+
+export default UserMenu;

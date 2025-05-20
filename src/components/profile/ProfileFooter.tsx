@@ -2,7 +2,6 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Loader2, Save } from 'lucide-react';
-import { toast } from 'sonner';
 
 interface ProfileFooterProps {
   isSaving: boolean;
@@ -14,17 +13,17 @@ const ProfileFooter = ({ isSaving, onSave, hasChanges }: ProfileFooterProps) => 
   const handleSave = async () => {
     try {
       const success = await onSave();
-      if (success) {
-        toast.success("Your profile has been updated successfully!");
-      }
+      
+      // Success message is handled in the parent component
+      return success;
     } catch (error) {
       console.error('Error saving profile:', error);
-      toast.error("Something went wrong while saving your profile");
+      return false;
     }
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-slate-900 to-transparent md:sticky md:bottom-auto md:mt-8 md:pb-4 md:bg-transparent">
+    <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-slate-900 via-slate-900/95 to-slate-900/0 md:sticky md:bottom-auto md:mt-8 md:pb-4 md:bg-transparent z-10">
       <div className="flex justify-end max-w-5xl mx-auto w-full">
         <Button
           onClick={handleSave}

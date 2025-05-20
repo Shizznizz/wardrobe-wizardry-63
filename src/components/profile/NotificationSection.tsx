@@ -16,10 +16,16 @@ const NotificationSection = ({ preferences, setPreferences }: NotificationSectio
   const handleToggleNotification = (setting: 'weeklyEmailUpdates' | 'notifyNewOutfits' | 'notifyWeatherChanges') => {
     setPreferences(prev => {
       if (!prev) return prev;
-      return {
+      
+      const updatedPreferences = {
         ...prev,
         [setting]: !prev[setting]
       };
+      
+      // Save to localStorage for immediate use in other components
+      localStorage.setItem(`notifPref_${setting}`, updatedPreferences[setting].toString());
+      
+      return updatedPreferences;
     });
   };
   

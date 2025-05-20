@@ -5,6 +5,15 @@ import { Link } from 'react-router-dom';
 import { ExternalLink } from 'lucide-react';
 
 const LegalInformationSettings = () => {
+  // Array of legal pages for easier maintenance and extension
+  const legalPages = [
+    { title: "Terms of Service", path: "/terms" },
+    { title: "Privacy Policy", path: "/privacy" },
+    { title: "Cookie Policy", path: "/cookies" },
+    { title: "GDPR Compliance", path: "/gdpr" },
+    { title: "Accessibility Statement", path: "/accessibility" }
+  ];
+  
   return (
     <div className="space-y-6">
       <div>
@@ -17,51 +26,19 @@ const LegalInformationSettings = () => {
       <Card className="bg-slate-800/30 border-white/10">
         <CardContent className="p-6">
           <ul className="space-y-4">
-            <li>
-              <Link 
-                to="#" 
-                className="flex items-center justify-between text-white hover:text-purple-300 transition-colors"
-              >
-                <span>Terms of Service</span>
-                <ExternalLink className="h-4 w-4" />
-              </Link>
-            </li>
-            <li>
-              <Link 
-                to="#" 
-                className="flex items-center justify-between text-white hover:text-purple-300 transition-colors"
-              >
-                <span>Privacy Policy</span>
-                <ExternalLink className="h-4 w-4" />
-              </Link>
-            </li>
-            <li>
-              <Link 
-                to="#" 
-                className="flex items-center justify-between text-white hover:text-purple-300 transition-colors"
-              >
-                <span>Cookie Policy</span>
-                <ExternalLink className="h-4 w-4" />
-              </Link>
-            </li>
-            <li>
-              <Link 
-                to="#" 
-                className="flex items-center justify-between text-white hover:text-purple-300 transition-colors"
-              >
-                <span>GDPR Compliance</span>
-                <ExternalLink className="h-4 w-4" />
-              </Link>
-            </li>
-            <li>
-              <Link 
-                to="#" 
-                className="flex items-center justify-between text-white hover:text-purple-300 transition-colors"
-              >
-                <span>Accessibility Statement</span>
-                <ExternalLink className="h-4 w-4" />
-              </Link>
-            </li>
+            {legalPages.map((page) => (
+              <li key={page.title}>
+                <Link 
+                  to={page.path}
+                  className="flex items-center justify-between text-white hover:text-purple-300 transition-colors"
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                >
+                  <span>{page.title}</span>
+                  <ExternalLink className="h-4 w-4" />
+                </Link>
+              </li>
+            ))}
           </ul>
         </CardContent>
       </Card>
