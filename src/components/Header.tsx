@@ -78,7 +78,6 @@ const Header = () => {
       { name: 'Fitting Room', path: '/fitting-room' },
       { name: 'Shop & Try', path: '/shop-and-try' },
       { name: 'Quizzes', path: '/quizzes' },
-      { name: 'Profile', path: '/profile' },
     ];
   } else {
     navItems = [
@@ -95,7 +94,7 @@ const Header = () => {
   return (
     <header 
       className={cn(
-        "fixed top-0 left-0 right-0 transition-all duration-500 py-2 sm:py-4 z-40",
+        "fixed top-0 left-0 right-0 transition-all duration-500 py-2 sm:py-4 z-50",
         isScrolled 
           ? "bg-purple-900/95 shadow-lg border-b border-white/10" 
           : "bg-[rgba(50,0,80,0.5)] backdrop-blur-md border-transparent text-white"
@@ -105,9 +104,9 @@ const Header = () => {
         backfaceVisibility: 'hidden'
       }}
     >
-      <div className="container mx-auto px-3 md:px-6 flex items-center justify-between">
+      <div className="container mx-auto px-3 md:px-6 flex items-center justify-between relative">
         {isMobile && (
-          <div className="text-white font-medium tracking-wide">{getCurrentPageName()}</div>
+          <div className="text-white font-medium tracking-wide pointer-events-auto">{getCurrentPageName()}</div>
         )}
 
         {!isMobile && (
@@ -118,7 +117,7 @@ const Header = () => {
           />
         )}
 
-        <div className="flex items-center">
+        <div className="flex items-center pointer-events-auto">
           <UserMenu isScrolled={isScrolled} />
 
           {isMobile && (
@@ -133,7 +132,6 @@ const Header = () => {
               aria-label="Toggle mobile menu"
               aria-expanded={isMenuOpen}
               aria-controls="mobile-menu"
-              style={{ pointerEvents: 'auto' }}
             >
               <Menu className="h-6 w-6" />
             </Button>

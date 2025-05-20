@@ -78,13 +78,13 @@ export const MobileMenu = ({
             animate={{ opacity: isOpen ? 1 : 0 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 pointer-events-auto"
             onClick={onClose}
           />
 
           {/* Menu */}
           <motion.div
-            className="fixed top-0 right-0 bottom-0 w-[80%] max-w-[300px] bg-gradient-to-b from-purple-900 to-slate-900 z-50 flex flex-col shadow-xl"
+            className="fixed top-0 right-0 bottom-0 w-[80%] max-w-[300px] bg-gradient-to-b from-purple-900 to-slate-900 z-50 flex flex-col shadow-xl pointer-events-auto"
             variants={menuVariants}
             initial="closed"
             animate={isOpen ? 'open' : 'closed'}
@@ -97,7 +97,7 @@ export const MobileMenu = ({
                 variant="ghost"
                 size="icon"
                 onClick={onClose}
-                className="text-white hover:bg-white/10"
+                className="text-white hover:bg-white/10 pointer-events-auto"
               >
                 <X className="h-6 w-6" />
               </Button>
@@ -133,7 +133,7 @@ export const MobileMenu = ({
                   <motion.li key={item.path} variants={itemVariants}>
                     <Link
                       to={item.path}
-                      className={`block px-4 py-2 rounded-md text-white ${
+                      className={`block px-4 py-2 rounded-md text-white pointer-events-auto ${
                         currentPath === item.path
                           ? 'bg-white/20 font-medium'
                           : 'hover:bg-white/10'
@@ -155,7 +155,7 @@ export const MobileMenu = ({
               >
                 <Button
                   variant="ghost"
-                  className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-900/20"
+                  className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-900/20 pointer-events-auto"
                   onClick={onSignOut}
                 >
                   <LogOut className="mr-2 h-4 w-4" />

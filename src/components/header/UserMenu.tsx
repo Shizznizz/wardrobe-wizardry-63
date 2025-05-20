@@ -1,3 +1,4 @@
+
 import { Link, useNavigate } from 'react-router-dom';
 import { LogOut, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -35,13 +36,13 @@ export const UserMenu = ({ isScrolled = false }: UserMenuProps) => {
         size="sm" 
         asChild 
         className={cn(
-          "ml-2 transition-all duration-300",
+          "ml-2 transition-all duration-300 pointer-events-auto",
           isScrolled 
             ? "bg-transparent border-white/30 text-white hover:bg-white/10 hover:text-white" 
             : "bg-white/10 border-white/20 text-white hover:bg-white/20"
         )}
       >
-        <Link to="/auth">Sign In</Link>
+        <Link to="/auth" className="pointer-events-auto">Sign In</Link>
       </Button>
     );
   }
@@ -53,7 +54,7 @@ export const UserMenu = ({ isScrolled = false }: UserMenuProps) => {
           variant="ghost" 
           size="icon" 
           className={cn(
-            "ml-2 rounded-full transition-all duration-300 z-[50]",
+            "ml-2 rounded-full transition-all duration-300 z-[50] pointer-events-auto",
             isScrolled 
               ? "text-white hover:bg-white/10" 
               : "text-white hover:bg-white/10"
@@ -64,14 +65,14 @@ export const UserMenu = ({ isScrolled = false }: UserMenuProps) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent 
         align="end" 
-        className="bg-white/95 backdrop-blur-md border border-slate-200 shadow-lg text-slate-800 rounded-lg py-2 font-medium"
+        className="bg-white/95 backdrop-blur-md border border-slate-200 shadow-lg text-slate-800 rounded-lg py-2 font-medium z-[60]"
         style={{ boxShadow: "0px 2px 12px rgba(0,0,0,0.15)" }}
       >
-        <DropdownMenuItem asChild className="hover:bg-slate-100 hover:text-purple-700 font-medium cursor-pointer px-4 py-2.5">
+        <DropdownMenuItem asChild className="hover:bg-slate-100 hover:text-purple-700 font-medium cursor-pointer px-4 py-2.5 pointer-events-auto">
           <Link to="/profile">My Profile</Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator className="bg-slate-200/70 mx-2" />
-        <DropdownMenuItem onClick={handleSignOut} className="text-red-600 hover:bg-red-50 hover:text-red-700 font-medium cursor-pointer px-4 py-2.5">
+        <DropdownMenuItem onClick={handleSignOut} className="text-red-600 hover:bg-red-50 hover:text-red-700 font-medium cursor-pointer px-4 py-2.5 pointer-events-auto">
           <LogOut className="mr-2 h-4 w-4" />
           Sign out
         </DropdownMenuItem>
