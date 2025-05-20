@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Container } from '@/components/ui/container';
 import { useAuth } from '@/hooks/useAuth';
@@ -97,6 +98,7 @@ const Profile = () => {
             notifyNewOutfits: data.notify_new_outfits !== undefined ? data.notify_new_outfits : true,
             notifyWeatherChanges: data.notify_weather_changes !== undefined ? data.notify_weather_changes : true,
             pronouns: data.pronouns || 'not-specified',
+            customPronouns: data.custom_pronouns || '',
             appearanceSettings: data.appearance_settings || {
               theme: 'system',
               reduceMotion: false,
@@ -131,6 +133,7 @@ const Profile = () => {
             notifyNewOutfits: true,
             notifyWeatherChanges: true,
             pronouns: 'not-specified',
+            customPronouns: '',
             appearanceSettings: {
               theme: 'system',
               reduceMotion: false,
@@ -234,13 +237,15 @@ const Profile = () => {
         notify_new_outfits: updatedPreferences.notifyNewOutfits,
         notify_weather_changes: updatedPreferences.notifyWeatherChanges,
         pronouns: updatedPreferences.pronouns || 'not-specified',
-        custom_pronouns: updatedPreferences.customPronouns, // Added this field
+        custom_pronouns: updatedPreferences.customPronouns,
         appearance_settings: updatedPreferences.appearanceSettings || {
           theme: 'system',
           reduceMotion: false,
           highContrast: false
         }
       };
+
+      console.log('Saving user preferences:', preferencesData);
 
       // Check if user has preferences record
       const { data: existingPrefs, error: checkError } = await supabase
@@ -292,6 +297,7 @@ const Profile = () => {
       setUserPreferences(updatedPreferences);
       setOriginalPreferences(JSON.parse(JSON.stringify(updatedPreferences))); // Update original for change comparison
       
+      toast.success('Profile saved successfully');
       return true;
     } catch (error) {
       console.error('Error saving preferences:', error);
