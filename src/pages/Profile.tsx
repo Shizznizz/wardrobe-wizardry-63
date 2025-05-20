@@ -17,14 +17,23 @@ import WardrobeBehaviorSection from '@/components/profile/WardrobeBehaviorSectio
 import NotificationSection from '@/components/profile/NotificationSection';
 import ProfileFooter from '@/components/profile/ProfileFooter';
 import { UserPreferences } from '@/lib/types';
+import { useIsMobile } from '@/hooks/use-mobile';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 const Profile = () => {
   const { user, isAuthenticated, loading } = useAuth();
   const navigate = useNavigate();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [userPreferences, setUserPreferences] = useState<UserPreferences | null>(null);
+  const [originalPreferences, setOriginalPreferences] = useState<UserPreferences | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const isMobile = useIsMobile();
   
   // Get user preferences from database
   useEffect(() => {
@@ -57,7 +66,7 @@ const Profile = () => {
       } else {
         if (data) {
           // Transform database format to app format
-          setUserPreferences({
+          const preferences = {
             favoriteColors: data.favorite_colors || [],
             favoriteStyles: data.favorite_styles || [],
             personalityTags: data.personality_tags || [],
@@ -85,10 +94,12 @@ const Profile = () => {
             notifyNewOutfits: data.notify_new_outfits !== undefined ? data.notify_new_outfits : true,
             notifyWeatherChanges: data.notify_weather_changes !== undefined ? data.notify_weather_changes : true,
             pronouns: data.pronouns || 'not-specified'
-          });
+          };
+          setUserPreferences(preferences);
+          setOriginalPreferences(JSON.parse(JSON.stringify(preferences))); // Deep copy for comparison
         } else {
           // Set defaults if no preferences exist
-          setUserPreferences({
+          const defaults = {
             favoriteColors: [],
             favoriteStyles: [],
             personalityTags: [],
@@ -112,7 +123,9 @@ const Profile = () => {
             notifyNewOutfits: true,
             notifyWeatherChanges: true,
             pronouns: 'not-specified'
-          });
+          };
+          setUserPreferences(defaults);
+          setOriginalPreferences(JSON.parse(JSON.stringify(defaults))); // Deep copy for comparison
         }
       }
     } catch (error) {
@@ -123,8 +136,20 @@ const Profile = () => {
     }
   };
   
+  // Check if preferences have changed
+  const hasChanges = (): boolean => {
+    if (!userPreferences || !originalPreferences) return false;
+    return JSON.stringify(userPreferences) !== JSON.stringify(originalPreferences);
+  };
+  
   const saveProfile = async (updatedPreferences: UserPreferences) => {
-    if (!user) return;
+    if (!user) return false;
+    
+    // Basic validation
+    if (updatedPreferences.firstName === '' || updatedPreferences.lastName === '') {
+      toast.error('Please fill in your name');
+      return false;
+    }
     
     setIsSaving(true);
     try {
@@ -195,9 +220,12 @@ const Profile = () => {
       
       if (profileError) {
         console.error('Error updating profile:', profileError);
+        toast.error('Could not update your profile details');
+        return false;
       }
       
       setUserPreferences(updatedPreferences);
+      setOriginalPreferences(JSON.parse(JSON.stringify(updatedPreferences))); // Update original for change comparison
       toast.success('Profile updated successfully!');
       
       return true;
@@ -208,6 +236,96 @@ const Profile = () => {
     } finally {
       setIsSaving(false);
     }
+  };
+  
+  const renderProfileContent = () => {
+    if (!userPreferences) return null;
+    
+    const profileSections = [
+      {
+        id: "personal",
+        title: "Personal Details",
+        content: (
+          <PersonalDetailsSection 
+            preferences={userPreferences}
+            setPreferences={setUserPreferences}
+          />
+        )
+      },
+      {
+        id: "location",
+        title: "Location",
+        content: (
+          <LocationSection 
+            preferences={userPreferences}
+            setPreferences={setUserPreferences}
+          />
+        )
+      },
+      {
+        id: "style",
+        title: "Style Preferences",
+        content: (
+          <StylePreferencesSection 
+            preferences={userPreferences}
+            setPreferences={setUserPreferences}
+          />
+        )
+      },
+      {
+        id: "behavior",
+        title: "Wardrobe Behavior",
+        content: (
+          <WardrobeBehaviorSection 
+            preferences={userPreferences}
+            setPreferences={setUserPreferences}
+          />
+        )
+      },
+      {
+        id: "notifications",
+        title: "Notifications",
+        content: (
+          <NotificationSection 
+            preferences={userPreferences}
+            setPreferences={setUserPreferences}
+          />
+        )
+      }
+    ];
+    
+    // Render as accordions on mobile, tabs on desktop
+    if (isMobile) {
+      return (
+        <Accordion type="single" collapsible className="w-full">
+          {profileSections.map((section) => (
+            <AccordionItem key={section.id} value={section.id}>
+              <AccordionTrigger>{section.title}</AccordionTrigger>
+              <AccordionContent className="p-4 space-y-4">
+                {section.content}
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      );
+    }
+    
+    // Desktop layout with tabs
+    return (
+      <Tabs defaultValue="personal" className="w-full">
+        <TabsList className="bg-slate-800/50 border-b border-white/10 rounded-t-lg rounded-b-none w-full justify-start overflow-x-auto">
+          {profileSections.map((section) => (
+            <TabsTrigger key={section.id} value={section.id}>{section.title}</TabsTrigger>
+          ))}
+        </TabsList>
+        
+        {profileSections.map((section) => (
+          <TabsContent key={section.id} value={section.id} className="p-6 space-y-4">
+            {section.content}
+          </TabsContent>
+        ))}
+      </Tabs>
+    );
   };
   
   if (loading || isLoading) {
@@ -223,70 +341,18 @@ const Profile = () => {
   
   return (
     <>
-      <Container className="py-10">
+      <Container className="py-10 pb-20">
         <ProfileHeader />
         
         <Card className="relative mt-6 overflow-hidden border-white/10 bg-slate-900/50 backdrop-blur-sm">
-          <Tabs defaultValue="personal" className="w-full">
-            <TabsList className="bg-slate-800/50 border-b border-white/10 rounded-t-lg rounded-b-none w-full justify-start overflow-x-auto">
-              <TabsTrigger value="personal">Personal Details</TabsTrigger>
-              <TabsTrigger value="location">Location</TabsTrigger>
-              <TabsTrigger value="style">Style Preferences</TabsTrigger>
-              <TabsTrigger value="behavior">Wardrobe Behavior</TabsTrigger>
-              <TabsTrigger value="notifications">Notifications</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="personal" className="p-6 space-y-4">
-              {userPreferences && (
-                <PersonalDetailsSection 
-                  preferences={userPreferences}
-                  setPreferences={setUserPreferences}
-                />
-              )}
-            </TabsContent>
-            
-            <TabsContent value="location" className="p-6 space-y-4">
-              {userPreferences && (
-                <LocationSection 
-                  preferences={userPreferences}
-                  setPreferences={setUserPreferences}
-                />
-              )}
-            </TabsContent>
-            
-            <TabsContent value="style" className="p-6 space-y-4">
-              {userPreferences && (
-                <StylePreferencesSection 
-                  preferences={userPreferences}
-                  setPreferences={setUserPreferences}
-                />
-              )}
-            </TabsContent>
-            
-            <TabsContent value="behavior" className="p-6 space-y-4">
-              {userPreferences && (
-                <WardrobeBehaviorSection 
-                  preferences={userPreferences}
-                  setPreferences={setUserPreferences}
-                />
-              )}
-            </TabsContent>
-            
-            <TabsContent value="notifications" className="p-6 space-y-4">
-              {userPreferences && (
-                <NotificationSection 
-                  preferences={userPreferences}
-                  setPreferences={setUserPreferences}
-                />
-              )}
-            </TabsContent>
-          </Tabs>
+          {renderProfileContent()}
         </Card>
         
         {userPreferences && (
           <ProfileFooter
             isSaving={isSaving}
             onSave={() => saveProfile(userPreferences)}
+            hasChanges={hasChanges()}
           />
         )}
       </Container>

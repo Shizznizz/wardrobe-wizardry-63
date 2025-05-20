@@ -4,6 +4,7 @@ import { Label } from '@/components/ui/label';
 import { UserPreferences } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { X } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface StylePreferencesSectionProps {
   preferences: UserPreferences;
@@ -39,8 +40,26 @@ const occasionOptions = [
 ];
 
 const StylePreferencesSection = ({ preferences, setPreferences }: StylePreferencesSectionProps) => {
+  // Helper function to normalize strings for case-insensitive comparison
+  const normalizeString = (str: string): string => {
+    return str.trim().toLowerCase();
+  };
+  
+  // Check if a style already exists (case-insensitive)
+  const styleExists = (style: string): boolean => {
+    if (!preferences.favoriteStyles || preferences.favoriteStyles.length === 0) return false;
+    
+    const normalizedStyle = normalizeString(style);
+    return preferences.favoriteStyles.some(existingStyle => 
+      normalizeString(existingStyle) === normalizedStyle
+    );
+  };
+  
   const handleAddStyle = (style: string) => {
-    if (preferences.favoriteStyles?.includes(style)) return;
+    if (styleExists(style)) {
+      toast.info("You've already added this style");
+      return;
+    }
     
     setPreferences(prev => {
       if (!prev) return prev;
@@ -61,8 +80,17 @@ const StylePreferencesSection = ({ preferences, setPreferences }: StylePreferenc
     });
   };
   
+  // Check if a color already exists
+  const colorExists = (color: string): boolean => {
+    if (!preferences.favoriteColors || preferences.favoriteColors.length === 0) return false;
+    return preferences.favoriteColors.includes(color);
+  };
+  
   const handleAddColor = (color: string) => {
-    if (preferences.favoriteColors?.includes(color)) return;
+    if (colorExists(color)) {
+      toast.info("You've already added this color");
+      return;
+    }
     
     setPreferences(prev => {
       if (!prev) return prev;
@@ -83,6 +111,16 @@ const StylePreferencesSection = ({ preferences, setPreferences }: StylePreferenc
     });
   };
   
+  // Check if an occasion already exists (case-insensitive)
+  const occasionExists = (occasion: string): boolean => {
+    if (!preferences.occasionPreferences || preferences.occasionPreferences.length === 0) return false;
+    
+    const normalizedOccasion = normalizeString(occasion);
+    return preferences.occasionPreferences.some(existingOccasion => 
+      normalizeString(existingOccasion) === normalizedOccasion
+    );
+  };
+  
   const handleToggleOccasion = (occasion: string) => {
     setPreferences(prev => {
       if (!prev) return prev;
@@ -95,6 +133,11 @@ const StylePreferencesSection = ({ preferences, setPreferences }: StylePreferenc
           occasionPreferences: occasionPreferences.filter(o => o !== occasion)
         };
       } else {
+        // Check for duplicates
+        if (occasionExists(occasion)) {
+          toast.info("You've already added this occasion");
+          return prev;
+        }
         return {
           ...prev,
           occasionPreferences: [...occasionPreferences, occasion]
@@ -135,7 +178,7 @@ const StylePreferencesSection = ({ preferences, setPreferences }: StylePreferenc
           <p className="text-sm text-white/70 mb-2">Add style tags:</p>
           <div className="flex flex-wrap gap-2">
             {styleOptions
-              .filter(style => !preferences.favoriteStyles?.includes(style))
+              .filter(style => !styleExists(style))
               .map(style => (
                 <Badge 
                   key={style} 
@@ -182,15 +225,22 @@ const StylePreferencesSection = ({ preferences, setPreferences }: StylePreferenc
           <p className="text-sm text-white/70 mb-2">Add colors:</p>
           <div className="flex flex-wrap gap-3">
             {colorOptions
-              .filter(color => !preferences.favoriteColors?.includes(color.value))
+              .filter(color => !colorExists(color.value))
               .map(color => (
-                <div 
-                  key={color.value} 
-                  className="w-8 h-8 rounded-full border border-white/30 cursor-pointer hover:scale-110 transition-transform"
-                  style={{ backgroundColor: color.value }}
-                  onClick={() => handleAddColor(color.value)}
-                  title={color.name}
-                ></div>
+                <TooltipProvider key={color.value}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div 
+                        className="w-8 h-8 rounded-full border border-white/30 cursor-pointer hover:scale-110 transition-transform"
+                        style={{ backgroundColor: color.value }}
+                        onClick={() => handleAddColor(color.value)}
+                      ></div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{color.name}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               ))
             }
           </div>
@@ -221,5 +271,8 @@ const StylePreferencesSection = ({ preferences, setPreferences }: StylePreferenc
     </div>
   );
 };
+
+// Import toast at the end to avoid circular dependency
+import { toast } from 'sonner';
 
 export default StylePreferencesSection;

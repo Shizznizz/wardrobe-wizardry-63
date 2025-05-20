@@ -56,7 +56,7 @@ const PersonalDetailsSection = ({ preferences, setPreferences }: PersonalDetails
     };
     
     loadProfileData();
-  }, [user]);
+  }, [user, setPreferences]);
   
   // Handle name changes
   const handleNameChange = (field: 'firstName' | 'lastName', value: string) => {
@@ -95,12 +95,12 @@ const PersonalDetailsSection = ({ preferences, setPreferences }: PersonalDetails
     const file = event.target.files[0];
     const fileExt = file.name.split('.').pop();
     const fileName = `${user.id}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-    const filePath = `avatars/${fileName}`;
+    const filePath = `${fileName}`;
     
     setUploading(true);
     
     try {
-      // First check if storage bucket exists, if not create it
+      // Create avatars bucket if it doesn't exist
       const { data: buckets } = await supabase
         .storage
         .listBuckets();
@@ -108,17 +108,13 @@ const PersonalDetailsSection = ({ preferences, setPreferences }: PersonalDetails
       const avatarBucketExists = buckets?.some(bucket => bucket.name === 'avatars');
       
       if (!avatarBucketExists) {
-        const { error: bucketError } = await supabase
-          .storage
-          .createBucket('avatars', { public: true });
-        
-        if (bucketError) {
-          throw bucketError;
-        }
+        console.log('Creating avatars bucket');
+        // Note: Users can't create buckets via the client, this would need admin privileges
+        // The bucket should be created via SQL migration instead
       }
       
       // Upload the file
-      const { error: uploadError } = await supabase
+      const { error: uploadError, data } = await supabase
         .storage
         .from('avatars')
         .upload(filePath, file);
@@ -128,12 +124,12 @@ const PersonalDetailsSection = ({ preferences, setPreferences }: PersonalDetails
       }
       
       // Get the public URL
-      const { data } = supabase
+      const { data: urlData } = supabase
         .storage
         .from('avatars')
         .getPublicUrl(filePath);
       
-      const publicUrl = data.publicUrl;
+      const publicUrl = urlData.publicUrl;
       
       // Update profile with new avatar URL
       const { error: updateError } = await supabase
