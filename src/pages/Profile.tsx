@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Container } from '@/components/ui/container';
 import { useAuth } from '@/hooks/useAuth';
@@ -25,6 +24,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import AccountSection from '@/components/profile/AccountSection';
+import AIStyleInsightsSection from '@/components/profile/AIStyleInsightsSection';
 
 const Profile = () => {
   const { user, isAuthenticated, loading } = useAuth();
@@ -416,34 +416,44 @@ const Profile = () => {
     // Render as accordions on mobile, tabs on desktop
     if (isMobile) {
       return (
-        <Accordion type="single" collapsible className="w-full">
-          {profileSections.map((section) => (
-            <AccordionItem key={section.id} value={section.id}>
-              <AccordionTrigger className="px-4 py-2">{section.title}</AccordionTrigger>
-              <AccordionContent className="p-4 space-y-4 pb-8">
-                {section.content}
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
+        <>
+          <Accordion type="single" collapsible className="w-full">
+            {profileSections.map((section) => (
+              <AccordionItem key={section.id} value={section.id}>
+                <AccordionTrigger className="px-4 py-2">{section.title}</AccordionTrigger>
+                <AccordionContent className="p-4 space-y-4 pb-8">
+                  {section.content}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+          
+          {/* Add AI Style Insights Section at the bottom */}
+          <AIStyleInsightsSection preferences={userPreferences} />
+        </>
       );
     }
     
     // Desktop layout with tabs
     return (
-      <Tabs defaultValue="personal" className="w-full">
-        <TabsList className="bg-slate-800/50 border-b border-white/10 rounded-t-lg rounded-b-none w-full justify-start overflow-x-auto">
+      <>
+        <Tabs defaultValue="personal" className="w-full">
+          <TabsList className="bg-slate-800/50 border-b border-white/10 rounded-t-lg rounded-b-none w-full justify-start overflow-x-auto">
+            {profileSections.map((section) => (
+              <TabsTrigger key={section.id} value={section.id}>{section.title}</TabsTrigger>
+            ))}
+          </TabsList>
+          
           {profileSections.map((section) => (
-            <TabsTrigger key={section.id} value={section.id}>{section.title}</TabsTrigger>
+            <TabsContent key={section.id} value={section.id} className="p-6 space-y-4">
+              {section.content}
+            </TabsContent>
           ))}
-        </TabsList>
+        </Tabs>
         
-        {profileSections.map((section) => (
-          <TabsContent key={section.id} value={section.id} className="p-6 space-y-4">
-            {section.content}
-          </TabsContent>
-        ))}
-      </Tabs>
+        {/* Add AI Style Insights Section at the bottom */}
+        <AIStyleInsightsSection preferences={userPreferences} />
+      </>
     );
   };
   
