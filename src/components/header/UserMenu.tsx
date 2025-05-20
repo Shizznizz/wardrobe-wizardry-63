@@ -1,4 +1,3 @@
-
 import { Link, useNavigate } from 'react-router-dom';
 import { LogOut, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -8,7 +7,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -66,14 +64,14 @@ export const UserMenu = ({ isScrolled = false }: UserMenuProps) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent 
         align="end" 
-        className="bg-slate-900/90 backdrop-blur-md border border-slate-700 shadow-lg text-white"
+        className="bg-white/95 backdrop-blur-md border border-slate-200 shadow-lg text-slate-800 rounded-lg py-2 font-medium"
+        style={{ boxShadow: "0px 2px 12px rgba(0,0,0,0.15)" }}
       >
-        <DropdownMenuLabel>My Account</DropdownMenuLabel>
-        <DropdownMenuSeparator className="bg-slate-700/50" />
-        <DropdownMenuItem asChild className="hover:bg-white/10 hover:text-purple-300 cursor-pointer">
+        <DropdownMenuItem asChild className="hover:bg-slate-100 hover:text-purple-700 font-medium cursor-pointer px-4 py-2.5">
           <Link to="/profile">My Profile</Link>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={handleSignOut} className="text-red-400 hover:bg-red-900/20 hover:text-red-300 cursor-pointer">
+        <DropdownMenuSeparator className="bg-slate-200/70 mx-2" />
+        <DropdownMenuItem onClick={handleSignOut} className="text-red-600 hover:bg-red-50 hover:text-red-700 font-medium cursor-pointer px-4 py-2.5">
           <LogOut className="mr-2 h-4 w-4" />
           Sign out
         </DropdownMenuItem>
