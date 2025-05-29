@@ -26,14 +26,13 @@ class AdminService {
       
       if (error) {
         console.error('Error fetching admin analytics:', error);
-        toast.error('Failed to load analytics data');
+        // Don't show toast here, let the component handle it
         return null;
       }
       
       return data as AdminAnalytics;
     } catch (error) {
       console.error('Exception fetching admin analytics:', error);
-      toast.error('Failed to load analytics data');
       return null;
     }
   }
@@ -62,7 +61,7 @@ class AdminService {
       ]);
 
       if (profilesRes.error || outfitsRes.error || quizResultsRes.error) {
-        throw new Error('Failed to fetch user data');
+        throw new Error('Failed to fetch user data for export');
       }
 
       // Create CSV content

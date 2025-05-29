@@ -1,5 +1,5 @@
+
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -8,45 +8,48 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useAuth } from '@/hooks/useAuth';
 import { adminService, AdminAnalytics } from '@/services/AdminService';
-import { Users, Activity, Shirt, Award, TrendingUp, Calendar, Download, Database, ChevronDown, ChevronUp } from 'lucide-react';
+import { Users, Activity, Shirt, Award, TrendingUp, Calendar, Download, Database, ChevronDown, ChevronUp, AlertTriangle } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { toast } from 'sonner';
 
 const AdminDashboard = () => {
   const { user, isAuthenticated } = useAuth();
-  const navigate = useNavigate();
   const [analytics, setAnalytics] = useState<AdminAnalytics | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
   const [adminToolsOpen, setAdminToolsOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [hasError, setHasError] = useState(false);
+
+  // Check if user is admin
+  const isAdmin = isAuthenticated && user?.email === 'danieldeurloo@hotmail.com';
 
   useEffect(() => {
-    const checkAccess = async () => {
-      if (!isAuthenticated || !user) {
-        toast.error('Access denied: admin only');
-        navigate('/');
+    const loadAnalytics = async () => {
+      if (!isAuthenticated || !isAdmin) {
+        setIsLoading(false);
         return;
       }
 
-      // Check if user email is the admin email
-      if (user.email !== 'danieldeurloo@hotmail.com') {
-        toast.error('Access denied: admin only');
-        navigate('/');
-        return;
+      try {
+        setHasError(false);
+        const data = await adminService.getAnalytics();
+        if (data) {
+          setAnalytics(data);
+        } else {
+          setHasError(true);
+        }
+      } catch (error) {
+        console.error('Error loading analytics:', error);
+        setHasError(true);
+        toast.error('Failed to load analytics data');
+      } finally {
+        setIsLoading(false);
       }
-
-      setIsAdmin(true);
-      
-      // Load analytics data
-      const data = await adminService.getAnalytics();
-      setAnalytics(data);
-      setIsLoading(false);
     };
 
-    checkAccess();
-  }, [isAuthenticated, user, navigate]);
+    loadAnalytics();
+  }, [isAuthenticated, isAdmin]);
 
   const handleExportData = async () => {
     setIsExporting(true);
@@ -65,8 +68,12 @@ const AdminDashboard = () => {
     setIsRefreshing(true);
     try {
       const data = await adminService.getAnalytics();
-      setAnalytics(data);
-      toast.success('Data refreshed successfully');
+      if (data) {
+        setAnalytics(data);
+        toast.success('Data refreshed successfully');
+      } else {
+        toast.error('Failed to refresh data');
+      }
     } catch (error) {
       console.error('Error refreshing data:', error);
       toast.error('Failed to refresh data');
@@ -75,10 +82,25 @@ const AdminDashboard = () => {
     }
   };
 
+  // Show unauthorized message if not admin
   if (!isAuthenticated || !isAdmin) {
-    return null;
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto p-8">
+          <AlertTriangle className="h-16 w-16 text-red-400 mx-auto mb-6" />
+          <h1 className="text-2xl font-bold text-white mb-4">Access Denied</h1>
+          <p className="text-white/80 mb-6">
+            ⚠️ You are not authorized to view this page.
+          </p>
+          <p className="text-white/60 text-sm">
+            This admin dashboard is restricted to authorized personnel only.
+          </p>
+        </div>
+      </div>
+    );
   }
 
+  // Show loading state
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 flex items-center justify-center">
@@ -90,12 +112,17 @@ const AdminDashboard = () => {
     );
   }
 
-  if (!analytics) {
+  // Show error state
+  if (hasError || !analytics) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 flex items-center justify-center">
-        <div className="text-center text-white">
+        <div className="text-center text-white max-w-md mx-auto p-8">
+          <AlertTriangle className="h-12 w-12 text-red-400 mx-auto mb-4" />
           <h2 className="text-2xl font-bold mb-4">Failed to load analytics</h2>
-          <p className="text-white/70">Please try refreshing the page.</p>
+          <p className="text-white/70 mb-6">There was an error loading the dashboard data.</p>
+          <Button onClick={handleRefreshData} disabled={isRefreshing} className="bg-purple-600 hover:bg-purple-700">
+            {isRefreshing ? 'Retrying...' : 'Retry'}
+          </Button>
         </div>
       </div>
     );
@@ -128,9 +155,9 @@ const AdminDashboard = () => {
             </div>
           </div>
 
-          {/* User Stats */}
+          {/* User Overview Section */}
           <div className="mb-8">
-            <h2 className="text-xl font-semibold mb-4 text-purple-300">User Stats</h2>
+            <h2 className="text-xl font-semibold mb-4 text-purple-300">User Overview</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Card className="bg-slate-900/50 border-purple-500/30">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -156,9 +183,9 @@ const AdminDashboard = () => {
             </div>
           </div>
 
-          {/* Quiz Stats */}
+          {/* Quiz Results Summary */}
           <div className="mb-8">
-            <h2 className="text-xl font-semibold mb-4 text-purple-300">Quiz Stats</h2>
+            <h2 className="text-xl font-semibold mb-4 text-purple-300">Quiz Results Summary</h2>
             <Card className="bg-slate-900/50 border-purple-500/30">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium text-white/80">Total Completed Quizzes</CardTitle>
@@ -171,9 +198,9 @@ const AdminDashboard = () => {
             </Card>
           </div>
 
-          {/* Wardrobe Stats */}
+          {/* Outfit & Wardrobe Stats */}
           <div className="mb-8">
-            <h2 className="text-xl font-semibold mb-4 text-purple-300">Wardrobe Stats</h2>
+            <h2 className="text-xl font-semibold mb-4 text-purple-300">Outfit & Wardrobe Stats</h2>
             <Card className="bg-slate-900/50 border-purple-500/30">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium text-white/80">Total Outfits Saved</CardTitle>
@@ -249,7 +276,7 @@ const AdminDashboard = () => {
             <CardHeader>
               <CardTitle className="text-white flex items-center gap-2">
                 <Calendar className="h-5 w-5" />
-                Recent Signups
+                Recent User Signups
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -258,7 +285,7 @@ const AdminDashboard = () => {
                   <TableHeader>
                     <TableRow className="border-slate-700">
                       <TableHead className="text-white/80">Name</TableHead>
-                      <TableHead className="text-white/80">Date</TableHead>
+                      <TableHead className="text-white/80">Signup Date</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
