@@ -1,6 +1,5 @@
 
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 
 export interface AdminAnalytics {
   total_users: number;
@@ -19,24 +18,29 @@ export interface AdminAnalytics {
   }>;
 }
 
-class AdminService {
-  async getAnalytics(): Promise<AdminAnalytics | null> {
-    try {
-      const { data, error } = await supabase.rpc('get_admin_analytics');
-      
-      if (error) {
-        console.error('Error fetching admin analytics:', error);
-        // Don't show toast here, let the component handle it
-        return null;
-      }
-      
-      return data as AdminAnalytics;
-    } catch (error) {
-      console.error('Exception fetching admin analytics:', error);
-      return null;
-    }
-  }
+export interface UserStats {
+  total_users: number;
+  recent_signups: Array<{
+    first_name: string;
+    last_name: string;
+    created_at: string;
+  }>;
+}
 
+export interface QuizAnalytics {
+  total_quizzes: number;
+  quiz_breakdown: Record<string, number>;
+}
+
+export interface OutfitSummary {
+  total_outfits: number;
+  popular_tags: Array<{
+    tag: string;
+    count: number;
+  }>;
+}
+
+class AdminService {
   async checkAdminStatus(): Promise<boolean> {
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -48,6 +52,79 @@ class AdminService {
     } catch (error) {
       console.error('Exception checking admin status:', error);
       return false;
+    }
+  }
+
+  async getAnalytics(): Promise<AdminAnalytics | null> {
+    try {
+      const { data, error } = await supabase.rpc('get_admin_analytics');
+      
+      if (error) {
+        console.error('Error fetching admin analytics:', error);
+        return null;
+      }
+      
+      return data as AdminAnalytics;
+    } catch (error) {
+      console.error('Exception fetching admin analytics:', error);
+      return null;
+    }
+  }
+
+  async getUserStats(): Promise<UserStats | null> {
+    try {
+      const { data: analytics, error } = await supabase.rpc('get_admin_analytics');
+      
+      if (error) {
+        console.error('Error fetching user stats:', error);
+        return null;
+      }
+      
+      return {
+        total_users: analytics.total_users,
+        recent_signups: analytics.recent_signups
+      };
+    } catch (error) {
+      console.error('Exception fetching user stats:', error);
+      return null;
+    }
+  }
+
+  async getQuizAnalytics(): Promise<QuizAnalytics | null> {
+    try {
+      const { data: analytics, error } = await supabase.rpc('get_admin_analytics');
+      
+      if (error) {
+        console.error('Error fetching quiz analytics:', error);
+        return null;
+      }
+      
+      return {
+        total_quizzes: analytics.total_quizzes,
+        quiz_breakdown: analytics.quiz_breakdown
+      };
+    } catch (error) {
+      console.error('Exception fetching quiz analytics:', error);
+      return null;
+    }
+  }
+
+  async getOutfitSummary(): Promise<OutfitSummary | null> {
+    try {
+      const { data: analytics, error } = await supabase.rpc('get_admin_analytics');
+      
+      if (error) {
+        console.error('Error fetching outfit summary:', error);
+        return null;
+      }
+      
+      return {
+        total_outfits: analytics.total_outfits,
+        popular_tags: analytics.popular_tags
+      };
+    } catch (error) {
+      console.error('Exception fetching outfit summary:', error);
+      return null;
     }
   }
 
