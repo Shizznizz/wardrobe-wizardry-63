@@ -4,28 +4,36 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useAuth } from '@/hooks/useAuth';
 import { adminService, AdminAnalytics } from '@/services/AdminService';
-import { Users, Activity, Shirt, Award, TrendingUp, Calendar } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { Users, Activity, Shirt, Award, TrendingUp, Calendar, Download, Database, ChevronDown, ChevronUp } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { toast } from 'sonner';
 
 const AdminDashboard = () => {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated } = useNavigate();
   const navigate = useNavigate();
   const [analytics, setAnalytics] = useState<AdminAnalytics | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [adminToolsOpen, setAdminToolsOpen] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
     const checkAccess = async () => {
       if (!isAuthenticated || !user) {
+        toast.error('Access denied: admin only');
         navigate('/');
         return;
       }
 
-      const adminStatus = await adminService.checkAdminStatus();
-      
-      if (!adminStatus) {
+      // Check if user email is the admin email
+      if (user.email !== 'danieldeurloo@hotmail.com') {
+        toast.error('Access denied: admin only');
         navigate('/');
         return;
       }
@@ -40,6 +48,33 @@ const AdminDashboard = () => {
 
     checkAccess();
   }, [isAuthenticated, user, navigate]);
+
+  const handleExportData = async () => {
+    setIsExporting(true);
+    try {
+      await adminService.exportAllUserData();
+      toast.success('User data exported successfully');
+    } catch (error) {
+      console.error('Error exporting data:', error);
+      toast.error('Failed to export user data');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleRefreshData = async () => {
+    setIsRefreshing(true);
+    try {
+      const data = await adminService.getAnalytics();
+      setAnalytics(data);
+      toast.success('Data refreshed successfully');
+    } catch (error) {
+      console.error('Error refreshing data:', error);
+      toast.error('Failed to refresh data');
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   if (!isAuthenticated || !isAdmin) {
     return null;
@@ -72,8 +107,6 @@ const AdminDashboard = () => {
     count
   }));
 
-  const COLORS = ['#8B5CF6', '#EC4899', '#F59E0B', '#10B981'];
-
   const averageQuizzesPerUser = analytics.total_users > 0 
     ? (analytics.total_quizzes / analytics.total_users).toFixed(1)
     : '0';
@@ -92,53 +125,64 @@ const AdminDashboard = () => {
             </div>
             <div>
               <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-              <p className="text-white/70">AI Wardrobe Assistant Analytics</p>
+              <p className="text-white/70">AI Wardrobe Assistant Analytics - Secure Admin Zone</p>
             </div>
           </div>
 
-          {/* Overview Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <Card className="bg-slate-900/50 border-purple-500/30">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-white/80">Total Users</CardTitle>
-                <Users className="h-4 w-4 text-purple-400" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-white">{analytics.total_users}</div>
-                <p className="text-xs text-white/60">Registered accounts</p>
-              </CardContent>
-            </Card>
+          {/* User Stats */}
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold mb-4 text-purple-300">User Stats</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card className="bg-slate-900/50 border-purple-500/30">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-white/80">Total Users Registered</CardTitle>
+                  <Users className="h-4 w-4 text-purple-400" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-white">{analytics.total_users}</div>
+                  <p className="text-xs text-white/60">All registered accounts</p>
+                </CardContent>
+              </Card>
 
-            <Card className="bg-slate-900/50 border-purple-500/30">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-white/80">Active Users</CardTitle>
-                <Activity className="h-4 w-4 text-green-400" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-white">{analytics.active_users}</div>
-                <p className="text-xs text-white/60">Last 30 days</p>
-              </CardContent>
-            </Card>
+              <Card className="bg-slate-900/50 border-purple-500/30">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-white/80">Active Users</CardTitle>
+                  <Activity className="h-4 w-4 text-green-400" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-white">{analytics.active_users}</div>
+                  <p className="text-xs text-white/60">Last 30 days</p>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
 
+          {/* Quiz Stats */}
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold mb-4 text-purple-300">Quiz Stats</h2>
             <Card className="bg-slate-900/50 border-purple-500/30">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-white/80">Total Outfits</CardTitle>
-                <Shirt className="h-4 w-4 text-blue-400" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-white">{analytics.total_outfits}</div>
-                <p className="text-xs text-white/60">Created by users</p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-slate-900/50 border-purple-500/30">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-white/80">Quizzes Completed</CardTitle>
+                <CardTitle className="text-sm font-medium text-white/80">Total Completed Quizzes</CardTitle>
                 <Award className="h-4 w-4 text-yellow-400" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-white">{analytics.total_quizzes}</div>
                 <p className="text-xs text-white/60">Avg: {averageQuizzesPerUser} per user</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Wardrobe Stats */}
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold mb-4 text-purple-300">Wardrobe Stats</h2>
+            <Card className="bg-slate-900/50 border-purple-500/30">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-white/80">Total Outfits Saved</CardTitle>
+                <Shirt className="h-4 w-4 text-blue-400" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-white">{analytics.total_outfits}</div>
+                <p className="text-xs text-white/60">Created by all users</p>
               </CardContent>
             </Card>
           </div>
@@ -178,7 +222,7 @@ const AdminDashboard = () => {
             {/* Popular Tags */}
             <Card className="bg-slate-900/50 border-purple-500/30">
               <CardHeader>
-                <CardTitle className="text-white">Popular Outfit Tags</CardTitle>
+                <CardTitle className="text-white">Popular Style Tags & Colors</CardTitle>
               </CardHeader>
               <CardContent>
                 {analytics.popular_tags.length > 0 ? (
@@ -201,8 +245,8 @@ const AdminDashboard = () => {
             </Card>
           </div>
 
-          {/* Recent Signups */}
-          <Card className="bg-slate-900/50 border-purple-500/30">
+          {/* Recent Activities */}
+          <Card className="bg-slate-900/50 border-purple-500/30 mb-8">
             <CardHeader>
               <CardTitle className="text-white flex items-center gap-2">
                 <Calendar className="h-5 w-5" />
@@ -211,26 +255,81 @@ const AdminDashboard = () => {
             </CardHeader>
             <CardContent>
               {analytics.recent_signups.length > 0 ? (
-                <div className="space-y-3">
-                  {analytics.recent_signups.map((signup, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
-                      <div>
-                        <p className="font-medium text-white">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="border-slate-700">
+                      <TableHead className="text-white/80">Name</TableHead>
+                      <TableHead className="text-white/80">Date</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {analytics.recent_signups.map((signup, index) => (
+                      <TableRow key={index} className="border-slate-700">
+                        <TableCell className="text-white">
                           {signup.first_name} {signup.last_name}
-                        </p>
-                      </div>
-                      <div className="text-sm text-white/60">
-                        {new Date(signup.created_at).toLocaleDateString()}
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                        </TableCell>
+                        <TableCell className="text-white/60">
+                          {new Date(signup.created_at).toLocaleDateString()}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
               ) : (
                 <div className="text-center text-white/60 py-8">
                   No recent signups available
                 </div>
               )}
             </CardContent>
+          </Card>
+
+          {/* Admin Tools Section */}
+          <Card className="bg-slate-900/50 border-red-500/30">
+            <Collapsible open={adminToolsOpen} onOpenChange={setAdminToolsOpen}>
+              <CollapsibleTrigger asChild>
+                <CardHeader className="cursor-pointer hover:bg-slate-800/30 transition-colors">
+                  <CardTitle className="text-white flex items-center justify-between">
+                    <span className="flex items-center gap-2">
+                      <Database className="h-5 w-5 text-red-400" />
+                      Admin Tools
+                    </span>
+                    {adminToolsOpen ? (
+                      <ChevronUp className="h-4 w-4" />
+                    ) : (
+                      <ChevronDown className="h-4 w-4" />
+                    )}
+                  </CardTitle>
+                </CardHeader>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Button
+                      onClick={handleExportData}
+                      disabled={isExporting}
+                      className="bg-blue-600 hover:bg-blue-700 text-white"
+                    >
+                      <Download className="h-4 w-4 mr-2" />
+                      {isExporting ? 'Exporting...' : 'Export All User Data (CSV)'}
+                    </Button>
+
+                    <Button
+                      onClick={handleRefreshData}
+                      disabled={isRefreshing}
+                      variant="outline"
+                      className="border-purple-500 text-purple-300 hover:bg-purple-500/10"
+                    >
+                      <TrendingUp className="h-4 w-4 mr-2" />
+                      {isRefreshing ? 'Refreshing...' : 'Refresh Data'}
+                    </Button>
+                  </div>
+                  
+                  <div className="text-sm text-white/60 bg-red-900/20 p-3 rounded-lg border border-red-500/30">
+                    <strong className="text-red-400">Admin Zone:</strong> These tools provide access to all user data. Use responsibly and in compliance with privacy policies.
+                  </div>
+                </CardContent>
+              </CollapsibleContent>
+            </Collapsible>
           </Card>
         </motion.div>
       </div>
