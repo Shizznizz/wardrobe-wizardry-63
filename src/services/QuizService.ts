@@ -10,6 +10,10 @@ export interface QuizResult {
   resultValue: any;
 }
 
+export interface QuizAnswers {
+  [questionId: string]: string | string[];
+}
+
 export const saveQuizResult = async (result: QuizResult): Promise<boolean> => {
   try {
     const { user } = await supabase.auth.getSession().then(({ data }) => ({ user: data.session?.user }));
@@ -26,7 +30,8 @@ export const saveQuizResult = async (result: QuizResult): Promise<boolean> => {
         quiz_id: result.quizId,
         quiz_name: result.quizName,
         result_label: result.resultLabel,
-        result_value: result.resultValue
+        result_value: result.resultValue,
+        completed_at: new Date().toISOString()
       });
       
     if (error) {
@@ -35,6 +40,7 @@ export const saveQuizResult = async (result: QuizResult): Promise<boolean> => {
       return false;
     }
     
+    toast.success(`${result.quizName} results saved successfully!`);
     return true;
   } catch (error) {
     console.error("Exception saving quiz result:", error);
@@ -54,7 +60,8 @@ export const getUserQuizResults = async (): Promise<QuizResult[]> => {
     const { data, error } = await supabase
       .from('user_quiz_results')
       .select('*')
-      .eq('user_id', user.id);
+      .eq('user_id', user.id)
+      .order('completed_at', { ascending: false });
       
     if (error) {
       console.error("Error fetching quiz results:", error);
@@ -70,6 +77,41 @@ export const getUserQuizResults = async (): Promise<QuizResult[]> => {
   } catch (error) {
     console.error("Exception fetching quiz results:", error);
     return [];
+  }
+};
+
+export const getQuizResultsByIds = async (quizIds: string[]): Promise<Record<string, any>> => {
+  try {
+    const { user } = await supabase.auth.getSession().then(({ data }) => ({ user: data.session?.user }));
+    
+    if (!user) {
+      return {};
+    }
+    
+    const { data, error } = await supabase
+      .from('user_quiz_results')
+      .select('*')
+      .eq('user_id', user.id)
+      .in('quiz_id', quizIds);
+      
+    if (error) {
+      console.error("Error fetching quiz results by IDs:", error);
+      return {};
+    }
+    
+    const results: Record<string, any> = {};
+    data.forEach(item => {
+      results[item.quiz_id] = {
+        resultLabel: item.result_label,
+        resultValue: item.result_value,
+        completedAt: item.completed_at
+      };
+    });
+    
+    return results;
+  } catch (error) {
+    console.error("Exception fetching quiz results by IDs:", error);
+    return {};
   }
 };
 
@@ -97,5 +139,36 @@ export const useQuizResults = () => {
     }
   };
   
-  return { getCompletedQuizIds };
+  const getAllQuizResults = async (): Promise<Record<string, any>> => {
+    if (!user) return {};
+    
+    try {
+      const { data, error } = await supabase
+        .from('user_quiz_results')
+        .select('*')
+        .eq('user_id', user.id);
+        
+      if (error) {
+        console.error("Error fetching all quiz results:", error);
+        return {};
+      }
+      
+      const results: Record<string, any> = {};
+      data.forEach(item => {
+        results[item.quiz_id] = {
+          quizName: item.quiz_name,
+          resultLabel: item.result_label,
+          resultValue: item.result_value,
+          completedAt: item.completed_at
+        };
+      });
+      
+      return results;
+    } catch (error) {
+      console.error("Exception fetching all quiz results:", error);
+      return {};
+    }
+  };
+  
+  return { getCompletedQuizIds, getAllQuizResults };
 };
