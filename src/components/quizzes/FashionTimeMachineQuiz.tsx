@@ -5,97 +5,103 @@ import { QuizData } from './QuizModal';
 const FashionTimeMachineQuiz = (): QuizData => {
   return {
     id: 'fashion-time-machine',
-    name: 'Fashion Time Machine',
+    title: 'Fashion Time Machine',
+    description: 'Explore which fashion eras resonate with your personal style.',
     questions: [
       {
         id: 'decade',
-        question: "What fashion decade speaks to you most?",
+        text: "What fashion decade speaks to you most?",
         options: [
-          { id: 'a', label: '60s mod', icon: Star },
-          { id: 'b', label: '70s boho', icon: Sparkles },
-          { id: 'c', label: '90s minimalism', icon: Heart },
-          { id: 'd', label: '2000s Y2K', icon: Coffee }
+          { id: 'a', label: '60s mod' },
+          { id: 'b', label: '70s boho' },
+          { id: 'c', label: '90s minimalism' },
+          { id: 'd', label: '2000s Y2K' }
         ]
       },
       {
         id: 'regret',
-        question: "What was your biggest childhood fashion regret?",
+        text: "What was your biggest childhood fashion regret?",
         options: [
-          { id: 'a', label: 'Velcro sneakers', icon: Star },
-          { id: 'b', label: 'Butterfly clips', icon: Sparkles },
-          { id: 'c', label: 'Neon everything', icon: Heart },
-          { id: 'd', label: 'Low-rise jeans', icon: Coffee }
+          { id: 'a', label: 'Velcro sneakers' },
+          { id: 'b', label: 'Butterfly clips' },
+          { id: 'c', label: 'Neon everything' },
+          { id: 'd', label: 'Low-rise jeans' }
         ]
       },
       {
         id: 'nostalgic',
-        question: "Pick a nostalgic fashion piece you'd still wear today:",
+        text: "Pick a nostalgic fashion piece you'd still wear today:",
         options: [
-          { id: 'a', label: 'Denim jacket', icon: Star },
-          { id: 'b', label: 'Slip dress', icon: Sparkles },
-          { id: 'c', label: 'Cargo pants', icon: Heart },
-          { id: 'd', label: 'Platform shoes', icon: Coffee }
+          { id: 'a', label: 'Denim jacket' },
+          { id: 'b', label: 'Slip dress' },
+          { id: 'c', label: 'Cargo pants' },
+          { id: 'd', label: 'Platform shoes' }
         ]
       },
       {
         id: 'highschool',
-        question: "How would your high school self describe your current style?",
+        text: "How would your high school self describe your current style?",
         options: [
-          { id: 'a', label: '"Glow-up level: 100"', icon: Star },
-          { id: 'b', label: '"Cooler than I imagined"', icon: Sparkles },
-          { id: 'c', label: '"Surprisingly the same"', icon: Heart },
-          { id: 'd', label: '"What happened to me?!"', icon: Coffee }
+          { id: 'a', label: '"Glow-up level: 100"' },
+          { id: 'b', label: '"Cooler than I imagined"' },
+          { id: 'c', label: '"Surprisingly the same"' },
+          { id: 'd', label: '"What happened to me?!"' }
         ]
       },
       {
         id: 'song',
-        question: "What song defines your fashion era?",
+        text: "What song defines your fashion era?",
         options: [
-          { id: 'a', label: 'Britney Spears – Toxic', icon: Star },
-          { id: 'b', label: 'Rihanna – Umbrella', icon: Sparkles },
-          { id: 'c', label: 'TLC – No Scrubs', icon: Heart },
-          { id: 'd', label: 'Spice Girls – Wannabe', icon: Coffee }
+          { id: 'a', label: 'Britney Spears – Toxic' },
+          { id: 'b', label: 'Rihanna – Umbrella' },
+          { id: 'c', label: 'TLC – No Scrubs' },
+          { id: 'd', label: 'Spice Girls – Wannabe' }
         ]
       }
     ],
     getResult: (answers) => {
-      // Simple algorithm to determine style history based on most common answer
       const counts: Record<string, number> = { a: 0, b: 0, c: 0, d: 0 };
       
       Object.values(answers).forEach(answer => {
-        counts[answer] = (counts[answer] || 0) + 1;
+        if (answer in counts) {
+          counts[answer] = (counts[answer] || 0) + 1;
+        }
       });
       
       const mostCommon = Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0];
       
-      const results = {
+      const results: Record<string, any> = {
         'a': {
-          title: 'Retro Modern Fusionist',
+          label: 'Retro Modern Fusionist',
           description: 'You skillfully blend iconic vintage elements with contemporary style. Your wardrobe honors fashion history while remaining firmly planted in the present, creating a timeless yet fresh aesthetic.',
-          traits: ['Historically informed', 'Selective adaptation', 'Contemporary twist'],
-          value: { styleHistory: 'Retro Modern Fusionist', eraInfluences: ['60s', 'early 2000s'], revivalElements: ['structured shapes', 'pop culture references', 'statement accessories'] }
+          tags: ['Historically informed', 'Selective adaptation', 'Contemporary twist'],
+          colors: ['vintage-inspired', 'classic combinations'],
+          recommendations: ['Mix vintage pieces with modern silhouettes', 'Study fashion history for inspiration', 'Invest in timeless pieces with a modern twist']
         },
         'b': {
-          title: '70s Bohemian Revivalist',
+          label: '70s Bohemian Revivalist',
           description: 'Your style channels the free-spirited essence of 70s fashion with a modern sensibility. You gravitate toward flowing silhouettes, natural materials, and a relaxed approach that honors vintage bohemian aesthetics.',
-          traits: ['Earth-inspired', 'Free-spirited', 'Romantically nostalgic'],
-          value: { styleHistory: '70s Bohemian Revivalist', eraInfluences: ['70s', 'early 2010s'], revivalElements: ['natural materials', 'flowing silhouettes', 'earthy palette'] }
+          tags: ['Earth-inspired', 'Free-spirited', 'Romantically nostalgic'],
+          colors: ['earth tones', 'warm browns', 'burnt orange'],
+          recommendations: ['Embrace flowing fabrics and natural textures', 'Layer vintage-inspired jewelry', 'Choose pieces with bohemian details']
         },
         'c': {
-          title: '90s Minimalist Enthusiast',
+          label: '90s Minimalist Enthusiast',
           description: 'You appreciate the clean lines and understated cool of 90s minimalism. Your style incorporates sleek silhouettes, thoughtful basics, and an effortless approach that balances nostalgia with modern simplicity.',
-          traits: ['Clean aesthetic', 'Understated', 'Thoughtfully simple'],
-          value: { styleHistory: '90s Minimalist Enthusiast', eraInfluences: ['90s', 'early 2020s'], revivalElements: ['monochrome', 'clean lines', 'quality basics'] }
+          tags: ['Clean aesthetic', 'Understated', 'Thoughtfully simple'],
+          colors: ['monochrome', 'neutral palette', 'black and white'],
+          recommendations: ['Focus on clean lines and minimal details', 'Invest in quality basics in neutral colors', 'Choose understated, timeless pieces']
         },
         'd': {
-          title: 'Y2K Trend Revivalist',
+          label: 'Y2K Trend Revivalist',
           description: "You embrace the playful experimentation of Y2K fashion with a contemporary twist. Your bold choices in color, texture, and silhouette create a style that is both nostalgically fun and refreshingly current.",
-          traits: ['Experimentally bold', 'Playfully ironic', 'Confident reinvention'],
-          value: { styleHistory: 'Y2K Trend Revivalist', eraInfluences: ['early 2000s', '2020s'], revivalElements: ['bold colors', 'mixed textures', 'statement accessories'] }
+          tags: ['Experimentally bold', 'Playfully ironic', 'Confident reinvention'],
+          colors: ['metallics', 'bright colors', 'futuristic tones'],
+          recommendations: ['Experiment with metallic fabrics and bold colors', 'Mix futuristic elements with everyday pieces', 'Embrace playful, statement accessories']
         }
       };
       
-      return results[mostCommon];
+      return results[mostCommon] || results['a'];
     }
   };
 };

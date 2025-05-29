@@ -1,484 +1,336 @@
-
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { X, Edit, RefreshCw } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
-import { useAuth } from '@/hooks/useAuth';
-import { supabase } from '@/integrations/supabase/client';
+import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
-import { getUserQuizResults, QuizResult } from '@/services/QuizService';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 import QuizModal from '@/components/quizzes/QuizModal';
 import FindYourStyleQuiz from '@/components/quizzes/FindYourStyleQuiz';
 import LifestyleLensQuiz from '@/components/quizzes/LifestyleLensQuiz';
 import VibeCheckQuiz from '@/components/quizzes/VibeCheckQuiz';
 import FashionTimeMachineQuiz from '@/components/quizzes/FashionTimeMachineQuiz';
+import { UserPreferences } from '@/lib/types';
 
-const colorOptions = [
-  'Black', 'White', 'Gray', 'Blue', 'Red', 'Green', 
-  'Yellow', 'Purple', 'Pink', 'Orange', 'Brown', 
-  'Navy', 'Beige', 'Burgundy'
-];
-
-const styleOptions = [
-  'Casual', 'Formal', 'Business', 'Streetwear', 
-  'Minimalist', 'Vintage', 'Bohemian', 'Preppy',
-  'Sporty', 'Gothic', 'Glam'
-];
-
-const occasionOptions = [
-  'Work', 'Date Night', 'Casual Outing', 'Workout',
-  'Formal Event', 'Beach Day', 'Travel', 'Home'
-];
+interface PreferenceSettingsProps {
+  onPreferencesUpdated?: () => void;
+}
 
 const PreferenceSettings = () => {
-  const { user } = useAuth();
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const [favoriteColors, setFavoriteColors] = useState<string[]>([]);
+  const [bodyType, setBodyType] = useState<string>('not-specified');
+  const [occasionPreferences, setOccasionPreferences] = useState<string[]>([]);
+  const [styleQuizResult, setStyleQuizResult] = useState<any>(null);
+  const [bio, setBio] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [quizResults, setQuizResults] = useState<QuizResult[]>([]);
-  const [activeQuiz, setActiveQuiz] = useState<string | null>(null);
-  const [preferences, setPreferences] = useState({
-    favoriteColors: [] as string[],
-    favoriteStyles: [] as string[],
-    occasionPreferences: [] as string[]
-  });
+  const [activeQuiz, setActiveQuiz] = useState<any>(null);
+  const { user } = useAuth();
 
   useEffect(() => {
-    if (user) {
-      fetchUserPreferences();
-      fetchQuizResults();
-    } else {
-      setLoading(false);
+    const storedDarkMode = localStorage.getItem('darkMode') === 'true';
+    setIsDarkMode(storedDarkMode);
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('darkMode', String(isDarkMode));
+    if (document.documentElement.classList.contains('dark') !== isDarkMode) {
+      if (isDarkMode) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
     }
+  }, [isDarkMode]);
+
+  useEffect(() => {
+    loadPreferences();
   }, [user]);
 
-  const fetchUserPreferences = async () => {
-    if (!user) return;
-    
+  const loadPreferences = async () => {
+    setLoading(true);
     try {
+      if (!user) {
+        console.warn("User not available, can't load preferences.");
+        return;
+      }
+
       const { data, error } = await supabase
         .from('user_preferences')
-        .select('favorite_colors, favorite_styles, occasions_preferences')
+        .select('*')
         .eq('user_id', user.id)
         .single();
-      
-      if (error && error.code !== 'PGRST116') {
-        throw error;
-      }
-      
-      if (data) {
-        setPreferences({
-          favoriteColors: data.favorite_colors || [],
-          favoriteStyles: data.favorite_styles || [],
-          occasionPreferences: data.occasions_preferences || []
-        });
-      }
-    } catch (error) {
-      console.error('Error fetching preferences:', error);
-      toast.error('Could not load your style preferences');
-    }
-  };
 
-  const fetchQuizResults = async () => {
-    try {
-      const results = await getUserQuizResults();
-      setQuizResults(results);
+      if (error) {
+        console.error("Error fetching user preferences:", error);
+        return;
+      }
+
+      if (data) {
+        setIsDarkMode(data.is_dark_mode ?? false);
+        setNotificationsEnabled(data.notifications_enabled ?? true);
+        setFavoriteColors(data.favorite_colors ?? []);
+        setBodyType(data.body_type ?? 'not-specified');
+        setOccasionPreferences(data.occasion_preferences ?? []);
+        setStyleQuizResult(data.style_quiz_result ?? null);
+        setBio(data.bio ?? '');
+      }
     } catch (error) {
-      console.error('Error fetching quiz results:', error);
-      toast.error('Could not load your quiz results');
+      console.error("Unexpected error loading preferences:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSavePreferences = async () => {
-    if (!user) return;
-    
+  const savePreferences = async () => {
     setSaving(true);
     try {
-      const { data: existingPrefs, error: checkError } = await supabase
-        .from('user_preferences')
-        .select('id')
-        .eq('user_id', user.id)
-        .single();
-      
-      let upsertError;
-      
-      if (existingPrefs) {
-        // Update existing preferences
-        const { error } = await supabase
-          .from('user_preferences')
-          .update({
-            favorite_colors: preferences.favoriteColors,
-            favorite_styles: preferences.favoriteStyles,
-            occasions_preferences: preferences.occasionPreferences
-          })
-          .eq('user_id', user.id);
-        
-        upsertError = error;
-      } else {
-        // Insert new preferences
-        const { error } = await supabase
-          .from('user_preferences')
-          .insert({
-            user_id: user.id,
-            favorite_colors: preferences.favoriteColors,
-            favorite_styles: preferences.favoriteStyles,
-            occasions_preferences: preferences.occasionPreferences
-          });
-        
-        upsertError = error;
+      if (!user) {
+        toast.error("You must be logged in to save preferences.");
+        return;
       }
-      
-      if (upsertError) throw upsertError;
-      
-      toast.success('Style preferences saved');
+
+      const { error } = await supabase
+        .from('user_preferences')
+        .upsert({
+          user_id: user.id,
+          is_dark_mode: isDarkMode,
+          notifications_enabled: notificationsEnabled,
+          favorite_colors: favoriteColors,
+          body_type: bodyType,
+          occasion_preferences: occasionPreferences,
+          style_quiz_result: styleQuizResult,
+          bio: bio,
+        }, { onConflict: 'user_id' });
+
+      if (error) {
+        console.error("Error saving user preferences:", error);
+        toast.error("Failed to save preferences.");
+        return;
+      }
+
+      toast.success("Preferences saved successfully!");
     } catch (error) {
-      console.error('Error saving preferences:', error);
-      toast.error('Could not save your style preferences');
+      console.error("Unexpected error saving preferences:", error);
+      toast.error("Something went wrong saving preferences.");
     } finally {
       setSaving(false);
     }
   };
 
-  const toggleItem = (item: string, category: 'favoriteColors' | 'favoriteStyles' | 'occasionPreferences') => {
-    setPreferences(prev => {
-      const current = [...prev[category]];
-      
-      if (current.includes(item)) {
-        return {
-          ...prev,
-          [category]: current.filter(i => i !== item)
-        };
-      } else {
-        return {
-          ...prev,
-          [category]: [...current, item]
-        };
-      }
-    });
-  };
-
-  const removeItem = (item: string, category: 'favoriteColors' | 'favoriteStyles' | 'occasionPreferences') => {
-    setPreferences(prev => ({
-      ...prev,
-      [category]: prev[category].filter(i => i !== item)
-    }));
-  };
-
-  const getQuizResult = (quizId: string) => {
-    return quizResults.find(result => result.quizId === quizId);
-  };
-
-  const openQuiz = (quizId: string) => {
-    setActiveQuiz(quizId);
-  };
-
-  const closeQuiz = () => {
-    setActiveQuiz(null);
-    fetchQuizResults();
-  };
-
-  const getQuizComponent = (quizId: string | null) => {
-    switch (quizId) {
-      case 'find-your-style':
-        return FindYourStyleQuiz();
-      case 'lifestyle-lens':
-        return LifestyleLensQuiz();
-      case 'vibe-check':
-        return VibeCheckQuiz();
-      case 'fashion-time-machine':
-        return FashionTimeMachineQuiz();
-      default:
-        return null;
+  const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const color = e.target.value.toLowerCase();
+    if (!favoriteColors.includes(color)) {
+      setFavoriteColors([...favoriteColors, color]);
     }
   };
 
-  if (loading) {
-    return (
-      <Card className="bg-slate-800/30 border-white/10">
-        <CardContent className="pt-6">
-          <div className="flex justify-center">
-            <Loader2 className="h-6 w-6 animate-spin text-purple-400" />
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
+  const removeColor = (colorToRemove: string) => {
+    setFavoriteColors(favoriteColors.filter(color => color !== colorToRemove));
+  };
 
-  const styleTypeQuiz = getQuizResult('find-your-style');
-  const lifestyleTypeQuiz = getQuizResult('lifestyle-lens');
-  const vibeProfileQuiz = getQuizResult('vibe-check');
-  const styleHistoryQuiz = getQuizResult('fashion-time-machine');
+  const handleOccasionChange = (occasion: string) => {
+    if (occasionPreferences.includes(occasion)) {
+      setOccasionPreferences(occasionPreferences.filter(o => o !== occasion));
+    } else {
+      setOccasionPreferences([...occasionPreferences, occasion]);
+    }
+  };
+
+  const handleBodyTypeChange = (value: string) => {
+    setBodyType(value);
+  };
+
+  const handleBioChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setBio(e.target.value);
+  };
+
+  const startQuiz = (quizType: string) => {
+    switch (quizType) {
+      case 'style':
+        setActiveQuiz(FindYourStyleQuiz());
+        break;
+      case 'lifestyle':
+        setActiveQuiz(LifestyleLensQuiz());
+        break;
+      case 'vibe':
+        setActiveQuiz(VibeCheckQuiz());
+        break;
+      case 'timeMachine':
+        setActiveQuiz(FashionTimeMachineQuiz());
+        break;
+      default:
+        setActiveQuiz(null);
+        break;
+    }
+  };
 
   return (
-    <>
-      <Card className="bg-slate-800/30 border-white/10 mb-8">
-        <CardHeader>
-          <CardTitle>Your Style Profile</CardTitle>
-          <CardDescription>
-            Quiz results that help Olivia understand your style preferences
-          </CardDescription>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="container py-12"
+    >
+      <Card className="bg-gradient-to-br from-slate-900/70 to-indigo-900/40 border-purple-500/20 shadow-xl backdrop-blur-sm overflow-hidden">
+        <CardHeader className="p-6 pb-0">
+          <CardTitle className="text-2xl font-semibold">Preference Settings</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <Label>Style Identity</Label>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => openQuiz('find-your-style')}
-                className="text-purple-400 hover:text-purple-300 hover:bg-purple-500/10"
-              >
-                {styleTypeQuiz ? <Edit className="h-4 w-4 mr-2" /> : <RefreshCw className="h-4 w-4 mr-2" />}
-                {styleTypeQuiz ? 'Edit' : 'Take Quiz'}
-              </Button>
-            </div>
-            {styleTypeQuiz ? (
-              <div className="p-4 rounded-md bg-purple-500/10 border border-purple-500/20">
-                <p className="font-semibold text-purple-300 text-lg mb-1">{styleTypeQuiz.resultValue.styleType}</p>
-                <p className="text-sm text-white/70">
-                  Your personal style combines {styleTypeQuiz.resultValue.mainColors?.join(', ')} colors and focuses on {styleTypeQuiz.resultValue.preferredItems?.join(', ')}
-                </p>
+        <CardContent className="p-6">
+          {loading ? (
+            <p className="text-white/70">Loading preferences...</p>
+          ) : (
+            <div className="space-y-6">
+              {/* Dark Mode */}
+              <div className="flex items-center justify-between">
+                <Label htmlFor="darkMode" className="text-white/80">Dark Mode</Label>
+                <Switch id="darkMode" checked={isDarkMode} onCheckedChange={(checked) => setIsDarkMode(checked)} />
               </div>
-            ) : (
-              <div className="p-4 rounded-md bg-white/5 border border-white/10 text-center">
-                <p className="text-white/60">Take the "Find Your Style" quiz to discover your style identity</p>
-              </div>
-            )}
-          </div>
+              <Separator className="bg-white/10" />
 
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <Label>Lifestyle Type</Label>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => openQuiz('lifestyle-lens')}
-                className="text-purple-400 hover:text-purple-300 hover:bg-purple-500/10"
-              >
-                {lifestyleTypeQuiz ? <Edit className="h-4 w-4 mr-2" /> : <RefreshCw className="h-4 w-4 mr-2" />}
-                {lifestyleTypeQuiz ? 'Edit' : 'Take Quiz'}
-              </Button>
-            </div>
-            {lifestyleTypeQuiz ? (
-              <div className="p-4 rounded-md bg-purple-500/10 border border-purple-500/20">
-                <p className="font-semibold text-purple-300 text-lg mb-1">{lifestyleTypeQuiz.resultValue.lifestyleType}</p>
-                <p className="text-sm text-white/70">
-                  Your lifestyle focuses on {lifestyleTypeQuiz.resultValue.occasions?.join(', ')} occasions and needs clothing that is {lifestyleTypeQuiz.resultValue.clothingFocus?.join(', ')}
-                </p>
+              {/* Notifications */}
+              <div className="flex items-center justify-between">
+                <Label htmlFor="notifications" className="text-white/80">Notifications</Label>
+                <Switch
+                  id="notifications"
+                  checked={notificationsEnabled}
+                  onCheckedChange={(checked) => setNotificationsEnabled(checked)}
+                />
               </div>
-            ) : (
-              <div className="p-4 rounded-md bg-white/5 border border-white/10 text-center">
-                <p className="text-white/60">Take the "Lifestyle Lens" quiz to determine your lifestyle needs</p>
-              </div>
-            )}
-          </div>
+              <Separator className="bg-white/10" />
 
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <Label>Vibe Profile</Label>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => openQuiz('vibe-check')}
-                className="text-purple-400 hover:text-purple-300 hover:bg-purple-500/10"
-              >
-                {vibeProfileQuiz ? <Edit className="h-4 w-4 mr-2" /> : <RefreshCw className="h-4 w-4 mr-2" />}
-                {vibeProfileQuiz ? 'Edit' : 'Take Quiz'}
-              </Button>
-            </div>
-            {vibeProfileQuiz ? (
-              <div className="p-4 rounded-md bg-purple-500/10 border border-purple-500/20">
-                <p className="font-semibold text-purple-300 text-lg mb-1">{vibeProfileQuiz.resultValue.vibeProfile}</p>
-                <p className="text-sm text-white/70">
-                  Your vibe is characterized by {vibeProfileQuiz.resultValue.expressionStyle} expression with {vibeProfileQuiz.resultValue.keyElements?.join(', ')} as key elements
-                </p>
-              </div>
-            ) : (
-              <div className="p-4 rounded-md bg-white/5 border border-white/10 text-center">
-                <p className="text-white/60">Take the "Vibe Check" quiz to define your personal vibe</p>
-              </div>
-            )}
-          </div>
-
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <Label>Fashion History</Label>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => openQuiz('fashion-time-machine')}
-                className="text-purple-400 hover:text-purple-300 hover:bg-purple-500/10"
-              >
-                {styleHistoryQuiz ? <Edit className="h-4 w-4 mr-2" /> : <RefreshCw className="h-4 w-4 mr-2" />}
-                {styleHistoryQuiz ? 'Edit' : 'Take Quiz'}
-              </Button>
-            </div>
-            {styleHistoryQuiz ? (
-              <div className="p-4 rounded-md bg-purple-500/10 border border-purple-500/20">
-                <p className="font-semibold text-purple-300 text-lg mb-1">{styleHistoryQuiz.resultValue.styleHistory}</p>
-                <p className="text-sm text-white/70">
-                  You're influenced by {styleHistoryQuiz.resultValue.eraInfluences?.join(' & ')} eras and love elements like {styleHistoryQuiz.resultValue.revivalElements?.join(', ')}
-                </p>
-              </div>
-            ) : (
-              <div className="p-4 rounded-md bg-white/5 border border-white/10 text-center">
-                <p className="text-white/60">Take the "Fashion Time Machine" quiz to reveal your fashion history</p>
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="bg-slate-800/30 border-white/10">
-        <CardHeader>
-          <CardTitle>Style Preferences</CardTitle>
-          <CardDescription>
-            Set your style preferences for better recommendations
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-8">
-          <div className="space-y-4">
-            <Label>Favorite Colors</Label>
-            <div className="flex flex-wrap gap-2">
-              {preferences.favoriteColors.map((color) => (
-                <Badge 
-                  key={color}
-                  variant="secondary"
-                  className="flex items-center gap-1 py-1 px-3 bg-slate-800"
-                >
-                  {color}
-                  <button
-                    onClick={() => removeItem(color, 'favoriteColors')}
-                    className="ml-1 hover:text-red-400 focus:outline-none"
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
-                </Badge>
-              ))}
-            </div>
-            <div className="pt-2">
-              <Label className="text-xs text-white/60 mb-2 block">Select colors to add:</Label>
-              <div className="flex flex-wrap gap-2">
-                {colorOptions
-                  .filter(color => !preferences.favoriteColors.includes(color))
-                  .map((color) => (
-                    <Badge 
-                      key={color} 
-                      variant="outline" 
-                      className="cursor-pointer border-white/20 hover:bg-white/10"
-                      onClick={() => toggleItem(color, 'favoriteColors')}
+              {/* Favorite Colors */}
+              <div>
+                <Label className="text-white/80">Favorite Colors</Label>
+                <div className="flex items-center space-x-2 mt-2">
+                  <Input
+                    type="color"
+                    className="w-10 h-10"
+                    onChange={handleColorChange}
+                  />
+                  <Input
+                    type="text"
+                    placeholder="Add a color (e.g., blue)"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const color = (e.target as HTMLInputElement).value.toLowerCase();
+                        if (color && !favoriteColors.includes(color)) {
+                          setFavoriteColors([...favoriteColors, color]);
+                          (e.target as HTMLInputElement).value = '';
+                        }
+                      }
+                    }}
+                    className="bg-transparent border-white/20 text-white"
+                  />
+                </div>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {favoriteColors.map((color) => (
+                    <Badge
+                      key={color}
+                      variant="secondary"
+                      className="cursor-pointer"
+                      style={{ backgroundColor: color }}
+                      onClick={() => removeColor(color)}
                     >
                       {color}
                     </Badge>
-                  ))
-                }
+                  ))}
+                </div>
               </div>
-            </div>
-          </div>
-          
-          <div className="space-y-4">
-            <Label>Favorite Styles</Label>
-            <div className="flex flex-wrap gap-2">
-              {preferences.favoriteStyles.map((style) => (
-                <Badge 
-                  key={style}
-                  variant="secondary"
-                  className="flex items-center gap-1 py-1 px-3 bg-slate-800"
-                >
-                  {style}
-                  <button
-                    onClick={() => removeItem(style, 'favoriteStyles')}
-                    className="ml-1 hover:text-red-400 focus:outline-none"
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
-                </Badge>
-              ))}
-            </div>
-            <div className="pt-2">
-              <Label className="text-xs text-white/60 mb-2 block">Select styles to add:</Label>
-              <div className="flex flex-wrap gap-2">
-                {styleOptions
-                  .filter(style => !preferences.favoriteStyles.includes(style))
-                  .map((style) => (
-                    <Badge 
-                      key={style} 
-                      variant="outline" 
-                      className="cursor-pointer border-white/20 hover:bg-white/10"
-                      onClick={() => toggleItem(style, 'favoriteStyles')}
-                    >
-                      {style}
-                    </Badge>
-                  ))
-                }
+              <Separator className="bg-white/10" />
+
+              {/* Body Type */}
+              <div>
+                <Label className="text-white/80">Body Type</Label>
+                <Select value={bodyType} onValueChange={handleBodyTypeChange}>
+                  <SelectTrigger className="bg-transparent border-white/20 text-white w-full">
+                    <SelectValue placeholder="Select your body type" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-800 border-white/20 text-white">
+                    <SelectItem value="not-specified">Not Specified</SelectItem>
+                    <SelectItem value="apple">Apple</SelectItem>
+                    <SelectItem value="pear">Pear</SelectItem>
+                    <SelectItem value="hourglass">Hourglass</SelectItem>
+                    <SelectItem value="rectangle">Rectangle</SelectItem>
+                    <SelectItem value="inverted-triangle">Inverted Triangle</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
-            </div>
-          </div>
-          
-          <div className="space-y-4">
-            <Label>Common Occasions</Label>
-            <div className="flex flex-wrap gap-2">
-              {preferences.occasionPreferences.map((occasion) => (
-                <Badge 
-                  key={occasion}
-                  variant="secondary"
-                  className="flex items-center gap-1 py-1 px-3 bg-slate-800"
-                >
-                  {occasion}
-                  <button
-                    onClick={() => removeItem(occasion, 'occasionPreferences')}
-                    className="ml-1 hover:text-red-400 focus:outline-none"
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
-                </Badge>
-              ))}
-            </div>
-            <div className="pt-2">
-              <Label className="text-xs text-white/60 mb-2 block">Select occasions to add:</Label>
-              <div className="flex flex-wrap gap-2">
-                {occasionOptions
-                  .filter(occasion => !preferences.occasionPreferences.includes(occasion))
-                  .map((occasion) => (
-                    <Badge 
-                      key={occasion} 
-                      variant="outline" 
-                      className="cursor-pointer border-white/20 hover:bg-white/10"
-                      onClick={() => toggleItem(occasion, 'occasionPreferences')}
+              <Separator className="bg-white/10" />
+
+              {/* Occasion Preferences */}
+              <div>
+                <Label className="text-white/80">Occasion Preferences</Label>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {['Casual', 'Work', 'Party', 'Formal', 'Outdoor', 'Travel'].map((occasion) => (
+                    <Button
+                      key={occasion}
+                      variant="outline"
+                      className={occasionPreferences.includes(occasion) ? 'bg-purple-500/20 hover:bg-purple-500/30' : 'hover:bg-purple-500/10'}
+                      onClick={() => handleOccasionChange(occasion)}
                     >
                       {occasion}
-                    </Badge>
-                  ))
-                }
+                    </Button>
+                  ))}
+                </div>
               </div>
-            </div>
-          </div>
-        </CardContent>
-        <CardFooter>
-          <Button 
-            onClick={handleSavePreferences} 
-            disabled={saving}
-            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90"
-          >
-            {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-            Save Preferences
-          </Button>
-        </CardFooter>
-      </Card>
+              <Separator className="bg-white/10" />
 
+              {/* Bio */}
+              <div>
+                <Label className="text-white/80">Bio</Label>
+                <Textarea
+                  placeholder="Tell us a bit about yourself..."
+                  className="bg-transparent border-white/20 text-white"
+                  value={bio}
+                  onChange={handleBioChange}
+                />
+              </div>
+              <Separator className="bg-white/10" />
+
+              {/* Style Quiz */}
+              <div>
+                <Label className="text-white/80">Style Quiz</Label>
+                <p className="text-white/70 text-sm mb-2">Take our style quiz to get personalized recommendations.</p>
+                <Button onClick={() => startQuiz('style')}>Take Style Quiz</Button>
+                <Button onClick={() => startQuiz('lifestyle')}>Take Lifestyle Quiz</Button>
+                 <Button onClick={() => startQuiz('vibe')}>Take Vibe Check Quiz</Button>
+                 <Button onClick={() => startQuiz('timeMachine')}>Take Fashion Time Machine Quiz</Button>
+              </div>
+
+              <Button
+                onClick={savePreferences}
+                disabled={saving}
+                className="w-full bg-gradient-to-r from-purple-500 to-indigo-500 hover:opacity-90 text-white"
+              >
+                {saving ? 'Saving...' : 'Save Preferences'}
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
       {activeQuiz && (
         <QuizModal
           isOpen={true}
-          onClose={closeQuiz}
-          quiz={getQuizComponent(activeQuiz)!}
+          onClose={() => setActiveQuiz(null)}
+          onComplete={() => {
+            setActiveQuiz(null);
+            loadPreferences(); // Reload preferences after quiz completion
+          }}
+          quiz={activeQuiz}
         />
       )}
-    </>
+    </motion.div>
   );
 };
 

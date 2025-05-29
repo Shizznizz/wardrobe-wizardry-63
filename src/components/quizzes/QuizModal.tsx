@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronLeft, ChevronRight, Check } from 'lucide-react';
@@ -18,7 +17,7 @@ interface QuizQuestion {
   }>;
 }
 
-interface QuizData {
+export interface QuizData {
   id: string;
   title: string;
   description: string;
