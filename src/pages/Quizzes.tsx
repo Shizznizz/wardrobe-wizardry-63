@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import EnhancedHeroSection from '@/components/shared/EnhancedHeroSection';
@@ -133,7 +132,6 @@ const Quizzes = () => {
   const completionProgress = completedQuizzes.length;
   const totalQuizzes = quizzes.length;
   const progressPercentage = (completionProgress / totalQuizzes) * 100;
-  const allQuizzesCompleted = completionProgress === totalQuizzes;
 
   // Currently active quiz data for modal
   const activeQuizData = modalQuizId 
@@ -168,14 +166,11 @@ const Quizzes = () => {
             </p>
             {completionProgress > 0 && (
               <Button 
-                onClick={() => navigate('/quiz-results')} 
+                onClick={() => navigate('/results')} 
                 variant="outline" 
-                className={cn(
-                  "text-purple-200 border-purple-500/30 hover:bg-purple-500/20",
-                  allQuizzesCompleted && "bg-gradient-to-r from-purple-600 to-pink-600 text-white border-transparent"
-                )}
+                className="text-purple-200 border-purple-500/30 hover:bg-purple-500/20"
               >
-                {allQuizzesCompleted ? 'View Complete Profile' : 'See My Results'} <ChevronRight className="ml-1 h-4 w-4" />
+                See My Results <ChevronRight className="ml-1 h-4 w-4" />
               </Button>
             )}
           </div>
@@ -228,7 +223,7 @@ const Quizzes = () => {
                         variant="ghost" 
                         className="text-white/90 hover:bg-white/10 hover:text-white w-full justify-between"
                       >
-                        {isCompleted ? 'Retake Quiz' : 'Start Quiz'} <ChevronRight className="h-4 w-4 ml-1" />
+                        Start Quiz <ChevronRight className="h-4 w-4 ml-1" />
                       </Button>
                     </div>
                   </CardContent>

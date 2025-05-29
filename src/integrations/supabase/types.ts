@@ -431,7 +431,6 @@ export type Database = {
       }
       user_quiz_results: {
         Row: {
-          completed_at: string | null
           created_at: string | null
           id: string
           quiz_id: string
@@ -442,7 +441,6 @@ export type Database = {
           user_id: string
         }
         Insert: {
-          completed_at?: string | null
           created_at?: string | null
           id?: string
           quiz_id: string
@@ -453,7 +451,6 @@ export type Database = {
           user_id: string
         }
         Update: {
-          completed_at?: string | null
           created_at?: string | null
           id?: string
           quiz_id?: string
