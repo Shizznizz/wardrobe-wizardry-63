@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Container } from '@/components/ui/container';
 import { useAuth } from '@/hooks/useAuth';
@@ -440,7 +439,7 @@ const Profile = () => {
           </Accordion>
           
           {/* Add AI Style Insights Section at the bottom */}
-          <AIStyleInsightsSection preferences={userPreferences} />
+          <AIStyleInsightsSection />
         </>
       );
     }
@@ -463,7 +462,7 @@ const Profile = () => {
         </Tabs>
         
         {/* Add AI Style Insights Section at the bottom */}
-        <AIStyleInsightsSection preferences={userPreferences} />
+        <AIStyleInsightsSection />
       </>
     );
   };
