@@ -362,6 +362,10 @@ export type Database = {
           preferred_city: string | null
           preferred_country: string | null
           pronouns: string | null
+          quiz_derived_eras: Json | null
+          quiz_derived_lifestyle: Json | null
+          quiz_derived_styles: Json | null
+          quiz_derived_vibes: Json | null
           reminder_enabled: boolean | null
           reminder_time: string | null
           seasonal_preferences: Json | null
@@ -389,6 +393,10 @@ export type Database = {
           preferred_city?: string | null
           preferred_country?: string | null
           pronouns?: string | null
+          quiz_derived_eras?: Json | null
+          quiz_derived_lifestyle?: Json | null
+          quiz_derived_styles?: Json | null
+          quiz_derived_vibes?: Json | null
           reminder_enabled?: boolean | null
           reminder_time?: string | null
           seasonal_preferences?: Json | null
@@ -416,6 +424,10 @@ export type Database = {
           preferred_city?: string | null
           preferred_country?: string | null
           pronouns?: string | null
+          quiz_derived_eras?: Json | null
+          quiz_derived_lifestyle?: Json | null
+          quiz_derived_styles?: Json | null
+          quiz_derived_vibes?: Json | null
           reminder_enabled?: boolean | null
           reminder_time?: string | null
           seasonal_preferences?: Json | null
@@ -431,6 +443,7 @@ export type Database = {
       }
       user_quiz_results: {
         Row: {
+          completed_at: string | null
           created_at: string | null
           id: string
           quiz_id: string
@@ -441,6 +454,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          completed_at?: string | null
           created_at?: string | null
           id?: string
           quiz_id: string
@@ -451,6 +465,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          completed_at?: string | null
           created_at?: string | null
           id?: string
           quiz_id?: string

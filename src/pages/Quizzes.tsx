@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import EnhancedHeroSection from '@/components/shared/EnhancedHeroSection';
@@ -12,7 +13,7 @@ import FindYourStyleQuiz from '@/components/quizzes/FindYourStyleQuiz';
 import LifestyleLensQuiz from '@/components/quizzes/LifestyleLensQuiz';
 import VibeCheckQuiz from '@/components/quizzes/VibeCheckQuiz';
 import FashionTimeMachineQuiz from '@/components/quizzes/FashionTimeMachineQuiz';
-import { useQuizResults } from '@/services/QuizService';
+import { getCompletedQuizIds } from '@/services/QuizService';
 
 interface Quiz {
   id: string;
@@ -24,17 +25,18 @@ interface Quiz {
 }
 
 const Quizzes = () => {
-  const [activeQuiz, setActiveQuiz] = useState<string | null>(null);
   const [completedQuizzes, setCompletedQuizzes] = useState<string[]>([]);
   const [hoveredQuiz, setHoveredQuiz] = useState<string | null>(null);
   const [modalQuizId, setModalQuizId] = useState<string | null>(null);
+  const [isLoadingCompleted, setIsLoadingCompleted] = useState(true);
   const { user, loading } = useAuth();
   const navigate = useNavigate();
-  const { getCompletedQuizIds } = useQuizResults();
   
-  // Load completed quizzes from localStorage and Supabase
+  // Load completed quizzes
   useEffect(() => {
     const loadCompletedQuizzes = async () => {
+      setIsLoadingCompleted(true);
+      
       // First try to load from localStorage for immediate display
       const savedCompletedQuizzes = localStorage.getItem('completedQuizzes');
       if (savedCompletedQuizzes) {
@@ -59,10 +61,12 @@ const Quizzes = () => {
           console.error("Error loading completed quizzes:", error);
         }
       }
+      
+      setIsLoadingCompleted(false);
     };
     
     loadCompletedQuizzes();
-  }, [user, getCompletedQuizIds]);
+  }, [user]);
   
   // Helper to mark a quiz as completed
   const markQuizCompleted = (quizId: string) => {
@@ -132,6 +136,7 @@ const Quizzes = () => {
   const completionProgress = completedQuizzes.length;
   const totalQuizzes = quizzes.length;
   const progressPercentage = (completionProgress / totalQuizzes) * 100;
+  const allQuizzesCompleted = completionProgress === totalQuizzes;
 
   // Currently active quiz data for modal
   const activeQuizData = modalQuizId 
@@ -164,11 +169,10 @@ const Quizzes = () => {
             <p className="text-xl text-purple-200 font-medium">
               Your Style Journey: {completionProgress} of {totalQuizzes} Quizzes Completed
             </p>
-            {completionProgress > 0 && (
+            {allQuizzesCompleted && (
               <Button 
-                onClick={() => navigate('/results')} 
-                variant="outline" 
-                className="text-purple-200 border-purple-500/30 hover:bg-purple-500/20"
+                onClick={() => navigate('/quiz-results')} 
+                className="bg-gradient-to-r from-coral-500 to-purple-600 hover:from-coral-600 hover:to-purple-700 text-white"
               >
                 See My Results <ChevronRight className="ml-1 h-4 w-4" />
               </Button>
@@ -180,6 +184,11 @@ const Quizzes = () => {
               style={{ width: `${progressPercentage}%` }}
             />
           </div>
+          {allQuizzesCompleted && (
+            <p className="text-center text-coral-300 text-sm mt-2 font-medium">
+              🎉 All quizzes completed! Check out your personalized style summary.
+            </p>
+          )}
         </div>
 
         {/* Quiz Cards Grid */}
@@ -223,7 +232,7 @@ const Quizzes = () => {
                         variant="ghost" 
                         className="text-white/90 hover:bg-white/10 hover:text-white w-full justify-between"
                       >
-                        Start Quiz <ChevronRight className="h-4 w-4 ml-1" />
+                        {isCompleted ? 'Retake Quiz' : 'Start Quiz'} <ChevronRight className="h-4 w-4 ml-1" />
                       </Button>
                     </div>
                   </CardContent>
@@ -240,7 +249,9 @@ const Quizzes = () => {
             isOpen={!!modalQuizId}
             onClose={() => setModalQuizId(null)}
             onComplete={() => {
-              markQuizCompleted(modalQuizId!);
+              if (modalQuizId) {
+                markQuizCompleted(modalQuizId);
+              }
               setModalQuizId(null);
             }}
           />

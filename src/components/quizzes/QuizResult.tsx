@@ -1,15 +1,17 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Check, Sparkles } from 'lucide-react';
-import { Confetti } from '@/components/ui/confetti';
-import { saveQuizResult, QuizResult as QuizResultType } from '@/services/QuizService';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Sparkles, RotateCcw } from 'lucide-react';
+import { saveQuizResult, QuizResult as QuizResultData } from '@/services/QuizService';
+import { toast } from 'sonner';
 
 interface QuizResultProps {
   title: string;
   description: string;
-  traits?: string[];
+  traits: string[];
   imageUrl?: string;
   quizId: string;
   quizName: string;
@@ -19,115 +21,126 @@ interface QuizResultProps {
   onRetake?: () => void;
 }
 
-const QuizResult = ({
+const QuizResult: React.FC<QuizResultProps> = ({
   title,
   description,
-  traits = [],
+  traits,
   imageUrl,
   quizId,
   quizName,
   resultLabel,
   resultValue,
   onSave,
-  onRetake,
-}: QuizResultProps) => {
-  const [showConfetti, setShowConfetti] = React.useState(true);
-  const [saving, setSaving] = React.useState(false);
+  onRetake
+}) => {
+  const [isSaving, setIsSaving] = useState(false);
 
-  const handleSaveResult = async () => {
-    setSaving(true);
+  const handleSave = async () => {
+    setIsSaving(true);
     
-    const result: QuizResultType = {
+    const quizResult: QuizResultData = {
       quizId,
       quizName,
       resultLabel,
-      resultValue,
+      resultValue
     };
+
+    const success = await saveQuizResult(quizResult);
     
-    const success = await saveQuizResult(result);
-    
-    setSaving(false);
-    
-    if (success && onSave) {
-      onSave();
+    if (success) {
+      toast.success("Your results have been saved and integrated into your profile!");
+      // Store in localStorage as backup
+      const completedQuizzes = JSON.parse(localStorage.getItem('completedQuizzes') || '[]');
+      if (!completedQuizzes.includes(quizId)) {
+        completedQuizzes.push(quizId);
+        localStorage.setItem('completedQuizzes', JSON.stringify(completedQuizzes));
+      }
+      
+      if (onSave) {
+        onSave();
+      }
     }
+    
+    setIsSaving(false);
   };
 
   return (
-    <div className="relative">
-      {showConfetti && (
-        <Confetti 
-          duration={2000}
-          onComplete={() => setShowConfetti(false)}
-        />
-      )}
-      
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5 }}
-        className="max-w-3xl mx-auto"
-      >
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mx-auto mb-6">
-            <Sparkles className="h-8 w-8 text-white" />
-          </div>
-          
-          <h2 className="text-3xl font-bold text-white mb-4">
-            You're a <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">{title}</span>
-          </h2>
-          
-          <p className="text-white/80 text-lg max-w-2xl mx-auto mb-6">
-            {description}
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+      className="space-y-6"
+    >
+      {/* Header Section */}
+      <div className="text-center space-y-4">
+        <div className="mx-auto w-16 h-16 rounded-full bg-gradient-to-br from-coral-400 to-purple-500 flex items-center justify-center mb-4">
+          <Sparkles className="h-8 w-8 text-white" />
+        </div>
+        
+        <h2 className="text-3xl font-bold text-white mb-2">{title}</h2>
+        <p className="text-white/80 text-lg leading-relaxed max-w-2xl mx-auto">
+          {description}
+        </p>
+      </div>
+
+      {/* Traits Section */}
+      <div className="flex flex-wrap justify-center gap-3">
+        {traits.map((trait, index) => (
+          <Badge 
+            key={index}
+            className="bg-gradient-to-r from-purple-500/30 to-pink-500/30 text-purple-200 border-purple-500/50 px-4 py-2 text-sm font-medium"
+          >
+            {trait}
+          </Badge>
+        ))}
+      </div>
+
+      {/* Olivia's Response */}
+      <div className="bg-white/5 border border-white/10 rounded-xl p-6 flex gap-4">
+        <Avatar className="h-12 w-12 border-2 border-purple-400/50 flex-shrink-0">
+          <AvatarImage src="/lovable-uploads/5be0da00-2b86-420e-b2b4-3cc8e5e4dc1a.png" alt="Olivia Bloom" />
+          <AvatarFallback className="bg-purple-800">OB</AvatarFallback>
+        </Avatar>
+        
+        <div className="flex-1">
+          <h4 className="font-semibold text-white mb-2">Olivia's Take:</h4>
+          <p className="text-white/80 text-sm leading-relaxed">
+            Perfect! I love learning more about your style. These insights will help me suggest outfits that truly reflect your personality and lifestyle. Ready to let me use this to personalize your recommendations?
           </p>
         </div>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="flex flex-col sm:flex-row gap-3 pt-4">
+        <Button
+          variant="outline"
+          onClick={onRetake}
+          className="border-white/20 text-white hover:bg-white/10 flex-1 sm:flex-none"
+          disabled={isSaving}
+        >
+          <RotateCcw className="mr-2 h-4 w-4" />
+          Retake Quiz
+        </Button>
         
-        {imageUrl && (
-          <div className="w-full max-w-md mx-auto mb-8 rounded-lg overflow-hidden shadow-lg border border-purple-500/20">
-            <img 
-              src={imageUrl} 
-              alt={title} 
-              className="w-full h-auto"
-            />
-          </div>
-        )}
-        
-        {traits.length > 0 && (
-          <div className="bg-white/5 border border-purple-500/20 rounded-lg p-6 mb-8">
-            <h3 className="text-xl font-semibold text-white mb-4">Your Key Characteristics:</h3>
-            <ul className="space-y-3">
-              {traits.map((trait, index) => (
-                <li key={index} className="flex items-start gap-2">
-                  <Check className="h-5 w-5 text-pink-400 mt-0.5" />
-                  <span className="text-white/90">{trait}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-        
-        <div className="flex flex-col sm:flex-row justify-center gap-4 mt-8">
-          <Button
-            onClick={handleSaveResult}
-            disabled={saving}
-            className="bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium px-6 py-2.5 rounded-lg hover:opacity-90 transition-opacity shadow-md"
-          >
-            <Sparkles className="mr-2 h-4 w-4" />
-            Let Olivia Use This Info
-          </Button>
-          
-          {onRetake && (
-            <Button
-              onClick={onRetake}
-              variant="outline"
-              className="text-white/70 border-white/10 hover:bg-white/5"
-            >
-              Retake Quiz
-            </Button>
+        <Button
+          onClick={handleSave}
+          disabled={isSaving}
+          className="bg-gradient-to-r from-coral-500 to-purple-600 hover:from-coral-600 hover:to-purple-700 text-white flex-1 sm:flex-none sm:ml-auto px-8"
+        >
+          {isSaving ? (
+            <div className="flex items-center">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+              Saving...
+            </div>
+          ) : (
+            <>
+              <Sparkles className="mr-2 h-4 w-4" />
+              Let Olivia Use This Info
+            </>
           )}
-        </div>
-      </motion.div>
-    </div>
+        </Button>
+      </div>
+    </motion.div>
   );
 };
 
