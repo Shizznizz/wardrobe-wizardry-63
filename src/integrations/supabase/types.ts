@@ -9,6 +9,56 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      activities: {
+        Row: {
+          activity: string | null
+          ai_suggested: boolean | null
+          created_at: string | null
+          date: string
+          id: string
+          outfit_id: string | null
+          temperature: string | null
+          time_of_day: string
+          updated_at: string | null
+          user_id: string
+          weather_condition: string | null
+        }
+        Insert: {
+          activity?: string | null
+          ai_suggested?: boolean | null
+          created_at?: string | null
+          date: string
+          id?: string
+          outfit_id?: string | null
+          temperature?: string | null
+          time_of_day: string
+          updated_at?: string | null
+          user_id: string
+          weather_condition?: string | null
+        }
+        Update: {
+          activity?: string | null
+          ai_suggested?: boolean | null
+          created_at?: string | null
+          date?: string
+          id?: string
+          outfit_id?: string | null
+          temperature?: string | null
+          time_of_day?: string
+          updated_at?: string | null
+          user_id?: string
+          weather_condition?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activities_outfit_id_fkey"
+            columns: ["outfit_id"]
+            isOneToOne: false
+            referencedRelation: "outfits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       calendar_events: {
         Row: {
           activity_tag: string | null
@@ -318,30 +368,75 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          color_scheme: string | null
           created_at: string | null
           first_name: string | null
           id: string
           last_name: string | null
+          notification_settings: Json | null
+          personality_tags: string[] | null
           pronouns: string | null
+          style_preferences: Json | null
+          theme_preference: string | null
           updated_at: string | null
         }
         Insert: {
           avatar_url?: string | null
+          color_scheme?: string | null
           created_at?: string | null
           first_name?: string | null
           id: string
           last_name?: string | null
+          notification_settings?: Json | null
+          personality_tags?: string[] | null
           pronouns?: string | null
+          style_preferences?: Json | null
+          theme_preference?: string | null
           updated_at?: string | null
         }
         Update: {
           avatar_url?: string | null
+          color_scheme?: string | null
           created_at?: string | null
           first_name?: string | null
           id?: string
           last_name?: string | null
+          notification_settings?: Json | null
+          personality_tags?: string[] | null
           pronouns?: string | null
+          style_preferences?: Json | null
+          theme_preference?: string | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      quiz_results: {
+        Row: {
+          completed: boolean | null
+          created_at: string | null
+          id: string
+          quiz_type: string
+          result_data: Json
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean | null
+          created_at?: string | null
+          id?: string
+          quiz_type: string
+          result_data: Json
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          completed?: boolean | null
+          created_at?: string | null
+          id?: string
+          quiz_type?: string
+          result_data?: Json
+          updated_at?: string | null
+          user_id?: string
         }
         Relationships: []
       }

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Outfit, ClothingItem } from '@/lib/types';
 import { useNavigate } from 'react-router-dom';
@@ -17,6 +18,7 @@ interface OutfitGridProps {
   onOutfitAddedToCalendar?: (log: OutfitLog) => void;
   onSelectOutfit?: (outfit: Outfit) => void;
   fetchFromSupabase?: boolean;
+  refreshData?: () => void;
 }
 
 const OutfitGrid = ({ 
@@ -27,7 +29,8 @@ const OutfitGrid = ({
   clothingItems,
   onOutfitAddedToCalendar,
   onSelectOutfit,
-  fetchFromSupabase = false
+  fetchFromSupabase = false,
+  refreshData
 }: OutfitGridProps) => {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -43,7 +46,8 @@ const OutfitGrid = ({
           const { data: outfitsData, error: outfitsError } = await supabase
             .from('outfits')
             .select('*')
-            .eq('user_id', user.id);
+            .eq('user_id', user.id)
+            .order('created_at', { ascending: false });
           
           if (outfitsError) {
             console.error('Error fetching outfits:', outfitsError);
@@ -62,7 +66,7 @@ const OutfitGrid = ({
       
       fetchOutfits();
     }
-  }, [fetchFromSupabase, user]);
+  }, [fetchFromSupabase, user, refreshData]);
 
   // Use outfits from props or from Supabase
   const displayOutfits = fetchFromSupabase ? userOutfits : outfits;
@@ -100,6 +104,60 @@ const OutfitGrid = ({
       navigate('/fitting-room');
     }
   };
+
+  const handleDelete = async (id: string) => {
+    if (user && fetchFromSupabase) {
+      try {
+        const { error } = await supabase
+          .from('outfits')
+          .delete()
+          .eq('id', id)
+          .eq('user_id', user.id);
+
+        if (error) throw error;
+        
+        setUserOutfits(prev => prev.filter(outfit => outfit.id !== id));
+        toast.success('Outfit deleted successfully');
+      } catch (error) {
+        console.error('Error deleting outfit:', error);
+        toast.error('Failed to delete outfit');
+      }
+    } else {
+      onDelete(id);
+    }
+  };
+
+  const handleToggleFavorite = async (id: string) => {
+    if (user && fetchFromSupabase) {
+      try {
+        const outfit = userOutfits.find(o => o.id === id);
+        if (!outfit) return;
+
+        const { error } = await supabase
+          .from('outfits')
+          .update({ favorite: !outfit.favorite })
+          .eq('id', id)
+          .eq('user_id', user.id);
+
+        if (error) throw error;
+        
+        setUserOutfits(prev => 
+          prev.map(outfit => 
+            outfit.id === id 
+              ? { ...outfit, favorite: !outfit.favorite }
+              : outfit
+          )
+        );
+        
+        toast.success(outfit.favorite ? 'Removed from favorites' : 'Added to favorites');
+      } catch (error) {
+        console.error('Error toggling favorite:', error);
+        toast.error('Failed to update favorite status');
+      }
+    } else {
+      onToggleFavorite(id);
+    }
+  };
   
   if (isLoading) {
     return (
@@ -129,8 +187,8 @@ const OutfitGrid = ({
             outfit={outfit}
             clothingItems={safeClothingItems}
             onEdit={onEdit}
-            onDelete={onDelete}
-            onToggleFavorite={onToggleFavorite}
+            onDelete={handleDelete}
+            onToggleFavorite={handleToggleFavorite}
             getClothingItemById={getClothingItemById}
             onOutfitAddedToCalendar={onOutfitAddedToCalendar}
             onPreviewInFittingRoom={handlePreviewInFittingRoom}

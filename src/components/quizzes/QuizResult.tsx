@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Sparkles, RotateCcw } from 'lucide-react';
-import { saveQuizResult, QuizResult as QuizResultData } from '@/services/QuizService';
+import { useUserData } from '@/hooks/useUserData';
 import { toast } from 'sonner';
 
 interface QuizResultProps {
@@ -34,34 +34,45 @@ const QuizResult: React.FC<QuizResultProps> = ({
   onRetake
 }) => {
   const [isSaving, setIsSaving] = useState(false);
+  const { saveQuizResult } = useUserData();
 
   const handleSave = async () => {
     setIsSaving(true);
     
-    const quizResult: QuizResultData = {
-      quizId,
-      quizName,
-      resultLabel,
-      resultValue
-    };
+    try {
+      const success = await saveQuizResult({
+        quiz_type: quizId,
+        result_data: {
+          quiz_name: quizName,
+          result_label: resultLabel,
+          title,
+          description,
+          traits,
+          ...resultValue
+        },
+        completed: true
+      });
 
-    const success = await saveQuizResult(quizResult);
-    
-    if (success) {
-      toast.success("Your results have been saved and integrated into your profile!");
-      // Store in localStorage as backup
-      const completedQuizzes = JSON.parse(localStorage.getItem('completedQuizzes') || '[]');
-      if (!completedQuizzes.includes(quizId)) {
-        completedQuizzes.push(quizId);
-        localStorage.setItem('completedQuizzes', JSON.stringify(completedQuizzes));
+      if (success) {
+        toast.success("Your results have been saved and integrated into your profile!");
+        
+        // Store in localStorage as backup
+        const completedQuizzes = JSON.parse(localStorage.getItem('completedQuizzes') || '[]');
+        if (!completedQuizzes.includes(quizId)) {
+          completedQuizzes.push(quizId);
+          localStorage.setItem('completedQuizzes', JSON.stringify(completedQuizzes));
+        }
+        
+        if (onSave) {
+          onSave();
+        }
       }
-      
-      if (onSave) {
-        onSave();
-      }
+    } catch (error) {
+      console.error('Error saving quiz result:', error);
+      toast.error('Failed to save quiz results');
+    } finally {
+      setIsSaving(false);
     }
-    
-    setIsSaving(false);
   };
 
   return (

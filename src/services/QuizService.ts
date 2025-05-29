@@ -1,6 +1,7 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { userDataService } from "./UserDataService";
 
 export interface QuizResult {
   quizId: string;
@@ -18,8 +19,24 @@ export const saveQuizResult = async (result: QuizResult): Promise<boolean> => {
       return false;
     }
     
-    // Save quiz result
-    const { error: resultError } = await supabase
+    // Save to new quiz_results table
+    const saveResult = await userDataService.saveQuizResult({
+      user_id: user.id,
+      quiz_type: result.quizId,
+      result_data: {
+        quiz_name: result.quizName,
+        result_label: result.resultLabel,
+        ...result.resultValue
+      },
+      completed: true
+    });
+
+    if (!saveResult.success) {
+      return false;
+    }
+
+    // Also save to existing user_quiz_results for backward compatibility
+    const { error: legacyError } = await supabase
       .from('user_quiz_results')
       .upsert({
         user_id: user.id,
@@ -29,10 +46,8 @@ export const saveQuizResult = async (result: QuizResult): Promise<boolean> => {
         result_value: result.resultValue
       });
       
-    if (resultError) {
-      console.error("Error saving quiz result:", resultError);
-      toast.error("Failed to save your quiz result");
-      return false;
+    if (legacyError) {
+      console.error("Error saving to legacy quiz results:", legacyError);
     }
 
     // Update user preferences based on quiz type
@@ -112,6 +127,19 @@ export const getUserQuizResults = async (): Promise<QuizResult[]> => {
       return [];
     }
     
+    // Get from new quiz_results table first
+    const quizResults = await userDataService.getUserQuizResults(user.id);
+    
+    if (quizResults.length > 0) {
+      return quizResults.map(item => ({
+        quizId: item.quiz_type,
+        quizName: item.result_data.quiz_name || item.quiz_type,
+        resultLabel: item.result_data.result_label || '',
+        resultValue: item.result_data
+      }));
+    }
+
+    // Fallback to legacy table
     const { data, error } = await supabase
       .from('user_quiz_results')
       .select('*')
@@ -140,17 +168,7 @@ export const getCompletedQuizIds = async (): Promise<string[]> => {
     
     if (!user) return [];
     
-    const { data, error } = await supabase
-      .from('user_quiz_results')
-      .select('quiz_id')
-      .eq('user_id', user.id);
-      
-    if (error) {
-      console.error("Error fetching completed quiz IDs:", error);
-      return [];
-    }
-    
-    return data.map(item => item.quiz_id);
+    return await userDataService.getCompletedQuizTypes(user.id);
   } catch (error) {
     console.error("Exception fetching completed quiz IDs:", error);
     return [];
