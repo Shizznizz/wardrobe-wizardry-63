@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu } from 'lucide-react';
@@ -109,7 +108,7 @@ const Header = () => {
         )}
 
         <div className="flex items-center">
-          <UserMenu isScrolled={isScrolled} />
+          <UserMenu />
 
           {isMobile && (
             <Button
