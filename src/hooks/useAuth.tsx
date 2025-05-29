@@ -10,6 +10,7 @@ type AuthContextType = {
   signOut: () => Promise<void>;
   isAuthenticated: boolean;
   isPremiumUser: boolean;
+  isAdmin: boolean;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -20,11 +21,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isPremiumUser, setIsPremiumUser] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      async (event, session) => {
         console.log("Auth state changed:", event);
         setSession(session);
         setUser(session?.user ?? null);
@@ -35,8 +37,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         if (session?.user) {
           const isDanielDeurloo = session.user.email === 'danieldeurloo@hotmail.com';
           setIsPremiumUser(!isDanielDeurloo);
+          
+          // Check admin status
+          setTimeout(async () => {
+            try {
+              const { data } = await supabase
+                .from('profiles')
+                .select('is_admin')
+                .eq('id', session.user.id)
+                .single();
+              
+              setIsAdmin(data?.is_admin || false);
+            } catch (error) {
+              console.error('Error fetching admin status:', error);
+              setIsAdmin(false);
+            }
+          }, 0);
         } else {
           setIsPremiumUser(false);
+          setIsAdmin(false);
         }
         
         setLoading(false);
@@ -54,6 +73,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (session?.user) {
         const isDanielDeurloo = session.user.email === 'danieldeurloo@hotmail.com';
         setIsPremiumUser(!isDanielDeurloo);
+        
+        // Check admin status for existing session
+        setTimeout(async () => {
+          try {
+            const { data } = await supabase
+              .from('profiles')
+              .select('is_admin')
+              .eq('id', session.user.id)
+              .single();
+            
+            setIsAdmin(data?.is_admin || false);
+          } catch (error) {
+            console.error('Error fetching admin status:', error);
+            setIsAdmin(false);
+          }
+        }, 0);
       }
       
       setLoading(false);
@@ -81,7 +116,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       loading, 
       signOut, 
       isAuthenticated,
-      isPremiumUser 
+      isPremiumUser,
+      isAdmin
     }}>
       {children}
     </AuthContext.Provider>

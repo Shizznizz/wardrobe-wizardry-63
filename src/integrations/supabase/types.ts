@@ -372,6 +372,7 @@ export type Database = {
           created_at: string | null
           first_name: string | null
           id: string
+          is_admin: boolean | null
           last_name: string | null
           notification_settings: Json | null
           personality_tags: string[] | null
@@ -386,6 +387,7 @@ export type Database = {
           created_at?: string | null
           first_name?: string | null
           id: string
+          is_admin?: boolean | null
           last_name?: string | null
           notification_settings?: Json | null
           personality_tags?: string[] | null
@@ -400,6 +402,7 @@ export type Database = {
           created_at?: string | null
           first_name?: string | null
           id?: string
+          is_admin?: boolean | null
           last_name?: string | null
           notification_settings?: Json | null
           personality_tags?: string[] | null
@@ -649,6 +652,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_admin_analytics: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       increment_message_count: {
         Args: { user_id_param: string }
         Returns: undefined

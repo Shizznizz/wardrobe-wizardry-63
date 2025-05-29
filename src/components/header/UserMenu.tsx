@@ -1,79 +1,97 @@
+
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { LogOut, User } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/hooks/useAuth';
-import { cn } from '@/lib/utils';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { User, Settings, LogOut, Shield } from 'lucide-react';
+import { toast } from 'sonner';
 
-interface UserMenuProps {
-  isScrolled?: boolean;
-}
-
-export const UserMenu = ({ isScrolled = false }: UserMenuProps) => {
-  const { user, signOut } = useAuth();
+const UserMenu = () => {
+  const { user, signOut, isAdmin } = useAuth();
   const navigate = useNavigate();
+  const [isSigningOut, setIsSigningOut] = useState(false);
 
   const handleSignOut = async () => {
     try {
+      setIsSigningOut(true);
       await signOut();
-      navigate("/");
+      toast.success('Signed out successfully');
+      navigate('/');
     } catch (error) {
-      // Keep error toast as it's an exception scenario
+      console.error('Error signing out:', error);
+      toast.error('Failed to sign out');
+    } finally {
+      setIsSigningOut(false);
     }
   };
 
   if (!user) {
     return (
-      <Button 
-        variant="outline" 
-        size="sm" 
-        asChild 
-        className={cn(
-          "ml-2 transition-all duration-300",
-          isScrolled 
-            ? "bg-transparent border-white/30 text-white hover:bg-white/10 hover:text-white" 
-            : "bg-white/10 border-white/20 text-white hover:bg-white/20"
-        )}
+      <Link 
+        to="/auth" 
+        className="text-white hover:text-purple-300 transition-colors text-sm font-medium"
       >
-        <Link to="/auth">Sign In</Link>
-      </Button>
+        Sign In
+      </Link>
     );
   }
+
+  const initials = user.email?.substring(0, 2).toUpperCase() || 'U';
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className={cn(
-            "ml-2 rounded-full transition-all duration-300 z-[50]",
-            isScrolled 
-              ? "text-white hover:bg-white/10" 
-              : "text-white hover:bg-white/10"
-          )}
-        >
-          <User className="h-5 w-5" />
-        </Button>
+        <button className="flex items-center space-x-2 text-white hover:text-purple-300 transition-colors">
+          <Avatar className="h-8 w-8">
+            <AvatarImage src={user.user_metadata?.avatar_url} />
+            <AvatarFallback className="bg-purple-600 text-white text-xs">
+              {initials}
+            </AvatarFallback>
+          </Avatar>
+        </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border border-gray-200 dark:border-gray-700 shadow-lg">
-        <DropdownMenuLabel>My Account</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem asChild className="hover:bg-accent/5 hover:text-accent cursor-pointer">
-          <Link to="/profile">My Profile</Link>
+      
+      <DropdownMenuContent className="w-56 bg-slate-900 border-slate-700">
+        <DropdownMenuItem asChild>
+          <Link to="/profile" className="flex items-center cursor-pointer text-white hover:text-purple-300">
+            <User className="mr-2 h-4 w-4" />
+            <span>Profile</span>
+          </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={handleSignOut} className="text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 cursor-pointer">
+        
+        <DropdownMenuItem asChild>
+          <Link to="/preferences" className="flex items-center cursor-pointer text-white hover:text-purple-300">
+            <Settings className="mr-2 h-4 w-4" />
+            <span>Preferences</span>
+          </Link>
+        </DropdownMenuItem>
+        
+        {isAdmin && (
+          <>
+            <DropdownMenuSeparator className="bg-slate-700" />
+            <DropdownMenuItem asChild>
+              <Link to="/admin-dashboard" className="flex items-center cursor-pointer text-orange-400 hover:text-orange-300">
+                <Shield className="mr-2 h-4 w-4" />
+                <span>Admin Dashboard</span>
+              </Link>
+            </DropdownMenuItem>
+          </>
+        )}
+        
+        <DropdownMenuSeparator className="bg-slate-700" />
+        
+        <DropdownMenuItem 
+          onClick={handleSignOut}
+          disabled={isSigningOut}
+          className="text-red-400 hover:text-red-300 cursor-pointer"
+        >
           <LogOut className="mr-2 h-4 w-4" />
-          Sign out
+          <span>{isSigningOut ? 'Signing out...' : 'Sign Out'}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
 };
+
+export default UserMenu;
