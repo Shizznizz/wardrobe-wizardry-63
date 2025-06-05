@@ -154,6 +154,18 @@ const ShopAndTry = () => {
     toast.info("Olivia is ready to chat about your style!");
   };
 
+  // Create a wrapper function for try-on without parameters
+  const handleTryOnClick = () => {
+    if (!userPhoto && !isUsingOliviaImage) {
+      toast.error("Please upload a photo or use Olivia first");
+      return;
+    }
+    
+    // Use a default outfit or the first selected item
+    const defaultOutfit = selectedItems.length > 0 ? selectedItems[0] : { name: "Current Selection" };
+    handleTryOutfit(defaultOutfit);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white overflow-x-hidden">
       <Header />
@@ -182,7 +194,7 @@ const ShopAndTry = () => {
           isProcessing={isProcessing}
           onUserPhotoUpload={handleUserPhotoUpload}
           onUseOliviaImage={handleUseOliviaImage}
-          onTryOn={handleTryOutfit}
+          onTryOn={handleTryOnClick}
           onClearPhotos={clearPhotos}
           showCompatibleOnly={showCompatibleOnly}
           onToggleCompatibleOnly={setShowCompatibleOnly}
