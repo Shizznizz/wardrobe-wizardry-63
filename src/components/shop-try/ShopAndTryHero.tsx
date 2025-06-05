@@ -1,188 +1,121 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Container } from '@/components/ui/container';
+import { Sparkles, Zap, UserCircle2, Shirt } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Sparkles, ShoppingBag, Shirt, Wand2 } from 'lucide-react';
-import OptimizedImage from '@/components/ui/optimized-image';
 
 interface ShopAndTryHeroProps {
   onStartStyling: () => void;
 }
 
 const ShopAndTryHero = ({ onStartStyling }: ShopAndTryHeroProps) => {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.2 }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 }
-  };
-
-  const imageVariants = {
-    hidden: { 
-      opacity: 0, 
-      scale: 0.9
-    },
-    visible: { 
-      opacity: 1, 
-      scale: 1,
-      transition: { 
-        type: "spring", 
-        stiffness: 60, 
-        damping: 13, 
-        duration: 1.2,
-        delay: 0.2
-      }
-    },
-    hover: {
-      scale: 1.03,
-      y: -5,
-      transition: { duration: 0.5 }
-    }
-  };
-
   return (
-    <section className="py-12 md:py-20 relative overflow-hidden">
-      {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-b from-purple-900/30 to-transparent pointer-events-none"></div>
+    <motion.section
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+      className="text-center relative overflow-hidden py-10 sm:py-16"
+    >
+      {/* Background shape */}
+      <div className="absolute inset-0 -z-10 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-600/20 rounded-full filter blur-3xl" />
+        <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-pink-600/20 rounded-full filter blur-3xl" />
+      </div>
       
-      <Container>
-        <div className="flex flex-col md:flex-row items-center gap-8 md:gap-16">
-          {/* Left side - Model Image with enhanced styling from My Wardrobe */}
+      <motion.div 
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        className="mx-auto max-w-xl mb-8"
+      >
+        <div className="flex justify-center mb-6">
           <motion.div 
-            className="w-full md:w-1/3 lg:w-2/5"
-            initial="hidden"
-            animate="visible"
-            whileHover="hover"
-            variants={imageVariants}
+            className="w-28 h-28 relative"
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.7, delay: 0.3 }}
           >
-            <div className="relative">
-              {/* Animated glow effect behind image */}
-              <motion.div 
-                className="absolute inset-0 bg-gradient-to-tr from-purple-500/30 to-pink-500/30 rounded-2xl blur-xl"
-                animate={{ 
-                  opacity: [0.5, 0.7, 0.5],
-                  scale: [1, 1.02, 1]
-                }}
-                transition={{
-                  duration: 3,
-                  repeat: Infinity,
-                  repeatType: "reverse"
-                }}
-              ></motion.div>
-              
-              {/* Image container with purple glow like in MyWardrobe */}
-              <div className="relative z-10 overflow-hidden rounded-2xl border-2 border-white/10 shadow-xl">
-                <OptimizedImage 
-                  src="/lovable-uploads/6d16aa51-bd78-4fb4-a783-8d27a089e19f.png" 
-                  alt="Fashion model in pink top and white pants" 
-                  className="w-full h-auto object-cover"
-                  priority={true}
-                  quality="high"
-                />
-                {/* Subtle overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-purple-900/40 to-transparent"></div>
-              </div>
-              
-              {/* Animated sparkle icon */}
-              <motion.div 
-                className="absolute -top-2 -right-2 bg-pink-500 rounded-full p-1.5 shadow-lg z-20"
-                animate={{ 
-                  scale: [1, 1.1, 1],
-                  rotate: [0, 5, 0, -5, 0]
-                }}
-                transition={{ 
-                  duration: 3, 
-                  repeat: Infinity,
-                  repeatType: "loop" 
-                }}
-              >
-                <Sparkles className="h-5 w-5 text-white" />
-              </motion.div>
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-600 to-pink-500 rounded-full opacity-20 animate-pulse" />
+            <div className="absolute inset-2 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center">
+              <Shirt className="w-12 h-12 text-white/90" />
             </div>
-          </motion.div>
-          
-          {/* Right side - Content */}
-          <motion.div 
-            className="w-full md:w-2/3 lg:w-3/5 space-y-6"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            <motion.h1 
-              className="text-4xl md:text-5xl lg:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-pink-200"
-              variants={itemVariants}
-            >
-              Shop & Try Fashion
-            </motion.h1>
-            
             <motion.div 
-              className="max-w-2xl space-y-6"
-              variants={itemVariants}
+              className="absolute -right-2 -top-2 bg-pink-500 rounded-full p-1.5"
+              animate={{ 
+                scale: [1, 1.1, 1],
+                rotate: [0, 5, 0, -5, 0]
+              }}
+              transition={{ 
+                duration: 3, 
+                repeat: Infinity,
+                repeatType: "loop" 
+              }}
             >
-              {/* Three-step guide */}
-              <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-white/5 rounded-xl p-5 backdrop-blur-md border border-white/10">
-                  <div className="bg-gradient-to-tr from-purple-600 to-pink-500 w-12 h-12 rounded-lg flex items-center justify-center mb-3 shadow-md relative">
-                    <Shirt className="h-6 w-6 text-white" />
-                    <div className="absolute -top-2 -right-2 bg-white rounded-full w-6 h-6 flex items-center justify-center text-purple-900 font-bold shadow-md">
-                      1
-                    </div>
-                  </div>
-                  <h3 className="text-lg font-semibold text-white">Try on trending outfits</h3>
-                  <p className="text-sm text-white/70 mt-1">Preview looks on your photo or use Olivia as your model</p>
-                </div>
-                
-                <div className="bg-white/5 rounded-xl p-5 backdrop-blur-md border border-white/10">
-                  <div className="bg-gradient-to-tr from-purple-600 to-pink-500 w-12 h-12 rounded-lg flex items-center justify-center mb-3 shadow-md relative">
-                    <Wand2 className="h-6 w-6 text-white" />
-                    <div className="absolute -top-2 -right-2 bg-white rounded-full w-6 h-6 flex items-center justify-center text-purple-900 font-bold shadow-md">
-                      2
-                    </div>
-                  </div>
-                  <h3 className="text-lg font-semibold text-white">Combine with your wardrobe</h3>
-                  <p className="text-sm text-white/70 mt-1">Mix and match with your existing pieces</p>
-                </div>
-                
-                <div className="bg-white/5 rounded-xl p-5 backdrop-blur-md border border-white/10">
-                  <div className="bg-gradient-to-tr from-purple-600 to-pink-500 w-12 h-12 rounded-lg flex items-center justify-center mb-3 shadow-md relative">
-                    <ShoppingBag className="h-6 w-6 text-white" />
-                    <div className="absolute -top-2 -right-2 bg-white rounded-full w-6 h-6 flex items-center justify-center text-purple-900 font-bold shadow-md">
-                      3
-                    </div>
-                  </div>
-                  <h3 className="text-lg font-semibold text-white">Shop smartly with Olivia</h3>
-                  <p className="text-sm text-white/70 mt-1">Get personalized style recommendations</p>
-                </div>
-              </div>
-              
-              <motion.div
-                className="mt-8"
-                variants={itemVariants}
-              >
-                <Button 
-                  className="bg-gradient-to-r from-pink-500 to-purple-500 hover:opacity-90 text-white font-medium px-8 py-6 rounded-lg shadow-lg shadow-pink-500/20 hover:shadow-pink-500/30 transition-all duration-300"
-                  size="lg"
-                  onClick={onStartStyling}
-                >
-                  <Sparkles className="mr-2 h-5 w-5" />
-                  Explore Styles with Olivia
-                </Button>
-                <p className="text-white/70 text-sm mt-4">
-                  Upload a photo or try outfits with Olivia — get inspired by trending fashion.
-                </p>
-              </motion.div>
+              <Sparkles className="w-5 h-5 text-white" />
             </motion.div>
           </motion.div>
         </div>
-      </Container>
-    </section>
+        
+        <motion.h1 
+          className="text-4xl sm:text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400"
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          Style It Your Way
+        </motion.h1>
+        
+        <motion.p 
+          className="text-lg text-white/80 mb-8"
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          Upload a photo or use Olivia to try on trending fashion pieces from the internet.
+        </motion.p>
+        
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          <Button 
+            onClick={onStartStyling}
+            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 text-white py-6 px-8 text-lg rounded-lg shadow-lg shadow-purple-500/20 group relative overflow-hidden"
+            size="lg"
+          >
+            <span className="absolute inset-0 bg-gradient-to-r from-pink-400/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+            <Zap className="mr-2 h-5 w-5 text-yellow-200 animate-pulse" />
+            <span>Start Styling with Olivia</span>
+          </Button>
+        </motion.div>
+      </motion.div>
+      
+      <motion.div 
+        className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+      >
+        <div className="backdrop-blur-sm bg-white/5 rounded-xl p-5 border border-white/10">
+          <UserCircle2 className="h-10 w-10 text-purple-400 mb-4" />
+          <h3 className="text-lg font-semibold mb-2">Your Style, Enhanced</h3>
+          <p className="text-white/70 text-sm">Upload your photo and see how the latest trends look on you.</p>
+        </div>
+        
+        <div className="backdrop-blur-sm bg-white/5 rounded-xl p-5 border border-white/10">
+          <Shirt className="h-10 w-10 text-pink-400 mb-4" />
+          <h3 className="text-lg font-semibold mb-2">Try Before You Buy</h3>
+          <p className="text-white/70 text-sm">Test any clothing item from any online store before purchasing.</p>
+        </div>
+        
+        <div className="backdrop-blur-sm bg-white/5 rounded-xl p-5 border border-white/10">
+          <Sparkles className="h-10 w-10 text-blue-400 mb-4" />
+          <h3 className="text-lg font-semibold mb-2">Olivia's AI Styling</h3>
+          <p className="text-white/70 text-sm">Get personalized style recommendations from our AI fashion assistant.</p>
+        </div>
+      </motion.div>
+    </motion.section>
   );
 };
 
