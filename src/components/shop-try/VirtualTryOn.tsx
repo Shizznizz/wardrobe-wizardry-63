@@ -1,14 +1,25 @@
 
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Container } from '@/components/ui/container';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Upload, Camera, Sparkles, User, Crown, Info } from 'lucide-react';
 import { ClothingItem, Outfit } from '@/lib/types';
-import OptimizedImage from '@/components/ui/optimized-image';
+import { 
+  Upload,
+  Camera, 
+  X, 
+  Image as ImageIcon, 
+  Loader2, 
+  FileWarning,
+  AlertTriangle,
+  User,
+  Sparkles,
+} from 'lucide-react';
+import VirtualFittingRoom from '@/components/VirtualFittingRoom';
+import UserPhotoDisplay from '@/components/fitting-room/UserPhotoDisplay';
+import { toast } from 'sonner';
 
 interface VirtualTryOnProps {
   id?: string;
@@ -32,7 +43,7 @@ interface VirtualTryOnProps {
   onSaveLook: () => void;
   onAddItem: (item: ClothingItem) => void;
   onShowPremiumPopup: () => void;
-  onAddToEarlyTesters: () => void;
+  onAddToEarlyTesters: (email: string) => void;
   earlyTester: boolean;
   setShowFeedback: (show: boolean) => void;
   showFeedback: boolean;
@@ -65,258 +76,319 @@ const VirtualTryOn = ({
   setShowFeedback,
   showFeedback
 }: VirtualTryOnProps) => {
-  const [activeTab, setActiveTab] = useState("your-photo");
-
+  const [activeTab, setActiveTab] = useState<string>(userPhoto ? 'clothing' : 'photo');
+  const [email, setEmail] = useState('');
+  
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>, type: 'user' | 'clothing') => {
-    const file = event.target.files?.[0];
-    if (file) {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+    
+    const file = files[0];
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please upload an image file');
+      return;
+    }
+    
+    if (type === 'user') {
+      onUserPhotoUpload(file);
+      setActiveTab('clothing');
+    } else {
+      onClothingPhotoUpload(file);
+    }
+    
+    // Reset input value so the same file can be uploaded again if needed
+    event.target.value = '';
+  };
+  
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+  
+  const handleDrop = (e: React.DragEvent, type: 'user' | 'clothing') => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const file = e.dataTransfer.files[0];
+      if (!file.type.startsWith('image/')) {
+        toast.error('Please upload an image file');
+        return;
+      }
+      
       if (type === 'user') {
         onUserPhotoUpload(file);
+        setActiveTab('clothing');
       } else {
         onClothingPhotoUpload(file);
       }
     }
   };
-
+  
+  const getOliviaEmoji = () => {
+    switch (oliviaMood) {
+      case 'happy': return '😊';
+      case 'thinking': return '🤔';
+      default: return '👋';
+    }
+  };
+  
   return (
-    <section id={id} className="py-16 relative">
+    <section className="py-16 relative" id={id}>
       <div className="absolute inset-0 bg-gradient-to-b from-slate-950/50 via-purple-950/30 to-slate-950/50 pointer-events-none"></div>
       
       <Container>
         <motion.div
-          className="text-center mb-8"
+          className="text-center mb-12"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Virtual Try-On Preview</h2>
-          <p className="text-white/70 max-w-2xl mx-auto mb-4">
-            Select a photo and preview how outfits might look before buying.
-          </p>
-          <div className="flex items-center justify-center gap-2 text-sm text-blue-300">
-            <Info className="h-4 w-4" />
-            <span>Upload your photo or use Olivia to see outfit previews</span>
+          <div className="inline-flex items-center mb-3 bg-gradient-to-r from-purple-600/30 to-pink-600/30 px-4 py-1 rounded-full">
+            <span className="text-sm font-medium text-white mr-2">Coming Soon</span>
+            <Sparkles className="h-4 w-4 text-pink-300" />
           </div>
+          
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Virtual Try-On</h2>
+          <p className="text-white/70 max-w-2xl mx-auto">
+            See how clothes look on you before you buy them
+          </p>
         </motion.div>
-
-        <motion.div
-          className="max-w-4xl mx-auto"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-        >
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-8 bg-slate-900/50 border border-white/10">
-              <TabsTrigger 
-                value="your-photo" 
-                className="data-[state=active]:bg-purple-600/20 data-[state=active]:text-white"
-              >
-                <User className="h-4 w-4 mr-2" />
-                Your Photo
-              </TabsTrigger>
-              <TabsTrigger 
-                value="use-olivia"
-                className="data-[state=active]:bg-purple-600/20 data-[state=active]:text-white"
-              >
-                <Sparkles className="h-4 w-4 mr-2" />
-                Use Olivia
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="your-photo" className="space-y-6">
-              <Card className="bg-gradient-to-br from-slate-900/80 to-purple-900/30 border-white/10">
-                <CardContent className="p-8">
-                  {userPhoto && !isUsingOliviaImage ? (
-                    <div className="space-y-6">
-                      <div className="flex justify-center">
-                        <div className="relative">
-                          <img 
-                            src={userPhoto} 
-                            alt="Your photo" 
-                            className="w-64 h-80 object-cover rounded-lg border-2 border-white/10"
-                          />
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={onClearUserPhoto}
-                            className="absolute top-2 right-2 bg-red-600/80 hover:bg-red-600 border-red-500 text-white"
-                          >
-                            Remove
-                          </Button>
+        
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+          {/* Left side - Upload interface */}
+          <div className="md:col-span-5">
+            <div className="space-y-6">
+              {userPhoto ? (
+                <UserPhotoDisplay 
+                  userPhoto={userPhoto}
+                  isUsingOliviaImage={isUsingOliviaImage}
+                  onResetPhoto={onClearUserPhoto}
+                />
+              ) : (
+                <Tabs 
+                  value={activeTab} 
+                  onValueChange={setActiveTab} 
+                  className="w-full"
+                >
+                  <TabsList className="grid grid-cols-2 mb-4 bg-slate-900/70">
+                    <TabsTrigger value="photo">Your Photo</TabsTrigger>
+                    <TabsTrigger value="olivia">Use Olivia</TabsTrigger>
+                  </TabsList>
+                  
+                  <TabsContent value="photo">
+                    <Card 
+                      className="border-white/10 bg-black/50 backdrop-blur-sm rounded-lg overflow-hidden"
+                      onDragOver={handleDragOver}
+                      onDrop={(e) => handleDrop(e, 'user')}
+                    >
+                      <div className="p-6 flex flex-col items-center justify-center min-h-[300px]">
+                        <div className="w-16 h-16 rounded-full bg-purple-900/30 flex items-center justify-center mb-4">
+                          <Upload className="h-7 w-7 text-purple-400" />
                         </div>
-                      </div>
-                      
-                      <div className="text-center">
-                        <Badge className="bg-green-600/20 text-green-300 border-green-500/30 mb-4">
-                          Photo Ready
-                        </Badge>
-                        <p className="text-white/70 mb-4">
-                          Your photo is ready! Now you can try on different outfits.
+                        <h3 className="text-lg font-medium mb-2">Upload your photo</h3>
+                        <p className="text-sm text-white/60 text-center mb-6 max-w-xs">
+                          Drag and drop or click below to upload your photo
                         </p>
-                        <div className="flex justify-center gap-4">
-                          <Button 
-                            onClick={onTryOn}
-                            className="bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90 text-white"
-                          >
-                            <Camera className="h-4 w-4 mr-2" />
-                            Try On Outfit
-                          </Button>
-                          {isPremiumUser && (
-                            <Button 
-                              onClick={onSaveLook}
-                              variant="outline"
-                              className="border-white/20 hover:bg-white/10 text-white"
-                            >
-                              Save Look
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="text-center space-y-6">
-                      <div className="w-64 h-80 mx-auto border-2 border-dashed border-white/20 rounded-lg flex items-center justify-center bg-slate-800/30">
-                        <div className="text-center">
-                          <Upload className="h-12 w-12 text-white/40 mx-auto mb-4" />
-                          <p className="text-white/60 mb-4">Upload your photo to get started</p>
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => handleFileUpload(e, 'user')}
-                            className="hidden"
-                            id="user-photo-upload"
-                          />
+                        <div>
                           <label htmlFor="user-photo-upload">
                             <Button 
-                              className="bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90 text-white"
-                              asChild
+                              type="button" 
+                              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 text-white"
                             >
-                              <span>
-                                <Upload className="h-4 w-4 mr-2" />
-                                Choose Photo
-                              </span>
+                              <ImageIcon className="h-4 w-4 mr-2" />
+                              Choose File
                             </Button>
+                            <input 
+                              id="user-photo-upload" 
+                              type="file" 
+                              accept="image/*" 
+                              className="hidden" 
+                              onChange={(e) => handleFileUpload(e, 'user')} 
+                            />
                           </label>
                         </div>
                       </div>
-                      
-                      <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-4">
-                        <div className="flex items-start gap-3">
-                          <Info className="h-5 w-5 text-blue-300 flex-shrink-0 mt-0.5" />
-                          <div className="text-sm text-blue-200">
-                            <p className="font-medium mb-1">Coming Soon - Advanced Try-On</p>
-                            <p className="text-blue-200/80">
-                              We're working on realistic virtual try-on technology. For now, enjoy our style recommendations and outfit previews!
-                            </p>
+                    </Card>
+                  </TabsContent>
+                  
+                  <TabsContent value="olivia">
+                    <Card className="border-white/10 bg-black/50 backdrop-blur-sm rounded-lg overflow-hidden">
+                      <div className="p-6 text-center">
+                        <div className="w-20 h-20 rounded-full mx-auto bg-gradient-to-tr from-purple-600 to-pink-500 p-1 mb-4">
+                          <img 
+                            src="/lovable-uploads/c937b60e-901e-48ae-b01d-28d901a11503.png" 
+                            alt="Olivia" 
+                            className="w-full h-full object-cover rounded-full"
+                          />
+                        </div>
+                        <h3 className="text-lg font-medium mb-2">Use Olivia as your model</h3>
+                        <p className="text-sm text-white/60 mb-4">
+                          See how outfits look on our virtual model
+                        </p>
+                        <Button 
+                          onClick={onShowOliviaImageGallery} 
+                          className="bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 text-white"
+                        >
+                          <User className="h-4 w-4 mr-2" />
+                          Choose Olivia Image
+                        </Button>
+                      </div>
+                    </Card>
+                  </TabsContent>
+                </Tabs>
+              )}
+              
+              {userPhoto && !clothingPhoto && (
+                <Card 
+                  className="border-white/10 bg-black/50 backdrop-blur-sm rounded-lg overflow-hidden"
+                  onDragOver={handleDragOver}
+                  onDrop={(e) => handleDrop(e, 'clothing')}
+                >
+                  <div className="p-6 flex flex-col items-center justify-center min-h-[260px]">
+                    <div className="w-14 h-14 rounded-full bg-pink-900/30 flex items-center justify-center mb-4">
+                      <ImageIcon className="h-6 w-6 text-pink-400" />
+                    </div>
+                    <h3 className="text-lg font-medium mb-2">Upload clothing item</h3>
+                    <p className="text-sm text-white/60 text-center mb-6 max-w-xs">
+                      Upload a clothing item to see how it looks on your photo
+                    </p>
+                    <div>
+                      <label htmlFor="clothing-upload">
+                        <Button 
+                          type="button" 
+                          className="bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 text-white"
+                        >
+                          <ImageIcon className="h-4 w-4 mr-2" />
+                          Choose Clothing
+                        </Button>
+                        <input 
+                          id="clothing-upload" 
+                          type="file" 
+                          accept="image/*" 
+                          className="hidden" 
+                          onChange={(e) => handleFileUpload(e, 'clothing')} 
+                        />
+                      </label>
+                    </div>
+                  </div>
+                </Card>
+              )}
+              
+              {userPhoto && clothingPhoto && (
+                <Card className="border-white/10 bg-black/50 backdrop-blur-sm rounded-lg overflow-hidden">
+                  <div className="p-6">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-lg font-medium">Selected Clothing</h3>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        onClick={() => {
+                          onClothingPhotoUpload(null as any);
+                        }} 
+                        className="text-white/70 hover:text-white"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    
+                    <div className="relative rounded-lg overflow-hidden aspect-square">
+                      <img 
+                        src={clothingPhoto} 
+                        alt="Selected clothing" 
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    
+                    <div className="mt-4 flex justify-center">
+                      <Button 
+                        onClick={onTryOn} 
+                        disabled={isProcessing}
+                        className="bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 text-white"
+                      >
+                        {isProcessing ? (
+                          <>
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            Processing...
+                          </>
+                        ) : (
+                          <>
+                            <Camera className="h-4 w-4 mr-2" />
+                            Try It On
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              )}
+              
+              {generationError && (
+                <Card className="border-red-600/30 bg-black/50 backdrop-blur-sm rounded-lg overflow-hidden">
+                  <div className="p-4 flex items-start">
+                    <FileWarning className="h-5 w-5 text-red-500 mr-3 mt-1 flex-shrink-0" />
+                    <div>
+                      <h4 className="font-medium text-red-400 mb-1">Error generating try-on</h4>
+                      <p className="text-sm text-white/70">{generationError}</p>
+                    </div>
+                  </div>
+                </Card>
+              )}
+            </div>
+          </div>
+          
+          {/* Right side - Results display */}
+          <div className="md:col-span-7">
+            <Card className="border-white/10 bg-black/50 backdrop-blur-sm rounded-lg overflow-hidden h-full relative">
+              {/* Semi-transparent overlay */}
+              <div className="absolute inset-0 bg-black/20 backdrop-blur-[1px] z-10"></div>
+              
+              <div className="p-3 sm:p-4 h-full relative">
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 text-center">
+                  {stylingTip && finalImage ? (
+                    <div className="bg-white/10 backdrop-blur-md p-4 rounded-lg max-w-sm border border-white/20 shadow-xl">
+                      <div className="flex items-start">
+                        <div className="flex-shrink-0 mr-3">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-purple-600 to-pink-500 flex items-center justify-center">
+                            <span className="text-xl">{getOliviaEmoji()}</span>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="use-olivia" className="space-y-6">
-              <Card className="bg-gradient-to-br from-slate-900/80 to-purple-900/30 border-white/10">
-                <CardContent className="p-8">
-                  {userPhoto && isUsingOliviaImage ? (
-                    <div className="space-y-6">
-                      <div className="flex justify-center">
-                        <div className="relative">
-                          <img 
-                            src={userPhoto} 
-                            alt="Olivia model" 
-                            className="w-64 h-80 object-cover rounded-lg border-2 border-pink-500/30"
-                          />
-                          <Badge className="absolute top-2 left-2 bg-pink-600/80 text-white border-pink-500">
-                            <Crown className="h-3 w-3 mr-1" />
-                            Olivia
-                          </Badge>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={onClearUserPhoto}
-                            className="absolute top-2 right-2 bg-red-600/80 hover:bg-red-600 border-red-500 text-white"
-                          >
-                            Change
-                          </Button>
-                        </div>
-                      </div>
-                      
-                      <div className="text-center">
-                        <Badge className="bg-pink-600/20 text-pink-300 border-pink-500/30 mb-4">
-                          Using Olivia as Model
-                        </Badge>
-                        <p className="text-white/70 mb-4">
-                          Perfect! Olivia is ready to show you how outfits look.
-                        </p>
-                        <div className="flex justify-center gap-4">
-                          <Button 
-                            onClick={onTryOn}
-                            className="bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90 text-white"
-                          >
-                            <Camera className="h-4 w-4 mr-2" />
-                            Try On Outfit
-                          </Button>
-                          {isPremiumUser && (
-                            <Button 
-                              onClick={onSaveLook}
-                              variant="outline"
-                              className="border-white/20 hover:bg-white/10 text-white"
-                            >
-                              Save Look
-                            </Button>
-                          )}
+                        <div className="text-left">
+                          <p className="text-sm font-medium text-white mb-1">Olivia's Tip:</p>
+                          <p className="text-sm text-white/80">{stylingTip}</p>
                         </div>
                       </div>
                     </div>
                   ) : (
-                    <div className="text-center space-y-6">
-                      <div className="w-64 h-80 mx-auto rounded-lg overflow-hidden border-2 border-pink-500/30">
-                        <OptimizedImage 
-                          src="/lovable-uploads/6d16aa51-bd78-4fb4-a783-8d27a089e19f.png" 
-                          alt="Olivia AI Model" 
-                          className="w-full h-full object-cover"
-                        />
+                    <div className="space-y-4">
+                      <div className="flex flex-col items-center">
+                        <AlertTriangle className="h-12 w-12 text-pink-500/70 mb-2" />
+                        <h3 className="text-xl font-bold">Coming Soon!</h3>
                       </div>
-                      
-                      <div>
-                        <Badge className="bg-pink-600/20 text-pink-300 border-pink-500/30 mb-4">
-                          AI Model Available
-                        </Badge>
-                        <p className="text-white/70 mb-4">
-                          Use Olivia as your virtual model to see how outfits look.
-                        </p>
-                        <Button 
-                          onClick={onShowOliviaImageGallery}
-                          className="bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90 text-white"
-                        >
-                          <Sparkles className="h-4 w-4 mr-2" />
-                          Use Olivia as Model
-                        </Button>
-                      </div>
-                      
-                      <div className="bg-purple-900/20 border border-purple-500/30 rounded-lg p-4">
-                        <div className="flex items-start gap-3">
-                          <Sparkles className="h-5 w-5 text-purple-300 flex-shrink-0 mt-0.5" />
-                          <div className="text-sm text-purple-200">
-                            <p className="font-medium mb-1">Why Use Olivia?</p>
-                            <p className="text-purple-200/80">
-                              Olivia helps you visualize outfits and styling ideas before making purchase decisions. Perfect for trying new looks!
-                            </p>
-                          </div>
-                        </div>
-                      </div>
+                      <p className="text-white/70 max-w-sm">
+                        Our AI-powered virtual try-on feature is currently in development.
+                        Stay tuned for the official release!
+                      </p>
                     </div>
                   )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
-        </motion.div>
+                </div>
+                
+                <VirtualFittingRoom
+                  finalImage={finalImage}
+                  outfit={mockOutfit}
+                  clothingItems={selectedItems}
+                  isProcessing={isProcessing}
+                  userPhoto={userPhoto}
+                  clothingPhoto={clothingPhoto}
+                  className="relative z-0"
+                  onSaveLook={onSaveLook}
+                  isOliviaImage={isUsingOliviaImage}
+                />
+              </div>
+            </Card>
+          </div>
+        </div>
       </Container>
     </section>
   );

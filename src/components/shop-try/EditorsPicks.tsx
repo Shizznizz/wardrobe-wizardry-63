@@ -1,11 +1,12 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Container } from '@/components/ui/container';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Heart, ShoppingBag, Star, TrendingUp, Clock, Crown } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { ShoppingBag, Star, ArrowRight, Sparkles, Tag, Shirt } from 'lucide-react';
 import { ClothingItem } from '@/lib/types';
+import { toast } from 'sonner';
 
 interface EditorsPicksProps {
   isPremiumUser: boolean;
@@ -15,6 +16,12 @@ interface EditorsPicksProps {
   onSaveToWardrobe: (item: ClothingItem) => void;
 }
 
+interface ExtendedClothingItem extends ClothingItem {
+  stylingTip?: string;
+  badge?: string;
+  availability?: string[];
+}
+
 const EditorsPicks = ({
   isPremiumUser,
   onTryItem,
@@ -22,92 +29,74 @@ const EditorsPicks = ({
   userCountry,
   onSaveToWardrobe
 }: EditorsPicksProps) => {
-  const editorsPicks = [
+  const [loading, setLoading] = useState(true);
+  
+  useEffect(() => {
+    // Simulate loading state
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+    
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Mock editor's picks
+  const editorsPicks: ExtendedClothingItem[] = [
     {
-      id: 'ep-1',
-      name: 'Classic Trench Coat',
-      price: 189.99,
-      image: '/lovable-uploads/f4be744c-31b5-4099-93e8-67f51af83dae.png',
-      brand: 'TimelessStyle',
-      rating: 4.9,
-      metadata: 'timeless',
-      description: 'A wardrobe staple that never goes out of style'
+      id: 'editor-1',
+      name: 'Pleated Midi Skirt',
+      type: 'skirt',
+      color: 'green',
+      brand: 'Zara',
+      price: 49.90,
+      imageUrl: '/lovable-uploads/352f9956-7bac-4f42-a91b-d20e04157b0d.png',
+      image: '/lovable-uploads/352f9956-7bac-4f42-a91b-d20e04157b0d.png', // Added image property
+      stylingTip: 'Pair with a tucked-in turtleneck and ankle boots for a polished look',
+      badge: 'Editor\'s Choice',
+      availability: ['United States', 'Canada', 'United Kingdom'],
+      season: ['spring', 'summer'],
+      occasion: 'casual'
     },
     {
-      id: 'ep-2',
-      name: 'Silk Slip Dress',
-      price: 159.99,
-      image: '/lovable-uploads/34e8d801-61ee-4254-a7ce-39b52a3a7e65.png',
-      brand: 'LuxeWear',
-      rating: 4.8,
-      metadata: 'trending',
-      description: 'Effortlessly elegant for any occasion'
+      id: 'editor-2',
+      name: 'Oversized Boyfriend Blazer',
+      type: 'jacket',
+      color: 'black',
+      brand: 'H&M',
+      price: 59.99,
+      imageUrl: '/lovable-uploads/547609e6-3e31-4592-9c0c-a9a94e8e4996.png',
+      image: '/lovable-uploads/547609e6-3e31-4592-9c0c-a9a94e8e4996.png', // Added image property
+      stylingTip: 'Layer over a slip dress or jeans for an effortless chic look',
+      badge: 'Trending',
+      availability: ['United States', 'Germany', 'France', 'Australia'],
+      season: ['spring', 'autumn'],
+      occasion: 'formal'
     },
     {
-      id: 'ep-3',
-      name: 'Structured Blazer',
-      price: 149.99,
-      image: '/lovable-uploads/6d16aa51-bd78-4fb4-a783-8d27a089e19f.png',
-      brand: 'PowerSuit',
-      rating: 4.7,
-      metadata: 'versatile',
-      description: 'Professional polish with modern edge'
+      id: 'editor-3',
+      name: 'Chunky Gold Chain Necklace',
+      type: 'accessories',
+      color: 'gold' as any, // Casting to any to avoid type error
+      brand: 'Mango',
+      price: 29.99,
+      imageUrl: '/lovable-uploads/45448793-cb34-4e4c-9dd8-de95f86f25ca.png',
+      image: '/lovable-uploads/45448793-cb34-4e4c-9dd8-de95f86f25ca.png', // Added image property
+      stylingTip: 'Elevates even the simplest white tee to statement status',
+      badge: 'Popular in your country',
+      availability: ['United States', 'United Kingdom', 'Australia'],
+      season: ['all'],
+      occasion: 'casual'
     }
   ];
-
-  const getMetadataIcon = (metadata: string) => {
-    switch (metadata) {
-      case 'trending':
-        return <TrendingUp className="h-3 w-3" />;
-      case 'timeless':
-        return <Clock className="h-3 w-3" />;
-      case 'versatile':
-        return <Star className="h-3 w-3" />;
-      default:
-        return <Crown className="h-3 w-3" />;
-    }
-  };
-
-  const getMetadataColor = (metadata: string) => {
-    switch (metadata) {
-      case 'trending':
-        return 'bg-green-600/20 text-green-300 border-green-500/30';
-      case 'timeless':
-        return 'bg-blue-600/20 text-blue-300 border-blue-500/30';
-      case 'versatile':
-        return 'bg-purple-600/20 text-purple-300 border-purple-500/30';
-      default:
-        return 'bg-pink-600/20 text-pink-300 border-pink-500/30';
-    }
-  };
-
-  const handleTryItem = (item: any) => {
-    const clothingItem: ClothingItem = {
-      id: item.id,
-      name: item.name,
-      type: 'top',
-      color: 'black',
-      season: ['all'],
-      image: item.image
-    };
-    onTryItem(clothingItem);
-  };
-
-  const handleSaveToWardrobe = (item: any) => {
-    const clothingItem: ClothingItem = {
-      id: item.id,
-      name: item.name,
-      type: 'top',
-      color: 'black',
-      season: ['all'],
-      image: item.image
-    };
-    onSaveToWardrobe(clothingItem);
-  };
+  
+  // Filter based on user's country if available
+  const filteredPicks = userCountry 
+    ? editorsPicks.filter(item => !item.availability || item.availability.includes(userCountry))
+    : editorsPicks;
 
   return (
     <section className="py-16 relative">
-      <div className="absolute inset-0 bg-gradient-to-b from-slate-950/30 via-purple-950/20 to-slate-950/30 pointer-events-none"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-slate-950/50 via-purple-950/30 to-slate-950/50 pointer-events-none"></div>
       
       <Container>
         <motion.div
@@ -119,81 +108,109 @@ const EditorsPicks = ({
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Editor's Picks</h2>
           <p className="text-white/70 max-w-2xl mx-auto">
-            Selected by our editors for their versatility and trend appeal.
+            Hand-selected by our fashion editors, these pieces are worth the investment
           </p>
         </motion.div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {editorsPicks.map((item, index) => (
-            <motion.div
-              key={item.id}
-              className="bg-gradient-to-br from-slate-900/80 to-purple-900/30 backdrop-blur-sm rounded-2xl border border-white/10 overflow-hidden group transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-purple-500/20"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-            >
-              <div className="relative aspect-square">
-                <img 
-                  src={item.image} 
-                  alt={item.name}
-                  className="w-full h-full object-cover"
-                />
-                <Badge className={`absolute top-2 left-2 ${getMetadataColor(item.metadata)}`}>
-                  {getMetadataIcon(item.metadata)}
-                  <span className="ml-1 capitalize">{item.metadata}</span>
-                </Badge>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute top-2 right-2 bg-black/50 hover:bg-black/70 text-white transition-all duration-300"
-                  onClick={() => handleSaveToWardrobe(item)}
-                >
-                  <Heart className="h-4 w-4" />
-                </Button>
-              </div>
-              
-              <div className="p-6 space-y-4">
-                <div className="space-y-2">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h3 className="font-semibold text-white">{item.name}</h3>
-                      <p className="text-white/60 text-sm">{item.brand}</p>
+        
+        {loading ? (
+          <div className="flex justify-center my-12">
+            <div className="w-12 h-12 rounded-full border-4 border-purple-600 border-t-transparent animate-spin"></div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {filteredPicks.map((item) => (
+              <motion.div
+                key={item.id}
+                className="h-full"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5 }}
+              >
+                <Card className="h-full bg-gradient-to-br from-slate-900/80 to-purple-950/20 border-white/10 hover:border-purple-400/30 overflow-hidden">
+                  <div className="relative">
+                    <div className="aspect-[3/4] overflow-hidden">
+                      <img 
+                        src={item.imageUrl} 
+                        alt={item.name}
+                        className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                      />
                     </div>
-                    <div className="text-right">
-                      <p className="text-white font-bold">${item.price}</p>
-                      <div className="flex items-center gap-1">
-                        <Star className="h-3 w-3 text-yellow-400 fill-current" />
-                        <span className="text-white/60 text-sm">{item.rating}</span>
+                    
+                    {item.badge && (
+                      <div className="absolute top-3 left-3 bg-gradient-to-r from-pink-500 to-purple-500 text-white text-xs px-3 py-1 rounded-full flex items-center">
+                        <Star className="h-3 w-3 mr-1" />
+                        {item.badge}
+                      </div>
+                    )}
+                  </div>
+                  
+                  <CardContent className="p-5">
+                    <div className="mb-3">
+                      <h3 className="font-semibold text-lg text-white">{item.name}</h3>
+                      <div className="flex justify-between items-baseline">
+                        <p className="text-white/60 text-sm">{item.brand}</p>
+                        <p className="text-lg font-bold text-white">${item.price}</p>
                       </div>
                     </div>
-                  </div>
-                  <p className="text-white/70 text-sm">{item.description}</p>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-3">
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    className="border-white/20 hover:bg-white/10 text-white transition-all duration-300 hover:border-purple-500/50"
-                    onClick={() => handleTryItem(item)}
-                  >
-                    Try On
-                  </Button>
-                  <Button 
-                    size="sm"
-                    className="bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90 text-white transition-all duration-300"
-                    onClick={() => {
-                      window.open('https://example.com/affiliate', '_blank');
-                    }}
-                  >
-                    <ShoppingBag className="h-4 w-4 mr-1" />
-                    Shop
-                  </Button>
-                </div>
-              </div>
-            </motion.div>
-          ))}
+                    
+                    {item.stylingTip && (
+                      <div className="flex items-start space-x-2 mb-4 bg-white/5 p-2 rounded">
+                        <Sparkles className="h-4 w-4 text-purple-400 mt-1 flex-shrink-0" />
+                        <p className="text-sm text-white/70">
+                          {item.stylingTip}
+                        </p>
+                      </div>
+                    )}
+                    
+                    <div className="mt-4 grid grid-cols-2 gap-3">
+                      <Button 
+                        variant="outline"
+                        className="border-white/20 hover:bg-white/10 text-white"
+                        onClick={() => onTryItem(item)}
+                      >
+                        <Shirt className="h-4 w-4 mr-2" />
+                        Try It
+                      </Button>
+                      
+                      <Button 
+                        className="bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 text-white"
+                        onClick={() => {
+                          window.open('https://example.com/shop', '_blank');
+                          toast.success('Opening shop page in new tab');
+                        }}
+                      >
+                        <ShoppingBag className="h-4 w-4 mr-2" />
+                        Shop
+                      </Button>
+                    </div>
+                    
+                    <Button 
+                      variant="ghost"
+                      className="w-full mt-3 text-white/70 hover:text-white"
+                      onClick={() => onSaveToWardrobe(item)}
+                    >
+                      <Tag className="h-4 w-4 mr-2" />
+                      Save to Wardrobe
+                    </Button>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        )}
+        
+        <div className="text-center mt-8">
+          <Button 
+            variant="link" 
+            className="text-purple-400 hover:text-purple-300 inline-flex items-center"
+            onClick={() => {
+              toast.info("Loading more editor's picks...");
+            }}
+          >
+            See more picks
+            <ArrowRight className="ml-1 h-4 w-4" />
+          </Button>
         </div>
       </Container>
     </section>
