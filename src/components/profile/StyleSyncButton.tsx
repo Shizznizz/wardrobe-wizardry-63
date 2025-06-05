@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Loader2, Sync, CheckCircle } from 'lucide-react';
+import { Loader2, RefreshCw, CheckCircle } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -169,7 +169,7 @@ const StyleSyncButton = ({ preferences, setPreferences }: StyleSyncButtonProps) 
       {isLoading ? (
         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
       ) : (
-        <Sync className="mr-2 h-4 w-4" />
+        <RefreshCw className="mr-2 h-4 w-4" />
       )}
       {isLoading ? 'Syncing...' : 'Sync with Style Profile'}
     </Button>

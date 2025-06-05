@@ -21,6 +21,14 @@ export type ClothingColor =
   | 'rose'
   | 'multicolor'
   | 'gold'
+  | 'silver'
+  | 'maroon'
+  | 'teal'
+  | 'lavender'
+  | 'mint'
+  | 'peach'
+  | 'olive'
+  | 'turquoise'
   | 'light blue';
 
 export type ClothingSeason = 'spring' | 'summer' | 'autumn' | 'winter' | 'all';
