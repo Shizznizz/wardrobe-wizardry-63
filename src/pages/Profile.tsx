@@ -446,13 +446,19 @@ const Profile = () => {
       );
     }
     
-    // Desktop layout with tabs
+    // Desktop layout with tabs - fix horizontal scroll
     return (
       <>
         <Tabs defaultValue="personal" className="w-full">
-          <TabsList className="bg-slate-800/50 border-b border-white/10 rounded-t-lg rounded-b-none w-full justify-start overflow-x-auto">
+          <TabsList className="bg-slate-800/50 border-b border-white/10 rounded-t-lg rounded-b-none w-full justify-start overflow-x-hidden">
             {profileSections.map((section) => (
-              <TabsTrigger key={section.id} value={section.id}>{section.title}</TabsTrigger>
+              <TabsTrigger 
+                key={section.id} 
+                value={section.id}
+                className="flex-shrink-0 whitespace-nowrap"
+              >
+                {section.title}
+              </TabsTrigger>
             ))}
           </TabsList>
           

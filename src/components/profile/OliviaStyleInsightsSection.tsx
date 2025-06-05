@@ -3,9 +3,11 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Sparkles, Palette, Calendar, Star, Clock } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Sparkles, Palette, Calendar, Star, Clock, Check, Save } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface QuizResult {
   quiz_id: string;
@@ -18,6 +20,7 @@ interface QuizResult {
 const OliviaStyleInsightsSection = () => {
   const [quizResults, setQuizResults] = useState<QuizResult[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -42,6 +45,81 @@ const OliviaStyleInsightsSection = () => {
       console.error('Error fetching quiz results:', error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const saveStyleInsights = async () => {
+    if (!user || quizResults.length === 0) return;
+
+    setIsSaving(true);
+    try {
+      // Aggregate all quiz insights
+      const styleInsights = {
+        quiz_results: quizResults.map(result => ({
+          quiz_id: result.quiz_id,
+          quiz_name: result.quiz_name,
+          result_label: result.result_label,
+          result_value: result.result_value,
+          completed_at: result.created_at
+        })),
+        personality_tags: [],
+        style_preferences: {},
+        color_scheme: '',
+        updated_at: new Date().toISOString()
+      };
+
+      // Extract insights from each quiz
+      quizResults.forEach(result => {
+        if (result.result_value) {
+          // Extract personality tags
+          if (result.result_value.keyElements) {
+            styleInsights.personality_tags.push(...result.result_value.keyElements);
+          }
+          if (result.result_value.traits) {
+            styleInsights.personality_tags.push(...result.result_value.traits);
+          }
+          if (result.result_value.preferredItems) {
+            styleInsights.personality_tags.push(...result.result_value.preferredItems);
+          }
+
+          // Store quiz-specific preferences
+          styleInsights.style_preferences[result.quiz_id] = result.result_value;
+
+          // Extract color preferences
+          if (result.result_value.mainColors) {
+            styleInsights.color_scheme = result.result_value.mainColors.join(', ');
+          }
+        }
+      });
+
+      // Remove duplicates from personality tags
+      styleInsights.personality_tags = [...new Set(styleInsights.personality_tags)];
+
+      // Update the profiles table with style insights
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({
+          personality_tags: styleInsights.personality_tags,
+          color_scheme: styleInsights.color_scheme,
+          style_preferences: styleInsights.style_preferences,
+          updated_at: styleInsights.updated_at
+        })
+        .eq('id', user.id);
+
+      if (profileError) throw profileError;
+
+      // Show success message with animation
+      toast.success("✨ Olivia will now use your style profile!", {
+        description: "Your style insights have been saved and will influence recommendations across the platform.",
+        duration: 4000,
+        icon: <Check className="h-5 w-5 text-green-500" />
+      });
+
+    } catch (error) {
+      console.error('Error saving style insights:', error);
+      toast.error('Failed to save style insights. Please try again.');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -100,14 +178,34 @@ const OliviaStyleInsightsSection = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h3 className="text-lg font-medium text-white mb-2 flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-coral-400" />
-          Olivia's Style Insights
-        </h3>
-        <p className="text-white/70 text-sm mb-4">
-          Based on your completed style quizzes, here's what I've learned about your unique style DNA.
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-lg font-medium text-white mb-2 flex items-center gap-2">
+            <Sparkles className="h-5 w-5 text-coral-400" />
+            Olivia's Style Insights
+          </h3>
+          <p className="text-white/70 text-sm mb-4">
+            Based on your completed style quizzes, here's what I've learned about your unique style DNA.
+          </p>
+        </div>
+        
+        <Button 
+          onClick={saveStyleInsights}
+          disabled={isSaving}
+          className="bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 text-white"
+        >
+          {isSaving ? (
+            <>
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+              Saving...
+            </>
+          ) : (
+            <>
+              <Save className="mr-2 h-4 w-4" />
+              Save Style Insights
+            </>
+          )}
+        </Button>
       </div>
 
       {/* Olivia's Summary */}
