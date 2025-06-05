@@ -24,7 +24,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import AccountSection from '@/components/profile/AccountSection';
-import AIStyleInsightsSection from '@/components/profile/AIStyleInsightsSection';
+import OliviaStyleInsightsSection from '@/components/profile/OliviaStyleInsightsSection';
 
 const Profile = () => {
   const { user, isAuthenticated, loading } = useAuth();
@@ -420,6 +420,11 @@ const Profile = () => {
             setPreferences={setUserPreferences}
           />
         )
+      },
+      {
+        id: "insights",
+        title: "Olivia's Style Insights",
+        content: <OliviaStyleInsightsSection />
       }
     ];
     
@@ -437,9 +442,6 @@ const Profile = () => {
               </AccordionItem>
             ))}
           </Accordion>
-          
-          {/* Add AI Style Insights Section at the bottom */}
-          <AIStyleInsightsSection />
         </>
       );
     }
@@ -460,9 +462,6 @@ const Profile = () => {
             </TabsContent>
           ))}
         </Tabs>
-        
-        {/* Add AI Style Insights Section at the bottom */}
-        <AIStyleInsightsSection />
       </>
     );
   };
