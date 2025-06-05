@@ -44,6 +44,14 @@ const ColorSelector: React.FC<ColorSelectorProps> = ({ selected, options, onChan
       multicolor: 'bg-gradient-to-r from-purple-500 via-pink-500 to-red-500',
       rose: 'bg-rose-400',
       gold: 'bg-amber-500',
+      silver: 'bg-gray-300',
+      maroon: 'bg-red-800',
+      teal: 'bg-teal-500',
+      lavender: 'bg-purple-300',
+      mint: 'bg-green-300',
+      peach: 'bg-orange-300',
+      olive: 'bg-green-700',
+      turquoise: 'bg-cyan-500',
       'light blue': 'bg-sky-300'
     };
     
@@ -65,7 +73,7 @@ const ColorSelector: React.FC<ColorSelectorProps> = ({ selected, options, onChan
           <div className={`absolute inset-0 ${getColorClass(option.value)}`} />
           {selected.includes(option.value) && (
             <span className="absolute inset-0 flex items-center justify-center">
-              <Check className={`h-4 w-4 ${option.value === 'white' || option.value === 'beige' || option.value === 'cream' ? 'text-black' : 'text-white'}`} />
+              <Check className={`h-4 w-4 ${option.value === 'white' || option.value === 'beige' || option.value === 'cream' || option.value === 'silver' || option.value === 'lavender' || option.value === 'mint' || option.value === 'peach' ? 'text-black' : 'text-white'}`} />
             </span>
           )}
         </button>
