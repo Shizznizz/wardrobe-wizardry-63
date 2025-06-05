@@ -8,11 +8,11 @@ import OutfitSubscriptionPopup from '@/components/OutfitSubscriptionPopup';
 import OliviaImageGallery from '@/components/outfits/OliviaImageGallery';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import EnhancedHeroSection from '@/components/shared/EnhancedHeroSection';
 import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Home, Shirt, ShoppingBag } from 'lucide-react';
 
 // Import components for our shop and try page
+import ShopAndTryHero from '@/components/shop-try/ShopAndTryHero';
 import StyleItYourWay from '@/components/shop-try/StyleItYourWay';
 import StyleAlchemy from '@/components/shop-try/StyleAlchemy';
 import VirtualTryOn from '@/components/shop-try/VirtualTryOn';
@@ -21,6 +21,7 @@ import EditorsPicks from '@/components/shop-try/EditorsPicks';
 import OliviaDailyDrop from '@/components/shop-try/OliviaDailyDrop';
 import ShopTryFooter from '@/components/shop-try/ShopTryFooter';
 import FloatingOliviaWidget from '@/components/shop-try/FloatingOliviaWidget';
+import PremiumFeatureSection from '@/components/shop-try/PremiumFeatureSection';
 
 const ShopAndTry = () => {
   const { isAuthenticated } = useAuth();
@@ -69,24 +70,18 @@ const ShopAndTry = () => {
     });
   };
 
-  // Define missing handler functions
   const handleShowStylingOptions = () => {
     toast.info("Opening styling options...");
-    // Implementation would go here in a real app
   };
   
-  // Fix types for file handlers
   const handleUserPhotoUpload = (file: File) => {
-    // Convert File to string URL for display
     const photoUrl = URL.createObjectURL(file);
     setUserPhoto(photoUrl);
     setFinalImage(null);
     toast.success("Photo uploaded successfully!");
   };
 
-  // Fix types for file handlers
   const handleClothingPhotoUpload = (file: File) => {
-    // Convert File to string URL for display
     const photoUrl = URL.createObjectURL(file);
     setClothingPhoto(photoUrl);
     setFinalImage(null);
@@ -110,7 +105,6 @@ const ShopAndTry = () => {
     
     setIsProcessing(true);
     
-    // Simulate processing
     setTimeout(() => {
       setFinalImage(userPhoto);
       setIsProcessing(false);
@@ -142,7 +136,6 @@ const ShopAndTry = () => {
     toast.success("You've been added to our early testers group!");
   };
 
-  // Function that should accept ClothingItem but is actually being passed a string itemId
   const handleTryOnTrendingItem = (item: ClothingItem) => {
     if (item) {
       setClothingPhoto(`/path/to/${item.imageUrl || ''}`);
@@ -157,7 +150,6 @@ const ShopAndTry = () => {
     toast.info(`Showing styles for ${mood} mood`);
   };
 
-  // Modified to accept string parameter instead of ClothingItem
   const handleStylistSuggestion = (item: ClothingItem) => {
     if (item && item.id) {
       const matchedItem = selectedItems.find(i => i.id === item.id);
@@ -171,7 +163,6 @@ const ShopAndTry = () => {
     }
   };
 
-  // Fix type mismatch
   const handleSaveToWishlist = (item: ClothingItem) => {
     if (item) {
       toast.success(`${item.name} added to wishlist!`);
@@ -180,23 +171,19 @@ const ShopAndTry = () => {
     }
   };
 
-  // Fix type signature for onSaveToWardrobe
   const handleSaveToWardrobe = (item: ClothingItem) => {
     toast.success(`${item.name} added to wardrobe!`);
   };
 
   const trackDailyDropClick = (itemId: string) => {
     console.log(`Clicked on daily drop item ${itemId}`);
-    // Analytics tracking would go here
   };
 
-  // Original function expecting a ClothingItem
   const handleSeeHowToWear = (item: ClothingItem) => {
     if (item && item.id) {
       trackDailyDropClick(item.id);
       if (isPremiumUser || isAuthenticated) {
         toast.success("Let me show you how to style this...");
-        // Mock AI logic - would be more sophisticated in real implementation
         setTimeout(() => {
           toast.info("This pairs perfectly with items in your wardrobe!");
         }, 1000);
@@ -206,9 +193,7 @@ const ShopAndTry = () => {
     }
   };
   
-  // Adapter function for EditorsPicks component that expects itemId as string
   const handleSaveToWardrobeAdapter = (itemId: string) => {
-    // Create a minimal ClothingItem with just the id and name to pass to the original handler
     const mockItem: ClothingItem = {
       id: itemId,
       name: "Item " + itemId,
@@ -220,9 +205,7 @@ const ShopAndTry = () => {
     handleSaveToWardrobe(mockItem);
   };
   
-  // Adapter function for OliviaDailyDrop component that expects itemId as string
   const handleSeeHowToWearAdapter = (itemId: string) => {
-    // Create a minimal ClothingItem with just the id and name to pass to the original handler
     const mockItem: ClothingItem = {
       id: itemId,
       name: "Item " + itemId,
@@ -239,10 +222,7 @@ const ShopAndTry = () => {
     toast.info("Olivia is ready to chat about your style!");
   };
 
-  // Create adapter functions to resolve type mismatches
-  // Convert string itemId to ClothingItem for components expecting ClothingItem
   const handleTryOnTrendingItemAdapter = (itemId: string) => {
-    // Create a minimal ClothingItem to pass to the original handler
     const mockItem: ClothingItem = {
       id: itemId,
       name: "Item " + itemId,
@@ -254,9 +234,7 @@ const ShopAndTry = () => {
     handleTryOnTrendingItem(mockItem);
   };
 
-  // Convert string itemId to ClothingItem for components expecting ClothingItem
   const handleStylistSuggestionAdapter = (itemId: string) => {
-    // Create a minimal ClothingItem to pass to the original handler
     const mockItem: ClothingItem = {
       id: itemId,
       name: "Item " + itemId,
@@ -268,7 +246,6 @@ const ShopAndTry = () => {
     handleStylistSuggestion(mockItem);
   };
 
-  // New adapter function to convert ClothingItem to string for components expecting string
   const handleSaveToWishlistAdapter = (item: ClothingItem) => {
     if (item && item.id) {
       handleSaveToWishlist(item);
@@ -277,7 +254,6 @@ const ShopAndTry = () => {
     }
   };
   
-  // Fix for EditorsPicks - convert ClothingItem to string ID for onTryItem
   const handleTryOnItemAdapter = (item: ClothingItem) => {
     if (item && item.id) {
       handleTryOnTrendingItemAdapter(item.id);
@@ -286,7 +262,6 @@ const ShopAndTry = () => {
     }
   };
   
-  // Fix for OliviaDailyDrop - convert ClothingItem to string ID for onSeeHowToWear
   const handleSeeHowToWearFromItemAdapter = (item: ClothingItem) => {
     if (item && item.id) {
       handleSeeHowToWearAdapter(item.id);
@@ -295,7 +270,6 @@ const ShopAndTry = () => {
     }
   };
   
-  // New adapter for lines 383-384: convert ClothingItem to string itemId
   const handleSaveToWardrobeItemAdapter = (item: ClothingItem) => {
     if (item && item.id) {
       handleSaveToWardrobeAdapter(item.id);
@@ -304,7 +278,6 @@ const ShopAndTry = () => {
     }
   };
   
-  // New adapter for line 397: convert string itemId to ClothingItem
   const handleSeeHowToWearAdapter2 = (itemId: string) => {
     const mockItem: ClothingItem = {
       id: itemId,
@@ -317,7 +290,6 @@ const ShopAndTry = () => {
     handleSeeHowToWear(mockItem);
   };
   
-  // New adapter for line 388: convert ClothingItem to string
   const onSaveToWishlistStringAdapter = (itemId: string) => {
     const mockItem: ClothingItem = {
       id: itemId,
@@ -330,7 +302,6 @@ const ShopAndTry = () => {
     handleSaveToWishlist(mockItem);
   };
   
-  // Create two new adapters for ShopByMood component to fix the errors on lines 417-418
   const handleTryOnTrendingItemForShopByMood = (item: ClothingItem) => {
     if (item && item.id) {
       handleTryOnTrendingItemAdapter(item.id);
@@ -351,33 +322,38 @@ const ShopAndTry = () => {
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white overflow-x-hidden">
       <Header />
       
-      <EnhancedHeroSection
-        title="Shop & Try Fashion"
-        subtitle="Preview new trends, mix with your wardrobe, and get smart fashion recommendations."
-        image={{
-          src: "/lovable-uploads/f4be744c-31b5-4099-93e8-67f51af83dae.png",
-          alt: "Olivia in pink crop top and skirt outfit",
-          variant: "standing"
-        }}
-        buttons={[
-          {
-            label: "Explore Styles with Olivia",
-            onClick: handleScrollToTryOn,
-            variant: "primary",
-            icon: <ArrowRight className="h-5 w-5" />
-          }
-        ]}
-      />
+      {/* Sticky mobile nav bar */}
+      {isMobile && (
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-slate-900/95 backdrop-blur-sm border-t border-white/10">
+          <div className="flex items-center justify-around py-2">
+            <Button variant="ghost" size="sm" className="flex flex-col items-center text-white/70 hover:text-white">
+              <Home className="h-4 w-4" />
+              <span className="text-xs">Home</span>
+            </Button>
+            <Button variant="ghost" size="sm" className="flex flex-col items-center text-white/70 hover:text-white" onClick={handleScrollToTryOn}>
+              <Shirt className="h-4 w-4" />
+              <span className="text-xs">Try-On</span>
+            </Button>
+            <Button variant="ghost" size="sm" className="flex flex-col items-center text-white/70 hover:text-white">
+              <ShoppingBag className="h-4 w-4" />
+              <span className="text-xs">Shop</span>
+            </Button>
+          </div>
+        </div>
+      )}
+      
+      {/* HERO SECTION - Keep exactly as-is */}
+      <ShopAndTryHero onStartStyling={handleScrollToTryOn} />
       
       <main className="pt-6 pb-20">
-        {/* SECTION 2: STYLE IT YOUR WAY */}
+        {/* SECTION 2: Start Your Smart Styling Flow (renamed from Style It Your Way) */}
         <StyleItYourWay 
           onTryBeforeBuy={handleScrollToTryOn}
           onAIStyling={() => document.getElementById('shop-by-mood')?.scrollIntoView({ behavior: 'smooth' })}
           onYourStyle={() => !userPhoto ? setShowOliviaImageGallery(true) : handleScrollToTryOn()}
         />
         
-        {/* SECTION 3: STYLE ALCHEMY (WEATHER-BASED RECOMMENDATIONS) */}
+        {/* SECTION 3: Your Personalized Look Today (renamed from Style Alchemy) */}
         <StyleAlchemy 
           userPhoto={userPhoto}
           isUsingOliviaImage={isUsingOliviaImage}
@@ -389,12 +365,11 @@ const ShopAndTry = () => {
               setShowSubscriptionPopup(true);
             } else {
               toast.info("Opening wardrobe selector...");
-              // This would connect to wardrobe in a real implementation
             }
           }}
         />
         
-        {/* SECTION 4: VIRTUAL TRY-ON */}
+        {/* SECTION 4: Virtual Try-On Preview (renamed from Virtual Try-On) */}
         <VirtualTryOn 
           id="virtual-try-on"
           userPhoto={userPhoto}
@@ -426,7 +401,15 @@ const ShopAndTry = () => {
           showFeedback={showFeedback}
         />
         
-        {/* SECTION 5: SHOP BY MOOD (CATEGORY-BASED ITEMS) */}
+        {/* Olivia's Daily Drop - moved above Shop by Mood on mobile */}
+        {isMobile && (
+          <OliviaDailyDrop
+            isPremiumUser={isPremiumUser || isAuthenticated}
+            onSeeHowToWear={handleSeeHowToWearAdapter2}
+          />
+        )}
+        
+        {/* SECTION 5: Shop by Mood */}
         <ShopByMood 
           id="shop-by-mood"
           isPremiumUser={isPremiumUser || isAuthenticated}
@@ -438,7 +421,7 @@ const ShopAndTry = () => {
           onSaveToWishlist={onSaveToWishlistStringAdapter}
         />
         
-        {/* SECTION 6: EDITOR'S PICKS / BASED ON YOUR VIBE / WISHLIST */}
+        {/* SECTION 6: Editor's Picks */}
         <EditorsPicks
           isPremiumUser={isPremiumUser || isAuthenticated}
           onTryItem={handleTryOnItemAdapter}
@@ -447,10 +430,18 @@ const ShopAndTry = () => {
           onSaveToWardrobe={handleSaveToWardrobeItemAdapter}
         />
         
-        {/* BONUS SECTION: DAILY FEATURE / STYLING CHALLENGE */}
-        <OliviaDailyDrop
+        {/* Olivia's Daily Drop - desktop position */}
+        {!isMobile && (
+          <OliviaDailyDrop
+            isPremiumUser={isPremiumUser || isAuthenticated}
+            onSeeHowToWear={handleSeeHowToWearAdapter2}
+          />
+        )}
+        
+        {/* Premium Features Section */}
+        <PremiumFeatureSection
           isPremiumUser={isPremiumUser || isAuthenticated}
-          onSeeHowToWear={handleSeeHowToWearAdapter2}
+          onUpgradeToPremium={handleShowPremiumPopup}
         />
         
         {/* Footer with affiliate disclaimer and country filter */}
@@ -468,6 +459,18 @@ const ShopAndTry = () => {
           onOpenChat={handleOpenChat}
         />
       </main>
+      
+      {/* Sticky premium CTA for mobile */}
+      {isMobile && !isPremiumUser && !isAuthenticated && (
+        <div className="fixed bottom-16 left-4 right-4 z-40">
+          <Button 
+            onClick={handleShowPremiumPopup}
+            className="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90 text-white shadow-lg"
+          >
+            Upgrade to Premium
+          </Button>
+        </div>
+      )}
       
       <OliviaImageGallery 
         isOpen={showOliviaImageGallery} 
