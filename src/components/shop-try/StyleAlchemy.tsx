@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Sparkles, MapPin, Thermometer, Eye, Shirt } from 'lucide-react';
 import WeatherWidget from '@/components/WeatherWidget';
 import OptimizedImage from '@/components/ui/optimized-image';
+import { WeatherInfo } from '@/lib/types';
 
 interface StyleAlchemyProps {
   userPhoto: string | null;
@@ -41,6 +42,11 @@ const StyleAlchemy = ({
       minute: '2-digit',
       hour12: true 
     });
+  };
+
+  const handleWeatherChange = (weather: WeatherInfo) => {
+    // Handle weather data if needed - for now we just receive it
+    console.log('Weather updated:', weather);
   };
 
   return (
@@ -86,6 +92,7 @@ const StyleAlchemy = ({
                 city={customLocation?.city}
                 country={customLocation?.country}
                 showToasts={false}
+                onWeatherChange={handleWeatherChange}
               />
             </div>
           </motion.div>
@@ -107,7 +114,7 @@ const StyleAlchemy = ({
               
               <div className="relative z-10">
                 <div className="flex items-start gap-4 mb-4">
-                  <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-pink-500/30 flex-shrink-0">
+                  <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-pink-500/30 flex-shrink-0">
                     <OptimizedImage 
                       src="/lovable-uploads/6d16aa51-bd78-4fb4-a783-8d27a089e19f.png" 
                       alt="Olivia AI Assistant" 
