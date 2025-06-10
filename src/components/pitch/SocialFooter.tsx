@@ -52,81 +52,184 @@ const SocialFooter = () => {
   };
 
   return (
-    <footer className="py-12 border-t border-white/10">
-      <Container>
-        <motion.div
-          className="text-center space-y-8"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <div className="space-y-4">
-            <h3 className="text-2xl font-bold">Share the Style Revolution</h3>
-            <p className="text-white/70 max-w-2xl mx-auto">
-              Help your friends discover their perfect style with Olivia. Fashion is better when shared!
-            </p>
-          </div>
-          
-          <div className="flex justify-center space-x-4">
-            <Button
-              variant="outline"
-              size="lg"
-              className="border-white/20 hover:bg-white/10 text-white"
-              onClick={() => handleShare('instagram')}
-            >
-              <Instagram className="h-5 w-5 mr-2" />
-              Instagram
-            </Button>
-            
-            <Button
-              variant="outline"
-              size="lg"
-              className="border-white/20 hover:bg-white/10 text-white"
-              onClick={() => handleShare('tiktok')}
-            >
-              <Video className="h-5 w-5 mr-2" />
-              TikTok
-            </Button>
-            
-            <Button
-              variant="outline"
-              size="lg"
-              className="border-white/20 hover:bg-white/10 text-white"
-              onClick={() => handleShare('generic')}
-            >
-              <Share2 className="h-5 w-5 mr-2" />
-              Share
-            </Button>
-          </div>
-
-          {/* Floating share your first AI look button */}
+    <>
+      {/* Share the Style Revolution Section */}
+      <section className="py-16 relative overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-950/40 via-slate-950/60 to-purple-900/50"></div>
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-10 left-10 w-20 h-20 bg-coral-400/20 rounded-full blur-xl animate-pulse"></div>
+          <div className="absolute bottom-20 right-16 w-16 h-16 bg-purple-400/20 rounded-full blur-lg animate-pulse delay-1000"></div>
+          <div className="absolute top-1/2 left-1/4 w-12 h-12 bg-coral-300/15 rounded-full blur-md animate-pulse delay-500"></div>
+        </div>
+        
+        <Container>
           <motion.div
-            className="flex justify-center"
-            initial={{ opacity: 0, scale: 0.8 }}
-            whileInView={{ opacity: 1, scale: 1 }}
+            className="text-center space-y-8 px-4 md:px-8"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.3 }}
+            transition={{ duration: 0.6 }}
           >
-            <Button
-              variant="outline"
-              className="border-coral-400/30 text-coral-300 hover:bg-coral-500/20 hover:text-coral-100 hover:border-coral-500/50 transition-colors"
-              onClick={handleShareFirstLook}
-            >
-              🎉 Share your first AI look
-            </Button>
-          </motion.div>
-          
-          <div className="pt-8 border-t border-white/10 space-y-4">
-            <div className="flex flex-wrap justify-center gap-6 text-sm text-white/60">
-              <a href="/style-planner" className="hover:text-coral-300 transition-colors">Style Planner</a>
-              <a href="/my-wardrobe" className="hover:text-coral-300 transition-colors">My Wardrobe</a>
-              <a href="/mix-and-match" className="hover:text-coral-300 transition-colors">Mix & Match</a>
-              <a href="/shop-and-try" className="hover:text-coral-300 transition-colors">Shop & Try</a>
-              <a href="/fitting-room" className="hover:text-coral-300 transition-colors">Fitting Room</a>
+            {/* Enhanced Typography */}
+            <div className="space-y-6">
+              <motion.h2 
+                className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight"
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+              >
+                Share the{' '}
+                <span className="bg-gradient-to-r from-coral-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
+                  Style Revolution
+                </span>
+              </motion.h2>
+              
+              <motion.p 
+                className="text-lg md:text-xl text-white/80 max-w-2xl mx-auto leading-relaxed"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+              >
+                Help your friends discover their perfect style with Olivia.{' '}
+                <span className="text-coral-300 font-medium">Fashion is better when shared!</span>
+              </motion.p>
             </div>
             
-            <div className="space-y-2">
+            {/* Enhanced CTA Buttons */}
+            <motion.div 
+              className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+            >
+              <motion.div 
+                className="flex-1"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="w-full border-white/20 hover:bg-white/10 text-white hover:border-coral-400/50 transition-all duration-300 py-4"
+                  onClick={() => handleShare('instagram')}
+                >
+                  <motion.div
+                    animate={{ scale: [1, 1.2, 1] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                  >
+                    <Instagram className="h-5 w-5 mr-2" />
+                  </motion.div>
+                  <div className="flex flex-col items-center">
+                    <span className="font-medium">Instagram</span>
+                    <span className="text-xs text-white/60">Follow Olivia</span>
+                  </div>
+                </Button>
+              </motion.div>
+              
+              <motion.div 
+                className="flex-1"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="w-full border-white/20 hover:bg-white/10 text-white hover:border-purple-400/50 transition-all duration-300 py-4"
+                  onClick={() => handleShare('tiktok')}
+                >
+                  <motion.div
+                    animate={{ rotate: [0, 15, -15, 0] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                  >
+                    <Video className="h-5 w-5 mr-2" />
+                  </motion.div>
+                  <div className="flex flex-col items-center">
+                    <span className="font-medium">TikTok</span>
+                    <span className="text-xs text-white/60">Watch Reels</span>
+                  </div>
+                </Button>
+              </motion.div>
+              
+              <motion.div 
+                className="flex-1"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="w-full border-white/20 hover:bg-white/10 text-white hover:border-pink-400/50 transition-all duration-300 py-4"
+                  onClick={() => handleShare('generic')}
+                >
+                  <motion.div
+                    animate={{ 
+                      scale: [1, 1.1, 1],
+                      rotate: [0, 5, -5, 0]
+                    }}
+                    transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                  >
+                    <Share2 className="h-5 w-5 mr-2" />
+                  </motion.div>
+                  <div className="flex flex-col items-center">
+                    <span className="font-medium">Share</span>
+                    <span className="text-xs text-white/60">Send to Friends</span>
+                  </div>
+                </Button>
+              </motion.div>
+            </motion.div>
+
+            {/* Floating share your first AI look button */}
+            <motion.div
+              className="flex justify-center pt-4"
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.6 }}
+            >
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Button
+                  variant="outline"
+                  className="border-coral-400/30 text-coral-300 hover:bg-coral-500/20 hover:text-coral-100 hover:border-coral-500/50 transition-all duration-300 px-6 py-3"
+                  onClick={handleShareFirstLook}
+                >
+                  🎉 Share your first AI look ✨
+                </Button>
+              </motion.div>
+            </motion.div>
+          </motion.div>
+        </Container>
+      </section>
+
+      {/* Footer Section - Clearly Separated */}
+      <footer className="py-12 border-t border-white/10 bg-gradient-to-b from-transparent to-purple-950/20">
+        <Container>
+          <motion.div
+            className="space-y-8"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            {/* Navigation Links */}
+            <div className="text-center">
+              <div className="flex flex-wrap justify-center gap-6 text-sm text-white/60">
+                <a href="/style-planner" className="hover:text-coral-300 transition-colors">Style Planner</a>
+                <a href="/my-wardrobe" className="hover:text-coral-300 transition-colors">My Wardrobe</a>
+                <a href="/mix-and-match" className="hover:text-coral-300 transition-colors">Mix & Match</a>
+                <a href="/shop-and-try" className="hover:text-coral-300 transition-colors">Shop & Try</a>
+                <a href="/fitting-room" className="hover:text-coral-300 transition-colors">Fitting Room</a>
+              </div>
+            </div>
+            
+            {/* Contact & Copyright */}
+            <div className="text-center space-y-2 border-t border-white/5 pt-6">
               <p className="text-white/60 text-sm">
                 Contact: <a href="mailto:info@aiwardrobeassistant.com" className="text-coral-300 hover:text-coral-200 transition-colors">info@aiwardrobeassistant.com</a>
               </p>
@@ -134,10 +237,10 @@ const SocialFooter = () => {
                 © 2024 Olivia Bloom AI – All rights reserved.
               </p>
             </div>
-          </div>
-        </motion.div>
-      </Container>
-    </footer>
+          </motion.div>
+        </Container>
+      </footer>
+    </>
   );
 };
 
