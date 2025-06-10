@@ -68,6 +68,10 @@ const DayDetailView = ({
   };
 
   const handleOpenOutfitSelector = () => {
+    if (!hasOutfits) {
+      toast.error("You need to create outfits first in Mix & Match");
+      return;
+    }
     setIsOutfitSelectorOpen(true);
   };
 
@@ -179,64 +183,56 @@ const DayDetailView = ({
         )}
         
         {/* Add Outfit/Activity Section */}
-        <div className="flex items-center justify-between pt-2 border-t border-slate-600/30">
+        <div className="pt-2 border-t border-slate-600/30 space-y-3">
           {!isAddingActivity ? (
-            <>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <span>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="text-xs"
-                        onClick={handleOpenOutfitSelector}
-                        disabled={!hasOutfits}
-                      >
-                        <Plus className="h-4 w-4 mr-1" />
-                        Add Outfit
-                      </Button>
-                    </span>
-                  </TooltipTrigger>
-                  {!hasOutfits && (
-                    <TooltipContent side="top" className="bg-slate-800 border-purple-500/20">
-                      <p className="text-xs">You need to create outfits in Mix & Match before using the planner.</p>
-                    </TooltipContent>
-                  )}
-                </Tooltip>
-              </TooltipProvider>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Button 
+                onClick={handleOpenOutfitSelector}
+                className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-400 hover:to-purple-400 text-white shadow-lg hover:shadow-pink-500/25 transition-all duration-300 flex items-center justify-center gap-2"
+                size="sm"
+              >
+                <Plus className="h-4 w-4" />
+                Add Outfit
+              </Button>
 
               <Button 
-                variant="ghost" 
-                size="sm" 
-                className="text-xs"
-                onClick={() => setIsAddingActivity(true)}>
-                <MapPin className="h-4 w-4 mr-1" />
+                variant="outline" 
+                onClick={() => setIsAddingActivity(true)}
+                className="border-orange-400/30 text-orange-300 hover:bg-orange-500/20 hover:border-orange-400/50 shadow-md transition-all duration-300 flex items-center justify-center gap-2"
+                size="sm"
+              >
+                <MapPin className="h-4 w-4" />
                 Add Activity
               </Button>
-            </>
+            </div>
           ) : (
-            <div className="flex w-full items-center gap-1">
+            <div className="space-y-3 p-4 bg-slate-700/20 rounded-lg border border-slate-600/30">
+              <div className="text-sm font-medium text-purple-200">Add New Activity</div>
               <Input 
                 placeholder="Enter activity..." 
-                className="text-xs h-8 bg-slate-700/50"
+                className="bg-slate-700/50 border-slate-600/50 text-white placeholder:text-slate-400 focus:border-purple-400 focus:ring-purple-400/20"
                 value={newActivity}
                 onChange={(e) => setNewActivity(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleAddActivity()}
+                autoFocus
               />
-              <Button 
-                size="sm" 
-                className="h-8" 
-                onClick={handleAddActivity}>
-                Add
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="h-8" 
-                onClick={() => setIsAddingActivity(false)}>
-                Cancel
-              </Button>
+              <div className="flex gap-2 pt-2">
+                <Button 
+                  onClick={handleAddActivity}
+                  className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-white shadow-md flex-1"
+                  size="sm"
+                >
+                  Add Activity
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setIsAddingActivity(false)}
+                  className="border-slate-500 text-slate-300 hover:bg-slate-600/50 flex-1"
+                  size="sm"
+                >
+                  Cancel
+                </Button>
+              </div>
             </div>
           )}
         </div>

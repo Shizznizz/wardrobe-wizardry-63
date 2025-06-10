@@ -62,6 +62,18 @@ const WeekViewContainer = ({
       setSelectedDate(date);
     }
     onDateClick(date);
+    
+    // Smooth scroll to day detail view
+    setTimeout(() => {
+      const dayDetailElement = document.getElementById('day-detail-view');
+      if (dayDetailElement) {
+        dayDetailElement.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start',
+          inline: 'nearest'
+        });
+      }
+    }, 100);
   };
 
   const handleReassignOutfit = async (logId: string, newOutfitId: string) => {
@@ -78,16 +90,19 @@ const WeekViewContainer = ({
       exit={{ opacity: 0 }}
       className="h-full flex flex-col gap-6"
     >
-      <div className="grid grid-cols-7 gap-2">
+      <div className={`grid grid-cols-7 gap-2 ${isMobile ? 'px-2' : ''}`}>
         {weekDates.map((date) => (
           <Button
             key={date.toISOString()}
             onClick={() => handleDateClick(date)}
             variant={isSameDay(date, selectedDate) ? "default" : "outline"}
             className={`
-              flex-1 flex flex-col items-center justify-center h-auto py-2
-              ${isSameDay(date, new Date()) ? 'border-primary' : ''}
-              ${isSameDay(date, selectedDate) ? 'bg-primary/20' : ''}
+              flex-1 flex flex-col items-center justify-center h-auto py-3 transition-all duration-300
+              ${isSameDay(date, new Date()) ? 'border-primary ring-1 ring-primary/30' : ''}
+              ${isSameDay(date, selectedDate) ? 
+                'bg-gradient-to-br from-purple-500 to-pink-500 text-white shadow-lg ring-2 ring-purple-400/50 scale-105 transform' : 
+                'hover:bg-slate-700/50 hover:border-purple-400/50'
+              }
             `}
           >
             <span className="text-xs font-medium mb-1">{format(date, 'EEE')}</span>
@@ -95,7 +110,11 @@ const WeekViewContainer = ({
               {format(date, 'd')}
             </span>
             {getLogsForDay(date).length > 0 && (
-              <div className="text-xs bg-primary/20 px-2 py-0.5 rounded-full mt-1">
+              <div className={`text-xs px-2 py-0.5 rounded-full mt-1 ${
+                isSameDay(date, selectedDate) 
+                  ? 'bg-white/20 text-white' 
+                  : 'bg-primary/20 text-primary'
+              }`}>
                 {getLogsForDay(date).length}
               </div>
             )}
@@ -103,18 +122,27 @@ const WeekViewContainer = ({
         ))}
       </div>
       
+      {/* Navigation spacing */}
+      <div className="h-4"></div>
+      
       {selectedDate && (
-        <div className="w-full">
-          <DayDetailView
-            selectedDate={selectedDate}
-            outfits={outfits}
-            outfitLogs={getLogsForDay(selectedDate)}
-            onAddOutfit={onAddOutfit}
-            onAddActivity={onAddActivity}
-            weatherLocation={weatherLocation}
-            onDeleteLog={onLogDelete}
-            onReassignOutfit={handleReassignOutfit}
-          />
+        <div id="day-detail-view" className={`w-full ${isMobile ? 'px-2' : ''}`}>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <DayDetailView
+              selectedDate={selectedDate}
+              outfits={outfits}
+              outfitLogs={getLogsForDay(selectedDate)}
+              onAddOutfit={onAddOutfit}
+              onAddActivity={onAddActivity}
+              weatherLocation={weatherLocation}
+              onDeleteLog={onLogDelete}
+              onReassignOutfit={handleReassignOutfit}
+            />
+          </motion.div>
         </div>
       )}
     </motion.div>

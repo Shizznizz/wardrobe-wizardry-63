@@ -89,6 +89,25 @@ const MonthView = ({
     setSelectedDate(new Date());
   };
 
+  const handleDateClick = (date: Date) => {
+    if (!isSameMonth(date, currentMonth)) return;
+    
+    setSelectedDate(date);
+    
+    // Auto-scroll to day detail view
+    setTimeout(() => {
+      const dayDetailElement = document.getElementById('day-detail-view') || 
+                              document.querySelector('[data-day-detail]');
+      if (dayDetailElement) {
+        dayDetailElement.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start',
+          inline: 'nearest'
+        });
+      }
+    }, 100);
+  };
+
   return (
     <motion.div 
       initial={{ opacity: 0 }}
@@ -108,7 +127,7 @@ const MonthView = ({
             variant="ghost" 
             size="sm" 
             onClick={goToPreviousMonth}
-            className="h-8 w-8 p-0"
+            className="h-8 w-8 p-0 hover:bg-slate-700/50"
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
@@ -116,7 +135,9 @@ const MonthView = ({
             variant="outline" 
             size="sm" 
             onClick={goToToday}
-            className={`h-8 text-xs ${isToday(currentMonth) ? 'bg-primary/20' : ''}`}
+            className={`h-8 text-xs border-slate-600 hover:bg-slate-700 ${
+              isToday(currentMonth) ? 'bg-primary/20 border-primary/50' : ''
+            }`}
           >
             Today
           </Button>
@@ -124,7 +145,7 @@ const MonthView = ({
             variant="ghost" 
             size="sm" 
             onClick={goToNextMonth}
-            className="h-8 w-8 p-0"
+            className="h-8 w-8 p-0 hover:bg-slate-700/50"
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
@@ -149,12 +170,15 @@ const MonthView = ({
                 variant={isToday(day.date) ? "default" : day.isCurrentMonth ? "outline" : "ghost"}
                 className={cn(`
                   p-1 h-auto min-h-[70px] flex flex-col items-center justify-between relative
-                  transition-all duration-200 group
+                  transition-all duration-300 group
                   ${day.isCurrentMonth ? 'text-white hover:shadow-lg hover:scale-[1.02]' : 'text-gray-400 opacity-40'}
                   ${day.hasOutfit && day.isCurrentMonth ? 'bg-primary/10 hover:bg-primary/20' : ''}
-                  ${isSameDay(day.date, selectedDate) ? 'ring-2 ring-primary ring-offset-2 ring-offset-background' : ''}
+                  ${isSameDay(day.date, selectedDate) ? 
+                    'ring-2 ring-purple-400 ring-offset-2 ring-offset-background bg-gradient-to-br from-purple-500/20 to-pink-500/20 scale-105 transform shadow-lg' : 
+                    ''
+                  }
                 `)}
-                onClick={() => day.isCurrentMonth && setSelectedDate(day.date)}
+                onClick={() => handleDateClick(day.date)}
                 disabled={!day.isCurrentMonth}
               >
                 <div className="flex items-center justify-between w-full px-2 pt-1">
