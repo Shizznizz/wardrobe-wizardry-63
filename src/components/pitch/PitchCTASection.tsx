@@ -61,22 +61,9 @@ const PitchCTASection = () => {
               >
                 <Button 
                   size="lg"
-                  className="bg-gradient-to-r from-coral-500 to-coral-400 hover:from-coral-400 hover:to-coral-300 text-white shadow-xl text-xl px-12 py-6 group relative overflow-hidden transition-all duration-300"
+                  className="bg-gradient-to-r from-coral-500 to-coral-400 hover:from-coral-400 hover:to-coral-300 text-white shadow-xl text-xl px-12 py-6 group relative overflow-hidden transition-all duration-300 hover:shadow-[0_0_30px_rgba(252,114,114,0.6)]"
                   onClick={() => navigate('/')}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.boxShadow = '0 0 30px rgba(252, 114, 114, 0.6)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.boxShadow = '0 25px 50px -12px rgba(0, 0, 0, 0.25)';
-                  }}
                 >
-                  {/* Glowing border animation */}
-                  <div className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" 
-                       style={{
-                         background: 'linear-gradient(45deg, transparent, rgba(252, 114, 114, 0.3), transparent)',
-                         animation: 'glow-rotate 2s linear infinite'
-                       }}></div>
-                  
                   <span className="relative z-10 flex items-center">
                     Start Your Style Journey
                     <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
@@ -108,14 +95,6 @@ const PitchCTASection = () => {
           </div>
         </motion.div>
       </Container>
-
-      {/* Add keyframes for glow animation */}
-      <style jsx>{`
-        @keyframes glow-rotate {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-      `}</style>
     </section>
   );
 };
