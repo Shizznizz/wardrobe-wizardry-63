@@ -16,6 +16,7 @@ import Quizzes from '@/pages/Quizzes';
 import StyleQuizPage from '@/pages/StyleQuiz';
 import QuizResults from '@/pages/QuizResults';
 import AdminDashboard from '@/pages/AdminDashboard';
+import Pitch from '@/pages/Pitch';
 
 // Providers and Components
 import { Toaster } from 'sonner';
@@ -49,6 +50,8 @@ function App() {
                 <Route path="/find-your-style" element={<PageLayout><StyleQuizPage /></PageLayout>} />
                 {/* Add PageLayout to Auth page as well to ensure footer appears there too */}
                 <Route path="/auth" element={<PageLayout><Auth /></PageLayout>} />
+                {/* Pitch page */}
+                <Route path="/pitch" element={<PageLayout><Pitch /></PageLayout>} />
                 {/* Admin Dashboard - secure route */}
                 <Route path="/admin-dashboard" element={<AdminDashboard />} />
               </Routes>
