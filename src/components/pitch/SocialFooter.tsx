@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Container } from '@/components/ui/container';
 import { Button } from '@/components/ui/button';
-import { Instagram, Tiktok, Share2 } from 'lucide-react';
+import { Instagram, Video, Share2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 const SocialFooter = () => {
@@ -71,7 +70,7 @@ const SocialFooter = () => {
               className="border-white/20 hover:bg-white/10 text-white"
               onClick={() => handleShare('tiktok')}
             >
-              <Tiktok className="h-5 w-5 mr-2" />
+              <Video className="h-5 w-5 mr-2" />
               TikTok
             </Button>
             
