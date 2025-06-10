@@ -1,3 +1,4 @@
+
 export interface User {
   id: string;
   email: string | null;
@@ -42,6 +43,21 @@ export interface UserPreferences {
   };
 }
 
+export type ClothingType = string;
+export type ClothingColor = string;
+export type ClothingMaterial = string;
+export type ClothingSeason = 'spring' | 'summer' | 'autumn' | 'winter' | 'all';
+export type ClothingOccasion = 'casual' | 'formal' | 'work' | 'sport' | 'special' | 'travel';
+
+export interface WeatherInfo {
+  temperature: number;
+  condition: string;
+  humidity?: number;
+  windSpeed?: number;
+  icon?: string;
+  description?: string;
+}
+
 export interface ClothingItem {
   id: string;
   name: string;
@@ -49,6 +65,7 @@ export interface ClothingItem {
   color: string;
   pattern: string;
   fabric: string;
+  material?: string;
   season: string[];
   sleeveLength: string;
   neckline: string;
@@ -62,6 +79,8 @@ export interface ClothingItem {
   styleTags: string[];
   personalityTags: string[];
   imageUrls: string[];
+  imageUrl?: string;
+  image?: string;
   dateAdded: Date;
   timesWorn: number;
   lastWorn: Date | undefined;
@@ -78,6 +97,7 @@ export interface ClothingItem {
   careInstructions: string;
   archived: boolean;
   source: string;
+  occasions?: string[];
 }
 
 export interface Outfit {
@@ -95,6 +115,7 @@ export interface Outfit {
   personality_tags: string[];
   color_scheme: string;
   colors: string[];
+  notes?: string;
 }
 
 export type TimeOfDay = 'morning' | 'afternoon' | 'evening' | 'night' | 'all-day';
