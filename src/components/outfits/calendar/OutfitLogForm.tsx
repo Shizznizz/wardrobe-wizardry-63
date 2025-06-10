@@ -179,16 +179,17 @@ const OutfitLogForm = ({
                 <SelectValue placeholder={isLoadingOutfits ? "Loading outfits..." : "Select an outfit"} />
               </SelectTrigger>
               <SelectContent className="bg-slate-800 border-slate-700 text-white">
-                {availableOutfits.map((outfit) => (
-                  <SelectItem key={outfit.id} value={outfit.id}>
-                    {formatOutfitDisplayName(outfit)}
-                  </SelectItem>
-                ))}
-                {availableOutfits.length === 0 && !isLoadingOutfits && (
-                  <SelectItem value="no-outfits" disabled>
+                {availableOutfits.length > 0 ? (
+                  availableOutfits.map((outfit) => (
+                    <SelectItem key={outfit.id} value={outfit.id}>
+                      {formatOutfitDisplayName(outfit)}
+                    </SelectItem>
+                  ))
+                ) : !isLoadingOutfits ? (
+                  <div className="px-2 py-1.5 text-sm text-slate-400">
                     No outfits available
-                  </SelectItem>
-                )}
+                  </div>
+                ) : null}
               </SelectContent>
             </Select>
           </div>
