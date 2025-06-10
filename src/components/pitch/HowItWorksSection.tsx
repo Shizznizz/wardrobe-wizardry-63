@@ -59,7 +59,8 @@ const HowItWorksSection = () => {
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        {/* Desktop View */}
+        <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {steps.map((step, index) => (
             <motion.div
               key={index}
@@ -71,13 +72,19 @@ const HowItWorksSection = () => {
               whileHover={{ y: -10, scale: 1.02 }}
             >
               <div className="bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-lg rounded-3xl p-8 border border-white/10 h-full">
-                {/* Step Number */}
-                <div className="text-6xl font-bold text-white/10 mb-4">{step.number}</div>
+                {/* Gradient Step Number Badge */}
+                <div className={`inline-flex items-center justify-center w-16 h-8 rounded-full bg-gradient-to-r ${step.color} text-white font-bold text-sm mb-4`}>
+                  {step.number}
+                </div>
                 
                 {/* Icon */}
-                <div className={`w-16 h-16 rounded-2xl bg-gradient-to-r ${step.color} p-4 mb-6`}>
+                <motion.div 
+                  className={`w-16 h-16 rounded-2xl bg-gradient-to-r ${step.color} p-4 mb-6`}
+                  whileInView={{ scale: [1, 1.1, 1] }}
+                  transition={{ duration: 0.5, delay: index * 0.2 }}
+                >
                   <step.icon className="h-8 w-8 text-white" />
-                </div>
+                </motion.div>
                 
                 {/* Content */}
                 <h3 className="text-xl font-bold mb-4">{step.title}</h3>
@@ -90,6 +97,49 @@ const HowItWorksSection = () => {
               )}
             </motion.div>
           ))}
+        </div>
+
+        {/* Mobile Horizontal Scroll */}
+        <div className="md:hidden">
+          <div className="flex overflow-x-auto pb-4 space-x-6 scrollbar-hide">
+            {steps.map((step, index) => (
+              <motion.div
+                key={index}
+                className="flex-shrink-0 w-80"
+                initial={{ opacity: 0, x: 50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+              >
+                <div className="bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-lg rounded-3xl p-6 border border-white/10 h-full">
+                  {/* Gradient Step Number Badge */}
+                  <div className={`inline-flex items-center justify-center w-16 h-8 rounded-full bg-gradient-to-r ${step.color} text-white font-bold text-sm mb-4`}>
+                    {step.number}
+                  </div>
+                  
+                  {/* Icon */}
+                  <motion.div 
+                    className={`w-14 h-14 rounded-2xl bg-gradient-to-r ${step.color} p-3 mb-4`}
+                    whileInView={{ scale: [1, 1.1, 1] }}
+                    transition={{ duration: 0.5, delay: index * 0.2 }}
+                  >
+                    <step.icon className="h-8 w-8 text-white" />
+                  </motion.div>
+                  
+                  {/* Content */}
+                  <h3 className="text-lg font-bold mb-3">{step.title}</h3>
+                  <p className="text-white/70 leading-relaxed text-sm">{step.description}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+          
+          {/* Scroll indicator */}
+          <div className="flex justify-center mt-4 space-x-2">
+            {steps.map((_, index) => (
+              <div key={index} className="w-2 h-2 rounded-full bg-white/30"></div>
+            ))}
+          </div>
         </div>
       </Container>
     </section>

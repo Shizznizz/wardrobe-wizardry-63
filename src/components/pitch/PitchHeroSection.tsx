@@ -64,7 +64,7 @@ const PitchHeroSection = () => {
             >
               <Button 
                 size="lg"
-                className="bg-gradient-to-r from-coral-500 to-coral-400 hover:from-coral-400 hover:to-coral-300 text-white shadow-lg hover:shadow-coral transition-all duration-300 text-lg px-8 py-4"
+                className="bg-gradient-to-r from-coral-500 to-coral-400 hover:from-coral-400 hover:to-coral-300 text-white shadow-lg hover:shadow-coral transition-all duration-300 text-lg px-8 py-4 rounded-full"
                 onClick={() => navigate('/')}
               >
                 Start Styling Now
@@ -73,10 +73,10 @@ const PitchHeroSection = () => {
               <Button 
                 size="lg"
                 variant="outline"
-                className="border-white/20 hover:bg-white/10 text-white text-lg px-8 py-4"
+                className="border-2 border-coral-400/50 hover:bg-coral-500/10 hover:border-coral-400 text-coral-100 text-lg px-8 py-4 rounded-lg transition-all duration-300"
                 onClick={() => navigate('/find-your-style')}
               >
-                Take a Style Quiz
+                Explore My Style
               </Button>
             </motion.div>
             
@@ -91,11 +91,11 @@ const PitchHeroSection = () => {
                   <Star key={i} className="h-4 w-4 fill-coral-400 text-coral-400" />
                 ))}
               </div>
-              <span>Join 50,000+ style-conscious users</span>
+              <span>⭐ Loved by 50,000+ style-forward users</span>
             </motion.div>
           </motion.div>
           
-          {/* Right Content - Olivia Image */}
+          {/* Right Content - Olivia Image with Sparkles */}
           <motion.div 
             className="flex justify-center lg:justify-end"
             initial={{ opacity: 0, x: 50 }}
@@ -110,29 +110,80 @@ const PitchHeroSection = () => {
               <div className="absolute inset-0 rounded-full border border-coral-400/20 animate-pulse"></div>
               <div className="absolute inset-4 rounded-full border border-purple-400/10"></div>
               
+              {/* Animated sparkles */}
+              <motion.div 
+                className="absolute top-8 right-8 text-coral-400"
+                animate={{ 
+                  y: [-10, 10, -10],
+                  rotate: [0, 180, 360],
+                  scale: [1, 1.2, 1]
+                }}
+                transition={{ 
+                  duration: 4, 
+                  repeat: Infinity, 
+                  ease: "easeInOut" 
+                }}
+              >
+                <Sparkles className="h-6 w-6" />
+              </motion.div>
+              
+              <motion.div 
+                className="absolute top-20 left-4 text-purple-400"
+                animate={{ 
+                  y: [10, -15, 10],
+                  rotate: [360, 180, 0],
+                  scale: [0.8, 1.1, 0.8]
+                }}
+                transition={{ 
+                  duration: 3.5, 
+                  repeat: Infinity, 
+                  ease: "easeInOut",
+                  delay: 0.5
+                }}
+              >
+                <Sparkles className="h-4 w-4" />
+              </motion.div>
+              
+              <motion.div 
+                className="absolute bottom-16 right-2 text-coral-300"
+                animate={{ 
+                  y: [5, -8, 5],
+                  rotate: [0, 270, 360],
+                  scale: [1.1, 0.9, 1.1]
+                }}
+                transition={{ 
+                  duration: 3, 
+                  repeat: Infinity, 
+                  ease: "easeInOut",
+                  delay: 1
+                }}
+              >
+                <Sparkles className="h-5 w-5" />
+              </motion.div>
+              
+              <motion.div 
+                className="absolute bottom-8 left-8 text-purple-300"
+                animate={{ 
+                  y: [-5, 12, -5],
+                  rotate: [180, 45, 180],
+                  scale: [0.9, 1.3, 0.9]
+                }}
+                transition={{ 
+                  duration: 4.5, 
+                  repeat: Infinity, 
+                  ease: "easeInOut",
+                  delay: 1.5
+                }}
+              >
+                <Sparkles className="h-3 w-3" />
+              </motion.div>
+              
               {/* Olivia Image */}
               <img 
                 src="/lovable-uploads/34e8d801-61ee-4254-a7ce-39b52a3a7e65.png" 
                 alt="Olivia - Your AI Fashion Assistant"
                 className="relative z-10 max-h-[400px] lg:max-h-[500px] w-auto object-contain animate-float drop-shadow-2xl"
               />
-              
-              {/* Floating sparkles */}
-              <motion.div 
-                className="absolute top-10 right-10 text-coral-400"
-                animate={{ y: [-10, 10, -10] }}
-                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-              >
-                <Sparkles className="h-6 w-6" />
-              </motion.div>
-              
-              <motion.div 
-                className="absolute bottom-20 left-5 text-purple-400"
-                animate={{ y: [10, -10, 10] }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-              >
-                <Sparkles className="h-4 w-4" />
-              </motion.div>
             </div>
           </motion.div>
         </div>

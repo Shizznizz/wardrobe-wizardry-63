@@ -26,6 +26,16 @@ const TestimonialsSection = () => {
       avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=64&h=64&fit=crop&crop=face",
       content: "The weather integration is genius! No more being caught in the rain wearing the wrong outfit. Olivia always keeps me weather-appropriate and stylish.",
       rating: 5
+    },
+    {
+      name: "Mila",
+      role: "Student",
+      location: "Amsterdam",
+      age: 21,
+      avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=64&h=64&fit=crop&crop=face",
+      content: "Olivia makes choosing outfits so easy — I feel confident every single day.",
+      rating: 5,
+      tag: "Student"
     }
   ];
 
@@ -52,7 +62,7 @@ const TestimonialsSection = () => {
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {testimonials.map((testimonial, index) => (
             <motion.div
               key={index}
@@ -87,7 +97,18 @@ const TestimonialsSection = () => {
                 />
                 <div>
                   <h4 className="font-semibold">{testimonial.name}</h4>
-                  <p className="text-sm text-white/60">{testimonial.role}</p>
+                  <div className="text-sm text-white/60">
+                    {testimonial.role}
+                    {testimonial.age && `, ${testimonial.age}`}
+                    {testimonial.location && (
+                      <div className="text-xs text-coral-300">{testimonial.location}</div>
+                    )}
+                    {testimonial.tag && (
+                      <div className="inline-block mt-1 px-2 py-1 bg-coral-500/20 text-coral-300 text-xs rounded-full border border-coral-500/30">
+                        {testimonial.tag}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </motion.div>

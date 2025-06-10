@@ -77,18 +77,29 @@ const ProblemSolutionSection = () => {
               {problems.map((problem, index) => (
                 <motion.div
                   key={index}
-                  className="flex items-start space-x-4 p-6 rounded-2xl bg-gradient-to-r from-red-900/20 to-orange-900/20 border border-red-500/20"
+                  className="flex items-start space-x-4 p-6 rounded-2xl bg-gradient-to-r from-red-900/20 to-orange-900/20 border border-red-500/20 hover:border-red-400/40 cursor-pointer group transition-all duration-300"
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
+                  whileHover={{ 
+                    scale: 1.02, 
+                    y: -5,
+                    boxShadow: "0 10px 25px rgba(239, 68, 68, 0.15)"
+                  }}
+                  whileTap={{ scale: 0.98 }}
                 >
-                  <div className="flex-shrink-0 w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center">
-                    <problem.icon className="h-6 w-6 text-red-400" />
-                  </div>
+                  <motion.div 
+                    className="flex-shrink-0 w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center group-hover:bg-red-500/30 transition-all duration-300"
+                    whileHover={{ 
+                      boxShadow: "0 0 20px rgba(239, 68, 68, 0.4)" 
+                    }}
+                  >
+                    <problem.icon className="h-6 w-6 text-red-400 group-hover:text-red-300 transition-colors duration-300" />
+                  </motion.div>
                   <div>
-                    <h4 className="text-lg font-semibold mb-2">{problem.title}</h4>
-                    <p className="text-white/70">{problem.description}</p>
+                    <h4 className="text-lg font-semibold mb-2 group-hover:text-white transition-colors duration-300">{problem.title}</h4>
+                    <p className="text-white/70 group-hover:text-white/80 transition-colors duration-300">{problem.description}</p>
                   </div>
                 </motion.div>
               ))}
@@ -102,23 +113,58 @@ const ProblemSolutionSection = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <h3 className="text-2xl font-bold mb-8 text-purple-400">The Solutions</h3>
+            <div className="mb-8">
+              <motion.h3 
+                className="text-lg font-medium text-coral-300 mb-2"
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.2 }}
+              >
+                Meet Olivia's Styling Powers
+              </motion.h3>
+              <h3 className="text-2xl font-bold text-purple-400">The Solutions</h3>
+            </div>
             <div className="space-y-6">
               {solutions.map((solution, index) => (
                 <motion.div
                   key={index}
-                  className="flex items-start space-x-4 p-6 rounded-2xl bg-gradient-to-r from-purple-900/20 to-coral-900/20 border border-purple-500/20"
+                  className="flex items-start space-x-4 p-6 rounded-2xl bg-gradient-to-r from-purple-900/20 to-coral-900/20 border border-purple-500/20 hover:border-purple-400/40 cursor-pointer group transition-all duration-300"
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
+                  whileHover={{ 
+                    scale: 1.02, 
+                    y: -5,
+                    boxShadow: "0 10px 25px rgba(168, 85, 247, 0.15)"
+                  }}
+                  whileTap={{ scale: 0.98 }}
                 >
-                  <div className="flex-shrink-0 w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center">
-                    <solution.icon className="h-6 w-6 text-purple-400" />
-                  </div>
+                  <motion.div 
+                    className="flex-shrink-0 w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center group-hover:bg-purple-500/30 transition-all duration-300"
+                    whileHover={{ 
+                      boxShadow: "0 0 20px rgba(168, 85, 247, 0.4)" 
+                    }}
+                    animate={{
+                      boxShadow: [
+                        "0 0 10px rgba(168, 85, 247, 0.2)",
+                        "0 0 15px rgba(168, 85, 247, 0.3)",
+                        "0 0 10px rgba(168, 85, 247, 0.2)"
+                      ]
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                      delay: index * 0.5
+                    }}
+                  >
+                    <solution.icon className="h-6 w-6 text-purple-400 group-hover:text-purple-300 transition-colors duration-300" />
+                  </motion.div>
                   <div>
-                    <h4 className="text-lg font-semibold mb-2">{solution.title}</h4>
-                    <p className="text-white/70">{solution.description}</p>
+                    <h4 className="text-lg font-semibold mb-2 group-hover:text-white transition-colors duration-300">{solution.title}</h4>
+                    <p className="text-white/70 group-hover:text-white/80 transition-colors duration-300">{solution.description}</p>
                   </div>
                 </motion.div>
               ))}

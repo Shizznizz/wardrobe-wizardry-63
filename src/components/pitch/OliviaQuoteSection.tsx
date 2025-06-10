@@ -56,7 +56,7 @@ const OliviaQuoteSection = () => {
               </div>
             </motion.div>
             
-            {/* Quote Content */}
+            {/* Quote Content - Digital Postcard Style */}
             <motion.div 
               className="space-y-6"
               initial={{ opacity: 0, x: 50 }}
@@ -69,17 +69,37 @@ const OliviaQuoteSection = () => {
                   A Message from Olivia
                 </h3>
                 
-                <blockquote className="text-2xl md:text-3xl lg:text-4xl font-bold leading-relaxed">
-                  "Fashion isn't about perfection — it's about{' '}
-                  <span className="bg-gradient-to-r from-coral-400 to-purple-400 bg-clip-text text-transparent">
-                    feeling perfectly you
-                  </span>
-                  . I'm here to help you discover that confidence, one outfit at a time."
-                </blockquote>
-                
-                <div className="flex items-center space-x-3 text-white/60">
-                  <div className="w-12 h-0.5 bg-coral-400"></div>
-                  <span className="font-medium">Olivia Bloom, Your AI Style Companion</span>
+                {/* Postcard-style quote box */}
+                <div className="bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-lg rounded-3xl p-8 border-2 border-white/20 relative shadow-2xl">
+                  {/* Floating sparkle near quote */}
+                  <motion.div 
+                    className="absolute -top-3 -right-3 text-coral-400"
+                    animate={{ 
+                      y: [-5, 5, -5],
+                      rotate: [0, 180, 360],
+                      scale: [1, 1.2, 1]
+                    }}
+                    transition={{ 
+                      duration: 3, 
+                      repeat: Infinity, 
+                      ease: "easeInOut" 
+                    }}
+                  >
+                    <Sparkles className="h-6 w-6" />
+                  </motion.div>
+                  
+                  <blockquote className="text-2xl md:text-3xl lg:text-4xl font-bold leading-relaxed mb-6">
+                    "Fashion isn't about perfection — it's about{' '}
+                    <span className="bg-gradient-to-r from-coral-400 to-purple-400 bg-clip-text text-transparent">
+                      feeling perfectly you
+                    </span>
+                    . I'm here to help you discover that confidence, one outfit at a time."
+                  </blockquote>
+                  
+                  <div className="flex items-center space-x-3 text-white/60">
+                    <div className="w-12 h-0.5 bg-coral-400"></div>
+                    <span className="font-medium">Olivia Bloom, Your AI Style Companion</span>
+                  </div>
                 </div>
               </div>
               

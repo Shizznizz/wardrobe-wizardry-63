@@ -42,11 +42,22 @@ const ScreenshotsSection = () => {
               <h3 className="text-xl font-bold mb-2">Mobile Experience</h3>
               <p className="text-white/60">Style on-the-go with our intuitive mobile interface</p>
             </div>
-            <div className="bg-gradient-to-br from-purple-900/30 to-slate-900/50 rounded-3xl p-8 border border-white/10 aspect-[3/4]">
-              <div className="w-full h-full bg-gradient-to-br from-white/5 to-white/10 rounded-2xl flex items-center justify-center">
-                <div className="text-center text-white/40">
-                  <Smartphone className="h-16 w-16 mx-auto mb-4" />
-                  <p className="text-sm">Mobile Screenshot<br />Coming Soon</p>
+            <div className="bg-gradient-to-br from-purple-900/30 to-slate-900/50 rounded-3xl p-8 border border-white/10 aspect-[3/4] shadow-2xl">
+              <div className="w-full h-full bg-gradient-to-br from-white/5 to-white/10 rounded-2xl flex items-center justify-center relative overflow-hidden">
+                {/* Preview Example Badge */}
+                <div className="absolute top-4 right-4 bg-coral-500/20 text-coral-300 text-xs px-3 py-1 rounded-full border border-coral-500/30">
+                  Preview Example
+                </div>
+                
+                {/* Blurred UI Preview */}
+                <div className="w-full h-full p-4 space-y-4">
+                  <div className="h-8 bg-gradient-to-r from-coral-400/20 to-purple-400/20 rounded blur-sm"></div>
+                  <div className="h-32 bg-gradient-to-br from-purple-400/20 to-coral-400/20 rounded-lg blur-sm"></div>
+                  <div className="space-y-2">
+                    <div className="h-4 bg-white/10 rounded blur-sm"></div>
+                    <div className="h-4 bg-white/10 rounded blur-sm w-3/4"></div>
+                  </div>
+                  <div className="h-20 bg-gradient-to-r from-coral-400/20 to-purple-400/20 rounded blur-sm"></div>
                 </div>
               </div>
             </div>
@@ -65,11 +76,22 @@ const ScreenshotsSection = () => {
               <h3 className="text-xl font-bold mb-2">Desktop Power</h3>
               <p className="text-white/60">Full wardrobe management and styling tools</p>
             </div>
-            <div className="bg-gradient-to-br from-purple-900/30 to-slate-900/50 rounded-3xl p-8 border border-white/10 aspect-[4/3]">
-              <div className="w-full h-full bg-gradient-to-br from-white/5 to-white/10 rounded-2xl flex items-center justify-center">
-                <div className="text-center text-white/40">
-                  <Monitor className="h-16 w-16 mx-auto mb-4" />
-                  <p className="text-sm">Desktop Screenshot<br />Coming Soon</p>
+            <div className="bg-gradient-to-br from-purple-900/30 to-slate-900/50 rounded-3xl p-8 border border-white/10 aspect-[4/3] shadow-2xl">
+              <div className="w-full h-full bg-gradient-to-br from-white/5 to-white/10 rounded-2xl flex items-center justify-center relative overflow-hidden">
+                {/* Preview Example Badge */}
+                <div className="absolute top-4 right-4 bg-purple-500/20 text-purple-300 text-xs px-3 py-1 rounded-full border border-purple-500/30">
+                  Preview Example
+                </div>
+                
+                {/* Blurred UI Preview */}
+                <div className="w-full h-full p-6 space-y-4">
+                  <div className="h-6 bg-gradient-to-r from-purple-400/20 to-coral-400/20 rounded blur-sm"></div>
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="h-24 bg-gradient-to-br from-coral-400/20 to-purple-400/20 rounded blur-sm"></div>
+                    <div className="h-24 bg-gradient-to-br from-purple-400/20 to-coral-400/20 rounded blur-sm"></div>
+                    <div className="h-24 bg-gradient-to-br from-coral-400/20 to-purple-400/20 rounded blur-sm"></div>
+                  </div>
+                  <div className="h-16 bg-gradient-to-r from-purple-400/20 to-coral-400/20 rounded blur-sm"></div>
                 </div>
               </div>
             </div>
@@ -88,11 +110,24 @@ const ScreenshotsSection = () => {
               <h3 className="text-xl font-bold mb-2">Tablet Comfort</h3>
               <p className="text-white/60">Perfect for planning outfits and browsing styles</p>
             </div>
-            <div className="bg-gradient-to-br from-purple-900/30 to-slate-900/50 rounded-3xl p-8 border border-white/10 aspect-[4/3]">
-              <div className="w-full h-full bg-gradient-to-br from-white/5 to-white/10 rounded-2xl flex items-center justify-center">
-                <div className="text-center text-white/40">
-                  <Tablet className="h-16 w-16 mx-auto mb-4" />
-                  <p className="text-sm">Tablet Screenshot<br />Coming Soon</p>
+            <div className="bg-gradient-to-br from-purple-900/30 to-slate-900/50 rounded-3xl p-8 border border-white/10 aspect-[4/3] shadow-2xl">
+              <div className="w-full h-full bg-gradient-to-br from-white/5 to-white/10 rounded-2xl flex items-center justify-center relative overflow-hidden">
+                {/* Preview Example Badge */}
+                <div className="absolute top-4 right-4 bg-emerald-500/20 text-emerald-300 text-xs px-3 py-1 rounded-full border border-emerald-500/30">
+                  Preview Example
+                </div>
+                
+                {/* Blurred UI Preview */}
+                <div className="w-full h-full p-5 space-y-4">
+                  <div className="h-6 bg-gradient-to-r from-emerald-400/20 to-coral-400/20 rounded blur-sm"></div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="h-28 bg-gradient-to-br from-coral-400/20 to-emerald-400/20 rounded blur-sm"></div>
+                    <div className="h-28 bg-gradient-to-br from-emerald-400/20 to-coral-400/20 rounded blur-sm"></div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="h-3 bg-white/10 rounded blur-sm"></div>
+                    <div className="h-3 bg-white/10 rounded blur-sm w-2/3"></div>
+                  </div>
                 </div>
               </div>
             </div>

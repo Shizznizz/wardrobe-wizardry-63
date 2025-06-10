@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Container } from '@/components/ui/container';
@@ -33,6 +34,20 @@ const SocialFooter = () => {
           toast.success('Link copied to clipboard!');
         }
         break;
+    }
+  };
+
+  const handleShareFirstLook = () => {
+    const text = "🎉 Share your first AI look! ✨";
+    if (navigator.share) {
+      navigator.share({
+        title: 'My AI Style Journey',
+        text: text,
+        url: window.location.href,
+      });
+    } else {
+      navigator.clipboard.writeText(`${text} ${window.location.href}`);
+      toast.success('Link copied to clipboard! 🎉');
     }
   };
 
@@ -84,11 +99,41 @@ const SocialFooter = () => {
               Share
             </Button>
           </div>
+
+          {/* Floating share your first AI look button */}
+          <motion.div
+            className="flex justify-center"
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3 }}
+          >
+            <Button
+              variant="outline"
+              className="border-coral-400/30 text-coral-300 hover:bg-coral-500/20 hover:text-coral-100 hover:border-coral-500/50 transition-colors"
+              onClick={handleShareFirstLook}
+            >
+              🎉 Share your first AI look
+            </Button>
+          </motion.div>
           
-          <div className="pt-8 border-t border-white/10">
-            <p className="text-white/60 text-sm">
-              © 2024 AI Wardrobe Assistant. Made with 💜 for fashion lovers everywhere.
-            </p>
+          <div className="pt-8 border-t border-white/10 space-y-4">
+            <div className="flex flex-wrap justify-center gap-6 text-sm text-white/60">
+              <a href="/style-planner" className="hover:text-coral-300 transition-colors">Style Planner</a>
+              <a href="/my-wardrobe" className="hover:text-coral-300 transition-colors">My Wardrobe</a>
+              <a href="/mix-and-match" className="hover:text-coral-300 transition-colors">Mix & Match</a>
+              <a href="/shop-and-try" className="hover:text-coral-300 transition-colors">Shop & Try</a>
+              <a href="/fitting-room" className="hover:text-coral-300 transition-colors">Fitting Room</a>
+            </div>
+            
+            <div className="space-y-2">
+              <p className="text-white/60 text-sm">
+                Contact: <a href="mailto:info@aiwardrobeassistant.com" className="text-coral-300 hover:text-coral-200 transition-colors">info@aiwardrobeassistant.com</a>
+              </p>
+              <p className="text-white/60 text-sm">
+                © 2024 Olivia Bloom AI – All rights reserved.
+              </p>
+            </div>
           </div>
         </motion.div>
       </Container>
