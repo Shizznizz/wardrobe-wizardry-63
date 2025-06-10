@@ -1,4 +1,5 @@
 
+
 export interface User {
   id: string;
   email: string | null;
@@ -58,6 +59,7 @@ export interface WeatherInfo {
   description?: string;
   city?: string;
   country?: string;
+  feelsLike?: number;
 }
 
 export interface ClothingItem {
@@ -118,6 +120,7 @@ export interface Outfit {
   color_scheme: string;
   colors: string[];
   notes?: string;
+  tags?: string[];
 }
 
 export type TimeOfDay = 'morning' | 'afternoon' | 'evening' | 'night' | 'all-day';
@@ -133,4 +136,11 @@ export interface OutfitLog {
   activity?: string;
   customActivity?: string;
   user_id: string;
+  askForAiSuggestion?: boolean;
 }
+
+export interface OutfitLogExtended extends OutfitLog {
+  outfitName?: string;
+  outfitDetails?: Outfit;
+}
+
