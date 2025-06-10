@@ -29,7 +29,7 @@ const OliviaStyleChatDialog = ({ isOpen, onClose, selectedDate }: OliviaStyleCha
   const [messages, setMessages] = useState<Message[]>([
     { 
       role: 'assistant', 
-      content: "Hi! I'm Olivia, your personal AI stylist. I can help you choose the perfect outfit based on today's weather, your activities, and your wardrobe. What would you like to wear today?",
+      content: "Hi! I'm Olivia, your personal AI stylist. I can see your wardrobe and style preferences, so I can give you truly personalized outfit suggestions! What would you like to wear today? 💫",
       timestamp: new Date()
     }
   ]);
@@ -99,11 +99,11 @@ const OliviaStyleChatDialog = ({ isOpen, onClose, selectedDate }: OliviaStyleCha
     }
   }, [isOpen, user]);
 
-  const getContextualInfo = async () => {
+  const getContextualInfo = () => {
     const currentDate = selectedDate || new Date();
     const weather = generateWeatherForDate(currentDate, savedLocation?.city, savedLocation?.country);
     
-    const context = {
+    return {
       date: currentDate.toDateString(),
       weather: weather,
       location: savedLocation ? `${savedLocation.city}, ${savedLocation.country}` : 'Unknown location',
@@ -111,8 +111,6 @@ const OliviaStyleChatDialog = ({ isOpen, onClose, selectedDate }: OliviaStyleCha
       outfitCount: outfits.length,
       favoriteOutfits: outfits.filter(o => o.favorite).length
     };
-
-    return context;
   };
 
   const handleUpgradeClick = () => {
@@ -140,40 +138,21 @@ const OliviaStyleChatDialog = ({ isOpen, onClose, selectedDate }: OliviaStyleCha
     setHasError(false);
     
     try {
-      const context = await getContextualInfo();
+      const context = getContextualInfo();
       
-      const systemPrompt = `You are Olivia, a friendly and knowledgeable AI personal stylist. You help users choose outfits based on:
-
-Current Context:
-- Date: ${context.date}
-- Weather: ${context.weather.temperature}°C, ${context.weather.condition}
-- Location: ${context.location}
-- User's wardrobe: ${context.wardrobeSize} items, ${context.outfitCount} saved outfits
-- Favorite outfits: ${context.favoriteOutfits}
-
-Guidelines:
-- Be warm, friendly, and encouraging
-- Give specific, actionable outfit advice
-- Consider the weather and activities
-- Reference their wardrobe when possible
-- Ask follow-up questions about their plans or preferences
-- Keep responses concise but helpful (2-3 sentences max)
-- Use emojis sparingly but effectively
-- Focus on making them feel confident and stylish`;
+      // Create a simple contextual message about current conditions
+      const contextualMessage = `Current context: It's ${context.weather.condition} and ${context.weather.temperature}°C in ${context.location} on ${context.date}. ${input.trim()}`;
 
       const conversationMessages = messages
         .concat(userMessage)
         .map(msg => ({
           role: msg.role,
-          content: msg.content
+          content: msg.role === 'user' && msg === userMessage ? contextualMessage : msg.content
         }));
 
       const { data, error } = await supabase.functions.invoke('chat-with-olivia', {
         body: { 
-          messages: [
-            { role: 'system', content: systemPrompt },
-            ...conversationMessages
-          ],
+          messages: conversationMessages,
           userId: user.id
         }
       });
