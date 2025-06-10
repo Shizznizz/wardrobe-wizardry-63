@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -39,9 +40,9 @@ const OutfitLogForm = ({
   const [date, setDate] = useState<Date>(selectedDate);
   const [outfitId, setOutfitId] = useState<string>('');
   const [timeOfDay, setTimeOfDay] = useState<TimeOfDay>('morning');
-  const [weatherCondition, setWeatherCondition] = useState<string>('');
+  const [weatherCondition, setWeatherCondition] = useState<string>('none');
   const [temperature, setTemperature] = useState<string>('');
-  const [activity, setActivity] = useState<Activity | ''>('');
+  const [activity, setActivity] = useState<Activity | 'none'>('none');
   const [customActivity, setCustomActivity] = useState<string>('');
   const [notes, setNotes] = useState<string>('');
   const [askForAiSuggestion, setAskForAiSuggestion] = useState<boolean>(false);
@@ -55,9 +56,9 @@ const OutfitLogForm = ({
       setOutfitId(initialData.outfitId);
       // Type assertion to ensure proper types
       setTimeOfDay(initialData.timeOfDay as TimeOfDay || 'morning');
-      setWeatherCondition(initialData.weatherCondition || '');
+      setWeatherCondition(initialData.weatherCondition || 'none');
       setTemperature(initialData.temperature || '');
-      setActivity(initialData.activity as Activity | '' || '');
+      setActivity(initialData.activity as Activity | 'none' || 'none');
       setCustomActivity(initialData.customActivity || '');
       setNotes(initialData.notes || '');
       setAskForAiSuggestion(initialData.askForAiSuggestion || false);
@@ -66,9 +67,9 @@ const OutfitLogForm = ({
       setDate(selectedDate);
       setOutfitId('');
       setTimeOfDay('morning');
-      setWeatherCondition('');
+      setWeatherCondition('none');
       setTemperature('');
-      setActivity('');
+      setActivity('none');
       setCustomActivity('');
       setNotes('');
       setAskForAiSuggestion(false);
@@ -86,9 +87,9 @@ const OutfitLogForm = ({
         outfitId,
         date,
         timeOfDay,
-        weatherCondition: weatherCondition || undefined,
+        weatherCondition: weatherCondition === 'none' ? undefined : weatherCondition,
         temperature: temperature || undefined,
-        activity: activity as Activity | undefined,
+        activity: activity === 'none' ? undefined : activity as Activity,
         customActivity: activity === 'other' ? customActivity : undefined,
         notes: notes || undefined,
         askForAiSuggestion,
@@ -106,9 +107,9 @@ const OutfitLogForm = ({
   const resetForm = () => {
     setOutfitId('');
     setTimeOfDay('morning');
-    setWeatherCondition('');
+    setWeatherCondition('none');
     setTemperature('');
-    setActivity('');
+    setActivity('none');
     setCustomActivity('');
     setNotes('');
     setAskForAiSuggestion(false);
@@ -202,7 +203,7 @@ const OutfitLogForm = ({
                   <SelectValue placeholder="Weather condition" />
                 </SelectTrigger>
                 <SelectContent className="bg-slate-800 border-slate-700 text-white">
-                  <SelectItem value="">None</SelectItem>
+                  <SelectItem value="none">None</SelectItem>
                   {weatherOptions.map((weather) => (
                     <SelectItem key={weather} value={weather}>
                       {weather.charAt(0).toUpperCase() + weather.slice(1)}
@@ -228,13 +229,13 @@ const OutfitLogForm = ({
             <Label htmlFor="activity">Activity/Occasion (Optional)</Label>
             <Select 
               value={activity} 
-              onValueChange={(value: string) => setActivity(value as Activity | '')}
+              onValueChange={(value: string) => setActivity(value as Activity | 'none')}
             >
               <SelectTrigger className="w-full bg-slate-800 border-slate-700">
                 <SelectValue placeholder="Select activity or occasion" />
               </SelectTrigger>
               <SelectContent className="bg-slate-800 border-slate-700 text-white">
-                <SelectItem value="">None</SelectItem>
+                <SelectItem value="none">None</SelectItem>
                 {activityOptions.map((activityOption) => (
                   <SelectItem key={activityOption} value={activityOption}>
                     {activityOption.charAt(0).toUpperCase() + activityOption.slice(1)}
