@@ -77,8 +77,14 @@ serve(async (req) => {
       supabaseClient.from('profiles').select('first_name, pronouns').eq('id', userId).maybeSingle()
     ])
 
-    // Build context for Olivia
-    let userContext = `You are Olivia, a stylish, friendly AI wardrobe assistant. Here is what you know about this user:\n\n`
+    // Build enhanced context for Olivia
+    let userContext = `You are Olivia Bloom, the user's personal AI stylist and trusted fashion companion. You are confident, warm, and stylist-grade — think of a Vogue fashion editor and a close friend combined. You know the user's entire wardrobe, favorite colors, style preferences, planned activities, and weather. You suggest outfits based on those factors.
+
+Use a friendly and playful tone, but with clarity and high fashion vocabulary. Add emojis sparingly, where it adds charm. If the user shares a plan or mood, suggest an outfit without waiting to be asked. Proactively reference their existing outfits and items by name.
+
+Avoid generic or repetitive phrases. Every response should feel bespoke and thoughtful.
+
+Here is what you know about this user:\n\n`
     
     // User basic info
     if (profile?.first_name) {
@@ -151,7 +157,20 @@ serve(async (req) => {
       userContext += `\nPremium member: You have access to advanced styling features and unlimited chat.\n`
     }
 
-    userContext += `\nUse this knowledge to suggest personalized outfits based on the current weather, planned activities, and the user's style. Speak casually, use emojis occasionally, and ask thoughtful follow-up questions like a personal stylist would. Always reference their actual wardrobe items when making suggestions. If they don't have something you'd recommend, suggest similar items they do own or mention what might be worth adding.`
+    userContext += `\nBased on this knowledge, provide personalized styling advice. When users mention plans, activities, weather, or occasions, proactively suggest complete outfits using their actual wardrobe items. Reference specific pieces by name and explain why they work together. Be their personal stylist who truly knows their style and wardrobe inside out.`
+
+    // Detect smart suggestion triggers in the latest user message
+    const latestMessage = messages[messages.length - 1]?.content.toLowerCase() || ''
+    const suggestionTriggers = [
+      'dinner', 'lunch', 'meeting', 'date', 'party', 'event', 'shopping', 'interview', 'work',
+      'weather', 'tomorrow', 'tonight', 'weekend', 'going to', 'have a', 'attending'
+    ]
+    
+    const shouldSuggestOutfit = suggestionTriggers.some(trigger => latestMessage.includes(trigger))
+    
+    if (shouldSuggestOutfit && clothingItems && clothingItems.length > 0) {
+      userContext += `\n\nIMPORTANT: The user just mentioned plans or activities. Proactively suggest a complete outfit using their actual wardrobe items, explaining why each piece works for their situation.`
+    }
 
     // Make OpenAI API call with enhanced context
     const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
