@@ -47,7 +47,7 @@ export type ClothingType = string;
 export type ClothingColor = string;
 export type ClothingMaterial = string;
 export type ClothingSeason = 'spring' | 'summer' | 'autumn' | 'winter' | 'all';
-export type ClothingOccasion = 'casual' | 'formal' | 'work' | 'sport' | 'special' | 'travel';
+export type ClothingOccasion = 'casual' | 'formal' | 'work' | 'sport' | 'special' | 'travel' | 'business' | 'party' | 'date';
 
 export interface WeatherInfo {
   temperature: number;
@@ -56,6 +56,8 @@ export interface WeatherInfo {
   windSpeed?: number;
   icon?: string;
   description?: string;
+  city?: string;
+  country?: string;
 }
 
 export interface ClothingItem {
@@ -63,40 +65,40 @@ export interface ClothingItem {
   name: string;
   type: string;
   color: string;
-  pattern: string;
-  fabric: string;
+  pattern?: string;
+  fabric?: string;
   material?: string;
   season: string[];
-  sleeveLength: string;
-  neckline: string;
-  fit: string;
-  length: string;
-  closure: string;
-  waist: string;
-  rise: string;
-  wash: string;
-  details: string;
-  styleTags: string[];
-  personalityTags: string[];
-  imageUrls: string[];
+  sleeveLength?: string;
+  neckline?: string;
+  fit?: string;
+  length?: string;
+  closure?: string;
+  waist?: string;
+  rise?: string;
+  wash?: string;
+  details?: string;
+  styleTags?: string[];
+  personalityTags?: string[];
+  imageUrls?: string[];
   imageUrl?: string;
   image?: string;
   dateAdded: Date;
   timesWorn: number;
   lastWorn: Date | undefined;
-  brand: string;
-  size: string;
-  condition: string;
-  notes: string;
+  brand?: string;
+  size?: string;
+  condition?: string;
+  notes?: string;
   userId: string;
   favorite: boolean;
-  cost: number;
-  currency: string;
-  store: string;
-  composition: string;
-  careInstructions: string;
-  archived: boolean;
-  source: string;
+  cost?: number;
+  currency?: string;
+  store?: string;
+  composition?: string;
+  careInstructions?: string;
+  archived?: boolean;
+  source?: string;
   occasions?: string[];
 }
 
