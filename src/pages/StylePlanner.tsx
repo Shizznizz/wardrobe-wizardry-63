@@ -18,6 +18,7 @@ const StylePlanner = () => {
   const { outfits, clothingItems, outfitLogs, addOutfitLog } = useOutfitState();
   const { savedLocation } = useLocationStorage();
   const [showTimeline, setShowTimeline] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const isMobile = useIsMobile();
 
   const handleShowTimeline = () => {
@@ -30,7 +31,6 @@ const StylePlanner = () => {
 
   const handleChatClick = () => {
     console.log("Chat with Olivia clicked");
-    // TODO: Implement chat functionality
   };
 
   return (
@@ -84,7 +84,10 @@ const StylePlanner = () => {
           transition={{ delay: 0.3, duration: 0.5 }}
           className="space-y-4"
         >
-          <CollapsibleOliviaSection onChatClick={handleChatClick} />
+          <CollapsibleOliviaSection 
+            onChatClick={handleChatClick} 
+            selectedDate={selectedDate}
+          />
         </motion.div>
       </section>
       

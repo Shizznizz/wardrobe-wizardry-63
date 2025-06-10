@@ -1,0 +1,296 @@
+
+import { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X, Send, Sparkles, Loader2, AlertTriangle } from 'lucide-react';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
+import { useOutfitState } from '@/hooks/useOutfitState';
+import { useLocationStorage } from '@/hooks/useLocationStorage';
+import { generateWeatherForDate } from '@/services/WeatherService';
+
+interface Message {
+  role: 'assistant' | 'user';
+  content: string;
+  timestamp: Date;
+}
+
+interface OliviaStyleChatDialogProps {
+  isOpen: boolean;
+  onClose: () => void;
+  selectedDate?: Date;
+}
+
+const OliviaStyleChatDialog = ({ isOpen, onClose, selectedDate }: OliviaStyleChatDialogProps) => {
+  const [messages, setMessages] = useState<Message[]>([
+    { 
+      role: 'assistant', 
+      content: "Hi! I'm Olivia, your personal AI stylist. I can help you choose the perfect outfit based on today's weather, your activities, and your wardrobe. What would you like to wear today?",
+      timestamp: new Date()
+    }
+  ]);
+  const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasError, setHasError] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const { toast } = useToast();
+  const { user } = useAuth();
+  const { outfits, clothingItems } = useOutfitState();
+  const { savedLocation } = useLocationStorage();
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  useEffect(() => {
+    if (isOpen) {
+      setHasError(false);
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
+    }
+  }, [isOpen]);
+
+  const getContextualInfo = async () => {
+    const currentDate = selectedDate || new Date();
+    const weather = generateWeatherForDate(currentDate, savedLocation?.city, savedLocation?.country);
+    
+    const context = {
+      date: currentDate.toDateString(),
+      weather: weather,
+      location: savedLocation ? `${savedLocation.city}, ${savedLocation.country}` : 'Unknown location',
+      wardrobeSize: clothingItems.length,
+      outfitCount: outfits.length,
+      favoriteOutfits: outfits.filter(o => o.favorite).length
+    };
+
+    return context;
+  };
+
+  const handleSendMessage = async () => {
+    if (!input.trim() || !user) return;
+    
+    const userMessage: Message = { 
+      role: 'user', 
+      content: input.trim(), 
+      timestamp: new Date() 
+    };
+    
+    setMessages(prev => [...prev, userMessage]);
+    setInput('');
+    setIsLoading(true);
+    setHasError(false);
+    
+    try {
+      const context = await getContextualInfo();
+      
+      const systemPrompt = `You are Olivia, a friendly and knowledgeable AI personal stylist. You help users choose outfits based on:
+
+Current Context:
+- Date: ${context.date}
+- Weather: ${context.weather.temperature}°C, ${context.weather.condition}
+- Location: ${context.location}
+- User's wardrobe: ${context.wardrobeSize} items, ${context.outfitCount} saved outfits
+- Favorite outfits: ${context.favoriteOutfits}
+
+Guidelines:
+- Be warm, friendly, and encouraging
+- Give specific, actionable outfit advice
+- Consider the weather and activities
+- Reference their wardrobe when possible
+- Ask follow-up questions about their plans or preferences
+- Keep responses concise but helpful (2-3 sentences max)
+- Use emojis sparingly but effectively
+- Focus on making them feel confident and stylish`;
+
+      const conversationMessages = messages
+        .concat(userMessage)
+        .map(msg => ({
+          role: msg.role,
+          content: msg.content
+        }));
+
+      const { data, error } = await supabase.functions.invoke('chat-with-olivia', {
+        body: { 
+          messages: [
+            { role: 'system', content: systemPrompt },
+            ...conversationMessages
+          ],
+          userId: user.id
+        }
+      });
+      
+      if (error) {
+        console.error('Supabase function error:', error);
+        throw new Error(`Error invoking function: ${error.message}`);
+      }
+      
+      if (!data || data.error) {
+        console.error('Function returned error:', data?.error);
+        throw new Error(data?.error || 'Unknown error occurred');
+      }
+      
+      setMessages(prev => [...prev, { 
+        role: 'assistant', 
+        content: data.reply,
+        timestamp: new Date()
+      }]);
+      
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
+    } catch (error) {
+      console.error('Error sending message:', error);
+      setHasError(true);
+      toast({
+        variant: "destructive",
+        title: "Olivia is temporarily unavailable",
+        description: "Please try again in a moment.",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+
+  const handleRetry = () => {
+    if (messages.length > 1) {
+      const lastUserMessage = messages.filter(msg => msg.role === 'user').pop();
+      if (lastUserMessage) {
+        setHasError(false);
+        setInput(lastUserMessage.content);
+        setTimeout(() => {
+          inputRef.current?.focus();
+        }, 100);
+      }
+    }
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-[500px] h-[600px] p-0 bg-slate-900 border-purple-500/20 text-white flex flex-col">
+        {/* Header */}
+        <div className="p-4 bg-gradient-to-r from-purple-600 to-pink-500 flex items-center justify-between flex-shrink-0">
+          <div className="flex items-center space-x-3">
+            <Avatar className="h-10 w-10 border-2 border-white">
+              <AvatarImage src="/lovable-uploads/b87d5aa1-136e-42c6-b11e-b4651dce8f93.png" alt="Olivia" />
+              <AvatarFallback className="bg-purple-200 text-purple-700">O</AvatarFallback>
+            </Avatar>
+            <div>
+              <h3 className="font-medium text-white flex items-center">
+                Olivia
+                <Sparkles className="h-4 w-4 ml-1 text-yellow-200" />
+              </h3>
+              <p className="text-xs text-white/80">Your AI Stylist</p>
+            </div>
+          </div>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={onClose}
+            className="text-white hover:bg-white/20 rounded-full h-8 w-8 p-0"
+          >
+            <X className="h-5 w-5" />
+          </Button>
+        </div>
+        
+        {/* Messages */}
+        <div className="flex-1 p-4 overflow-y-auto flex flex-col space-y-4 bg-slate-950">
+          {messages.map((message, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+            >
+              {message.role === 'assistant' && (
+                <Avatar className="h-8 w-8 mr-2 mt-1 flex-shrink-0">
+                  <AvatarImage src="/lovable-uploads/b87d5aa1-136e-42c6-b11e-b4651dce8f93.png" alt="Olivia" />
+                  <AvatarFallback className="bg-purple-200 text-purple-700">O</AvatarFallback>
+                </Avatar>
+              )}
+              <div
+                className={`max-w-[80%] p-3 rounded-lg ${
+                  message.role === 'user'
+                    ? 'bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-tr-none'
+                    : 'bg-slate-800 text-white border border-slate-700 rounded-tl-none'
+                }`}
+              >
+                <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+              </div>
+            </motion.div>
+          ))}
+          
+          {isLoading && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex justify-start"
+            >
+              <Avatar className="h-8 w-8 mr-2 mt-1 flex-shrink-0">
+                <AvatarImage src="/lovable-uploads/b87d5aa1-136e-42c6-b11e-b4651dce8f93.png" alt="Olivia" />
+                <AvatarFallback className="bg-purple-200 text-purple-700">O</AvatarFallback>
+              </Avatar>
+              <div className="bg-slate-800 p-3 rounded-lg border border-slate-700 rounded-tl-none">
+                <div className="flex items-center space-x-2">
+                  <Loader2 className="h-4 w-4 animate-spin text-purple-400" />
+                  <span className="text-sm text-purple-300">Olivia is thinking...</span>
+                </div>
+              </div>
+            </motion.div>
+          )}
+          
+          {hasError && (
+            <div className="flex justify-center my-4">
+              <div className="bg-red-900/20 border border-red-800 p-3 rounded-lg flex items-center gap-2 text-red-300">
+                <AlertTriangle className="h-5 w-5" />
+                <span className="text-sm font-medium">Connection issue. Please try again.</span>
+                <Button size="sm" variant="outline" onClick={handleRetry} className="ml-2">
+                  Retry
+                </Button>
+              </div>
+            </div>
+          )}
+          <div ref={messagesEndRef} />
+        </div>
+        
+        {/* Input */}
+        <div className="p-3 border-t border-slate-700 bg-slate-900 flex-shrink-0">
+          <div className="flex items-end space-x-2">
+            <textarea
+              ref={inputRef}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyPress}
+              placeholder="Ask Olivia for style advice..."
+              className="flex-1 px-4 py-2 border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm resize-none h-10 max-h-24 bg-slate-800 text-white"
+              rows={1}
+              disabled={isLoading || !user}
+            />
+            <Button
+              onClick={handleSendMessage}
+              disabled={!input.trim() || isLoading || !user}
+              size="icon"
+              className="rounded-full h-10 w-10 bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 disabled:opacity-50 flex-shrink-0"
+            >
+              <Send className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export default OliviaStyleChatDialog;
