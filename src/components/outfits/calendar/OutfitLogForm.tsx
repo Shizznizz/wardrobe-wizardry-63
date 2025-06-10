@@ -4,15 +4,16 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from '@
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { format } from 'date-fns';
-import { Outfit, TimeOfDay, Activity } from '@/lib/types';
+import { Outfit, TimeOfDay } from '@/lib/types';
 import { OutfitLog } from '../OutfitLogItem';
 import { CalendarIcon, X } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface OutfitLogFormProps {
   isOpen: boolean;
@@ -24,9 +25,7 @@ interface OutfitLogFormProps {
   initialData?: OutfitLog | null;
 }
 
-const weatherOptions = ['sunny', 'cloudy', 'rainy', 'snowy', 'windy'];
 const timeOfDayOptions: TimeOfDay[] = ['morning', 'afternoon', 'evening', 'night'];
-const activityOptions: Activity[] = ['casual', 'work', 'formal', 'party', 'date', 'interview', 'presentation', 'dinner', 'sport', 'other'];
 
 const OutfitLogForm = ({ 
   isOpen, 
@@ -40,45 +39,86 @@ const OutfitLogForm = ({
   const [date, setDate] = useState<Date>(selectedDate);
   const [outfitId, setOutfitId] = useState<string>('');
   const [timeOfDay, setTimeOfDay] = useState<TimeOfDay>('morning');
-  const [weatherCondition, setWeatherCondition] = useState<string>('none');
-  const [temperature, setTemperature] = useState<string>('');
-  const [activity, setActivity] = useState<Activity | 'none'>('none');
-  const [customActivity, setCustomActivity] = useState<string>('');
   const [notes, setNotes] = useState<string>('');
-  const [askForAiSuggestion, setAskForAiSuggestion] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [supabaseOutfits, setSupabaseOutfits] = useState<Outfit[]>([]);
+  const [isLoadingOutfits, setIsLoadingOutfits] = useState<boolean>(false);
   const { user } = useAuth();
+
+  // Load outfits from Supabase
+  const loadOutfitsFromSupabase = async () => {
+    if (!user) return;
+    
+    setIsLoadingOutfits(true);
+    try {
+      const { data, error } = await supabase
+        .from('outfits')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error('Error loading outfits:', error);
+        toast.error('Failed to load your outfits');
+        return;
+      }
+      
+      // Convert database format to app format
+      const formattedOutfits: Outfit[] = data.map(outfit => ({
+        id: outfit.id,
+        name: outfit.name,
+        items: outfit.items,
+        occasions: outfit.occasions,
+        occasion: outfit.occasion,
+        season: outfit.season,
+        seasons: outfit.season,
+        favorite: outfit.favorite,
+        timesWorn: outfit.times_worn,
+        lastWorn: outfit.last_worn ? new Date(outfit.last_worn) : undefined,
+        dateAdded: outfit.date_added ? new Date(outfit.date_added) : new Date(),
+        personality_tags: outfit.personality_tags,
+        color_scheme: outfit.color_scheme,
+        colors: outfit.colors
+      }));
+      
+      setSupabaseOutfits(formattedOutfits);
+    } catch (error) {
+      console.error('Error loading outfits:', error);
+      toast.error('Failed to load your outfits');
+    } finally {
+      setIsLoadingOutfits(false);
+    }
+  };
+
+  // Load outfits when modal opens
+  useEffect(() => {
+    if (isOpen && user) {
+      loadOutfitsFromSupabase();
+    }
+  }, [isOpen, user]);
 
   // Populate form with initialData when in edit mode
   useEffect(() => {
     if (initialData && editMode) {
       setDate(new Date(initialData.date));
       setOutfitId(initialData.outfitId);
-      // Type assertion to ensure proper types
       setTimeOfDay(initialData.timeOfDay as TimeOfDay || 'morning');
-      setWeatherCondition(initialData.weatherCondition || 'none');
-      setTemperature(initialData.temperature || '');
-      setActivity(initialData.activity as Activity | 'none' || 'none');
-      setCustomActivity(initialData.customActivity || '');
       setNotes(initialData.notes || '');
-      setAskForAiSuggestion(initialData.askForAiSuggestion || false);
     } else {
       // Reset form when not in edit mode
       setDate(selectedDate);
       setOutfitId('');
       setTimeOfDay('morning');
-      setWeatherCondition('none');
-      setTemperature('');
-      setActivity('none');
-      setCustomActivity('');
       setNotes('');
-      setAskForAiSuggestion(false);
     }
   }, [initialData, editMode, isOpen, selectedDate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!outfitId) return;
+    if (!outfitId) {
+      toast.error('Please select an outfit');
+      return;
+    }
     
     setIsSubmitting(true);
     
@@ -87,12 +127,7 @@ const OutfitLogForm = ({
         outfitId,
         date,
         timeOfDay,
-        weatherCondition: weatherCondition === 'none' ? undefined : weatherCondition,
-        temperature: temperature || undefined,
-        activity: activity === 'none' ? undefined : activity as Activity,
-        customActivity: activity === 'other' ? customActivity : undefined,
         notes: notes || undefined,
-        askForAiSuggestion,
         user_id: user?.id || '',
       };
       
@@ -107,12 +142,15 @@ const OutfitLogForm = ({
   const resetForm = () => {
     setOutfitId('');
     setTimeOfDay('morning');
-    setWeatherCondition('none');
-    setTemperature('');
-    setActivity('none');
-    setCustomActivity('');
     setNotes('');
-    setAskForAiSuggestion(false);
+  };
+
+  // Use Supabase outfits if available, otherwise fall back to props
+  const availableOutfits = supabaseOutfits.length > 0 ? supabaseOutfits : outfits;
+
+  const formatOutfitDisplayName = (outfit: Outfit) => {
+    const timesWornText = outfit.timesWorn ? ` (worn ${outfit.timesWorn}x)` : '';
+    return `${outfit.name}${timesWornText}`;
   };
 
   return (
@@ -135,16 +173,22 @@ const OutfitLogForm = ({
             <Select 
               value={outfitId} 
               onValueChange={setOutfitId}
+              disabled={isLoadingOutfits}
             >
               <SelectTrigger className="w-full bg-slate-800 border-slate-700">
-                <SelectValue placeholder="Select an outfit" />
+                <SelectValue placeholder={isLoadingOutfits ? "Loading outfits..." : "Select an outfit"} />
               </SelectTrigger>
               <SelectContent className="bg-slate-800 border-slate-700 text-white">
-                {outfits.map((outfit) => (
+                {availableOutfits.map((outfit) => (
                   <SelectItem key={outfit.id} value={outfit.id}>
-                    {outfit.name}
+                    {formatOutfitDisplayName(outfit)}
                   </SelectItem>
                 ))}
+                {availableOutfits.length === 0 && !isLoadingOutfits && (
+                  <SelectItem value="no-outfits" disabled>
+                    No outfits available
+                  </SelectItem>
+                )}
               </SelectContent>
             </Select>
           </div>
@@ -192,70 +236,6 @@ const OutfitLogForm = ({
             </Select>
           </div>
           
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="weather">Weather (Optional)</Label>
-              <Select 
-                value={weatherCondition} 
-                onValueChange={setWeatherCondition}
-              >
-                <SelectTrigger className="w-full bg-slate-800 border-slate-700">
-                  <SelectValue placeholder="Weather condition" />
-                </SelectTrigger>
-                <SelectContent className="bg-slate-800 border-slate-700 text-white">
-                  <SelectItem value="none">None</SelectItem>
-                  {weatherOptions.map((weather) => (
-                    <SelectItem key={weather} value={weather}>
-                      {weather.charAt(0).toUpperCase() + weather.slice(1)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="temperature">Temperature (Optional)</Label>
-              <Input
-                id="temperature"
-                value={temperature}
-                onChange={(e) => setTemperature(e.target.value)}
-                placeholder="e.g. 20°C"
-                className="bg-slate-800 border-slate-700 text-white"
-              />
-            </div>
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="activity">Activity/Occasion (Optional)</Label>
-            <Select 
-              value={activity} 
-              onValueChange={(value: string) => setActivity(value as Activity | 'none')}
-            >
-              <SelectTrigger className="w-full bg-slate-800 border-slate-700">
-                <SelectValue placeholder="Select activity or occasion" />
-              </SelectTrigger>
-              <SelectContent className="bg-slate-800 border-slate-700 text-white">
-                <SelectItem value="none">None</SelectItem>
-                {activityOptions.map((activityOption) => (
-                  <SelectItem key={activityOption} value={activityOption}>
-                    {activityOption.charAt(0).toUpperCase() + activityOption.slice(1)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            
-            {activity === 'other' && (
-              <div className="mt-2">
-                <Input
-                  value={customActivity}
-                  onChange={(e) => setCustomActivity(e.target.value)}
-                  placeholder="Specify the activity"
-                  className="bg-slate-800 border-slate-700 text-white"
-                />
-              </div>
-            )}
-          </div>
-          
           <div className="space-y-2">
             <Label htmlFor="notes">Notes (Optional)</Label>
             <Textarea
@@ -279,7 +259,7 @@ const OutfitLogForm = ({
             </Button>
             <Button 
               type="submit"
-              disabled={!outfitId || isSubmitting}
+              disabled={!outfitId || isSubmitting || availableOutfits.length === 0}
               className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
             >
               {isSubmitting ? 'Saving...' : editMode ? 'Update Outfit' : 'Save Log'}
