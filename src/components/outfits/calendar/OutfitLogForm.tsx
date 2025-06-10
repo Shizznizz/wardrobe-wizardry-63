@@ -25,7 +25,12 @@ interface OutfitLogFormProps {
   initialData?: OutfitLog | null;
 }
 
-const timeOfDayOptions: TimeOfDay[] = ['morning', 'afternoon', 'evening', 'night'];
+const timeOfDayOptions = [
+  { value: 'morning', label: 'Morning' },
+  { value: 'afternoon', label: 'Afternoon' },
+  { value: 'evening', label: 'Evening' },
+  { value: 'night', label: 'Night' }
+];
 
 const OutfitLogForm = ({ 
   isOpen, 
@@ -38,7 +43,7 @@ const OutfitLogForm = ({
 }: OutfitLogFormProps) => {
   const [date, setDate] = useState<Date>(selectedDate);
   const [outfitId, setOutfitId] = useState<string>('');
-  const [timeOfDay, setTimeOfDay] = useState<TimeOfDay>('morning');
+  const [timeOfDay, setTimeOfDay] = useState<string>('morning');
   const [notes, setNotes] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [supabaseOutfits, setSupabaseOutfits] = useState<Outfit[]>([]);
@@ -101,8 +106,8 @@ const OutfitLogForm = ({
   useEffect(() => {
     if (initialData && editMode) {
       setDate(new Date(initialData.date));
-      setOutfitId(initialData.outfitId);
-      setTimeOfDay(initialData.timeOfDay as TimeOfDay || 'morning');
+      setOutfitId(initialData.outfitId || '');
+      setTimeOfDay(initialData.timeOfDay || 'morning');
       setNotes(initialData.notes || '');
     } else {
       // Reset form when not in edit mode
@@ -126,7 +131,7 @@ const OutfitLogForm = ({
       const logData: Omit<OutfitLog, 'id'> = {
         outfitId,
         date,
-        timeOfDay,
+        timeOfDay: timeOfDay as TimeOfDay,
         notes: notes || undefined,
         user_id: user?.id || '',
       };
@@ -222,15 +227,15 @@ const OutfitLogForm = ({
             <Label htmlFor="timeOfDay">Time of Day</Label>
             <Select 
               value={timeOfDay} 
-              onValueChange={(value: string) => setTimeOfDay(value as TimeOfDay)}
+              onValueChange={setTimeOfDay}
             >
               <SelectTrigger className="w-full bg-slate-800 border-slate-700">
                 <SelectValue placeholder="Select time of day" />
               </SelectTrigger>
               <SelectContent className="bg-slate-800 border-slate-700 text-white">
-                {timeOfDayOptions.map((time) => (
-                  <SelectItem key={time} value={time}>
-                    {time.charAt(0).toUpperCase() + time.slice(1)}
+                {timeOfDayOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
                   </SelectItem>
                 ))}
               </SelectContent>
