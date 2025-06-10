@@ -443,6 +443,36 @@ export type Database = {
         }
         Relationships: []
       }
+      user_chat_limits: {
+        Row: {
+          created_at: string
+          id: string
+          is_premium: boolean
+          last_message_at: string
+          message_count: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_premium?: boolean
+          last_message_at?: string
+          message_count?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_premium?: boolean
+          last_message_at?: string
+          message_count?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_preferences: {
         Row: {
           appearance_settings: Json | null

@@ -70,13 +70,13 @@ const CollapsibleOliviaSection = ({ onChatClick, selectedDate }: CollapsibleOliv
                   <div className="absolute bottom-0 right-1/4 w-24 h-24 bg-violet-400/10 rounded-full blur-3xl"></div>
                   
                   <div className="relative flex flex-col md:flex-row items-center gap-6">
-                    {/* Olivia's new image */}
+                    {/* Olivia's image - increased by 30% */}
                     <div className="flex-shrink-0 order-1 md:order-1">
                       <div className="relative">
                         <img
                           src="/lovable-uploads/b87d5aa1-136e-42c6-b11e-b4651dce8f93.png"
                           alt="Olivia - Your AI Stylist"
-                          className="w-24 h-24 md:w-32 md:h-32 object-contain rounded-2xl"
+                          className="w-32 h-32 md:w-42 md:h-42 object-contain rounded-2xl"
                           style={{
                             filter: 'drop-shadow(0 10px 25px rgba(139, 69, 255, 0.4)) drop-shadow(0 4px 12px rgba(219, 39, 119, 0.3))',
                           }}

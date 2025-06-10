@@ -1,7 +1,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Send, Sparkles, Loader2, AlertTriangle } from 'lucide-react';
+import { X, Send, Sparkles, Loader2, AlertTriangle, Lock } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
@@ -11,6 +11,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useOutfitState } from '@/hooks/useOutfitState';
 import { useLocationStorage } from '@/hooks/useLocationStorage';
 import { generateWeatherForDate } from '@/services/WeatherService';
+import { useNavigate } from 'react-router-dom';
 
 interface Message {
   role: 'assistant' | 'user';
@@ -35,12 +36,15 @@ const OliviaStyleChatDialog = ({ isOpen, onClose, selectedDate }: OliviaStyleCha
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const [messageCount, setMessageCount] = useState(0);
+  const [limitReached, setLimitReached] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const { toast } = useToast();
   const { user } = useAuth();
   const { outfits, clothingItems } = useOutfitState();
   const { savedLocation } = useLocationStorage();
+  const navigate = useNavigate();
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -54,6 +58,46 @@ const OliviaStyleChatDialog = ({ isOpen, onClose, selectedDate }: OliviaStyleCha
       }, 100);
     }
   }, [isOpen]);
+
+  // Get user message count on initial load
+  useEffect(() => {
+    const fetchMessageCount = async () => {
+      if (!user) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from('user_chat_limits')
+          .select('message_count, last_message_at, is_premium')
+          .eq('user_id', user.id)
+          .maybeSingle();
+        
+        if (error) {
+          console.error('Error fetching message count:', error);
+          return;
+        }
+        
+        if (data) {
+          const today = new Date().toDateString();
+          const lastMessageDate = new Date(data.last_message_at).toDateString();
+          
+          // Reset count if it's a new day
+          const currentCount = lastMessageDate === today ? data.message_count : 0;
+          setMessageCount(currentCount);
+          
+          // Check if they've already reached the limit (for non-premium users)
+          if (!data.is_premium && currentCount >= 5) {
+            setLimitReached(true);
+          }
+        }
+      } catch (error) {
+        console.error('Error getting message count:', error);
+      }
+    };
+    
+    if (isOpen && user) {
+      fetchMessageCount();
+    }
+  }, [isOpen, user]);
 
   const getContextualInfo = async () => {
     const currentDate = selectedDate || new Date();
@@ -69,6 +113,16 @@ const OliviaStyleChatDialog = ({ isOpen, onClose, selectedDate }: OliviaStyleCha
     };
 
     return context;
+  };
+
+  const handleUpgradeClick = () => {
+    onClose();
+    navigate('/premium');
+    toast({
+      title: "Premium Required",
+      description: "You'll need to upgrade to premium to continue chatting with Olivia.",
+      variant: "default"
+    });
   };
 
   const handleSendMessage = async () => {
@@ -132,6 +186,16 @@ Guidelines:
       if (!data || data.error) {
         console.error('Function returned error:', data?.error);
         throw new Error(data?.error || 'Unknown error occurred');
+      }
+      
+      // Update message count from response
+      if (data.messageCount) {
+        setMessageCount(data.messageCount);
+      }
+      
+      // Check if limit has been reached
+      if (data.limitReached) {
+        setLimitReached(true);
       }
       
       setMessages(prev => [...prev, { 
@@ -262,6 +326,28 @@ Guidelines:
               </div>
             </div>
           )}
+
+          {limitReached && (
+            <div className="flex justify-center my-4">
+              <div className="bg-amber-900/20 border border-amber-800 p-4 rounded-lg">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="bg-amber-700 p-2 rounded-full">
+                    <Lock className="h-5 w-5 text-amber-300" />
+                  </div>
+                  <h3 className="font-medium text-amber-300">Daily Limit Reached</h3>
+                </div>
+                <p className="text-sm text-amber-400 mb-3">
+                  You've reached your daily free message limit. Upgrade to premium to keep chatting with Olivia Bloom.
+                </p>
+                <Button 
+                  onClick={handleUpgradeClick}
+                  className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white"
+                >
+                  <Sparkles className="mr-2 h-4 w-4" /> Upgrade to Premium
+                </Button>
+              </div>
+            </div>
+          )}
           <div ref={messagesEndRef} />
         </div>
         
@@ -273,20 +359,25 @@ Guidelines:
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyPress}
-              placeholder="Ask Olivia for style advice..."
+              placeholder={limitReached ? "Upgrade to continue chatting..." : "Ask Olivia for style advice..."}
               className="flex-1 px-4 py-2 border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm resize-none h-10 max-h-24 bg-slate-800 text-white"
               rows={1}
-              disabled={isLoading || !user}
+              disabled={isLoading || limitReached || !user}
             />
             <Button
               onClick={handleSendMessage}
-              disabled={!input.trim() || isLoading || !user}
+              disabled={!input.trim() || isLoading || limitReached || !user}
               size="icon"
               className="rounded-full h-10 w-10 bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 disabled:opacity-50 flex-shrink-0"
             >
               <Send className="h-4 w-4" />
             </Button>
           </div>
+          {messageCount > 0 && messageCount <= 5 && !limitReached && (
+            <div className="mt-2 text-xs text-center text-slate-400">
+              {messageCount}/5 free messages used today
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>
