@@ -13,12 +13,13 @@ import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import OutfitSelectorDialog from './OutfitSelectorDialog';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface DayDetailViewProps {
   selectedDate: Date;
   outfits: Outfit[];
   outfitLogs: OutfitLog[];
-  onAddOutfit?: (outfitId: string) => void;
+  onAddOutfit?: (outfitId?: string) => void;
   onAddActivity?: (activity: string) => void;
   weatherLocation?: { city: string; country: string };
   onDeleteLog?: (id: string) => Promise<boolean>;
@@ -41,9 +42,9 @@ const DayDetailView = ({
   const [isAddingActivity, setIsAddingActivity] = useState(false);
   const [isOutfitSelectorOpen, setIsOutfitSelectorOpen] = useState(false);
   const [currentReassignLogId, setCurrentReassignLogId] = useState<string | null>(null);
+  const isMobile = useIsMobile();
   
   useEffect(() => {
-    // Reset the activity input state when the selected date changes
     setNewActivity('');
     setIsAddingActivity(false);
   }, [selectedDate]);
@@ -68,11 +69,7 @@ const DayDetailView = ({
   };
 
   const handleOpenOutfitSelector = () => {
-    if (!hasOutfits) {
-      toast.error("You need to create outfits first in Mix & Match");
-      return;
-    }
-    setIsOutfitSelectorOpen(true);
+    onAddOutfit?.();
   };
 
   const handleReassignOutfit = (logId: string) => {
@@ -82,14 +79,12 @@ const DayDetailView = ({
 
   const handleOutfitSelected = (outfitId: string) => {
     if (currentReassignLogId) {
-      // Handle reassignment of an outfit
       const log = outfitLogs.find(log => log.id === currentReassignLogId);
       if (log && onReassignOutfit) {
         onReassignOutfit(currentReassignLogId, outfitId);
       }
       setCurrentReassignLogId(null);
     } else {
-      // Handle adding a new outfit
       onAddOutfit?.(outfitId);
     }
     setIsOutfitSelectorOpen(false);
@@ -99,7 +94,7 @@ const DayDetailView = ({
   const hasOutfits = outfits && outfits.length > 0;
 
   return (
-    <Card className="bg-slate-800/40 border-purple-500/20 shadow-lg backdrop-blur-sm">
+    <Card className="bg-slate-800/40 border-purple-500/20 shadow-lg backdrop-blur-sm" data-day-detail>
       <CardHeader className="pb-2">
         <CardTitle className="flex justify-between items-center">
           <div className="text-lg text-purple-200">{format(selectedDate, 'EEEE, MMMM d')}</div>
@@ -126,7 +121,6 @@ const DayDetailView = ({
         {outfitLogs.length > 0 ? (
           <div className="space-y-2">
             {outfitLogs.map(log => {
-              // Find the outfit details for outfit logs
               const outfitDetails = log.outfitId !== 'activity' 
                 ? outfits.find(o => o.id === log.outfitId) 
                 : null;
@@ -177,49 +171,53 @@ const DayDetailView = ({
             })}
           </div>
         ) : (
-          <div className="text-center py-4 text-slate-400 text-sm">
+          <div className="text-center py-6 text-slate-400 text-sm border-2 border-dashed border-slate-600/30 rounded-lg">
+            <CalendarDays className="h-8 w-8 mx-auto mb-2 text-slate-500" />
             No items planned for this day
           </div>
         )}
         
         {/* Add Outfit/Activity Section */}
-        <div className="pt-2 border-t border-slate-600/30 space-y-3">
+        <div className={`pt-4 border-t border-slate-600/30 space-y-4 ${isMobile ? 'pb-8' : ''}`}>
           {!isAddingActivity ? (
-            <div className="flex flex-col sm:flex-row gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Button 
                 onClick={handleOpenOutfitSelector}
-                className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-400 hover:to-purple-400 text-white shadow-lg hover:shadow-pink-500/25 transition-all duration-300 flex items-center justify-center gap-2"
-                size="sm"
+                className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-400 hover:to-purple-400 text-white shadow-lg hover:shadow-pink-500/25 transition-all duration-300 flex items-center justify-center gap-2 h-12 font-medium"
+                size="lg"
               >
-                <Plus className="h-4 w-4" />
+                <Plus className="h-5 w-5" />
                 Add Outfit
               </Button>
 
               <Button 
                 variant="outline" 
                 onClick={() => setIsAddingActivity(true)}
-                className="border-orange-400/30 text-orange-300 hover:bg-orange-500/20 hover:border-orange-400/50 shadow-md transition-all duration-300 flex items-center justify-center gap-2"
-                size="sm"
+                className="border-orange-400/30 text-orange-300 hover:bg-orange-500/20 hover:border-orange-400/50 shadow-md transition-all duration-300 flex items-center justify-center gap-2 h-12 font-medium"
+                size="lg"
               >
-                <MapPin className="h-4 w-4" />
+                <MapPin className="h-5 w-5" />
                 Add Activity
               </Button>
             </div>
           ) : (
-            <div className="space-y-3 p-4 bg-slate-700/20 rounded-lg border border-slate-600/30">
-              <div className="text-sm font-medium text-purple-200">Add New Activity</div>
+            <div className="space-y-4 p-4 bg-slate-700/20 rounded-lg border border-slate-600/30">
+              <div className="text-sm font-medium text-purple-200 flex items-center gap-2">
+                <MapPin className="h-4 w-4" />
+                Add New Activity
+              </div>
               <Input 
                 placeholder="Enter activity..." 
-                className="bg-slate-700/50 border-slate-600/50 text-white placeholder:text-slate-400 focus:border-purple-400 focus:ring-purple-400/20"
+                className="bg-slate-700/50 border-slate-600/50 text-white placeholder:text-slate-400 focus:border-purple-400 focus:ring-purple-400/20 h-12"
                 value={newActivity}
                 onChange={(e) => setNewActivity(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleAddActivity()}
                 autoFocus
               />
-              <div className="flex gap-2 pt-2">
+              <div className="flex gap-3 pt-2">
                 <Button 
                   onClick={handleAddActivity}
-                  className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-white shadow-md flex-1"
+                  className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-white shadow-md flex-1 h-10"
                   size="sm"
                 >
                   Add Activity
@@ -227,7 +225,7 @@ const DayDetailView = ({
                 <Button 
                   variant="outline" 
                   onClick={() => setIsAddingActivity(false)}
-                  className="border-slate-500 text-slate-300 hover:bg-slate-600/50 flex-1"
+                  className="border-slate-500 text-slate-300 hover:bg-slate-600/50 flex-1 h-10"
                   size="sm"
                 >
                   Cancel
