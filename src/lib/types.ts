@@ -13,31 +13,31 @@ export interface User {
 export interface UserPreferences {
   firstName?: string;
   lastName?: string;
-  favoriteColors: string[];
-  favoriteStyles: string[];
-  personalityTags: string[];
-  bodyType: 'hourglass' | 'rectangle' | 'triangle' | 'inverted-triangle' | 'oval' | 'not-specified';
-  seasonalPreferences: {
+  favoriteColors?: string[];
+  favoriteStyles?: string[];
+  personalityTags?: string[];
+  bodyType?: 'hourglass' | 'rectangle' | 'triangle' | 'inverted-triangle' | 'oval' | 'not-specified';
+  seasonalPreferences?: {
     spring: { enabled: boolean; temperatureRange: [number, number] };
     summer: { enabled: boolean; temperatureRange: [number, number] };
     autumn: { enabled: boolean; temperatureRange: [number, number] };
     winter: { enabled: boolean; temperatureRange: [number, number] };
     all: { enabled: boolean; temperatureRange: [number, number] };
   };
-  outfitReminders: boolean;
-  reminderTime: string;
-  occasionPreferences: string[];
-  climatePreferences: string[];
+  outfitReminders?: boolean;
+  reminderTime?: string;
+  occasionPreferences?: string[];
+  climatePreferences?: string[];
   weatherLocation?: { city: string; country: string };
-  useTrendsGlobal: boolean;
-  useTrendsLocal: boolean;
-  useOnlyWardrobe: boolean;
-  temperatureUnit: 'C' | 'F';
-  weeklyEmailUpdates: boolean;
-  notifyNewOutfits: boolean;
-  notifyWeatherChanges: boolean;
-  pronouns: 'he/him' | 'she/her' | 'they/them' | 'not-specified';
-  appearanceSettings: {
+  useTrendsGlobal?: boolean;
+  useTrendsLocal?: boolean;
+  useOnlyWardrobe?: boolean;
+  temperatureUnit?: 'C' | 'F';
+  weeklyEmailUpdates?: boolean;
+  notifyNewOutfits?: boolean;
+  notifyWeatherChanges?: boolean;
+  pronouns?: 'he/him' | 'she/her' | 'they/them' | 'not-specified';
+  appearanceSettings?: {
     theme: 'light' | 'dark' | 'system';
     highContrast: boolean;
     reduceMotion: boolean;
@@ -70,7 +70,7 @@ export interface ClothingItem {
   pattern?: string;
   fabric?: string;
   material?: string;
-  season: string[];
+  season?: string[];
   sleeveLength?: string;
   neckline?: string;
   fit?: string;
@@ -87,12 +87,12 @@ export interface ClothingItem {
   image?: string;
   dateAdded: Date;
   timesWorn: number;
-  lastWorn: Date | undefined;
+  lastWorn?: Date | undefined;
   brand?: string;
   size?: string;
   condition?: string;
   notes?: string;
-  userId: string;
+  userId?: string;
   favorite: boolean;
   cost?: number;
   currency?: string;
@@ -102,23 +102,24 @@ export interface ClothingItem {
   archived?: boolean;
   source?: string;
   occasions?: string[];
+  category?: string;
 }
 
 export interface Outfit {
   id: string;
   name: string;
   items: string[];
-  occasions: string[];
-  occasion: string;
-  season: string[];
-  seasons: string[];
+  occasions?: string[];
+  occasion?: string;
+  season?: string[];
+  seasons?: string[];
   favorite: boolean;
   timesWorn: number;
-  lastWorn: Date | undefined;
+  lastWorn?: Date | undefined;
   dateAdded: Date;
-  personality_tags: string[];
-  color_scheme: string;
-  colors: string[];
+  personality_tags?: string[];
+  color_scheme?: string;
+  colors?: string[];
   notes?: string;
   tags?: string[];
 }
@@ -137,6 +138,8 @@ export interface OutfitLog {
   customActivity?: string;
   user_id: string;
   askForAiSuggestion?: boolean;
+  aiSuggested?: boolean;
+  aiSuggestionFeedback?: string;
 }
 
 export interface OutfitLogExtended extends OutfitLog {
