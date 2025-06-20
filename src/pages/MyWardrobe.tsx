@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 
@@ -19,7 +19,6 @@ const MyWardrobe = () => {
   const { clothingItems, isLoadingItems, addClothingItem, deleteClothingItem, updateClothingItem } = useWardrobeData();
   
   const [showFilters, setShowFilters] = useState(false);
-  const [filteredItems, setFilteredItems] = useState<ClothingItem[]>([]);
   const [filterApplied, setFilterApplied] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
@@ -35,21 +34,6 @@ const MyWardrobe = () => {
   const [colorFilter, setColorFilter] = useState<string | null>(null);
   const [seasonFilter, setSeasonFilter] = useState<ClothingSeason | null>(null);
   const [sortOrder, setSortOrder] = useState<string | null>(null);
-  
-  // State to prevent unnecessary refreshes
-  const [cachedItems, setCachedItems] = useState<ClothingItem[]>([]);
-  const [cachedFilteredItems, setCachedFilteredItems] = useState<ClothingItem[]>([]);
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
-  
-  // Cache clothing items whenever they change
-  useEffect(() => {
-    if (clothingItems.length > 0 && isInitialLoad) {
-      setCachedItems(clothingItems);
-      setIsInitialLoad(false);
-    } else if (!isLoadingItems && !isInitialLoad) {
-      setCachedItems(clothingItems);
-    }
-  }, [clothingItems, isLoadingItems, isInitialLoad]);
 
   const handleUploadNew = () => {
     if (!isAuthenticated) {
@@ -94,25 +78,24 @@ const MyWardrobe = () => {
     // Match logic would be implemented here
   };
   
-  // Get unique values for filters
-  const getUniqueCategories = () => {
-    const categories = cachedItems.map(item => item.type || item.category || '').filter(Boolean);
+  // Memoized unique values for filters
+  const uniqueCategories = useMemo(() => {
+    const categories = clothingItems.map(item => item.type || item.category || '').filter(Boolean);
     return [...new Set(categories)];
-  };
+  }, [clothingItems]);
   
-  const getUniqueColors = () => {
-    const colors = cachedItems.map(item => item.color || '').filter(Boolean);
+  const uniqueColors = useMemo(() => {
+    const colors = clothingItems.map(item => item.color || '').filter(Boolean);
     return [...new Set(colors)];
-  };
+  }, [clothingItems]);
   
   // Handle search query changes
   const handleSearch = useCallback((query: string) => {
     setSearchQuery(query);
   }, []);
   
-  // Apply filters and search to the clothing items
-  const applyFilters = useCallback(() => {
-    let filtered = [...cachedItems];
+  const filteredItems = useMemo(() => {
+    let filtered = [...clothingItems];
     
     // Apply search filter
     if (searchQuery.trim() !== '') {
@@ -170,17 +153,12 @@ const MyWardrobe = () => {
       }
     }
     
-    setFilterApplied(!!searchQuery || !!categoryFilter || !!colorFilter || !!seasonFilter || !!sortOrder);
-    setCachedFilteredItems(filtered);
-    setFilteredItems(filtered);
-  }, [cachedItems, searchQuery, categoryFilter, colorFilter, seasonFilter, sortOrder]);
-  
-  // Apply filters when any filter option changes or search query changes
+    return filtered;
+  }, [clothingItems, searchQuery, categoryFilter, colorFilter, seasonFilter, sortOrder]);
+
   useEffect(() => {
-    if (cachedItems.length > 0) {
-      applyFilters();
-    }
-  }, [applyFilters, cachedItems, searchQuery, categoryFilter, colorFilter, seasonFilter, sortOrder]);
+    setFilterApplied(!!searchQuery || !!categoryFilter || !!colorFilter || !!seasonFilter || !!sortOrder);
+  }, [searchQuery, categoryFilter, colorFilter, seasonFilter, sortOrder]);
   
   // Reset all filters
   const clearAllFilters = () => {
@@ -190,7 +168,6 @@ const MyWardrobe = () => {
     setSeasonFilter(null);
     setSortOrder(null);
     setFilterApplied(false);
-    setFilteredItems(cachedItems);
   };
 
   // Define the seasons array
@@ -200,7 +177,7 @@ const MyWardrobe = () => {
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-purple-950 text-white pb-20">
       <WardrobeHeader 
         onUpload={handleAddItem} 
-        clothingItems={cachedItems} 
+        clothingItems={clothingItems} 
         isAuthenticated={isAuthenticated}
       />
       
@@ -208,7 +185,7 @@ const MyWardrobe = () => {
         <WardrobeAuthNotice isAuthenticated={isAuthenticated} />
         
         {/* Only show controls and search if we have items or loading */}
-        {(cachedItems.length > 0 || isLoadingItems) && (
+        {(clothingItems.length > 0 || isLoadingItems) && (
           <div className="space-y-4">
             <WardrobeSearch onSearch={handleSearch} />
             
@@ -222,7 +199,7 @@ const MyWardrobe = () => {
         )}
         
         {/* Filter Bar - Only show if we have items */}
-        {cachedItems.length > 0 && (
+        {clothingItems.length > 0 && (
           <motion.div 
             className="mt-6"
             initial={{ opacity: 0, y: 20 }}
@@ -230,8 +207,8 @@ const MyWardrobe = () => {
             transition={{ duration: 0.3 }}
           >
             <WardrobeFilterBar 
-              uniqueCategories={getUniqueCategories()}
-              uniqueColors={getUniqueColors()}
+              uniqueCategories={uniqueCategories}
+              uniqueColors={uniqueColors}
               seasons={seasons}
               categoryFilter={categoryFilter}
               colorFilter={colorFilter}
@@ -244,7 +221,7 @@ const MyWardrobe = () => {
               clearAllFilters={clearAllFilters}
               filterApplied={filterApplied}
               filteredItemsCount={filteredItems.length}
-              totalItemsCount={cachedItems.length}
+              totalItemsCount={clothingItems.length}
             />
           </motion.div>
         )}
@@ -254,7 +231,7 @@ const MyWardrobe = () => {
           onUpload={handleAddItem}
           isAuthenticated={isAuthenticated}
           isLoadingItems={isLoadingItems}
-          itemCount={cachedItems.length}
+          itemCount={clothingItems.length}
         />
         
         {/* Main Content */}
@@ -262,7 +239,7 @@ const MyWardrobe = () => {
           isLoadingItems={isLoadingItems}
           filterApplied={filterApplied}
           filteredItems={filteredItems}
-          allItems={cachedItems}
+          allItems={clothingItems}
           isAuthenticated={isAuthenticated}
           handleDeleteItem={handleDeleteItem}
           handleToggleFavorite={handleToggleFavorite}
