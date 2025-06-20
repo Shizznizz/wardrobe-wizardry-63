@@ -17,6 +17,7 @@ import StyleQuizPage from '@/pages/StyleQuiz';
 import QuizResults from '@/pages/QuizResults';
 import AdminDashboard from '@/pages/AdminDashboard';
 import Pitch from '@/pages/Pitch';
+import OutfitPreviewTest from '@/pages/OutfitPreviewTest';
 
 // Providers and Components
 import { Toaster } from 'sonner';
@@ -54,6 +55,8 @@ function App() {
                 <Route path="/pitch" element={<PageLayout><Pitch /></PageLayout>} />
                 {/* Admin Dashboard - secure route */}
                 <Route path="/admin-dashboard" element={<AdminDashboard />} />
+                {/* Test page for OutfitPreviewCard */}
+                <Route path="/outfit-preview-test" element={<PageLayout><OutfitPreviewTest /></PageLayout>} />
               </Routes>
             </Router>
             <Toaster position="top-center" richColors closeButton />
