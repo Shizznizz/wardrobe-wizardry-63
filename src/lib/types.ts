@@ -135,6 +135,9 @@ export interface PersonalizedItem extends ClothingItem {
   personalizedReason?: string;
 }
 
+// Add TrendingClothingItem type alias
+export type TrendingClothingItem = ExtendedClothingItem;
+
 export interface Outfit {
   id: string;
   name: string;
@@ -176,5 +179,3 @@ export interface OutfitLogExtended extends OutfitLog {
   outfitName?: string;
   outfitDetails?: Outfit;
 }
-
-
