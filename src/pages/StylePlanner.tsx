@@ -6,6 +6,7 @@ import EnhancedHeroSection from '@/components/shared/EnhancedHeroSection';
 import OutfitCalendar from '@/components/outfits/OutfitCalendar';
 import { useOutfitState } from '@/hooks/useOutfitState';
 import { useLocationStorage } from '@/hooks/useLocationStorage';
+import { sampleOutfits, sampleClothingItems } from '@/lib/wardrobeData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart3, CalendarIcon, CalendarDays, Clock, Users, Sparkles, Activity, PieChart } from 'lucide-react';
 import { ChartContainer, ChartTooltipContent, ChartTooltip } from '@/components/ui/chart';
@@ -13,9 +14,10 @@ import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, CartesianGrid, Toolti
 import { useIsMobile } from '@/hooks/use-mobile';
 import CollapsibleOliviaSection from '@/components/outfits/CollapsibleOliviaSection';
 import MissedOpportunitiesSection from '@/components/outfits/calendar/MissedOpportunitiesSection';
+import OutfitPreviewCard from '@/components/outfits/OutfitPreviewCard';
 
 const StylePlanner = () => {
-  const { outfits, clothingItems, outfitLogs, addOutfitLog } = useOutfitState();
+  const { outfits, clothingItems, outfitLogs, addOutfitLog } = useOutfitState(sampleOutfits, sampleClothingItems);
   const { savedLocation } = useLocationStorage();
   const [showTimeline, setShowTimeline] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -88,6 +90,40 @@ const StylePlanner = () => {
             onChatClick={handleChatClick} 
             selectedDate={selectedDate}
           />
+        </motion.div>
+      </section>
+      
+      {/* Outfit Preview Cards Section */}
+      <section className="container mx-auto px-4 py-6">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 0.5 }}
+          className="space-y-6"
+        >
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold mb-2 text-purple-200">Today's Style Inspiration</h2>
+            <p className="text-purple-200/80">Curated outfit ideas perfect for your day</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {outfits.slice(0, 6).map((outfit) => (
+              <OutfitPreviewCard
+                key={outfit.id}
+                outfit={outfit}
+                clothingItems={clothingItems}
+                weather={{
+                  temperature: 22,
+                  condition: 'Partly Cloudy',
+                  city: savedLocation?.city || 'Your City'
+                }}
+                activitySuggestion="casual day out"
+                onCardClick={(outfit) => {
+                  console.log('Outfit clicked:', outfit.name);
+                }}
+              />
+            ))}
+          </div>
         </motion.div>
       </section>
       
