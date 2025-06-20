@@ -224,6 +224,9 @@ const OutfitPreviewCard = ({
 };
 
 const generateOliviaTip = (outfit: Outfit, weather?: WeatherInfo, activity?: string): string => {
+  const outfitItems = outfit.items || [];
+  const hasMultipleItems = outfitItems.length > 1;
+  
   const tips = [
     `This ${outfit.name.toLowerCase()} combination creates a perfect balance of style and comfort.`,
     `I love how the colors in this outfit complement each other beautifully.`,
@@ -231,6 +234,16 @@ const generateOliviaTip = (outfit: Outfit, weather?: WeatherInfo, activity?: str
     `The silhouette of this outfit is incredibly flattering and on-trend.`,
     `This combination shows off your personal style while staying practical.`
   ];
+
+  if (hasMultipleItems) {
+    tips.push(`The way you've layered these ${outfitItems.length} pieces creates such a cohesive look!`);
+  }
+  
+  if (outfit.occasions?.includes('formal')) {
+    tips.push(`This sophisticated ensemble is perfect for making a lasting impression.`);
+  } else if (outfit.occasions?.includes('casual')) {
+    tips.push(`I love how effortlessly chic this casual look is - comfort meets style perfectly.`);
+  }
 
   if (weather && weather.temperature < 15) {
     tips.push(`Perfect for cooler weather - the layers will keep you warm and stylish.`);
