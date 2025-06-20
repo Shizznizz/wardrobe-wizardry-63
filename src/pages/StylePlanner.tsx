@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { format } from 'date-fns';
 import EnhancedHeroSection from '@/components/shared/EnhancedHeroSection';
 import OutfitCalendar from '@/components/outfits/OutfitCalendar';
+import WeeklyOutfitPlanner from '@/components/style-planner/WeeklyOutfitPlanner';
 import { useOutfitState } from '@/hooks/useOutfitState';
 import { useLocationStorage } from '@/hooks/useLocationStorage';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -51,6 +52,22 @@ const StylePlanner = () => {
           }
         ]}
       />
+
+      {/* Weekly Outfit Planner Section */}
+      <section className="container mx-auto px-4 pt-10 pb-12">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1, duration: 0.5 }}
+        >
+          <WeeklyOutfitPlanner
+            outfits={outfits}
+            clothingItems={clothingItems}
+            outfitLogs={outfitLogs}
+            onAddLog={addOutfitLog}
+          />
+        </motion.div>
+      </section>
       
       {/* My Style Calendar Section */}
       <section className="container mx-auto px-4 pt-10 pb-12">

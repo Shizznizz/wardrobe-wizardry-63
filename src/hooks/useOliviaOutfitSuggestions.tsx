@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { Outfit, ClothingItem, WeatherInfo, ClothingSeason } from '@/lib/types';
 import { useWardrobeData } from '@/hooks/useWardrobeData';
@@ -183,7 +184,7 @@ export const useOliviaOutfitSuggestions = () => {
           ...(accessoryItem?.color ? [accessoryItem.color] : [])
         ];
         
-        outfits.push({
+        outfits.push(createDefaultOutfit({
           id: `olivia-suggestion-${i}`,
           name: outfitNames[i] || `${currentSeason.charAt(0).toUpperCase() + currentSeason.slice(1)} Outfit`,
           items: outfitItems,
@@ -191,9 +192,8 @@ export const useOliviaOutfitSuggestions = () => {
           occasions: [mostCommonOccasion],
           occasion: mostCommonOccasion,
           colors: colors,
-          personality_tags: ['trendy', 'casual'],
-          dateAdded: new Date()
-        });
+          personality_tags: ['trendy', 'casual']
+        }));
       }
       
       setGeneratedOutfits(outfits);
@@ -203,14 +203,14 @@ export const useOliviaOutfitSuggestions = () => {
     } finally {
       setIsGenerating(false);
     }
-  }, []);
+  }, [clothingItems, currentSeason, currentWeather]);
 
   // Generate outfits when clothing items or weather change
   useEffect(() => {
     if (!isLoadingItems && clothingItems && clothingItems.length > 0) {
       generateOutfitSuggestions();
     }
-  }, [isLoadingItems, clothingItems, currentSeason, currentWeather]);
+  }, [isLoadingItems, clothingItems, generateOutfitSuggestions]);
 
   return {
     outfits: generatedOutfits,
