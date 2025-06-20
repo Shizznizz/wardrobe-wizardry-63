@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Lock, Check } from 'lucide-react';
 import { ClothingItem, Outfit } from '@/lib/types';
+import { createDefaultOutfit } from '@/lib/itemHelpers';
 import OutfitGrid from '@/components/OutfitGrid';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -49,16 +50,19 @@ const OutfitSelectionTabs = ({
             toast.error('Failed to load your outfits');
             setUserOutfits([]);
           } else if (data) {
-            // Format the data to match Outfit type
-            const formattedOutfits: Outfit[] = data.map(outfitData => ({
-              id: outfitData.id,
-              name: outfitData.name || `Outfit ${outfitData.id.slice(0, 4)}`,
-              items: outfitData.items || [],
-              seasons: outfitData.season || ['all'],
-              occasions: outfitData.occasions || [outfitData.occasion || 'casual'],
-              favorite: outfitData.favorite || false,
-              dateAdded: new Date(outfitData.date_added || outfitData.created_at)
-            }));
+            // Format the data to match Outfit type using helper function
+            const formattedOutfits: Outfit[] = data.map(outfitData => 
+              createDefaultOutfit({
+                id: outfitData.id,
+                name: outfitData.name || `Outfit ${outfitData.id.slice(0, 4)}`,
+                items: outfitData.items || [],
+                seasons: outfitData.season || ['all'],
+                occasions: outfitData.occasions || [outfitData.occasion || 'casual'],
+                favorite: outfitData.favorite || false,
+                timesWorn: outfitData.times_worn || 0,
+                dateAdded: new Date(outfitData.date_added || outfitData.created_at)
+              })
+            );
             
             setUserOutfits(formattedOutfits);
           }
@@ -79,7 +83,7 @@ const OutfitSelectionTabs = ({
     
     // Scroll to preview section
     setTimeout(() => {
-      document.getElementById('preview-section')?.scrollIntoView({ behavior: 'smooth' });
+      document.getElementById('result-preview-section')?.scrollIntoView({ behavior: 'smooth' });
     }, 100);
   };
   
