@@ -31,7 +31,7 @@ interface WardrobeFilterBarProps {
   totalItemsCount: number;
 }
 
-const WardrobeFilterBar = ({
+const WardrobeFilterBar = React.memo(({
   uniqueCategories,
   uniqueColors,
   seasons,
@@ -217,6 +217,8 @@ const WardrobeFilterBar = ({
       )}
     </>
   );
-};
+});
+
+WardrobeFilterBar.displayName = 'WardrobeFilterBar';
 
 export default WardrobeFilterBar;
