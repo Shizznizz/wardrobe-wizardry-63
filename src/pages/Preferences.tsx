@@ -25,23 +25,19 @@ const Preferences = () => {
     seasonalPreferences: {
       spring: { 
         enabled: true, 
-        temperatureRange: [10, 22],
-        timeOfYear: [1, 3]
+        temperatureRange: [10, 22]
       },
       summer: { 
         enabled: true, 
-        temperatureRange: [20, 35],
-        timeOfYear: [1, 3]
+        temperatureRange: [20, 35]
       },
       autumn: { 
         enabled: true, 
-        temperatureRange: [8, 20],
-        timeOfYear: [1, 3]
+        temperatureRange: [8, 20]
       },
       winter: { 
         enabled: true, 
-        temperatureRange: [-5, 10],
-        timeOfYear: [1, 3]
+        temperatureRange: [-5, 10]
       },
       all: { 
         enabled: true, 

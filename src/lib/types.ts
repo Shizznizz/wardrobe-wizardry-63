@@ -12,6 +12,15 @@ export interface User {
 export type PersonalityTag = string;
 export type BodyType = 'hourglass' | 'rectangle' | 'triangle' | 'inverted-triangle' | 'oval' | 'not-specified';
 
+export interface StyleQuizResult {
+  styleType?: string;
+  mainColors?: string[];
+  preferredItems?: string[];
+  styleSummary?: string;
+  completedAt?: string;
+  personalityTags?: string[];
+}
+
 export interface UserPreferences {
   firstName?: string;
   lastName?: string;
@@ -45,6 +54,7 @@ export interface UserPreferences {
     highContrast: boolean;
     reduceMotion: boolean;
   };
+  styleQuizResult?: StyleQuizResult | null;
 }
 
 export type ClothingType = string;

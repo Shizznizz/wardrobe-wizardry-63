@@ -99,8 +99,7 @@ const Profile = () => {
               theme: 'system',
               highContrast: false,
               reduceMotion: false
-            },
-            styleQuizResult: null // Will be populated below if available
+            }
           };
           setUserPreferences(preferences);
           setOriginalPreferences(JSON.parse(JSON.stringify(preferences))); // Deep copy for comparison
@@ -134,8 +133,7 @@ const Profile = () => {
               theme: 'system',
               highContrast: false,
               reduceMotion: false
-            },
-            styleQuizResult: null
+            }
           };
           setUserPreferences(defaults);
           setOriginalPreferences(JSON.parse(JSON.stringify(defaults))); // Deep copy for comparison
