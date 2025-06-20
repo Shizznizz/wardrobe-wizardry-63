@@ -174,3 +174,11 @@ export const getItemCompatibilityScore = (item1: ClothingItem, item2: ClothingIt
   
   return Math.min(score, 100);
 };
+
+export interface WardrobeFilters {
+  types: string[];
+  colors: string[];
+  seasons: string[];
+  occasions: string[];
+  favorites: boolean;
+}

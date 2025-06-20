@@ -38,8 +38,8 @@ const ShopByMood = ({ onAddToWishlist, onTryItem }: ShopByMoodProps) => {
         image: '/lovable-uploads/45448793-cb34-4e4c-9dd8-de95f86f25ca.png',
         price: 295,
         mood: 'confident',
-        availableColors: ['black', 'navy', 'charcoal'],
-        season: ['all']
+        season: ['all'],
+        availableColors: ['black', 'navy', 'charcoal']
       }),
       createMoodClothingItem({
         id: 'conf-2',
@@ -51,8 +51,8 @@ const ShopByMood = ({ onAddToWishlist, onTryItem }: ShopByMoodProps) => {
         image: '/lovable-uploads/b87d5aa1-136e-42c6-b11e-b4651dce8f93.png',
         price: 695,
         mood: 'confident',
-        availableColors: ['red', 'black', 'nude'],
-        season: ['all']
+        season: ['all'],
+        availableColors: ['red', 'black', 'nude']
       })
     ],
     romantic: [
@@ -66,8 +66,8 @@ const ShopByMood = ({ onAddToWishlist, onTryItem }: ShopByMoodProps) => {
         image: '/lovable-uploads/22f42482-be2b-4588-a88f-47730da3a352.png',
         price: 198,
         mood: 'romantic',
-        availableColors: ['blush', 'ivory', 'sage'],
-        season: ['spring', 'summer']
+        season: ['spring', 'summer'],
+        availableColors: ['blush', 'ivory', 'sage']
       }),
       createMoodClothingItem({
         id: 'rom-2',
@@ -79,8 +79,8 @@ const ShopByMood = ({ onAddToWishlist, onTryItem }: ShopByMoodProps) => {
         image: '/lovable-uploads/976eb626-3977-4b64-a550-f81af9fad23b.png',
         price: 150,
         mood: 'romantic',
-        availableColors: ['pearl', 'gold'],
-        season: ['all']
+        season: ['all'],
+        availableColors: ['pearl', 'gold']
       })
     ],
     edgy: [
@@ -94,8 +94,8 @@ const ShopByMood = ({ onAddToWishlist, onTryItem }: ShopByMoodProps) => {
         image: '/lovable-uploads/117f17c5-142c-43a5-88dd-5fb06adbbe27.png',
         price: 398,
         mood: 'edgy',
-        availableColors: ['black', 'brown'],
-        season: ['autumn', 'winter', 'spring']
+        season: ['autumn', 'winter', 'spring'],
+        availableColors: ['black', 'brown']
       })
     ],
     playful: [
@@ -109,8 +109,8 @@ const ShopByMood = ({ onAddToWishlist, onTryItem }: ShopByMoodProps) => {
         image: '/lovable-uploads/5b4ac746-a6e4-4d29-8f41-3a8a6724b87d.png',
         price: 225,
         mood: 'playful',
-        availableColors: ['multicolor', 'pastels'],
-        season: ['spring', 'autumn']
+        season: ['spring', 'autumn'],
+        availableColors: ['multicolor', 'pastels']
       })
     ],
     elegant: [
@@ -124,8 +124,8 @@ const ShopByMood = ({ onAddToWishlist, onTryItem }: ShopByMoodProps) => {
         image: '/lovable-uploads/034e8d801-61ee-4254-a7ce-39b52a3a7e65.png',
         price: 1290,
         mood: 'elegant',
-        availableColors: ['camel', 'navy', 'black'],
-        season: ['autumn', 'winter']
+        season: ['autumn', 'winter'],
+        availableColors: ['camel', 'navy', 'black']
       })
     ],
     casual: [
@@ -139,8 +139,8 @@ const ShopByMood = ({ onAddToWishlist, onTryItem }: ShopByMoodProps) => {
         image: '/lovable-uploads/510dbdf2-837f-4649-8da3-bd06977fa677.png',
         price: 98,
         mood: 'casual',
-        availableColors: ['blue', 'black', 'white'],
-        season: ['spring', 'summer', 'autumn']
+        season: ['spring', 'summer', 'autumn'],
+        availableColors: ['blue', 'black', 'white']
       })
     ]
   };

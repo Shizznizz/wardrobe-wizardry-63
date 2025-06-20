@@ -247,9 +247,7 @@ const ShopAndTry = () => {
       id: itemId,
       name: "Item " + itemId,
       type: "top",
-      color: "black",
-      season: ["all"],
-      image: ""
+      color: "black"
     };
     handleTryOnTrendingItem(mockItem);
   };
@@ -261,9 +259,7 @@ const ShopAndTry = () => {
       id: itemId,
       name: "Item " + itemId,
       type: "top",
-      color: "black",
-      season: ["all"],
-      image: ""
+      color: "black"
     };
     handleStylistSuggestion(mockItem);
   };
@@ -310,9 +306,7 @@ const ShopAndTry = () => {
       id: itemId,
       name: "Item " + itemId,
       type: "top",
-      color: "black",
-      season: ["all"],
-      image: ""
+      color: "black"
     };
     handleSeeHowToWear(mockItem);
   };
@@ -323,9 +317,7 @@ const ShopAndTry = () => {
       id: itemId,
       name: "Item " + itemId,
       type: "top",
-      color: "black",
-      season: ["all"],
-      image: ""
+      color: "black"
     };
     handleSaveToWishlist(mockItem);
   };
@@ -428,7 +420,6 @@ const ShopAndTry = () => {
         
         {/* SECTION 5: SHOP BY MOOD (CATEGORY-BASED ITEMS) */}
         <ShopByMood 
-          id="shop-by-mood"
           isPremiumUser={isPremiumUser || isAuthenticated}
           onTryItem={handleTryOnTrendingItemForShopByMood}
           onStylistSuggestion={handleStylistSuggestionForShopByMood}

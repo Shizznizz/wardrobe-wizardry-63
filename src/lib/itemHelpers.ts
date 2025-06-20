@@ -1,4 +1,3 @@
-
 import { ClothingItem, Outfit, ExtendedClothingItem, MoodClothingItem, PersonalizedItem } from './types';
 
 export const createDefaultClothingItem = (overrides: Partial<ClothingItem>): ClothingItem => ({
@@ -45,6 +44,7 @@ export const createMoodClothingItem = (overrides: Partial<MoodClothingItem>): Mo
   favorite: false,
   season: ['all'],
   occasions: ['casual'],
+  availableColors: [],
   ...overrides
 });
 

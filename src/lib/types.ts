@@ -123,6 +123,7 @@ export interface MoodClothingItem extends ClothingItem {
   affiliateUrl?: string;
   tags?: string[];
   mood?: string;
+  availableColors?: string[];
 }
 
 export interface PersonalizedItem extends ClothingItem {

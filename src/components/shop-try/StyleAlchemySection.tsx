@@ -1,19 +1,22 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Sparkles, Heart, ShoppingBag } from 'lucide-react';
-import { ClothingItem } from '@/lib/types';
+import { ClothingItem, WeatherInfo } from '@/lib/types';
 import { createShopClothingItem } from '@/lib/itemHelpers';
 import { toast } from 'sonner';
 
 interface StyleAlchemySectionProps {
   onAddToCart?: (item: ClothingItem) => void;
   onTryItem?: (item: ClothingItem) => void;
+  weather?: WeatherInfo;
+  isPremiumUser?: boolean;
+  onUpgradeToPremium?: () => void;
+  customLocation?: { city: string; country: string } | null;
 }
 
-const StyleAlchemySection = ({ onAddToCart, onTryItem }: StyleAlchemySectionProps) => {
+const StyleAlchemySection = ({ onAddToCart, onTryItem, weather }: StyleAlchemySectionProps) => {
   const [selectedItems, setSelectedItems] = useState<ClothingItem[]>([]);
 
   const alchemyItem = createShopClothingItem({
