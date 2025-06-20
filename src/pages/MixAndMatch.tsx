@@ -11,6 +11,7 @@ import OliviaRecommendationSection from '@/components/outfits/mix-match/OliviaRe
 import CreateOutfitSection from '@/components/outfits/mix-match/CreateOutfitSection';
 import OutfitMagicSection from '@/components/outfits/mix-match/OutfitMagicSection';
 import CreateOutfitDialog from '@/components/outfits/mix-match/CreateOutfitDialog';
+import OutfitPreviewCard from '@/components/outfits/OutfitPreviewCard';
 import { useAuth } from '@/hooks/useAuth';
 import { useWardrobeData } from '@/hooks/useWardrobeData';
 import EnhancedHeroSection from '@/components/shared/EnhancedHeroSection';
@@ -23,6 +24,10 @@ import { supabase } from '@/integrations/supabase/client';
 const MixAndMatch = () => {
   const { isAuthenticated, user } = useAuth();
   const { clothingItems, outfits, isLoadingItems, isLoadingOutfits, refreshOutfits } = useWardrobeData();
+  
+  const getClothingItemById = (id: string) => {
+    return clothingItems.find(item => item.id === id);
+  };
   
   const [currentOutfit, setCurrentOutfit] = useState<Outfit | null>(null);
   const [showRecommendation, setShowRecommendation] = useState(false);
@@ -253,6 +258,34 @@ const MixAndMatch = () => {
               isPremium={isAuthenticated}
               isLoading={isLoadingItems}
             />
+            
+            {outfits && outfits.length > 0 && (
+              <div className="space-y-6">
+                <h2 className="text-2xl font-bold text-white text-center">Outfit Preview Demo</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {outfits.slice(0, 3).map((outfit) => (
+                    <OutfitPreviewCard
+                      key={outfit.id}
+                      outfit={outfit}
+                      clothingItems={clothingItems}
+                      getClothingItemById={getClothingItemById}
+                      stylingTip={{
+                        title: "Perfect for Today",
+                        description: "This outfit combines comfort and style perfectly for your daily activities. The color coordination creates a harmonious look that's both trendy and timeless."
+                      }}
+                      weatherInfo={{
+                        temperature: `${temperature}°F`,
+                        condition: weatherCondition
+                      }}
+                      activityInfo={{
+                        activity: situation,
+                        timeOfDay: 'all-day'
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
           </>
         )}
       </div>
