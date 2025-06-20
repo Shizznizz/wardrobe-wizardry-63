@@ -12,10 +12,25 @@ import { toast } from 'sonner';
 interface ShopByMoodProps {
   onAddToWishlist?: (item: MoodClothingItem) => void;
   onTryItem?: (item: MoodClothingItem) => void;
+  isPremiumUser?: boolean;
+  onStylistSuggestion?: (item: MoodClothingItem) => void;
+  onUpgradeToPremium?: () => void;
+  activeMood?: string | null;
+  onMoodSelect?: (mood: string) => void;
+  onSaveToWishlist?: (itemId: string) => void;
 }
 
-const ShopByMood = ({ onAddToWishlist, onTryItem }: ShopByMoodProps) => {
-  const [selectedMood, setSelectedMood] = useState<string>('confident');
+const ShopByMood = ({ 
+  onAddToWishlist, 
+  onTryItem,
+  isPremiumUser,
+  onStylistSuggestion,
+  onUpgradeToPremium,
+  activeMood,
+  onMoodSelect,
+  onSaveToWishlist
+}: ShopByMoodProps) => {
+  const [selectedMood, setSelectedMood] = useState<string>(activeMood || 'confident');
 
   const moods = [
     { id: 'confident', name: 'Confident', color: 'from-red-500 to-pink-500', emoji: '💪' },
@@ -38,8 +53,7 @@ const ShopByMood = ({ onAddToWishlist, onTryItem }: ShopByMoodProps) => {
         image: '/lovable-uploads/45448793-cb34-4e4c-9dd8-de95f86f25ca.png',
         price: 295,
         mood: 'confident',
-        season: ['all'],
-        availableColors: ['black', 'navy', 'charcoal']
+        season: ['all']
       }),
       createMoodClothingItem({
         id: 'conf-2',
@@ -51,8 +65,7 @@ const ShopByMood = ({ onAddToWishlist, onTryItem }: ShopByMoodProps) => {
         image: '/lovable-uploads/b87d5aa1-136e-42c6-b11e-b4651dce8f93.png',
         price: 695,
         mood: 'confident',
-        season: ['all'],
-        availableColors: ['red', 'black', 'nude']
+        season: ['all']
       })
     ],
     romantic: [
@@ -66,8 +79,7 @@ const ShopByMood = ({ onAddToWishlist, onTryItem }: ShopByMoodProps) => {
         image: '/lovable-uploads/22f42482-be2b-4588-a88f-47730da3a352.png',
         price: 198,
         mood: 'romantic',
-        season: ['spring', 'summer'],
-        availableColors: ['blush', 'ivory', 'sage']
+        season: ['spring', 'summer']
       }),
       createMoodClothingItem({
         id: 'rom-2',
@@ -79,8 +91,7 @@ const ShopByMood = ({ onAddToWishlist, onTryItem }: ShopByMoodProps) => {
         image: '/lovable-uploads/976eb626-3977-4b64-a550-f81af9fad23b.png',
         price: 150,
         mood: 'romantic',
-        season: ['all'],
-        availableColors: ['pearl', 'gold']
+        season: ['all']
       })
     ],
     edgy: [
@@ -94,8 +105,7 @@ const ShopByMood = ({ onAddToWishlist, onTryItem }: ShopByMoodProps) => {
         image: '/lovable-uploads/117f17c5-142c-43a5-88dd-5fb06adbbe27.png',
         price: 398,
         mood: 'edgy',
-        season: ['autumn', 'winter', 'spring'],
-        availableColors: ['black', 'brown']
+        season: ['autumn', 'winter', 'spring']
       })
     ],
     playful: [
@@ -109,8 +119,7 @@ const ShopByMood = ({ onAddToWishlist, onTryItem }: ShopByMoodProps) => {
         image: '/lovable-uploads/5b4ac746-a6e4-4d29-8f41-3a8a6724b87d.png',
         price: 225,
         mood: 'playful',
-        season: ['spring', 'autumn'],
-        availableColors: ['multicolor', 'pastels']
+        season: ['spring', 'autumn']
       })
     ],
     elegant: [
@@ -124,8 +133,7 @@ const ShopByMood = ({ onAddToWishlist, onTryItem }: ShopByMoodProps) => {
         image: '/lovable-uploads/034e8d801-61ee-4254-a7ce-39b52a3a7e65.png',
         price: 1290,
         mood: 'elegant',
-        season: ['autumn', 'winter'],
-        availableColors: ['camel', 'navy', 'black']
+        season: ['autumn', 'winter']
       })
     ],
     casual: [
@@ -139,8 +147,7 @@ const ShopByMood = ({ onAddToWishlist, onTryItem }: ShopByMoodProps) => {
         image: '/lovable-uploads/510dbdf2-837f-4649-8da3-bd06977fa677.png',
         price: 98,
         mood: 'casual',
-        season: ['spring', 'summer', 'autumn'],
-        availableColors: ['blue', 'black', 'white']
+        season: ['spring', 'summer', 'autumn']
       })
     ]
   };
@@ -148,6 +155,9 @@ const ShopByMood = ({ onAddToWishlist, onTryItem }: ShopByMoodProps) => {
   const handleAddToWishlist = (item: MoodClothingItem) => {
     if (onAddToWishlist) {
       onAddToWishlist(item);
+    }
+    if (onSaveToWishlist) {
+      onSaveToWishlist(item.id);
     }
     toast.success(`${item.name} added to wishlist!`);
   };
@@ -157,6 +167,13 @@ const ShopByMood = ({ onAddToWishlist, onTryItem }: ShopByMoodProps) => {
       onTryItem(item);
     }
     toast.success(`Trying on ${item.name}!`);
+  };
+
+  const handleMoodSelect = (mood: string) => {
+    setSelectedMood(mood);
+    if (onMoodSelect) {
+      onMoodSelect(mood);
+    }
   };
 
   const selectedMoodData = moods.find(m => m.id === selectedMood);
@@ -172,7 +189,7 @@ const ShopByMood = ({ onAddToWishlist, onTryItem }: ShopByMoodProps) => {
             <Button
               key={mood.id}
               variant={selectedMood === mood.id ? "default" : "outline"}
-              onClick={() => setSelectedMood(mood.id)}
+              onClick={() => handleMoodSelect(mood.id)}
               className={`
                 ${selectedMood === mood.id 
                   ? `bg-gradient-to-r ${mood.color} text-white border-transparent`

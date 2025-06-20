@@ -1,3 +1,4 @@
+
 import { ClothingItem, ClothingSeason, ClothingOccasion } from '@/lib/types';
 
 export const filterItemsBySearchTerm = (items: ClothingItem[], searchTerm: string): ClothingItem[] => {
@@ -181,4 +182,11 @@ export interface WardrobeFilters {
   seasons: string[];
   occasions: string[];
   favorites: boolean;
+  category: string | null;
+  color: string | null;
+  occasion: string | null;
+  timeFrame: 'all' | 'recent';
+  favorite: boolean | null;
+  weatherAppropriate: boolean | null;
+  searchQuery: string;
 }

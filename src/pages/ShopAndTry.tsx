@@ -47,10 +47,24 @@ const ShopAndTry = () => {
   
   const isMobile = useIsMobile();
 
+  const createMockItem = (overrides: any) => {
+    return {
+      id: overrides.id,
+      name: overrides.name,
+      type: overrides.type,
+      color: overrides.color,
+      dateAdded: new Date(),
+      timesWorn: 0,
+      favorite: false,
+      season: overrides.season || ['all'],
+      image: overrides.image,
+      ...overrides
+    };
+  };
+
   useEffect(() => {
     setIsPremiumUser(isAuthenticated);
     
-    // Detect user's country by IP (mock implementation)
     const detectUserCountry = async () => {
       try {
         setUserCountry('United States');
@@ -69,24 +83,18 @@ const ShopAndTry = () => {
     });
   };
 
-  // Define missing handler functions
   const handleShowStylingOptions = () => {
     toast.info("Opening styling options...");
-    // Implementation would go here in a real app
   };
   
-  // Fix types for file handlers
   const handleUserPhotoUpload = (file: File) => {
-    // Convert File to string URL for display
     const photoUrl = URL.createObjectURL(file);
     setUserPhoto(photoUrl);
     setFinalImage(null);
     toast.success("Photo uploaded successfully!");
   };
 
-  // Fix types for file handlers
   const handleClothingPhotoUpload = (file: File) => {
-    // Convert File to string URL for display
     const photoUrl = URL.createObjectURL(file);
     setClothingPhoto(photoUrl);
     setFinalImage(null);
@@ -110,7 +118,6 @@ const ShopAndTry = () => {
     
     setIsProcessing(true);
     
-    // Simulate processing
     setTimeout(() => {
       setFinalImage(userPhoto);
       setIsProcessing(false);
@@ -142,7 +149,6 @@ const ShopAndTry = () => {
     toast.success("You've been added to our early testers group!");
   };
 
-  // Function that should accept ClothingItem but is actually being passed a string itemId
   const handleTryOnTrendingItem = (item: ClothingItem) => {
     if (item) {
       setClothingPhoto(`/path/to/${item.imageUrl || ''}`);
@@ -157,7 +163,6 @@ const ShopAndTry = () => {
     toast.info(`Showing styles for ${mood} mood`);
   };
 
-  // Modified to accept string parameter instead of ClothingItem
   const handleStylistSuggestion = (item: ClothingItem) => {
     if (item && item.id) {
       const matchedItem = selectedItems.find(i => i.id === item.id);
@@ -171,7 +176,6 @@ const ShopAndTry = () => {
     }
   };
 
-  // Fix type mismatch
   const handleSaveToWishlist = (item: ClothingItem) => {
     if (item) {
       toast.success(`${item.name} added to wishlist!`);
@@ -180,23 +184,19 @@ const ShopAndTry = () => {
     }
   };
 
-  // Fix type signature for onSaveToWardrobe
   const handleSaveToWardrobe = (item: ClothingItem) => {
     toast.success(`${item.name} added to wardrobe!`);
   };
 
   const trackDailyDropClick = (itemId: string) => {
     console.log(`Clicked on daily drop item ${itemId}`);
-    // Analytics tracking would go here
   };
 
-  // Original function expecting a ClothingItem
   const handleSeeHowToWear = (item: ClothingItem) => {
     if (item && item.id) {
       trackDailyDropClick(item.id);
       if (isPremiumUser || isAuthenticated) {
         toast.success("Let me show you how to style this...");
-        // Mock AI logic - would be more sophisticated in real implementation
         setTimeout(() => {
           toast.info("This pairs perfectly with items in your wardrobe!");
         }, 1000);
@@ -206,31 +206,27 @@ const ShopAndTry = () => {
     }
   };
   
-  // Adapter function for EditorsPicks component that expects itemId as string
   const handleSaveToWardrobeAdapter = (itemId: string) => {
-    // Create a minimal ClothingItem with just the id and name to pass to the original handler
-    const mockItem: ClothingItem = {
+    const mockItem: ClothingItem = createMockItem({
       id: itemId,
       name: "Item " + itemId,
       type: "top",
       color: "black",
       season: ["all"],
       image: ""
-    };
+    });
     handleSaveToWardrobe(mockItem);
   };
   
-  // Adapter function for OliviaDailyDrop component that expects itemId as string
   const handleSeeHowToWearAdapter = (itemId: string) => {
-    // Create a minimal ClothingItem with just the id and name to pass to the original handler
-    const mockItem: ClothingItem = {
+    const mockItem: ClothingItem = createMockItem({
       id: itemId,
       name: "Item " + itemId,
       type: "top",
       color: "black",
       season: ["all"],
       image: ""
-    };
+    });
     handleSeeHowToWear(mockItem);
   };
   
@@ -239,32 +235,26 @@ const ShopAndTry = () => {
     toast.info("Olivia is ready to chat about your style!");
   };
 
-  // Create adapter functions to resolve type mismatches
-  // Convert string itemId to ClothingItem for components expecting ClothingItem
   const handleTryOnTrendingItemAdapter = (itemId: string) => {
-    // Create a minimal ClothingItem to pass to the original handler
-    const mockItem: ClothingItem = {
+    const mockItem: ClothingItem = createMockItem({
       id: itemId,
       name: "Item " + itemId,
       type: "top",
       color: "black"
-    };
+    });
     handleTryOnTrendingItem(mockItem);
   };
 
-  // Convert string itemId to ClothingItem for components expecting ClothingItem
   const handleStylistSuggestionAdapter = (itemId: string) => {
-    // Create a minimal ClothingItem to pass to the original handler
-    const mockItem: ClothingItem = {
+    const mockItem: ClothingItem = createMockItem({
       id: itemId,
       name: "Item " + itemId,
       type: "top",
       color: "black"
-    };
+    });
     handleStylistSuggestion(mockItem);
   };
 
-  // New adapter function to convert ClothingItem to string for components expecting string
   const handleSaveToWishlistAdapter = (item: ClothingItem) => {
     if (item && item.id) {
       handleSaveToWishlist(item);
@@ -273,7 +263,6 @@ const ShopAndTry = () => {
     }
   };
   
-  // Fix for EditorsPicks - convert ClothingItem to string ID for onTryItem
   const handleTryOnItemAdapter = (item: ClothingItem) => {
     if (item && item.id) {
       handleTryOnTrendingItemAdapter(item.id);
@@ -282,7 +271,6 @@ const ShopAndTry = () => {
     }
   };
   
-  // Fix for OliviaDailyDrop - convert ClothingItem to string ID for onSeeHowToWear
   const handleSeeHowToWearFromItemAdapter = (item: ClothingItem) => {
     if (item && item.id) {
       handleSeeHowToWearAdapter(item.id);
@@ -291,7 +279,6 @@ const ShopAndTry = () => {
     }
   };
   
-  // New adapter for lines 383-384: convert ClothingItem to string itemId
   const handleSaveToWardrobeItemAdapter = (item: ClothingItem) => {
     if (item && item.id) {
       handleSaveToWardrobeAdapter(item.id);
@@ -300,29 +287,26 @@ const ShopAndTry = () => {
     }
   };
   
-  // New adapter for line 397: convert string itemId to ClothingItem
   const handleSeeHowToWearAdapter2 = (itemId: string) => {
-    const mockItem: ClothingItem = {
+    const mockItem: ClothingItem = createMockItem({
       id: itemId,
       name: "Item " + itemId,
       type: "top",
       color: "black"
-    };
+    });
     handleSeeHowToWear(mockItem);
   };
   
-  // New adapter for line 388: convert ClothingItem to string
   const onSaveToWishlistStringAdapter = (itemId: string) => {
-    const mockItem: ClothingItem = {
+    const mockItem: ClothingItem = createMockItem({
       id: itemId,
       name: "Item " + itemId,
       type: "top",
       color: "black"
-    };
+    });
     handleSaveToWishlist(mockItem);
   };
   
-  // Create two new adapters for ShopByMood component to fix the errors on lines 417-418
   const handleTryOnTrendingItemForShopByMood = (item: ClothingItem) => {
     if (item && item.id) {
       handleTryOnTrendingItemAdapter(item.id);
@@ -362,14 +346,12 @@ const ShopAndTry = () => {
       />
       
       <main className="pt-6 pb-20">
-        {/* SECTION 2: STYLE IT YOUR WAY */}
         <StyleItYourWay 
           onTryBeforeBuy={handleScrollToTryOn}
           onAIStyling={() => document.getElementById('shop-by-mood')?.scrollIntoView({ behavior: 'smooth' })}
           onYourStyle={() => !userPhoto ? setShowOliviaImageGallery(true) : handleScrollToTryOn()}
         />
         
-        {/* SECTION 3: STYLE ALCHEMY (WEATHER-BASED RECOMMENDATIONS) */}
         <StyleAlchemy 
           userPhoto={userPhoto}
           isUsingOliviaImage={isUsingOliviaImage}
@@ -381,12 +363,10 @@ const ShopAndTry = () => {
               setShowSubscriptionPopup(true);
             } else {
               toast.info("Opening wardrobe selector...");
-              // This would connect to wardrobe in a real implementation
             }
           }}
         />
         
-        {/* SECTION 4: VIRTUAL TRY-ON */}
         <VirtualTryOn 
           id="virtual-try-on"
           userPhoto={userPhoto}
@@ -418,9 +398,7 @@ const ShopAndTry = () => {
           showFeedback={showFeedback}
         />
         
-        {/* SECTION 5: SHOP BY MOOD (CATEGORY-BASED ITEMS) */}
         <ShopByMood 
-          isPremiumUser={isPremiumUser || isAuthenticated}
           onTryItem={handleTryOnTrendingItemForShopByMood}
           onStylistSuggestion={handleStylistSuggestionForShopByMood}
           onUpgradeToPremium={handleShowPremiumPopup}
@@ -429,7 +407,6 @@ const ShopAndTry = () => {
           onSaveToWishlist={onSaveToWishlistStringAdapter}
         />
         
-        {/* SECTION 6: EDITOR'S PICKS / BASED ON YOUR VIBE / WISHLIST */}
         <EditorsPicks
           isPremiumUser={isPremiumUser || isAuthenticated}
           onTryItem={handleTryOnItemAdapter}
@@ -438,13 +415,11 @@ const ShopAndTry = () => {
           onSaveToWardrobe={handleSaveToWardrobeItemAdapter}
         />
         
-        {/* BONUS SECTION: DAILY FEATURE / STYLING CHALLENGE */}
         <OliviaDailyDrop
           isPremiumUser={isPremiumUser || isAuthenticated}
           onSeeHowToWear={handleSeeHowToWearAdapter2}
         />
         
-        {/* Footer with affiliate disclaimer and country filter */}
         <ShopTryFooter 
           userCountry={userCountry || 'United States'} 
           onCountryChange={(country) => {
