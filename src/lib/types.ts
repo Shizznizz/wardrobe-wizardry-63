@@ -1,5 +1,6 @@
 
 
+
 export interface User {
   id: string;
   email: string | null;
@@ -10,19 +11,23 @@ export interface User {
   } | null;
 }
 
+// Add missing type exports
+export type PersonalityTag = string;
+export type BodyType = 'hourglass' | 'rectangle' | 'triangle' | 'inverted-triangle' | 'oval' | 'not-specified';
+
 export interface UserPreferences {
   firstName?: string;
   lastName?: string;
   favoriteColors?: string[];
   favoriteStyles?: string[];
   personalityTags?: string[];
-  bodyType?: 'hourglass' | 'rectangle' | 'triangle' | 'inverted-triangle' | 'oval' | 'not-specified';
+  bodyType?: BodyType;
   seasonalPreferences?: {
-    spring: { enabled: boolean; temperatureRange: [number, number] };
-    summer: { enabled: boolean; temperatureRange: [number, number] };
-    autumn: { enabled: boolean; temperatureRange: [number, number] };
-    winter: { enabled: boolean; temperatureRange: [number, number] };
-    all: { enabled: boolean; temperatureRange: [number, number] };
+    spring: { enabled: boolean; temperatureRange: [number, number]; goToLook?: string };
+    summer: { enabled: boolean; temperatureRange: [number, number]; goToLook?: string };
+    autumn: { enabled: boolean; temperatureRange: [number, number]; goToLook?: string };
+    winter: { enabled: boolean; temperatureRange: [number, number]; goToLook?: string };
+    all: { enabled: boolean; temperatureRange: [number, number]; goToLook?: string };
   };
   outfitReminders?: boolean;
   reminderTime?: string;
@@ -36,7 +41,8 @@ export interface UserPreferences {
   weeklyEmailUpdates?: boolean;
   notifyNewOutfits?: boolean;
   notifyWeatherChanges?: boolean;
-  pronouns?: 'he/him' | 'she/her' | 'they/them' | 'not-specified';
+  pronouns?: 'he/him' | 'she/her' | 'they/them' | 'not-specified' | 'custom';
+  customPronouns?: string;
   appearanceSettings?: {
     theme: 'light' | 'dark' | 'system';
     highContrast: boolean;
@@ -103,6 +109,30 @@ export interface ClothingItem {
   source?: string;
   occasions?: string[];
   category?: string;
+  price?: number;
+  affiliateUrl?: string;
+  tags?: string[];
+}
+
+// Extended types for different use cases
+export interface ExtendedClothingItem extends ClothingItem {
+  price?: number;
+  affiliateUrl?: string;
+  tags?: string[];
+}
+
+export interface MoodClothingItem extends ClothingItem {
+  price?: number;
+  affiliateUrl?: string;
+  tags?: string[];
+  mood?: string;
+}
+
+export interface PersonalizedItem extends ClothingItem {
+  price?: number;
+  affiliateUrl?: string;
+  tags?: string[];
+  personalizedReason?: string;
 }
 
 export interface Outfit {
@@ -146,4 +176,5 @@ export interface OutfitLogExtended extends OutfitLog {
   outfitName?: string;
   outfitDetails?: Outfit;
 }
+
 
