@@ -58,6 +58,18 @@ const OutfitPreviewCard = ({
     const totalItems = outfit.items?.length || 0;
     const occasions = outfit.occasions || [];
     const seasons = outfit.seasons || outfit.season || [];
+    const isAISuggested = outfit.personality_tags?.includes('olivia-suggested');
+    
+    if (isAISuggested) {
+      const daySpecificTips = [
+        `I chose this combination considering today's weather and your style preferences!`,
+        `This ${totalItems}-piece look balances comfort and style perfectly for your day.`,
+        `The colors work beautifully together and complement the season.`,
+        `I made sure this outfit uses different pieces from your other weekly looks!`,
+        `Perfect for ${occasions.join(' and ') || 'your planned activities'} - you'll feel confident and comfortable.`
+      ];
+      return daySpecificTips[Math.floor(Math.random() * daySpecificTips.length)];
+    }
     
     const tips = [
       `Perfect for ${activitySuggestion || 'your day'}! This ${totalItems}-piece look is effortlessly chic.`,

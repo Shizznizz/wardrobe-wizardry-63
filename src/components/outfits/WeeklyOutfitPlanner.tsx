@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { addDays, format, startOfWeek, endOfWeek, isSameDay } from 'date-fns';
 import { Button } from '@/components/ui/button';
-import { Plus, X } from 'lucide-react';
+import { Plus, X, Sparkles, RefreshCw } from 'lucide-react';
 import { ClothingItem, Outfit } from '@/lib/types';
 import { OutfitLog } from '@/components/outfits/OutfitLogItem';
 import { useCalendarState } from '@/hooks/useCalendarState';
 import { useAuth } from '@/hooks/useAuth';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useWeeklyOutfitPlanner } from '@/hooks/useWeeklyOutfitPlanner';
 import OutfitPreviewCard from './OutfitPreviewCard';
 import OutfitSelectorDialog from './calendar/OutfitSelectorDialog';
 import { toast } from 'sonner';
@@ -35,6 +36,13 @@ const WeeklyOutfitPlanner = ({
     addOutfitLog,
     deleteOutfitLog,
   } = useCalendarState(outfits, clothingItems);
+  
+  const {
+    generateWeeklyOutfits,
+    saveOutfitToSupabase,
+    isGenerating,
+    setIsGenerating
+  } = useWeeklyOutfitPlanner();
 
   const weekStart = startOfWeek(currentDate, { weekStartsOn: 0 });
   const weekEnd = endOfWeek(currentDate, { weekStartsOn: 0 });
@@ -94,11 +102,77 @@ const WeeklyOutfitPlanner = ({
     }
   };
 
+  const handleAutoPlanWeek = async () => {
+    if (!user || clothingItems.length === 0) {
+      toast.error('Please add clothing items to your wardrobe first');
+      return;
+    }
+
+    setIsGenerating(true);
+    try {
+      const generatedOutfits = await generateWeeklyOutfits(clothingItems, weatherLocation);
+      
+      for (let i = 0; i < generatedOutfits.length; i++) {
+        const outfit = generatedOutfits[i];
+        const date = addDays(weekStart, i);
+        
+        const savedOutfitId = await saveOutfitToSupabase(outfit);
+        if (!savedOutfitId) continue;
+        
+        const existingLog = getOutfitForDay(date);
+        if (existingLog) {
+          await deleteOutfitLog(existingLog.id);
+        }
+        
+        await addOutfitLog({
+          outfitId: savedOutfitId,
+          date,
+          timeOfDay: 'all-day' as const,
+          user_id: user.id,
+          aiSuggested: true,
+          notes: `Auto-planned by Olivia for ${format(date, 'EEEE')}`
+        });
+      }
+      
+      toast.success('Week planned successfully! Olivia has created 7 unique outfits for you.');
+    } catch (error) {
+      console.error('Error auto-planning week:', error);
+      toast.error('Failed to plan your week. Please try again.');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="text-center mb-8">
         <h2 className="text-3xl font-bold mb-2 text-purple-200">Weekly Outfit Planner</h2>
-        <p className="text-purple-200/80">Plan your outfits for the week ahead</p>
+        <p className="text-purple-200/80 mb-6">Plan your outfits for the week ahead</p>
+        
+        {outfits.length > 0 && clothingItems.length > 0 && (
+          <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+            <Button
+              onClick={handleAutoPlanWeek}
+              disabled={isGenerating}
+              className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-400 hover:to-purple-400 text-white shadow-lg hover:shadow-pink-500/25 transition-all duration-300"
+              size={isMobile ? "default" : "lg"}
+            >
+              <Sparkles className="h-4 w-4 mr-2" />
+              {isGenerating ? 'Planning Your Week...' : 'Auto Plan My Week'}
+            </Button>
+            
+            <Button
+              onClick={handleAutoPlanWeek}
+              disabled={isGenerating}
+              variant="outline"
+              className="border-purple-400/30 text-purple-200 hover:bg-purple-500/20"
+              size={isMobile ? "sm" : "default"}
+            >
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Try Again
+            </Button>
+          </div>
+        )}
       </div>
 
       <div className={`grid gap-4 ${isMobile ? 'grid-cols-1' : 'grid-cols-2 lg:grid-cols-3 xl:grid-cols-7'}`}>
