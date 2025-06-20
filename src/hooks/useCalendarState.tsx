@@ -16,40 +16,39 @@ export function useCalendarState(initialOutfits: Outfit[], initialClothingItems:
   const [selectedLog, setSelectedLog] = useState<OutfitLog | null>(null);
   const { user } = useAuth();
   
-  // Load outfit logs from Supabase on component mount
+  // Load outfit logs from Supabase on component mount and when user changes
   useEffect(() => {
-    loadOutfitLogs();
+    if (user) {
+      loadOutfitLogs();
+    } else {
+      loadFromLocalStorage();
+    }
   }, [user]);
   
   const loadOutfitLogs = async () => {
+    if (!user) return;
+    
     setIsLoading(true);
     
     try {
-      // For logged-in users, fetch from Supabase
-      if (user) {
-        const { success, data, error } = await getOutfitLogs(user.id);
-        
-        if (success && data) {
-          // Ensure all logs have a properly formatted date
-          const formattedLogs = data.map((log: any) => ({
-            ...log,
-            date: new Date(log.date)
-          }));
-          setOutfitLogs(formattedLogs);
-          console.log('Loaded outfit logs from Supabase:', formattedLogs.length);
-        } else if (error) {
-          console.error('Error loading outfit logs:', error);
-          // Fallback to localStorage
-          loadFromLocalStorage();
-        }
-      } else {
-        // For non-logged in users, use localStorage
-        loadFromLocalStorage();
+      console.log('Loading outfit logs for user:', user.id);
+      const { success, data, error } = await getOutfitLogs(user.id);
+      
+      if (success && data) {
+        // Ensure all logs have a properly formatted date
+        const formattedLogs = data.map((log: any) => ({
+          ...log,
+          date: new Date(log.date)
+        }));
+        setOutfitLogs(formattedLogs);
+        console.log('Loaded outfit logs from Supabase:', formattedLogs.length);
+      } else if (error) {
+        console.error('Error loading outfit logs:', error);
+        toast.error('Failed to load your outfit logs');
       }
     } catch (error) {
       console.error('Failed to load outfit logs:', error);
-      // Fallback to localStorage
-      loadFromLocalStorage();
+      toast.error('Failed to load your outfit logs');
     } finally {
       setIsLoading(false);
     }
@@ -72,17 +71,64 @@ export function useCalendarState(initialOutfits: Outfit[], initialClothingItems:
       console.error('Error loading outfit logs from localStorage:', error);
     }
   };
+
+  // Validate outfit exists and belongs to user
+  const validateOutfit = async (outfitId: string): Promise<boolean> => {
+    if (!user || outfitId === 'activity') return true;
+    
+    try {
+      const { data, error } = await supabase
+        .from('outfits')
+        .select('id')
+        .eq('id', outfitId)
+        .eq('user_id', user.id)
+        .maybeSingle();
+      
+      if (error) {
+        console.error('Error validating outfit:', error);
+        return false;
+      }
+      
+      return !!data;
+    } catch (error) {
+      console.error('Failed to validate outfit:', error);
+      return false;
+    }
+  };
   
-  // Add a new outfit log
+  // Add a new outfit log with validation and duplicate prevention
   const addOutfitLog = async (log: Omit<OutfitLog, 'id'>) => {
     try {
+      console.log('Adding outfit log:', log);
+      
+      // Validate outfit exists if it's not an activity
+      if (log.outfitId !== 'activity') {
+        const isValidOutfit = await validateOutfit(log.outfitId);
+        if (!isValidOutfit) {
+          toast.error('Selected outfit no longer exists');
+          return null;
+        }
+      }
+
+      // Check for duplicate logs (same outfit, date, and time of day)
+      const existingLog = outfitLogs.find(existingLog => 
+        isSameDay(new Date(existingLog.date), new Date(log.date)) &&
+        existingLog.timeOfDay === log.timeOfDay &&
+        existingLog.outfitId === log.outfitId
+      );
+
+      if (existingLog) {
+        toast.error('This outfit is already logged for this time');
+        return null;
+      }
+
       if (user) {
         // Add to Supabase
-        console.log('Saving outfit log to Supabase:', log);
+        console.log('Saving outfit log to Supabase for user:', user.id);
         const { success, data, error } = await saveSBOutfitLog(user.id, log);
         
         if (!success || error) {
-          console.error('Error adding outfit log:', error);
+          console.error('Error adding outfit log to Supabase:', error);
           toast.error('Failed to save outfit log');
           return null;
         }
@@ -94,7 +140,7 @@ export function useCalendarState(initialOutfits: Outfit[], initialClothingItems:
             date: new Date(data.date)
           };
           
-          // Add to state
+          // Add to state immediately for UI responsiveness
           setOutfitLogs(prev => [...prev, formattedData]);
           console.log('Outfit log saved successfully to Supabase');
           return formattedData;
@@ -128,13 +174,23 @@ export function useCalendarState(initialOutfits: Outfit[], initialClothingItems:
   // Update an existing outfit log
   const updateOutfitLog = async (id: string, updates: Partial<OutfitLog>) => {
     try {
+      console.log('Updating outfit log:', id, updates);
+      
+      // Validate outfit if updating outfit ID
+      if (updates.outfitId && updates.outfitId !== 'activity') {
+        const isValidOutfit = await validateOutfit(updates.outfitId);
+        if (!isValidOutfit) {
+          toast.error('Selected outfit no longer exists');
+          return false;
+        }
+      }
+
       if (user) {
         // Update in Supabase
-        console.log('Updating outfit log in Supabase:', id, updates);
         const { success, data, error } = await updateSBOutfitLog(user.id, id, updates);
         
         if (!success || error) {
-          console.error('Error updating outfit log:', error);
+          console.error('Error updating outfit log in Supabase:', error);
           toast.error('Failed to update outfit log');
           return false;
         }
@@ -178,19 +234,35 @@ export function useCalendarState(initialOutfits: Outfit[], initialClothingItems:
     }
   };
 
-  // Reassign an outfit in a log
-  const reassignOutfitLog = async (id: string, newOutfitId: string) => {
+  // Reassign an outfit in a log with proper validation
+  const reassignOutfitLog = async (id: string, newOutfitId: string): Promise<boolean> => {
     try {
+      console.log('Reassigning outfit log:', id, 'to outfit:', newOutfitId);
+      
+      // Validate the new outfit
+      if (newOutfitId !== 'activity') {
+        const isValidOutfit = await validateOutfit(newOutfitId);
+        if (!isValidOutfit) {
+          toast.error('Selected outfit no longer exists');
+          return false;
+        }
+      }
+
       // Find the log to be updated
       const logToUpdate = outfitLogs.find(log => log.id === id);
       if (!logToUpdate) {
         console.error('Log not found for reassignment');
+        toast.error('Log not found');
         return false;
       }
       
       // Update with the new outfit ID
       const updates = { outfitId: newOutfitId };
       const success = await updateOutfitLog(id, updates);
+      
+      if (success) {
+        console.log('Outfit reassigned successfully');
+      }
       
       return success;
     } catch (error) {
@@ -203,19 +275,22 @@ export function useCalendarState(initialOutfits: Outfit[], initialClothingItems:
   // Delete an outfit log
   const deleteOutfitLog = async (id: string) => {
     try {
+      console.log('Deleting outfit log:', id);
+      
       if (user) {
         // Delete from Supabase
-        console.log('Deleting outfit log from Supabase:', id);
         const { success, error } = await deleteSBOutfitLog(user.id, id);
         
         if (!success || error) {
-          console.error('Error deleting outfit log:', error);
+          console.error('Error deleting outfit log from Supabase:', error);
           toast.error('Failed to delete outfit log');
           return false;
         }
+        
+        console.log('Outfit log deleted successfully from Supabase');
       }
       
-      // Update state
+      // Update state immediately for UI responsiveness
       setOutfitLogs(prev => prev.filter(log => log.id !== id));
       
       // Update localStorage for non-logged in users
@@ -228,9 +303,9 @@ export function useCalendarState(initialOutfits: Outfit[], initialClothingItems:
           date: log.date instanceof Date ? log.date.toISOString() : log.date
         }));
         localStorage.setItem('outfitLogs', JSON.stringify(logsForStorage));
+        console.log('Outfit log deleted successfully from localStorage');
       }
       
-      console.log('Outfit log deleted successfully');
       return true;
     } catch (error) {
       console.error('Failed to delete outfit log:', error);

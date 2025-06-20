@@ -38,8 +38,12 @@ const EditItemDialog = ({ item, isOpen, onClose, onSave }: EditItemDialogProps) 
       setColor(item.color);
       setMaterial(item.material || '');
       
-      // Handle seasons field - use season array
-      const itemSeasons = Array.isArray(item.season) ? item.season : [];
+      // Handle seasons field - properly type the season array
+      const itemSeasons = Array.isArray(item.season) 
+        ? item.season.filter((s): s is ClothingSeason => 
+            ['spring', 'summer', 'autumn', 'winter', 'all'].includes(s)
+          )
+        : [];
       setSeasons(itemSeasons);
       
       setFavorite(item.favorite || false);
