@@ -1,6 +1,3 @@
-
-
-
 export interface User {
   id: string;
   email: string | null;
@@ -178,4 +175,11 @@ export interface OutfitLog {
 export interface OutfitLogExtended extends OutfitLog {
   outfitName?: string;
   outfitDetails?: Outfit;
+}
+
+export interface Activity {
+  id: string;
+  name: string;
+  category?: string;
+  description?: string;
 }

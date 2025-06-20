@@ -1,9 +1,9 @@
-
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Outfit, ClothingItem, WeatherInfo, ClothingSeason } from '@/lib/types';
 import { useWardrobeData } from '@/hooks/useWardrobeData';
 import { generateRandomWeather } from '@/services/WeatherService';
 import { toast } from 'sonner';
+import { createDefaultOutfit } from '@/lib/itemHelpers';
 
 export const useOliviaOutfitSuggestions = () => {
   const [generatedOutfits, setGeneratedOutfits] = useState<Outfit[]>([]);
@@ -37,7 +37,7 @@ export const useOliviaOutfitSuggestions = () => {
   }, []);
 
   // Generate outfits based on weather, season, and wardrobe
-  const generateOutfits = () => {
+  const generateOutfitSuggestions = useCallback(async () => {
     setIsGenerating(true);
     
     try {
@@ -203,12 +203,12 @@ export const useOliviaOutfitSuggestions = () => {
     } finally {
       setIsGenerating(false);
     }
-  };
+  }, []);
 
   // Generate outfits when clothing items or weather change
   useEffect(() => {
     if (!isLoadingItems && clothingItems && clothingItems.length > 0) {
-      generateOutfits();
+      generateOutfitSuggestions();
     }
   }, [isLoadingItems, clothingItems, currentSeason, currentWeather]);
 
@@ -217,7 +217,7 @@ export const useOliviaOutfitSuggestions = () => {
     isGenerating,
     weather: currentWeather,
     season: currentSeason,
-    refreshOutfits: generateOutfits,
+    refreshOutfits: generateOutfitSuggestions,
     isLoading: isGenerating || isLoadingItems
   };
 };
