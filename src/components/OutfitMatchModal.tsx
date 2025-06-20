@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -56,9 +57,7 @@ const OutfitMatchModal = ({ open, onOpenChange, item, allItems }: OutfitMatchMod
             imageUrl: item.image_url,
             image: item.image_url,
             timesWorn: item.times_worn || 0,
-            dateAdded: new Date(item.date_added),
-            lastWorn: item.last_worn ? new Date(item.last_worn) : undefined,
-            userId: user.id
+            dateAdded: new Date(item.date_added)
           }));
           
           setUserClothingItems(formattedItems);
@@ -147,17 +146,12 @@ const OutfitMatchModal = ({ open, onOpenChange, item, allItems }: OutfitMatchMod
       id: uuidv4(),
       name: outfitName,
       items: selectedItems.map(i => i.id),
-      season: [...new Set(selectedItems.flatMap(i => i.season || []))],
-      seasons: [...new Set(selectedItems.flatMap(i => i.season || []))],
+      season: [...new Set(selectedItems.flatMap(i => i.season))],
       occasion: selectedItems.flatMap(i => i.occasions || [])[0] || 'casual',
       occasions: [...new Set(selectedItems.flatMap(i => i.occasions || []))],
       favorite: false,
       timesWorn: 0,
       dateAdded: new Date(),
-      lastWorn: undefined,
-      personality_tags: [],
-      color_scheme: '',
-      colors: []
     };
     
     console.log('New outfit created:', newOutfit);

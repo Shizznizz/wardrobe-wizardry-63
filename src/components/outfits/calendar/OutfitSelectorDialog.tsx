@@ -1,14 +1,14 @@
 
 import { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Outfit, ClothingSeason } from '@/lib/types';
+import OutfitPreview from './OutfitPreview';
+import { X, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Search, Star, Clock } from 'lucide-react';
-import { Outfit } from '@/lib/types';
-import { useAuth } from '@/hooks/useAuth';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { Badge } from '@/components/ui/badge';
 
 interface OutfitSelectorDialogProps {
   isOpen: boolean;
@@ -18,194 +18,184 @@ interface OutfitSelectorDialogProps {
 }
 
 const OutfitSelectorDialog = ({ isOpen, onClose, onSubmit, outfits }: OutfitSelectorDialogProps) => {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedSeason, setSelectedSeason] = useState<ClothingSeason | null>(null);
   const [selectedOutfitId, setSelectedOutfitId] = useState<string>('');
-  const [supabaseOutfits, setSupabaseOutfits] = useState<Outfit[]>([]);
-  const [isLoadingOutfits, setIsLoadingOutfits] = useState(false);
-  const { user } = useAuth();
+  const [searchQuery, setSearchQuery] = useState('');
 
-  // Load outfits from Supabase when dialog opens
   useEffect(() => {
-    if (isOpen && user) {
-      loadOutfitsFromSupabase();
-    }
-  }, [isOpen, user]);
-
-  // Reset form when dialog opens/closes
-  useEffect(() => {
-    if (isOpen) {
-      setSearchTerm('');
+    if (!isOpen) {
+      setSelectedSeason(null);
       setSelectedOutfitId('');
+      setSearchQuery('');
     }
   }, [isOpen]);
 
-  const loadOutfitsFromSupabase = async () => {
-    if (!user) return;
+  const seasons: ClothingSeason[] = ['spring', 'summer', 'autumn', 'winter', 'all'];
+  
+  // Filter outfits based on season and search query
+  const filteredOutfits = outfits.filter(outfit => {
+    const matchesSeason = !selectedSeason || outfit.seasons?.includes(selectedSeason);
+    const matchesSearch = !searchQuery || 
+      outfit.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (outfit.occasions?.some(o => o.toLowerCase().includes(searchQuery.toLowerCase())));
+    return matchesSeason && matchesSearch;
+  });
+
+  // Group outfits by occasions for better organization
+  const getOutfitsByOccasion = () => {
+    const occasionMap = new Map<string, Outfit[]>();
     
-    setIsLoadingOutfits(true);
-    try {
-      const { data, error } = await supabase
-        .from('outfits')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
-      
-      if (error) {
-        console.error('Error loading outfits:', error);
-        toast.error('Failed to load your outfits');
-        return;
+    filteredOutfits.forEach(outfit => {
+      if (outfit.occasions && outfit.occasions.length > 0) {
+        outfit.occasions.forEach(occasion => {
+          if (!occasionMap.has(occasion)) {
+            occasionMap.set(occasion, []);
+          }
+          occasionMap.get(occasion)?.push(outfit);
+        });
+      } else {
+        if (!occasionMap.has('Other')) {
+          occasionMap.set('Other', []);
+        }
+        occasionMap.get('Other')?.push(outfit);
       }
-      
-      // Convert database format to app format
-      const formattedOutfits: Outfit[] = data.map(outfit => ({
-        id: outfit.id,
-        name: outfit.name,
-        items: outfit.items || [],
-        occasions: outfit.occasions || [],
-        occasion: outfit.occasion || 'casual',
-        season: outfit.season || ['all'],
-        seasons: outfit.season || ['all'],
-        favorite: outfit.favorite || false,
-        timesWorn: outfit.times_worn || 0,
-        lastWorn: outfit.last_worn ? new Date(outfit.last_worn) : undefined,
-        dateAdded: outfit.date_added ? new Date(outfit.date_added) : new Date(),
-        personality_tags: outfit.personality_tags || [],
-        color_scheme: outfit.color_scheme,
-        colors: outfit.colors || []
-      }));
-      
-      setSupabaseOutfits(formattedOutfits);
-    } catch (error) {
-      console.error('Error loading outfits:', error);
-      toast.error('Failed to load your outfits');
-    } finally {
-      setIsLoadingOutfits(false);
-    }
+    });
+    
+    return occasionMap;
   };
 
-  // Use Supabase outfits if available, otherwise fall back to props
-  const availableOutfits = supabaseOutfits.length > 0 ? supabaseOutfits : outfits;
+  const outfitsByOccasion = getOutfitsByOccasion();
+  const selectedOutfit = outfits.find(o => o.id === selectedOutfitId);
 
-  const filteredOutfits = availableOutfits.filter(outfit =>
-    outfit.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    outfit.occasions?.some(occasion => occasion.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    outfit.personality_tags?.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  const handleOutfitSelect = (outfitId: string) => {
+    setSelectedOutfitId(outfitId);
+  };
 
   const handleSubmit = () => {
-    if (!selectedOutfitId) {
-      toast.error('Please select an outfit');
-      return;
+    if (selectedOutfitId) {
+      onSubmit(selectedOutfitId);
     }
-    
-    // Verify the outfit still exists
-    const selectedOutfit = availableOutfits.find(o => o.id === selectedOutfitId);
-    if (!selectedOutfit) {
-      toast.error('Selected outfit no longer exists');
-      return;
-    }
-    
-    onSubmit(selectedOutfitId);
-    onClose();
-  };
-
-  const formatOutfitDisplayInfo = (outfit: Outfit) => {
-    const timesWornText = outfit.timesWorn ? ` • worn ${outfit.timesWorn}x` : '';
-    const occasionsText = outfit.occasions && outfit.occasions.length > 0 
-      ? ` • ${outfit.occasions.slice(0, 2).join(', ')}` 
-      : '';
-    return `${timesWornText}${occasionsText}`;
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px] bg-slate-900 border-purple-500/20 text-white max-h-[80vh] flex flex-col">
+      <DialogContent className="sm:max-w-[550px] bg-slate-900 border-purple-500/20 text-white">
+        <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 hover:opacity-100 ring-offset-background transition-opacity focus:outline-none disabled:pointer-events-none">
+          <X className="h-4 w-4 text-white" />
+          <span className="sr-only">Close</span>
+        </DialogClose>
+        
         <DialogHeader>
           <DialogTitle className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
             Select an Outfit
           </DialogTitle>
         </DialogHeader>
-        
-        <div className="space-y-4 flex-1 min-h-0">
-          {/* Search */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-            <Input
-              placeholder="Search outfits..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 bg-slate-800 border-slate-700 text-white"
-            />
+
+        <div className="space-y-4 py-3">
+          <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex-1">
+              <div className="relative">
+                <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <Input
+                  placeholder="Search outfits..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="bg-slate-800 border-slate-700 text-white pl-8"
+                />
+              </div>
+            </div>
+            <div className="w-full sm:w-1/3">
+              <Select
+                value={selectedSeason || undefined}
+                onValueChange={(value: ClothingSeason) => {
+                  setSelectedSeason(value);
+                }}
+              >
+                <SelectTrigger className="w-full bg-slate-800 border-slate-700">
+                  <SelectValue placeholder="Season" />
+                </SelectTrigger>
+                <SelectContent 
+                  className="bg-slate-800 border-slate-700 text-white max-h-[300px]"
+                  position="popper"
+                  sideOffset={5}
+                >
+                  <SelectItem key="all-seasons" value="">All seasons</SelectItem>
+                  {seasons.map(season => (
+                    <SelectItem key={season} value={season}>
+                      {season.charAt(0).toUpperCase() + season.slice(1)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
-          {/* Outfit List */}
-          <ScrollArea className="flex-1 min-h-[300px] max-h-[400px]">
-            {isLoadingOutfits ? (
-              <div className="flex items-center justify-center py-8">
-                <div className="text-slate-400">Loading outfits...</div>
-              </div>
-            ) : filteredOutfits.length > 0 ? (
-              <div className="space-y-2 pr-4">
-                {filteredOutfits.map((outfit) => (
-                  <div
-                    key={outfit.id}
-                    className={`p-3 rounded-lg border cursor-pointer transition-all duration-200 ${
-                      selectedOutfitId === outfit.id
-                        ? 'border-purple-500 bg-purple-500/20'
-                        : 'border-slate-700 bg-slate-800/50 hover:border-slate-600 hover:bg-slate-800'
-                    }`}
-                    onClick={() => setSelectedOutfitId(outfit.id)}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <h4 className="font-medium text-white">{outfit.name}</h4>
-                          {outfit.favorite && <Star className="h-4 w-4 text-yellow-400 fill-current" />}
+          <ScrollArea className="h-[300px] pr-4">
+            {Array.from(outfitsByOccasion.entries()).map(([occasion, outfitList]) => (
+              <div key={occasion} className="mb-4">
+                <h3 className="text-sm font-semibold text-purple-300 mb-2">
+                  {occasion.charAt(0).toUpperCase() + occasion.slice(1)}
+                </h3>
+                <div className="space-y-2">
+                  {outfitList.map(outfit => (
+                    <div 
+                      key={outfit.id} 
+                      className={`p-2 rounded-lg border cursor-pointer transition-colors
+                        ${selectedOutfitId === outfit.id 
+                          ? 'bg-purple-800/50 border-purple-500' 
+                          : 'bg-slate-800/30 border-slate-700/30 hover:bg-slate-700/40'}`}
+                      onClick={() => handleOutfitSelect(outfit.id)}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-16 h-16 bg-slate-700/50 rounded-md flex items-center justify-center overflow-hidden">
+                          {/* Outfit preview placeholder */}
+                          <span className="text-2xl text-slate-400">👔</span>
                         </div>
-                        <div className="text-xs text-slate-400 mt-1">
-                          {formatOutfitDisplayInfo(outfit)}
+                        <div className="flex-1">
+                          <p className="font-medium">{outfit.name}</p>
+                          <div className="flex flex-wrap gap-1 mt-1">
+                            {outfit.seasons?.map(season => (
+                              <Badge key={season} variant="secondary" className="text-[10px] py-0">
+                                {season}
+                              </Badge>
+                            ))}
+                            {outfit.favorite && (
+                              <Badge variant="default" className="text-[10px] py-0 bg-gradient-to-r from-blue-500 to-purple-500">
+                                Favorite
+                              </Badge>
+                            )}
+                          </div>
                         </div>
                       </div>
-                      {selectedOutfitId === outfit.id && (
-                        <div className="h-4 w-4 rounded-full bg-purple-500 flex items-center justify-center">
-                          <div className="h-2 w-2 rounded-full bg-white" />
-                        </div>
-                      )}
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            ) : (
-              <div className="text-center py-8">
-                <p className="text-slate-400 mb-4">
-                  {searchTerm ? 'No outfits match your search' : 'No outfits available'}
-                </p>
-                {!searchTerm && availableOutfits.length === 0 && (
-                  <p className="text-sm text-slate-500">
-                    Create some outfits in Mix & Match first
-                  </p>
-                )}
+            ))}
+
+            {filteredOutfits.length === 0 && (
+              <div className="text-center py-8 text-slate-400">
+                No outfits match your search
               </div>
             )}
           </ScrollArea>
-        </div>
 
-        {/* Actions */}
-        <div className="flex justify-end space-x-2 pt-4 border-t border-slate-700">
-          <Button 
-            variant="outline" 
-            onClick={onClose}
-            className="border-slate-600 text-white hover:bg-slate-700"
-          >
-            Cancel
-          </Button>
-          <Button 
-            onClick={handleSubmit}
-            disabled={!selectedOutfitId || isLoadingOutfits}
-            className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
-          >
-            Add Outfit
-          </Button>
+          <div className="flex justify-end gap-2 pt-2">
+            <Button 
+              variant="outline" 
+              onClick={onClose}
+              className="border-slate-600 text-white hover:bg-slate-700"
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleSubmit}
+              disabled={!selectedOutfitId}
+              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+            >
+              Select Outfit
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

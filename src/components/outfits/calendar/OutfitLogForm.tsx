@@ -29,8 +29,7 @@ const timeOfDayOptions = [
   { value: 'morning', label: 'Morning' },
   { value: 'afternoon', label: 'Afternoon' },
   { value: 'evening', label: 'Evening' },
-  { value: 'night', label: 'Night' },
-  { value: 'all-day', label: 'All Day' }
+  { value: 'night', label: 'Night' }
 ];
 
 const OutfitLogForm = ({ 

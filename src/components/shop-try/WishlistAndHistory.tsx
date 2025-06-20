@@ -5,114 +5,128 @@ import { Button } from '@/components/ui/button';
 import { Star, ExternalLink, Shirt, Lock, Bookmark, BookmarkCheck, Clock } from 'lucide-react';
 import { ClothingItem } from '@/lib/types';
 import { toast } from 'sonner';
-import { createShopClothingItem } from '@/lib/itemHelpers';
 
 interface WishlistAndHistoryProps {
   isPremiumUser: boolean;
   onTryItem: (item: ClothingItem) => void;
   onUpgradeToPremium: () => void;
-  onRemoveFromWishlist: (item: ClothingItem) => void;
 }
 
-const WishlistAndHistory = ({ isPremiumUser, onTryItem, onUpgradeToPremium, onRemoveFromWishlist }: WishlistAndHistoryProps) => {
-  const [activeTab, setActiveTab] = useState('wishlist');
-  
-  // Mock wishlist data using helper function
-  const wishlistItems: ClothingItem[] = [
-    createShopClothingItem({
-      id: 'wish-1',
-      name: 'Vintage Leather Jacket',
-      type: 'jacket',
-      color: 'black',
-      brand: 'Classic Style',
-      imageUrl: 'https://images.unsplash.com/photo-1578681994506-b8f463449011?auto=format&fit=crop&w=500&h=600',
-      price: 199.99,
-      season: ['fall', 'winter'],
-      occasions: ['casual'],
-      tags: ['vintage', 'edgy']
-    }),
-    createShopClothingItem({
-      id: 'wish-2',
-      name: 'Floral Summer Dress',
-      type: 'dress',
-      color: 'pink',
-      brand: 'Bloom Fashion',
-      imageUrl: 'https://images.unsplash.com/photo-1612336307429-8a898d10e223?auto=format&fit=crop&w=500&h=600',
-      price: 89.99,
-      season: ['spring', 'summer'],
-      occasions: ['casual'],
-      tags: ['floral', 'feminine']
-    }),
-    createShopClothingItem({
-      id: 'wish-3',
-      name: 'High-Waist Trousers',
-      type: 'pants',
-      color: 'navy',
-      brand: 'Professional Line',
-      imageUrl: 'https://images.unsplash.com/photo-1551489186-cf8726f514f8?auto=format&fit=crop&w=500&h=600',
-      price: 79.99,
-      season: ['all'],
-      occasions: ['work'],
-      tags: ['professional', 'classic']
-    }),
-    createShopClothingItem({
-      id: 'wish-4',
-      name: 'Cashmere Cardigan',
-      type: 'cardigan',
-      color: 'beige',
-      brand: 'Luxury Knits',
-      imageUrl: 'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?auto=format&fit=crop&w=500&h=600',
-      price: 149.99,
-      season: ['fall', 'winter'],
-      occasions: ['casual'],
-      tags: ['luxury', 'cozy']
-    })
-  ];
-  
-  // Mock recently viewed items using helper function
-  const recentlyViewed: ClothingItem[] = [
-    createShopClothingItem({
-      id: 'recent-1',
-      name: 'Striped T-Shirt',
-      type: 'top',
-      color: 'white',
-      brand: 'Basic Essentials',
-      imageUrl: 'https://images.unsplash.com/photo-1571945153237-4929e783af4a?auto=format&fit=crop&w=500&h=600',
-      price: 29.99,
-      season: ['spring', 'summer'],
-      occasions: ['casual'],
-      tags: ['basic', 'striped']
-    }),
-    createShopClothingItem({
-      id: 'recent-2',
-      name: 'Midi Skirt',
-      type: 'skirt',
-      color: 'burgundy',
-      brand: 'Elegant Wear',
-      imageUrl: 'https://images.unsplash.com/photo-1577900232022-11d542d5790d?auto=format&fit=crop&w=500&h=600',
-      price: 69.99,
-      season: ['fall'],
-      occasions: ['work'],
-      tags: ['elegant', 'professional']
-    }),
-    createShopClothingItem({
-      id: 'recent-3',
-      name: 'Ankle Boots',
-      type: 'shoes',
-      color: 'black',
-      brand: 'Urban Steps',
-      imageUrl: 'https://images.unsplash.com/photo-1520639888713-7851133b1ed0?auto=format&fit=crop&w=500&h=600',
-      price: 119.99,
-      season: ['fall', 'winter'],
-      occasions: ['casual'],
-      tags: ['versatile', 'comfortable']
-    })
-  ];
-
+const WishlistAndHistory = ({ isPremiumUser, onTryItem, onUpgradeToPremium }: WishlistAndHistoryProps) => {
+  const [wishlistItems, setWishlistItems] = useState<ClothingItem[]>([]);
+  const [recentlyViewed, setRecentlyViewed] = useState<ClothingItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Sample wishlist items
+    const sampleWishlist: ClothingItem[] = [
+      {
+        id: 'wish-1',
+        name: 'Oversized Boyfriend Blazer',
+        type: 'jacket',
+        color: 'black',
+        season: ['all'],  // Fixed: array instead of string
+        image: '',
+        occasion: 'formal',
+        brand: 'Zara',
+        imageUrl: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&w=500&h=600',
+        price: 79.99,  // Fixed: number instead of string
+        tags: ['Office', 'Power Look'],
+        affiliateUrl: 'https://www.zara.com'
+      },
+      {
+        id: 'wish-2',
+        name: 'Satin Midi Skirt',
+        type: 'skirt',
+        color: 'pink',
+        season: ['spring', 'summer'],  // Fixed: array instead of string
+        image: '',
+        occasion: 'casual',
+        brand: 'H&M',
+        imageUrl: 'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?auto=format&fit=crop&w=500&h=600',
+        price: 49.99,  // Fixed: number instead of string
+        tags: ['Elegant', 'Feminine'],
+        affiliateUrl: 'https://www.hm.com'
+      },
+      {
+        id: 'wish-3',
+        name: 'Chunky Platform Boots',
+        type: 'boots',
+        color: 'black',
+        season: ['autumn', 'winter'],  // Fixed: array instead of string
+        image: '',
+        occasion: 'casual',
+        brand: 'Dr. Martens',
+        imageUrl: 'https://images.unsplash.com/photo-1608256471372-41a9a2ecafe3?auto=format&fit=crop&w=500&h=600',
+        price: 159.99,  // Fixed: number instead of string
+        tags: ['Edgy', 'Statement'],
+        affiliateUrl: 'https://www.drmartens.com'
+      },
+      {
+        id: 'wish-4',
+        name: 'Knit Cardigan',
+        type: 'sweater',
+        color: 'beige',
+        season: ['autumn', 'winter'],  // Fixed: array instead of string
+        image: '',
+        occasion: 'casual',
+        brand: 'Mango',
+        imageUrl: 'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?auto=format&fit=crop&w=500&h=600',
+        price: 45.99,  // Fixed: number instead of string
+        tags: ['Cozy', 'Layering'],
+        affiliateUrl: 'https://www.mango.com'
+      }
+    ];
+    
+    // Sample recently viewed items
+    const sampleRecent: ClothingItem[] = [
+      {
+        id: 'recent-1',
+        name: 'One-piece Swimsuit',
+        type: 'other',  // Changed from 'swimwear' to valid type
+        color: 'blue',
+        season: ['summer'],  // Fixed: array instead of string
+        image: '',
+        occasion: 'casual',
+        brand: 'Seafolly',
+        imageUrl: 'https://images.unsplash.com/photo-1570976447640-ac859a117d57?auto=format&fit=crop&w=500&h=600',
+        price: 89.99,  // Fixed: number instead of string
+        tags: ['Beach', 'Resort'],
+        affiliateUrl: 'https://www.seafolly.com'
+      },
+      {
+        id: 'recent-2',
+        name: 'Evening Gown',
+        type: 'dress',
+        color: 'purple',  // Changed from 'burgundy' to valid color
+        season: ['all'],  // Fixed: array instead of string
+        image: '',
+        occasion: 'formal',
+        brand: 'ASOS',
+        imageUrl: 'https://images.unsplash.com/photo-1623609163841-5e69d8c62cc7?auto=format&fit=crop&w=500&h=600',
+        price: 129.99,  // Fixed: number instead of string
+        tags: ['Elegant', 'Event'],
+        affiliateUrl: 'https://www.asos.com'
+      },
+      {
+        id: 'recent-3',
+        name: 'Leather Tote Bag',
+        type: 'accessories',
+        color: 'brown',
+        season: ['all'],  // Fixed: array instead of string
+        image: '',
+        occasion: 'casual',
+        brand: 'Coach',
+        imageUrl: 'https://images.unsplash.com/photo-1590874103328-eac38a683ce7?auto=format&fit=crop&w=500&h=600',
+        price: 249.99,  // Fixed: number instead of string
+        tags: ['Classic', 'Everyday'],
+        affiliateUrl: 'https://www.coach.com'
+      }
+    ];
+
     setTimeout(() => {
+      setWishlistItems(sampleWishlist);
+      setRecentlyViewed(sampleRecent);
       setLoading(false);
     }, 800);
   }, []);

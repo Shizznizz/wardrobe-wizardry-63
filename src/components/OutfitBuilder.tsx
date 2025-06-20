@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -50,9 +51,9 @@ const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }
       // Handle the season value which might be a string or an array
       if (initialOutfit.season) {
         if (Array.isArray(initialOutfit.season)) {
-          setSelectedSeasons(initialOutfit.season as ClothingSeason[]);
+          setSelectedSeasons(initialOutfit.season);
         } else {
-          setSelectedSeasons([initialOutfit.season as ClothingSeason]);
+          setSelectedSeasons([initialOutfit.season]);
         }
       } else {
         setSelectedSeasons([]);
@@ -115,10 +116,7 @@ const OutfitBuilder = ({ isOpen, onClose, onSave, clothingItems, initialOutfit }
       favorite: initialOutfit?.favorite || false,
       timesWorn: initialOutfit?.timesWorn || 0,
       dateAdded: isCreatingNewOutfit ? new Date() : (initialOutfit?.dateAdded || new Date()),
-      lastWorn: initialOutfit?.lastWorn,
-      personality_tags: [],
-      color_scheme: '',
-      colors: []
+      lastWorn: initialOutfit?.lastWorn
     };
     
     // Log the outfit being saved

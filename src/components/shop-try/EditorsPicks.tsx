@@ -5,8 +5,7 @@ import { Container } from '@/components/ui/container';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ShoppingBag, Star, ArrowRight, Sparkles, Tag, Shirt } from 'lucide-react';
-import { ClothingItem, ExtendedClothingItem } from '@/lib/types';
-import { createExtendedClothingItem } from '@/lib/itemHelpers';
+import { ClothingItem } from '@/lib/types';
 import { toast } from 'sonner';
 
 interface EditorsPicksProps {
@@ -17,7 +16,7 @@ interface EditorsPicksProps {
   onSaveToWardrobe: (item: ClothingItem) => void;
 }
 
-interface ExtendedClothingItemWithStyling extends ExtendedClothingItem {
+interface ExtendedClothingItem extends ClothingItem {
   stylingTip?: string;
   badge?: string;
   availability?: string[];
@@ -42,57 +41,51 @@ const EditorsPicks = ({
   }, []);
 
   // Mock editor's picks
-  const editorsPicks: ExtendedClothingItemWithStyling[] = [
+  const editorsPicks: ExtendedClothingItem[] = [
     {
-      ...createExtendedClothingItem({
-        id: 'editor-1',
-        name: 'Pleated Midi Skirt',
-        type: 'skirt',
-        color: 'green',
-        brand: 'Zara',
-        price: 49.90,
-        imageUrl: '/lovable-uploads/352f9956-7bac-4f42-a91b-d20e04157b0d.png',
-        image: '/lovable-uploads/352f9956-7bac-4f42-a91b-d20e04157b0d.png',
-        season: ['spring', 'summer'],
-        occasions: ['casual']
-      }),
+      id: 'editor-1',
+      name: 'Pleated Midi Skirt',
+      type: 'skirt',
+      color: 'green',
+      brand: 'Zara',
+      price: 49.90,
+      imageUrl: '/lovable-uploads/352f9956-7bac-4f42-a91b-d20e04157b0d.png',
+      image: '/lovable-uploads/352f9956-7bac-4f42-a91b-d20e04157b0d.png', // Added image property
       stylingTip: 'Pair with a tucked-in turtleneck and ankle boots for a polished look',
       badge: 'Editor\'s Choice',
-      availability: ['United States', 'Canada', 'United Kingdom']
+      availability: ['United States', 'Canada', 'United Kingdom'],
+      season: ['spring', 'summer'],
+      occasion: 'casual'
     },
     {
-      ...createExtendedClothingItem({
-        id: 'editor-2',
-        name: 'Oversized Boyfriend Blazer',
-        type: 'jacket',
-        color: 'black',
-        brand: 'H&M',
-        price: 59.99,
-        imageUrl: '/lovable-uploads/547609e6-3e31-4592-9c0c-a9a94e8e4996.png',
-        image: '/lovable-uploads/547609e6-3e31-4592-9c0c-a9a94e8e4996.png',
-        season: ['spring', 'autumn'],
-        occasions: ['formal']
-      }),
+      id: 'editor-2',
+      name: 'Oversized Boyfriend Blazer',
+      type: 'jacket',
+      color: 'black',
+      brand: 'H&M',
+      price: 59.99,
+      imageUrl: '/lovable-uploads/547609e6-3e31-4592-9c0c-a9a94e8e4996.png',
+      image: '/lovable-uploads/547609e6-3e31-4592-9c0c-a9a94e8e4996.png', // Added image property
       stylingTip: 'Layer over a slip dress or jeans for an effortless chic look',
       badge: 'Trending',
-      availability: ['United States', 'Germany', 'France', 'Australia']
+      availability: ['United States', 'Germany', 'France', 'Australia'],
+      season: ['spring', 'autumn'],
+      occasion: 'formal'
     },
     {
-      ...createExtendedClothingItem({
-        id: 'editor-3',
-        name: 'Chunky Gold Chain Necklace',
-        type: 'accessories',
-        color: 'gold',
-        brand: 'Mango',
-        price: 29.99,
-        imageUrl: '/lovable-uploads/45448793-cb34-4e4c-9dd8-de95f86f25ca.png',
-        image: '/lovable-uploads/45448793-cb34-4e4c-9dd8-de95f86f25ca.png',
-        season: ['all'],
-        occasions: ['casual']
-      }),
+      id: 'editor-3',
+      name: 'Chunky Gold Chain Necklace',
+      type: 'accessories',
+      color: 'gold' as any, // Casting to any to avoid type error
+      brand: 'Mango',
+      price: 29.99,
+      imageUrl: '/lovable-uploads/45448793-cb34-4e4c-9dd8-de95f86f25ca.png',
+      image: '/lovable-uploads/45448793-cb34-4e4c-9dd8-de95f86f25ca.png', // Added image property
       stylingTip: 'Elevates even the simplest white tee to statement status',
       badge: 'Popular in your country',
-      availability: ['United States', 'United Kingdom', 'Australia']
+      availability: ['United States', 'United Kingdom', 'Australia'],
+      season: ['all'],
+      occasion: 'casual'
     }
   ];
   

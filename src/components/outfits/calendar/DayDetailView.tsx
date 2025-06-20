@@ -24,7 +24,7 @@ interface DayDetailViewProps {
   weatherLocation?: { city: string; country: string };
   onDeleteLog?: (id: string) => Promise<boolean>;
   onWeatherChange?: (weather: any) => void;
-  onReassignOutfit?: (logId: string, newOutfitId: string) => Promise<boolean>;
+  onReassignOutfit?: (logId: string, oldOutfitId: string) => void;
 }
 
 const DayDetailView = ({ 
@@ -77,25 +77,17 @@ const DayDetailView = ({
     setIsOutfitSelectorOpen(true);
   };
 
-  const handleOutfitSelected = async (outfitId: string) => {
-    if (currentReassignLogId && onReassignOutfit) {
-      const success = await onReassignOutfit(currentReassignLogId, outfitId);
-      if (success) {
-        toast.success("Outfit reassigned successfully");
-      } else {
-        toast.error("Failed to reassign outfit");
+  const handleOutfitSelected = (outfitId: string) => {
+    if (currentReassignLogId) {
+      const log = outfitLogs.find(log => log.id === currentReassignLogId);
+      if (log && onReassignOutfit) {
+        onReassignOutfit(currentReassignLogId, outfitId);
       }
       setCurrentReassignLogId(null);
     } else {
       onAddOutfit?.(outfitId);
     }
     setIsOutfitSelectorOpen(false);
-  };
-
-  // Helper function to find outfit details with better error handling
-  const getOutfitDetails = (outfitId: string) => {
-    if (outfitId === 'activity') return null;
-    return outfits.find(o => o.id === outfitId) || null;
   };
 
   const favoriteOutfits = outfits.filter(outfit => outfit.favorite);
@@ -129,7 +121,9 @@ const DayDetailView = ({
         {outfitLogs.length > 0 ? (
           <div className="space-y-2">
             {outfitLogs.map(log => {
-              const outfitDetails = getOutfitDetails(log.outfitId);
+              const outfitDetails = log.outfitId !== 'activity' 
+                ? outfits.find(o => o.id === log.outfitId) 
+                : null;
                 
               return (
                 <div key={log.id} 
@@ -146,21 +140,18 @@ const DayDetailView = ({
                       <>
                         <Shirt className="h-4 w-4 text-purple-400" />
                         <span className="text-sm">{outfitDetails.name}</span>
-                        {log.timeOfDay && log.timeOfDay !== 'all-day' && (
-                          <span className="text-xs text-slate-400">({log.timeOfDay})</span>
-                        )}
                       </>
                     ) : (
                       <div className="flex items-center gap-2">
-                        <AlertCircle className="h-4 w-4 text-amber-400" />
-                        <span className="text-sm text-amber-300">This outfit was deleted</span>
+                        <AlertCircle className="h-4 w-4 text-red-400" />
+                        <span className="text-sm text-red-300">Outfit not found</span>
                         <Button 
                           variant="ghost" 
                           size="sm" 
-                          className="text-xs py-0 h-6 ml-1 text-blue-400 hover:text-blue-300"
+                          className="text-xs py-0 h-6 ml-1"
                           onClick={() => handleReassignOutfit(log.id)}
                         >
-                          Choose new outfit
+                          Reassign outfit
                         </Button>
                       </div>
                     )}

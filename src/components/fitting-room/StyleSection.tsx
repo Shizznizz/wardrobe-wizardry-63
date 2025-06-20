@@ -1,10 +1,10 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, RefreshCw, Sparkles } from 'lucide-react';
 import { Outfit, WeatherInfo } from '@/lib/types';
-import { createDefaultOutfit } from '@/lib/itemHelpers';
 import OutfitCard from './OutfitCard';
 import BlurredSectionOverlay from './BlurredSectionOverlay';
 import { Badge } from '@/components/ui/badge';
@@ -71,7 +71,7 @@ const StyleSection: React.FC<StyleSectionProps> = ({
 
   // Olivia's Current Faves - fallback outfits when no outfits are available
   const oliviaFavorites: Outfit[] = [
-    createDefaultOutfit({
+    {
       id: "olivia-fave-1",
       name: "Spring Casual",
       notes: "Olivia loves this relaxed yet put-together look for spring days",
@@ -79,10 +79,9 @@ const StyleSection: React.FC<StyleSectionProps> = ({
       seasons: ["spring"],
       occasions: ["casual", "everyday"],
       favorite: true,
-      timesWorn: 0,
       dateAdded: new Date()
-    }),
-    createDefaultOutfit({
+    },
+    {
       id: "olivia-fave-2",
       name: "Weekend Brunch",
       notes: "Perfect for weekend brunches or coffee dates",
@@ -90,10 +89,9 @@ const StyleSection: React.FC<StyleSectionProps> = ({
       seasons: ["spring", "summer"],
       occasions: ["casual", "brunch"],
       favorite: true,
-      timesWorn: 0,
       dateAdded: new Date()
-    }),
-    createDefaultOutfit({
+    },
+    {
       id: "olivia-fave-3",
       name: "Office Chic",
       notes: "Professional but stylish outfit for the office",
@@ -101,9 +99,8 @@ const StyleSection: React.FC<StyleSectionProps> = ({
       seasons: ["all"],
       occasions: ["work", "business"],
       favorite: true,
-      timesWorn: 0,
       dateAdded: new Date()
-    })
+    }
   ];
   
   // Determine which outfits to display - use Olivia's faves if no outfits provided

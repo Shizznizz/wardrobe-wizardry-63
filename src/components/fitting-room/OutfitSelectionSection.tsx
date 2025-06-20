@@ -6,7 +6,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Lock, Check, FilterIcon, Shirt } from 'lucide-react';
 import { ClothingSeason, ClothingOccasion, Outfit, ClothingItem } from '@/lib/types';
-import { createDefaultOutfit } from '@/lib/itemHelpers';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -79,19 +78,16 @@ const OutfitSelectionSection = ({
             toast.error('Failed to load your outfits');
             setUserOutfits([]);
           } else if (data) {
-            // Format the data to match Outfit type using helper function
-            const formattedOutfits: Outfit[] = data.map(outfitData => 
-              createDefaultOutfit({
-                id: outfitData.id,
-                name: outfitData.name || `Outfit ${outfitData.id.slice(0, 4)}`,
-                items: outfitData.items || [],
-                seasons: outfitData.season || ['all'],
-                occasions: outfitData.occasions || [outfitData.occasion || 'casual'],
-                favorite: outfitData.favorite || false,
-                timesWorn: outfitData.times_worn || 0,
-                dateAdded: new Date(outfitData.date_added || outfitData.created_at)
-              })
-            );
+            // Format the data to match Outfit type
+            const formattedOutfits: Outfit[] = data.map(outfitData => ({
+              id: outfitData.id,
+              name: outfitData.name || `Outfit ${outfitData.id.slice(0, 4)}`,
+              items: outfitData.items || [],
+              seasons: outfitData.season || ['all'],
+              occasions: outfitData.occasions || [outfitData.occasion || 'casual'],
+              favorite: outfitData.favorite || false,
+              dateAdded: new Date(outfitData.date_added || outfitData.created_at)
+            }));
             
             setUserOutfits(formattedOutfits);
             
@@ -155,10 +151,10 @@ const OutfitSelectionSection = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3 }}
-      className="mb-5"
+      className="mb-5" // Reduced bottom margin from mb-6 to mb-5
     >
       <Card className="glass-dark border-white/10 overflow-hidden shadow-lg">
-        <CardContent className="p-4">
+        <CardContent className="p-4"> {/* Reduced padding from p-5 to p-4 */}
           <h2 className="text-xl font-semibold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-blue-300 to-purple-300">
             Choose an Outfit to Try On
           </h2>
@@ -207,7 +203,7 @@ const OutfitSelectionSection = ({
             onValueChange={setActiveTab}
             className="w-full"
           >
-            <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-4">
+            <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-4"> {/* Reduced margin from mb-6 to mb-4 */}
               <TabsTrigger value="your-outfits">Your Outfits</TabsTrigger>
               <TabsTrigger 
                 value="ai-suggested"
@@ -224,138 +220,70 @@ const OutfitSelectionSection = ({
             </TabsList>
             
             <TabsContent value="your-outfits">
-              <div className="space-y-4">
-                <div className="bg-white/5 rounded-lg p-4 border border-white/10">
-                  {isLoading ? (
-                    <div className="flex justify-center items-center h-40">
-                      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-white"></div>
-                    </div>
-                  ) : filteredUserOutfits.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {filteredUserOutfits.map((outfit) => (
-                        <div key={outfit.id} className="bg-white/5 rounded-lg p-3 border border-white/10 hover:border-purple-400/30 transition-colors cursor-pointer">
-                          <div className="flex items-center justify-between mb-2">
-                            <h3 className="font-medium text-white truncate">{outfit.name}</h3>
-                            {outfit.favorite && (
-                              <Badge className="bg-purple-500/70 text-white border-none text-xs">Favorite</Badge>
-                            )}
-                          </div>
-                          
-                          <div className="grid grid-cols-4 gap-1 mb-3">
-                            {outfit.items.slice(0, 4).map((itemId, index) => {
-                              const item = getClothingItemById(itemId);
-                              return (
-                                <div key={index} className="aspect-square bg-white/10 rounded-sm overflow-hidden">
-                                  {item?.imageUrl ? (
-                                    <img 
-                                      src={item.imageUrl} 
-                                      alt={item.name}
-                                      className="w-full h-full object-cover"
-                                    />
-                                  ) : (
-                                    <div className="w-full h-full flex items-center justify-center">
-                                      <Shirt className="h-4 w-4 text-white/40" />
-                                    </div>
-                                  )}
-                                </div>
-                              );
-                            })}
-                          </div>
-                          
-                          <div className="flex flex-wrap gap-1 mb-3">
-                            {outfit.seasons?.slice(0, 2).map((season, index) => (
-                              <Badge key={index} variant="outline" className="text-xs border-white/20 text-white/60">
-                                {season}
-                              </Badge>
-                            ))}
-                            {outfit.occasions?.slice(0, 1).map((occasion, index) => (
-                              <Badge key={index} variant="outline" className="text-xs border-white/20 text-white/60">
-                                {occasion}
-                              </Badge>
-                            ))}
-                          </div>
-                          
-                          <Button 
-                            size="sm"
-                            className="w-full bg-purple-600 hover:bg-purple-700 text-white"
-                            onClick={() => handleSelectOutfit(outfit)}
-                          >
-                            <Check className="mr-2 h-3 w-3" />
-                            Try This On
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-10">
-                      <p className="text-lg text-white/70">
-                        {userOutfits.length === 0 
-                          ? "You haven't created any outfits yet." 
-                          : "No outfits match your current filters."
-                        }
-                      </p>
-                      {userOutfits.length === 0 && (
-                        <Button 
-                          variant="outline"
-                          className="mt-4 border-blue-400/30 text-blue-300 hover:bg-blue-900/20"
-                          onClick={() => window.location.href = '/wardrobe/mix-match'}
-                        >
-                          Go to Mix & Match to create outfits
-                        </Button>
-                      )}
-                    </div>
-                  )}
-                </div>
+              <div className="space-y-4"> {/* Reduced from space-y-6 to space-y-4 */}
+                {isLoading ? (
+                  <div className="flex justify-center items-center h-40">
+                    <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-white"></div>
+                  </div>
+                ) : filteredUserOutfits.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                    {filteredUserOutfits.map((outfit) => (
+                      <OutfitCard 
+                        key={outfit.id} 
+                        outfit={outfit} 
+                        onSelect={handleSelectOutfit}
+                        getClothingItemById={getClothingItemById}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <p className="text-lg text-white/70">No outfits found matching your filters.</p>
+                    <Button 
+                      variant="outline"
+                      className="mt-4 border-blue-400/30 text-blue-300 hover:bg-blue-900/20"
+                      onClick={() => {
+                        setSelectedSeason('all');
+                        setSelectedStyle('all');
+                      }}
+                    >
+                      Clear Filters
+                    </Button>
+                  </div>
+                )}
               </div>
             </TabsContent>
             
             <TabsContent value="ai-suggested">
-              <div className="space-y-4">
+              <div className="space-y-8">
                 {isPremiumUser ? (
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {filteredAiOutfits.map((outfit, idx) => (
-                      <div key={outfit.id} className="bg-white/5 rounded-lg p-3 border border-white/10 hover:border-purple-400/30 transition-colors">
-                        <div className="flex items-center justify-between mb-2">
-                          <h3 className="font-medium text-white truncate">{outfit.name}</h3>
-                          <Badge className="bg-purple-500/70 text-white border-none text-xs">AI Generated</Badge>
-                        </div>
-                        
-                        <div className="grid grid-cols-4 gap-1 mb-3">
-                          {outfit.items.slice(0, 4).map((itemId, index) => {
-                            const item = getClothingItemById(itemId);
-                            return (
-                              <div key={index} className="aspect-square bg-white/10 rounded-sm overflow-hidden">
-                                {item?.imageUrl ? (
-                                  <img 
-                                    src={item.imageUrl} 
-                                    alt={item.name}
-                                    className="w-full h-full object-cover"
-                                  />
-                                ) : (
-                                  <div className="w-full h-full flex items-center justify-center">
-                                    <Shirt className="h-4 w-4 text-white/40" />
-                                  </div>
-                                )}
-                              </div>
-                            );
-                          })}
-                        </div>
-                        
-                        <p className="text-white/70 text-sm mb-3">
-                          AI-generated outfit tailored to your style preferences.
-                        </p>
-                        
-                        <Button 
-                          size="sm"
-                          className="w-full bg-purple-600 hover:bg-purple-700 text-white"
-                          onClick={() => handleSelectOutfit(outfit)}
-                        >
-                          <Check className="mr-2 h-3 w-3" />
-                          Try This On
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
+                  filteredAiOutfits.length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                      {filteredAiOutfits.map((outfit) => (
+                        <OutfitCard 
+                          key={outfit.id} 
+                          outfit={outfit} 
+                          onSelect={handleSelectOutfit}
+                          isAiGenerated
+                          getClothingItemById={getClothingItemById}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12">
+                      <p className="text-lg text-white/70">No AI-suggested outfits found matching your filters.</p>
+                      <Button 
+                        variant="outline"
+                        className="mt-4 border-blue-400/30 text-blue-300 hover:bg-blue-900/20"
+                        onClick={() => {
+                          setSelectedSeason('all');
+                          setSelectedStyle('all');
+                        }}
+                      >
+                        Clear Filters
+                      </Button>
+                    </div>
+                  )
                 ) : (
                   <div className="bg-white/5 backdrop-blur-sm rounded-lg border border-white/10 p-8 text-center">
                     <Lock className="h-12 w-12 text-yellow-400 mx-auto mb-4" />
@@ -378,8 +306,6 @@ const OutfitSelectionSection = ({
     </motion.div>
   );
 };
-
-export default OutfitSelectionSection;
 
 interface OutfitCardProps {
   outfit: Outfit;
@@ -470,3 +396,5 @@ const OutfitCard = ({ outfit, onSelect, isAiGenerated = false, getClothingItemBy
     </motion.div>
   );
 };
+
+export default OutfitSelectionSection;

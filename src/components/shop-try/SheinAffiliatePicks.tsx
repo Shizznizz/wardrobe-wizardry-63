@@ -5,7 +5,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ExternalLink, Shirt, LightbulbIcon, X } from 'lucide-react';
 import { ClothingItem } from '@/lib/types';
-import { createShopClothingItem } from '@/lib/itemHelpers';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
 
@@ -31,9 +30,9 @@ const SheinAffiliatePicks = ({ isPremiumUser, onTryItem, onUpgradeToPremium }: S
   const affiliateTag = "?msockid=2899f7288144623b0eb3e4678084638d";
 
   useEffect(() => {
-    // Sample data for Shein products using helper function
+    // Sample data for Shein products
     const sheinProducts: ClothingItem[] = [
-      createShopClothingItem({
+      {
         id: 'shein-1',
         name: 'Vintage Wash Denim Jacket',
         type: 'jacket',
@@ -45,8 +44,8 @@ const SheinAffiliatePicks = ({ isPremiumUser, onTryItem, onUpgradeToPremium }: S
         brand: 'Shein',
         tags: ['Casual', 'Streetstyle'],
         affiliateUrl: `https://nl.shein.com/Vintage-Wash-Denim-Jacket${affiliateTag}`
-      }),
-      createShopClothingItem({
+      },
+      {
         id: 'shein-2',
         name: 'Floral Midi Dress',
         type: 'dress',
@@ -58,8 +57,8 @@ const SheinAffiliatePicks = ({ isPremiumUser, onTryItem, onUpgradeToPremium }: S
         brand: 'Shein',
         tags: ['Romantic', 'Boho'],
         affiliateUrl: `https://nl.shein.com/Floral-Midi-Dress${affiliateTag}`
-      }),
-      createShopClothingItem({
+      },
+      {
         id: 'shein-3',
         name: 'High Waist Wide Leg Pants',
         type: 'pants',
@@ -71,8 +70,8 @@ const SheinAffiliatePicks = ({ isPremiumUser, onTryItem, onUpgradeToPremium }: S
         brand: 'Shein',
         tags: ['Minimalist', 'Office'],
         affiliateUrl: `https://nl.shein.com/High-Waist-Wide-Leg-Pants${affiliateTag}`
-      }),
-      createShopClothingItem({
+      },
+      {
         id: 'shein-4',
         name: 'Oversized Knit Sweater',
         type: 'sweater',
@@ -84,8 +83,8 @@ const SheinAffiliatePicks = ({ isPremiumUser, onTryItem, onUpgradeToPremium }: S
         brand: 'Shein',
         tags: ['Cozy', 'Everyday'],
         affiliateUrl: `https://nl.shein.com/Oversized-Knit-Sweater${affiliateTag}`
-      }),
-      createShopClothingItem({
+      },
+      {
         id: 'shein-5',
         name: 'Split Hem Midi Skirt',
         type: 'skirt',
@@ -97,7 +96,7 @@ const SheinAffiliatePicks = ({ isPremiumUser, onTryItem, onUpgradeToPremium }: S
         brand: 'Shein',
         tags: ['Trendy', 'Date Night'],
         affiliateUrl: `https://nl.shein.com/Split-Hem-Midi-Skirt${affiliateTag}`
-      })
+      }
     ];
 
     setTimeout(() => {

@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -74,18 +75,13 @@ const PersonalDetailsSection = ({ preferences, setPreferences }: PersonalDetails
     });
   };
   
-  // Handle pronoun change with proper type casting
+  // Handle pronoun change
   const handlePronounChange = (value: string) => {
     setPreferences(prev => {
       if (!prev) return prev;
-      
-      // Ensure the value is a valid pronoun type
-      const validPronouns = ['not-specified', 'he/him', 'she/her', 'they/them', 'custom'] as const;
-      const pronoun = validPronouns.includes(value as any) ? value as typeof validPronouns[number] : 'not-specified';
-      
       return {
         ...prev,
-        pronouns: pronoun
+        pronouns: value
       };
     });
   };

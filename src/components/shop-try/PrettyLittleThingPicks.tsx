@@ -5,7 +5,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ExternalLink, Shirt, LightbulbIcon } from 'lucide-react';
 import { ClothingItem } from '@/lib/types';
-import { createShopClothingItem } from '@/lib/itemHelpers';
 import { toast } from 'sonner';
 
 interface PrettyLittleThingPicksProps {
@@ -25,58 +24,58 @@ const PrettyLittleThingPicks = ({
   useEffect(() => {
     // Sample data for PLT products
     const pltProducts: ClothingItem[] = [
-      createShopClothingItem({
+      {
         id: 'plt-1',
         name: 'Oversized Denim Jacket',
         type: 'jacket',
         color: 'blue',
         season: ['all'],
+        image: '',
         imageUrl: 'https://images.unsplash.com/photo-1611312449408-fcece27cdbb7?auto=format&fit=crop&w=500&h=600',
-        image: 'https://images.unsplash.com/photo-1611312449408-fcece27cdbb7?auto=format&fit=crop&w=500&h=600',
         price: 49.99,
         brand: 'PrettyLittleThing',
         tags: ['Boho Chic', 'Casual'],
         affiliateUrl: 'https://www.prettylittlething.com/oversized-denim-jacket'
-      }),
-      createShopClothingItem({
+      },
+      {
         id: 'plt-2',
         name: 'Satin Slip Dress',
         type: 'dress',
-        color: 'rose',
+        color: 'rose',  // Updated to match new type
         season: ['spring', 'summer'],
+        image: '',
         imageUrl: 'https://images.unsplash.com/photo-1585487000160-6ebcfceb0d03?auto=format&fit=crop&w=500&h=600',
-        image: 'https://images.unsplash.com/photo-1585487000160-6ebcfceb0d03?auto=format&fit=crop&w=500&h=600',
         price: 35.99,
         brand: 'PrettyLittleThing',
         tags: ['Date Night', 'Romantic'],
         affiliateUrl: 'https://www.prettylittlething.com/satin-slip-dress'
-      }),
-      createShopClothingItem({
+      },
+      {
         id: 'plt-3',
         name: 'Tailored Blazer',
-        type: 'blazer',
+        type: 'blazer',  // Updated to match new type
         color: 'black',
         season: ['all'],
+        image: '',
         imageUrl: 'https://images.unsplash.com/photo-1591511276520-e0e2b3465b4f?auto=format&fit=crop&w=500&h=600',
-        image: 'https://images.unsplash.com/photo-1591511276520-e0e2b3465b4f?auto=format&fit=crop&w=500&h=600',
         price: 55.99,
         brand: 'PrettyLittleThing',
         tags: ['Power Boss', 'Office'],
         affiliateUrl: 'https://www.prettylittlething.com/tailored-blazer'
-      }),
-      createShopClothingItem({
+      },
+      {
         id: 'plt-4',
         name: 'Wide Leg Trousers',
         type: 'pants',
         color: 'cream',
         season: ['all'],
+        image: '',
         imageUrl: 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?auto=format&fit=crop&w=500&h=600',
-        image: 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?auto=format&fit=crop&w=500&h=600',
         price: 42.99,
         brand: 'PrettyLittleThing',
         tags: ['Minimalist', 'Office'],
         affiliateUrl: 'https://www.prettylittlething.com/wide-leg-trousers'
-      })
+      }
     ];
 
     setTimeout(() => {

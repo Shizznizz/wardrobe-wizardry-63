@@ -1,23 +1,41 @@
+
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Card, CardContent } from '@/components/ui/card';
+import { Container } from '@/components/ui/container';
 import { Button } from '@/components/ui/button';
-import { Shirt, LightbulbIcon, Heart, ShoppingBag } from 'lucide-react';
-import { MoodClothingItem, ClothingType } from '@/lib/types';
-import { createMoodClothingItem } from '@/lib/itemHelpers';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { 
+  Sparkles, 
+  Heart, 
+  ShoppingBag, 
+  Shirt, 
+  PlusCircle,
+  ThumbsUp,
+  Tag
+} from 'lucide-react';
+import { ClothingItem, ClothingType } from '@/lib/types';
 import { toast } from 'sonner';
 
 interface ShopByMoodProps {
+  id?: string;
   isPremiumUser: boolean;
-  onTryItem: (item: MoodClothingItem) => void;
-  onStylistSuggestion: (item: MoodClothingItem) => void;
+  onTryItem: (item: ClothingItem) => void;
+  onStylistSuggestion: (item: ClothingItem) => void;
   onUpgradeToPremium: () => void;
   activeMood: string | null;
-  onMoodSelect: (mood: string) => void;
-  onSaveToWishlist: (item: MoodClothingItem) => void;
+  onMoodSelect: (mood: string | null) => void;
+  onSaveToWishlist: (itemId: string) => void;
+}
+
+// Define extended ClothingItem type with additional properties
+interface MoodClothingItem extends ClothingItem {
+  mood?: string;
+  stylistNote?: string;
+  availableColors?: string[];
 }
 
 const ShopByMood = ({
+  id,
   isPremiumUser,
   onTryItem,
   onStylistSuggestion,
@@ -26,490 +44,291 @@ const ShopByMood = ({
   onMoodSelect,
   onSaveToWishlist
 }: ShopByMoodProps) => {
-  const moodCategories = ['confident', 'relaxed', 'adventurous', 'romantic', 'professional'];
-
-  const moodItems: Record<string, MoodClothingItem[]> = {
-    confident: [
-      createMoodClothingItem({
-        id: 'conf-1',
-        name: 'Power Blazer',
-        type: 'blazer',
-        color: 'black',
-        brand: 'Confidence Co.',
-        imageUrl: 'https://images.unsplash.com/photo-1594633313593-bab3825d0caf?auto=format&fit=crop&w=500&h=600',
-        image: 'https://images.unsplash.com/photo-1594633313593-bab3825d0caf?auto=format&fit=crop&w=500&h=600',
-        price: 129.99,
-        mood: 'confident',
-        stylistNote: 'Perfect for making a bold statement',
-        availableColors: ['black', 'navy', 'burgundy'],
-        season: ['all']
-      }),
-      createMoodClothingItem({
-        id: 'conf-2',
-        name: 'Statement Heels',
-        type: 'shoes',
-        color: 'red',
-        brand: 'Bold Steps',
-        imageUrl: 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=500&h=600',
-        image: 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=500&h=600',
-        price: 89.99,
-        mood: 'confident',
-        stylistNote: 'Adds instant confidence to any outfit',
-        availableColors: ['red', 'black', 'nude'],
-        season: ['all']
-      }),
-      createMoodClothingItem({
-        id: 'conf-3',
-        name: 'Structured Handbag',
-        type: 'bag',
-        color: 'brown',
-        brand: 'Executive Style',
-        imageUrl: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=500&h=600',
-        image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=500&h=600',
-        price: 159.99,
-        mood: 'confident',
-        stylistNote: 'Professional and sophisticated',
-        availableColors: ['brown', 'black', 'tan'],
-        season: ['all']
-      }),
-      createMoodClothingItem({
-        id: 'conf-4',
-        name: 'Tailored Trousers',
-        type: 'pants',
-        color: 'navy',
-        brand: 'Sharp Lines',
-        imageUrl: 'https://images.unsplash.com/photo-1506629905607-d405343160e3?auto=format&fit=crop&w=500&h=600',
-        image: 'https://images.unsplash.com/photo-1506629905607-d405343160e3?auto=format&fit=crop&w=500&h=600',
-        price: 79.99,
-        mood: 'confident',
-        stylistNote: 'Clean lines for a powerful silhouette',
-        availableColors: ['navy', 'black', 'charcoal'],
-        season: ['all']
-      }),
-      createMoodClothingItem({
-        id: 'conf-5',
-        name: 'Bold Watch',
-        type: 'accessory',
-        color: 'gold',
-        brand: 'Time Authority',
-        imageUrl: 'https://images.unsplash.com/photo-1524592094714-0f0654e20314?auto=format&fit=crop&w=500&h=600',
-        image: 'https://images.unsplash.com/photo-1524592094714-0f0654e20314?auto=format&fit=crop&w=500&h=600',
-        price: 199.99,
-        mood: 'confident',
-        stylistNote: 'Makes a statement on your wrist',
-        availableColors: ['gold', 'silver', 'rose-gold'],
-        season: ['all']
-      })
-    ],
-    relaxed: [
-      createMoodClothingItem({
-        id: 'relax-1',
-        name: 'Soft Knit Sweater',
-        type: 'sweater',
-        color: 'gray',
-        brand: 'Comfort Zone',
-        imageUrl: 'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?auto=format&fit=crop&w=500&h=600',
-        image: 'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?auto=format&fit=crop&w=500&h=600',
-        price: 69.99,
-        mood: 'relaxed',
-        stylistNote: 'Perfect for lounging at home',
-        availableColors: ['gray', 'cream', 'light-blue'],
-        season: ['all']
-      }),
-      createMoodClothingItem({
-        id: 'relax-2',
-        name: 'Loose Fit Jeans',
-        type: 'pants',
-        color: 'light-wash',
-        brand: 'Easy Living',
-        imageUrl: 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=500&h=600',
-        image: 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=500&h=600',
-        price: 59.99,
-        mood: 'relaxed',
-        stylistNote: 'Comfortable and casual',
-        availableColors: ['light-wash', 'dark-wash', 'black'],
-        season: ['all']
-      }),
-      createMoodClothingItem({
-        id: 'relax-3',
-        name: 'Slip-On Sneakers',
-        type: 'shoes',
-        color: 'white',
-        brand: 'Casual Steps',
-        imageUrl: 'https://images.unsplash.com/photo-1560769629-975ef6bbefb3?auto=format&fit=crop&w=500&h=600',
-        image: 'https://images.unsplash.com/photo-1560769629-975ef6bbefb3?auto=format&fit=crop&w=500&h=600',
-        price: 49.99,
-        mood: 'relaxed',
-        stylistNote: 'Easy to wear and stylish',
-        availableColors: ['white', 'gray', 'navy'],
-        season: ['all']
-      }),
-      createMoodClothingItem({
-        id: 'relax-4',
-        name: 'Oversized T-Shirt',
-        type: 'top',
-        color: 'white',
-        brand: 'Basic Comfort',
-        imageUrl: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&w=500&h=600',
-        image: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&w=500&h=600',
-        price: 29.99,
-        mood: 'relaxed',
-        stylistNote: 'Simple and versatile',
-        availableColors: ['white', 'black', 'gray'],
-        season: ['all']
-      }),
-      createMoodClothingItem({
-        id: 'relax-5',
-        name: 'Cozy Socks',
-        type: 'accessory',
-        color: 'beige',
-        brand: 'Warm Feet',
-        imageUrl: 'https://images.unsplash.com/photo-1547906935-29479644f19c?auto=format&fit=crop&w=500&h=600',
-        image: 'https://images.unsplash.com/photo-1547906935-29479644f19c?auto=format&fit=crop&w=500&h=600',
-        price: 19.99,
-        mood: 'relaxed',
-        stylistNote: 'Keeps your feet warm and cozy',
-        availableColors: ['beige', 'gray', 'brown'],
-        season: ['all']
-      })
-    ],
-    adventurous: [
-      createMoodClothingItem({
-        id: 'adv-1',
-        name: 'Cargo Pants',
-        type: 'pants',
-        color: 'olive',
-        brand: 'Outdoor Gear',
-        imageUrl: 'https://images.unsplash.com/photo-1603366447840-999c42c1193e?auto=format&fit=crop&w=500&h=600',
-        image: 'https://images.unsplash.com/photo-1603366447840-999c42c1193e?auto=format&fit=crop&w=500&h=600',
-        price: 79.99,
-        mood: 'adventurous',
-        stylistNote: 'Durable and practical for any adventure',
-        availableColors: ['olive', 'khaki', 'black'],
-        season: ['all']
-      }),
-      createMoodClothingItem({
-        id: 'adv-2',
-        name: 'Hiking Boots',
-        type: 'shoes',
-        color: 'brown',
-        brand: 'Trail Blazers',
-        imageUrl: 'https://images.unsplash.com/photo-1543508282-c8e79f03d608?auto=format&fit=crop&w=500&h=600',
-        image: 'https://images.unsplash.com/photo-1543508282-c8e79f03d608?auto=format&fit=crop&w=500&h=600',
-        price: 129.99,
-        mood: 'adventurous',
-        stylistNote: 'Provides excellent support and grip',
-        availableColors: ['brown', 'black', 'gray'],
-        season: ['all']
-      }),
-      createMoodClothingItem({
-        id: 'adv-3',
-        name: 'Backpack',
-        type: 'bag',
-        color: 'green',
-        brand: 'Adventure Ready',
-        imageUrl: 'https://images.unsplash.com/photo-1563734247433-6639b99d9983?auto=format&fit=crop&w=500&h=600',
-        image: 'https://images.unsplash.com/photo-1563734247433-6639b99d9983?auto=format&fit=crop&w=500&h=600',
-        price: 89.99,
-        mood: 'adventurous',
-        stylistNote: 'Spacious and durable for all your gear',
-        availableColors: ['green', 'blue', 'black'],
-        season: ['all']
-      }),
-      createMoodClothingItem({
-        id: 'adv-4',
-        name: 'Waterproof Jacket',
-        type: 'jacket',
-        color: 'blue',
-        brand: 'Weather Shield',
-        imageUrl: 'https://images.unsplash.com/photo-1531297484003-eeef7cde1da4?auto=format&fit=crop&w=500&h=600',
-        image: 'https://images.unsplash.com/photo-1531297484003-eeef7cde1da4?auto=format&fit=crop&w=500&h=600',
-        price: 99.99,
-        mood: 'adventurous',
-        stylistNote: 'Keeps you dry in any weather',
-        availableColors: ['blue', 'red', 'black'],
-        season: ['all']
-      }),
-      createMoodClothingItem({
-        id: 'adv-5',
-        name: 'Compass',
-        type: 'accessory',
-        color: 'silver',
-        brand: 'Navigation Tools',
-        imageUrl: 'https://images.unsplash.com/photo-1585314064435-d464159a72c4?auto=format&fit=crop&w=500&h=600',
-        image: 'https://images.unsplash.com/photo-1585314064435-d464159a72c4?auto=format&fit=crop&w=500&h=600',
-        price: 29.99,
-        mood: 'adventurous',
-        stylistNote: 'Helps you find your way',
-        availableColors: ['silver', 'gold', 'black'],
-        season: ['all']
-      })
-    ],
-    romantic: [
-      createMoodClothingItem({
-        id: 'rom-1',
-        name: 'Lace Dress',
-        type: 'dress',
-        color: 'pink',
-        brand: 'Sweetheart Styles',
-        imageUrl: 'https://images.unsplash.com/photo-1603432242909-772988939199?auto=format&fit=crop&w=500&h=600',
-        image: 'https://images.unsplash.com/photo-1603432242909-772988939199?auto=format&fit=crop&w=500&h=600',
-        price: 89.99,
-        mood: 'romantic',
-        stylistNote: 'Elegant and feminine',
-        availableColors: ['pink', 'white', 'lavender'],
-        season: ['spring', 'summer']
-      }),
-      createMoodClothingItem({
-        id: 'rom-2',
-        name: 'Ballet Flats',
-        type: 'shoes',
-        color: 'nude',
-        brand: 'Delicate Steps',
-        imageUrl: 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=500&h=600',
-        image: 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=500&h=600',
-        price: 59.99,
-        mood: 'romantic',
-        stylistNote: 'Comfortable and stylish',
-        availableColors: ['nude', 'pink', 'white'],
-        season: ['all']
-      }),
-      createMoodClothingItem({
-        id: 'rom-3',
-        name: 'Pearl Necklace',
-        type: 'accessory',
-        color: 'white',
-        brand: 'Timeless Treasures',
-        imageUrl: 'https://images.unsplash.com/photo-1524592094714-0f0654e20314?auto=format&fit=crop&w=500&h=600',
-        image: 'https://images.unsplash.com/photo-1524592094714-0f0654e20314?auto=format&fit=crop&w=500&h=600',
-        price: 79.99,
-        mood: 'romantic',
-        stylistNote: 'Adds a touch of elegance',
-        availableColors: ['white', 'gold', 'silver'],
-        season: ['all']
-      }),
-      createMoodClothingItem({
-        id: 'rom-4',
-        name: 'Floral Scarf',
-        type: 'accessory',
-        color: 'multicolor',
-        brand: 'Bloom Accessories',
-        imageUrl: 'https://images.unsplash.com/photo-1547906935-29479644f19c?auto=format&fit=crop&w=500&h=600',
-        image: 'https://images.unsplash.com/photo-1547906935-29479644f19c?auto=format&fit=crop&w=500&h=600',
-        price: 39.99,
-        mood: 'romantic',
-        stylistNote: 'Adds a pop of color',
-        availableColors: ['multicolor', 'pink', 'lavender'],
-        season: ['spring', 'summer']
-      }),
-      createMoodClothingItem({
-        id: 'rom-5',
-        name: 'Cardigan',
-        type: 'sweater',
-        color: 'beige',
-        brand: 'Cozy Knits',
-        imageUrl: 'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?auto=format&fit=crop&w=500&h=600',
-        image: 'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?auto=format&fit=crop&w=500&h=600',
-        price: 69.99,
-        mood: 'romantic',
-        stylistNote: 'Perfect for layering',
-        availableColors: ['beige', 'pink', 'white'],
-        season: ['all']
-      })
-    ],
-    professional: [
-      createMoodClothingItem({
-        id: 'prof-1',
-        name: 'Pencil Skirt',
-        type: 'skirt',
-        color: 'black',
-        brand: 'Executive Wear',
-        imageUrl: 'https://images.unsplash.com/photo-1577900232022-11d542d5790d?auto=format&fit=crop&w=500&h=600',
-        image: 'https://images.unsplash.com/photo-1577900232022-11d542d5790d?auto=format&fit=crop&w=500&h=600',
-        price: 69.99,
-        mood: 'professional',
-        stylistNote: 'Classic and versatile',
-        availableColors: ['black', 'navy', 'gray'],
-        season: ['all']
-      }),
-      createMoodClothingItem({
-        id: 'prof-2',
-        name: 'Button-Down Shirt',
-        type: 'top',
-        color: 'white',
-        brand: 'Corporate Style',
-        imageUrl: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&w=500&h=600',
-        image: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&w=500&h=600',
-        price: 49.99,
-        mood: 'professional',
-        stylistNote: 'Essential for any professional wardrobe',
-        availableColors: ['white', 'blue', 'gray'],
-        season: ['all']
-      }),
-      createMoodClothingItem({
-        id: 'prof-3',
-        name: 'Blazer',
-        type: 'jacket',
-        color: 'navy',
-        brand: 'Business Attire',
-        imageUrl: 'https://images.unsplash.com/photo-1594633313593-bab3825d0caf?auto=format&fit=crop&w=500&h=600',
-        image: 'https://images.unsplash.com/photo-1594633313593-bab3825d0caf?auto=format&fit=crop&w=500&h=600',
-        price: 99.99,
-        mood: 'professional',
-        stylistNote: 'Adds a touch of sophistication',
-        availableColors: ['navy', 'black', 'gray'],
-        season: ['all']
-      }),
-      createMoodClothingItem({
-        id: 'prof-4',
-        name: 'Loafers',
-        type: 'shoes',
-        color: 'black',
-        brand: 'Formal Footwear',
-        imageUrl: 'https://images.unsplash.com/photo-1520639888713-7851133b1ed0?auto=format&fit=crop&w=500&h=600',
-        image: 'https://images.unsplash.com/photo-1520639888713-7851133b1ed0?auto=format&fit=crop&w=500&h=600',
-        price: 79.99,
-        mood: 'professional',
-        stylistNote: 'Comfortable and stylish',
-        availableColors: ['black', 'brown', 'navy'],
-        season: ['all']
-      }),
-      createMoodClothingItem({
-        id: 'prof-5',
-        name: 'Briefcase',
-        type: 'bag',
-        color: 'brown',
-        brand: 'Executive Bags',
-        imageUrl: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=500&h=600',
-        image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=500&h=600',
-        price: 129.99,
-        mood: 'professional',
-        stylistNote: 'Keeps your essentials organized',
-        availableColors: ['brown', 'black', 'navy'],
-        season: ['all']
-      })
-    ]
-  };
-
-  const handleTryOn = (item: MoodClothingItem) => {
-    if (!isPremiumUser) {
-      onUpgradeToPremium();
-      return;
+  const [loading, setLoading] = useState(true);
+  
+  // Mock products data
+  const products: MoodClothingItem[] = [
+    {
+      id: 'casual-1',
+      name: 'Relaxed Fit T-Shirt',
+      type: 'top' as ClothingType,
+      color: 'white',
+      brand: 'Mango',
+      imageUrl: '/lovable-uploads/f1154816-6766-4478-ba89-6342580bc85b.png',
+      image: '/lovable-uploads/f1154816-6766-4478-ba89-6342580bc85b.png',
+      price: 24.90,
+      mood: 'casual',
+      stylistNote: 'Perfect for running errands or weekend brunch',
+      availableColors: ['white', 'black', 'gray'],
+      season: ['spring', 'summer']
+    },
+    {
+      id: 'casual-2',
+      name: 'High-Waisted Jeans',
+      type: 'pants' as ClothingType,
+      color: 'blue',
+      brand: 'Zara',
+      imageUrl: '/lovable-uploads/7bf89910-ba2c-43e0-a523-899d90c3022e.png',
+      image: '/lovable-uploads/7bf89910-ba2c-43e0-a523-899d90c3022e.png',
+      price: 49.90,
+      mood: 'casual',
+      stylistNote: 'These jeans go with everything in your wardrobe',
+      availableColors: ['blue', 'black', 'light blue'],
+      season: ['all']
+    },
+    {
+      id: 'romantic-1',
+      name: 'Floral Midi Dress',
+      type: 'dress' as ClothingType,
+      color: 'pink',
+      brand: 'H&M',
+      imageUrl: '/lovable-uploads/1d4e81c7-dcef-4208-ba9f-77c0544f9e12.png',
+      image: '/lovable-uploads/1d4e81c7-dcef-4208-ba9f-77c0544f9e12.png',
+      price: 69.99,
+      mood: 'romantic',
+      stylistNote: 'Perfect for date nights or special occasions',
+      availableColors: ['pink', 'blue'],
+      season: ['spring', 'summer']
+    },
+    {
+      id: 'formal-1',
+      name: 'Tailored Blazer',
+      type: 'jacket' as ClothingType,
+      color: 'black',
+      brand: 'Massimo Dutti',
+      imageUrl: '/lovable-uploads/547609e6-3e31-4592-9c0c-a9a94e8e4996.png',
+      image: '/lovable-uploads/547609e6-3e31-4592-9c0c-a9a94e8e4996.png',
+      price: 129.00,
+      mood: 'formal',
+      stylistNote: 'A versatile piece for work or evening events',
+      availableColors: ['black', 'beige', 'navy'],
+      season: ['autumn', 'winter', 'spring']
+    },
+    {
+      id: 'cozy-1',
+      name: 'Oversized Knit Sweater',
+      type: 'top' as ClothingType,
+      color: 'beige',
+      brand: 'COS',
+      imageUrl: '/lovable-uploads/e4bf2134-0936-46f8-8d70-adcc220e50be.png',
+      image: '/lovable-uploads/e4bf2134-0936-46f8-8d70-adcc220e50be.png',
+      price: 89.00,
+      mood: 'cozy',
+      stylistNote: 'Looks great with leggings or skinny jeans',
+      availableColors: ['beige', 'gray'],
+      season: ['autumn', 'winter']
     }
-    onTryItem(item);
-  };
+  ];
+  
+  // Filter products based on selected mood
+  const filteredProducts = activeMood 
+    ? products.filter(product => product.mood === activeMood) 
+    : products;
 
-  const handleStylistSuggestion = (item: MoodClothingItem) => {
-    if (!isPremiumUser) {
-      onUpgradeToPremium();
-      return;
-    }
-    onStylistSuggestion(item);
-  };
-
-  const getMoodItems = (mood: string): MoodClothingItem[] => {
-    return moodItems[mood] || [];
-  };
+  // Simulate loading state
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
-    <motion.div
-      id="shop-by-mood"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="mb-12"
-    >
-      <div className="flex items-center mb-6">
-        <div className="h-px flex-grow bg-gradient-to-r from-transparent via-purple-500/30 to-transparent"></div>
-        <h2 className="px-4 text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-          Shop By Mood
-        </h2>
-        <div className="h-px flex-grow bg-gradient-to-r from-purple-500/30 via-transparent to-transparent"></div>
-      </div>
-
-      <div className="flex justify-center space-x-4 mb-6">
-        {moodCategories.map((mood) => (
-          <Button
-            key={mood}
-            variant={activeMood === mood ? 'default' : 'outline'}
-            className={`capitalize ${activeMood === mood ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white' : 'border-white/20 hover:bg-white/10 text-white/80'}`}
-            onClick={() => onMoodSelect(mood)}
+    <section className="py-16 relative" id={id || "shop-by-mood"}>
+      <div className="absolute inset-0 bg-gradient-to-b from-slate-950/50 via-purple-950/30 to-slate-950/50 pointer-events-none"></div>
+      
+      <Container>
+        <motion.div
+          className="text-center mb-12"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+        >
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Shop by Mood</h2>
+          <p className="text-white/70 max-w-2xl mx-auto">
+            Find the perfect piece to match how you're feeling today
+          </p>
+        </motion.div>
+        
+        <div className="mb-8 flex justify-center">
+          <Tabs 
+            value={activeMood || 'all'} 
+            onValueChange={(value) => onMoodSelect(value === 'all' ? null : value)}
+            className="w-full"
           >
-            {mood}
-          </Button>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-        {getMoodItems(activeMood || moodCategories[0]).map((item) => (
-          <motion.div
-            key={item.id}
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3 }}
-            className="h-full"
-          >
-            <Card className="h-full border-0 shadow-soft bg-gradient-to-br from-slate-800/80 to-slate-900/80 border border-white/10 backdrop-blur-lg overflow-hidden">
-              <div className="relative aspect-[3/4] overflow-hidden">
-                <img
-                  src={item.imageUrl}
-                  alt={item.name}
-                  className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                />
-
-                {!isPremiumUser && (
-                  <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center z-10 opacity-0 hover:opacity-100 transition-opacity">
-                    <Button
-                      size="sm"
-                      onClick={() => onUpgradeToPremium()}
-                      className="bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90"
+            <TabsList className="bg-white/5 border border-white/10 p-1 overflow-x-auto flex flex-nowrap justify-start md:justify-center max-w-full">
+              <TabsTrigger value="all" className="rounded-md">All</TabsTrigger>
+              <TabsTrigger value="casual" className="rounded-md">Casual</TabsTrigger>
+              <TabsTrigger value="romantic" className="rounded-md">Romantic</TabsTrigger>
+              <TabsTrigger value="formal" className="rounded-md">Formal</TabsTrigger>
+              <TabsTrigger value="cozy" className="rounded-md">Cozy</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
+        
+        {loading ? (
+          <div className="flex justify-center my-12">
+            <div className="w-12 h-12 rounded-full border-4 border-purple-600 border-t-transparent animate-spin"></div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredProducts.map((item) => (
+              <motion.div
+                key={item.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5 }}
+                whileHover={{ y: -5, boxShadow: '0 20px 25px -5px rgba(139, 92, 246, 0.15)' }}
+                className="bg-gradient-to-br from-purple-900/20 to-slate-900/90 backdrop-blur-sm rounded-xl border border-white/10 overflow-hidden"
+              >
+                <div className="relative aspect-[3/4] overflow-hidden">
+                  <img 
+                    src={item.imageUrl} 
+                    alt={item.name}
+                    className="w-full h-full object-cover"
+                  />
+                  
+                  <div className="absolute top-2 right-2 z-10">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="bg-black/40 text-white hover:bg-black/60 backdrop-blur-sm h-8 w-8 rounded-full"
+                      onClick={() => {
+                        onSaveToWishlist(item.id);
+                        toast.success('Added to wishlist');
+                      }}
                     >
-                      Unlock Try-On
+                      <Heart className="h-4 w-4" />
                     </Button>
                   </div>
-                )}
-              </div>
-
-              <CardContent className="p-4 space-y-3">
-                <h3 className="font-medium text-white truncate">{item.name}</h3>
-                <p className="text-sm text-slate-400">{item.stylistNote}</p>
-
-                <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:opacity-90 flex-1"
-                    onClick={() => handleTryOn(item)}
-                  >
-                    <Shirt className="h-3.5 w-3.5 mr-1.5" />
-                    Try Now
-                  </Button>
-
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="border-white/20 hover:bg-white/10"
-                    onClick={() => handleStylistSuggestion(item)}
-                  >
-                    <LightbulbIcon className="h-3.5 w-3.5 mr-1.5" />
-                    Stylist Tip
-                  </Button>
-
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="border-white/20 hover:bg-white/10"
-                    onClick={() => onSaveToWishlist(item)}
-                  >
-                    <Heart className="h-3.5 w-3.5" />
-                    <span className="sr-only">Add to Wishlist</span>
-                  </Button>
+                  
+                  <div className="absolute top-2 left-2 z-10">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="bg-gradient-to-r from-purple-500/90 to-pink-500/90 text-white hover:opacity-90 backdrop-blur-sm h-7 rounded-full"
+                      onClick={() => onTryItem(item)}
+                    >
+                      <Shirt className="h-3.5 w-3.5 mr-1" />
+                      Try It
+                    </Button>
+                  </div>
+                  
+                  <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/80 to-transparent">
+                    <h3 className="font-medium text-white text-lg">{item.name}</h3>
+                    <p className="text-white/70 text-sm">{item.brand}</p>
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
+                
+                <div className="p-4">
+                  <div className="flex justify-between items-baseline mb-3">
+                    <div className="flex items-center">
+                      <Tag className="h-4 w-4 mr-1.5 text-purple-400" />
+                      <div className="text-xl font-bold">${item.price.toFixed(2)}</div>
+                    </div>
+                    
+                    {item.availableColors && (
+                      <div className="flex items-center space-x-1">
+                        {item.availableColors.slice(0, 3).map((color, idx) => (
+                          <div 
+                            key={idx} 
+                            className="w-3 h-3 rounded-full border border-white/20"
+                            style={{ backgroundColor: color }}
+                          />
+                        ))}
+                        {item.availableColors.length > 3 && (
+                          <span className="text-xs text-white/60">+{item.availableColors.length - 3}</span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  
+                  {item.stylistNote && (
+                    <div className="flex items-start mb-4 bg-white/5 p-2 rounded">
+                      <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-purple-500 to-pink-500 flex items-center justify-center mr-2 flex-shrink-0">
+                        <Sparkles className="h-3.5 w-3.5 text-white" />
+                      </div>
+                      <p className="text-xs text-white/70">
+                        "{item.stylistNote}"
+                      </p>
+                    </div>
+                  )}
+                  
+                  <div className="flex gap-2 mt-3">
+                    <Button 
+                      variant="outline" 
+                      className="flex-1 border-white/20 hover:bg-white/10 text-white"
+                      onClick={() => {
+                        onStylistSuggestion(item);
+                      }}
+                    >
+                      <ThumbsUp className="h-4 w-4 mr-1.5" />
+                      Suggest
+                    </Button>
+                    
+                    <Button 
+                      className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 text-white"
+                      onClick={() => {
+                        window.open('https://example.com/affiliate', '_blank');
+                        toast.success('Opening shop page in new tab');
+                      }}
+                    >
+                      <ShoppingBag className="h-4 w-4 mr-1.5" />
+                      Shop
+                    </Button>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
+        
+        {isPremiumUser && (
+          <div className="text-center mt-8">
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                toast.info('More items coming soon!');
+              }}
+              className="border-white/20 hover:bg-white/10 text-white"
+            >
+              <PlusCircle className="h-4 w-4 mr-2" />
+              Load More
+            </Button>
+          </div>
+        )}
+        
+        {!isPremiumUser && (
+          <motion.div 
+            className="mt-12 bg-gradient-to-r from-purple-900/30 to-pink-900/30 rounded-xl p-6 md:p-8 border border-purple-500/20"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="text-center md:text-left">
+                <h3 className="text-xl md:text-2xl font-bold mb-2">Unlock More Styles</h3>
+                <p className="text-white/70">
+                  Access all moods and get personalized style suggestions with Premium
+                </p>
+              </div>
+              <Button 
+                onClick={onUpgradeToPremium}
+                className="bg-gradient-to-r from-pink-500 to-purple-500 hover:opacity-90 text-white px-8"
+                size="lg"
+              >
+                <Sparkles className="h-4 w-4 mr-2" />
+                Upgrade to Premium
+              </Button>
+            </div>
           </motion.div>
-        ))}
-      </div>
-    </motion.div>
+        )}
+      </Container>
+    </section>
   );
 };
 

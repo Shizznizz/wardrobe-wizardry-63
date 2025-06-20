@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Outfit, ClothingItem } from '@/lib/types';
-import { createDefaultOutfit } from '@/lib/itemHelpers';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Card } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
@@ -52,28 +51,12 @@ const OutfitSelectionSection = ({
             toast.error('Failed to load your outfits');
           } else {
             console.log('Fetched outfits:', data);
-            
-            // Convert database outfits to proper Outfit objects
-            const formattedOutfits: Outfit[] = Array.isArray(data) ? data.map(dbOutfit => ({
-              ...createDefaultOutfit({
-                id: dbOutfit.id,
-                name: dbOutfit.name,
-                items: dbOutfit.items || [],
-                season: dbOutfit.season || ['all'],
-                seasons: dbOutfit.season || ['all'],
-                occasion: dbOutfit.occasion || 'casual',
-                occasions: dbOutfit.occasions || ['casual'],
-                favorite: dbOutfit.favorite || false,
-                timesWorn: dbOutfit.times_worn || 0,
-                dateAdded: new Date(dbOutfit.date_added || new Date())
-              })
-            })) : [];
-            
-            setUserOutfits(formattedOutfits);
+            setUserOutfits(Array.isArray(data) ? data : []);
             
             // Create Olivia's picks from user outfits
-            const picks = formattedOutfits.length > 0 
-              ? formattedOutfits.filter(outfit => outfit.favorite || Math.random() > 0.5).slice(0, 3) 
+            // For now, we'll just use some of the user's outfits as Olivia's picks
+            const picks = Array.isArray(data) && data.length > 0 
+              ? data.filter(outfit => outfit.favorite || Math.random() > 0.5).slice(0, 3) 
               : [];
             
             setOliviaOutfits(picks);
