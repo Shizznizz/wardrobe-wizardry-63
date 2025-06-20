@@ -32,7 +32,7 @@ import {
 
 const clothingTypes: { value: ClothingType; label: string; icon: any }[] = [
   { value: 'top', label: 'Tops', icon: Shirt },
-  { value: 'pants', label: 'Bottoms', icon: Shirt }, // Changed from 'bottom' to 'pants' which exists in ClothingType
+  { value: 'pants', label: 'Bottoms', icon: Shirt },
   { value: 'dress', label: 'Dresses', icon: Shirt },
   { value: 'coat', label: 'Outerwear', icon: Shirt },
   { value: 'shoes', label: 'Shoes', icon: Shirt },
@@ -90,12 +90,11 @@ const EnhancedWardrobeFilters: React.FC<EnhancedWardrobeFiltersProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState("all");
   const [activeFilters, setActiveFilters] = useState<WardrobeFilters>({
-    category: null,
-    color: null,
-    occasion: null,
-    timeFrame: 'all',
-    favorite: null,
-    weatherAppropriate: null,
+    types: [],
+    colors: [],
+    seasons: [],
+    occasions: [],
+    favorites: false,
     searchQuery: ''
   });
 
@@ -114,21 +113,26 @@ const EnhancedWardrobeFilters: React.FC<EnhancedWardrobeFiltersProps> = ({
     if (onToggleFilter) {
       onToggleFilter(filterType, value);
     } else {
-      handleFilterChange({
-        [filterType]: filters[filterType] === value ? null : value
-      });
+      if (filterType === 'types' || filterType === 'colors' || filterType === 'seasons' || filterType === 'occasions') {
+        const currentArray = filters[filterType] as string[];
+        const newArray = currentArray.includes(value) 
+          ? currentArray.filter(item => item !== value)
+          : [...currentArray, value];
+        handleFilterChange({ [filterType]: newArray });
+      } else if (filterType === 'favorites') {
+        handleFilterChange({ favorites: !filters.favorites });
+      }
     }
   };
 
   // Clear all filters
   const clearAllFilters = () => {
     const emptyFilters: WardrobeFilters = {
-      category: null,
-      color: null,
-      occasion: null,
-      timeFrame: 'all',
-      favorite: null,
-      weatherAppropriate: null,
+      types: [],
+      colors: [],
+      seasons: [],
+      occasions: [],
+      favorites: false,
       searchQuery: ''
     };
     
@@ -184,7 +188,7 @@ const EnhancedWardrobeFilters: React.FC<EnhancedWardrobeFiltersProps> = ({
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {clothingTypes.map((type) => {
-                    const isActive = filters.category === type.value;
+                    const isActive = filters.types.includes(type.value);
                     const Icon = type.icon;
                     
                     return (
@@ -196,7 +200,7 @@ const EnhancedWardrobeFilters: React.FC<EnhancedWardrobeFiltersProps> = ({
                           "text-xs border-slate-700/50 hover:bg-slate-800/60 hover:border-purple-500/40",
                           isActive && "bg-slate-800/80 border-purple-500/50 text-purple-300"
                         )}
-                        onClick={() => handleToggleFilter('category', type.value)}
+                        onClick={() => handleToggleFilter('types', type.value)}
                       >
                         <Icon className="h-3.5 w-3.5 mr-1.5" />
                         {type.label}
@@ -213,7 +217,7 @@ const EnhancedWardrobeFilters: React.FC<EnhancedWardrobeFiltersProps> = ({
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {colors.map((color) => {
-                    const isActive = filters.color === color.value;
+                    const isActive = filters.colors.includes(color.value);
                     
                     return (
                       <Button
@@ -224,7 +228,7 @@ const EnhancedWardrobeFilters: React.FC<EnhancedWardrobeFiltersProps> = ({
                           "text-xs border-slate-700/50 hover:bg-slate-800/60 hover:border-purple-500/40",
                           isActive && "bg-slate-800/80 border-purple-500/50 text-purple-300"
                         )}
-                        onClick={() => handleToggleFilter('color', color.value)}
+                        onClick={() => handleToggleFilter('colors', color.value)}
                       >
                         <span 
                           className={`h-3 w-3 rounded-full mr-1.5 ${color.bgClass} border border-white/20`}
@@ -243,7 +247,7 @@ const EnhancedWardrobeFilters: React.FC<EnhancedWardrobeFiltersProps> = ({
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {occasions.map((occasion) => {
-                    const isActive = filters.occasion === occasion.value;
+                    const isActive = filters.occasions.includes(occasion.value);
                     const Icon = occasion.icon;
                     
                     return (
@@ -255,7 +259,7 @@ const EnhancedWardrobeFilters: React.FC<EnhancedWardrobeFiltersProps> = ({
                           "text-xs border-slate-700/50 hover:bg-slate-800/60 hover:border-purple-500/40",
                           isActive && "bg-slate-800/80 border-purple-500/50 text-purple-300"
                         )}
-                        onClick={() => handleToggleFilter('occasion', occasion.value)}
+                        onClick={() => handleToggleFilter('occasions', occasion.value)}
                       >
                         <Icon className="h-3.5 w-3.5 mr-1.5" />
                         {occasion.label}
@@ -277,49 +281,15 @@ const EnhancedWardrobeFilters: React.FC<EnhancedWardrobeFiltersProps> = ({
                     size="sm"
                     className={cn(
                       "text-xs border-slate-700/50 hover:bg-slate-800/60 hover:border-purple-500/40",
-                      filters.favorite === true && "bg-slate-800/80 border-purple-500/50 text-purple-300"
+                      filters.favorites && "bg-slate-800/80 border-purple-500/50 text-purple-300"
                     )}
-                    onClick={() => handleToggleFilter('favorite', filters.favorite === true ? null : true)}
+                    onClick={() => handleToggleFilter('favorites', true)}
                   >
                     <Heart className={cn(
                       "h-3.5 w-3.5 mr-1.5",
-                      filters.favorite === true && "fill-red-500 text-red-500"
+                      filters.favorites && "fill-red-500 text-red-500"
                     )} />
                     Favorites
-                  </Button>
-                  
-                  {/* Weather Appropriate Filter */}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className={cn(
-                      "text-xs border-slate-700/50 hover:bg-slate-800/60 hover:border-purple-500/40",
-                      filters.weatherAppropriate === true && "bg-slate-800/80 border-purple-500/50 text-purple-300"
-                    )}
-                    onClick={() => handleToggleFilter('weatherAppropriate', filters.weatherAppropriate === true ? null : true)}
-                    disabled={!temperature}
-                  >
-                    <Sun className="h-3.5 w-3.5 mr-1.5" />
-                    Weather Appropriate
-                    {temperature && (
-                      <Badge variant="outline" className="ml-1.5 py-0 h-4 text-[10px]">
-                        {temperature}°
-                      </Badge>
-                    )}
-                  </Button>
-                  
-                  {/* Recently Worn Filter */}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className={cn(
-                      "text-xs border-slate-700/50 hover:bg-slate-800/60 hover:border-purple-500/40",
-                      filters.timeFrame !== 'all' && "bg-slate-800/80 border-purple-500/50 text-purple-300"
-                    )}
-                    onClick={() => handleToggleFilter('timeFrame', filters.timeFrame !== 'recent' ? 'recent' : 'all')}
-                  >
-                    <CalendarIcon className="h-3.5 w-3.5 mr-1.5" />
-                    Recently Worn
                   </Button>
                 </div>
               </div>
@@ -330,7 +300,7 @@ const EnhancedWardrobeFilters: React.FC<EnhancedWardrobeFiltersProps> = ({
           {activeTab === "category" && (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 pt-2">
               {clothingTypes.map((type) => {
-                const isActive = filters.category === type.value;
+                const isActive = filters.types.includes(type.value);
                 const Icon = type.icon;
                 
                 return (
@@ -343,7 +313,7 @@ const EnhancedWardrobeFilters: React.FC<EnhancedWardrobeFiltersProps> = ({
                         ? "bg-gradient-to-r from-indigo-600/80 to-purple-600/80 border-0" 
                         : "hover:bg-slate-800/60 hover:border-purple-500/40"
                     )}
-                    onClick={() => handleToggleFilter('category', type.value)}
+                    onClick={() => handleToggleFilter('types', type.value)}
                   >
                     <Icon className={cn("h-5 w-5 mb-1", isActive ? "text-white" : "text-purple-300")} />
                     <span className="text-xs font-medium">{type.label}</span>
@@ -357,7 +327,7 @@ const EnhancedWardrobeFilters: React.FC<EnhancedWardrobeFiltersProps> = ({
           {activeTab === "color" && (
             <div className="grid grid-cols-3 sm:grid-cols-5 gap-3 pt-2">
               {colors.map((color) => {
-                const isActive = filters.color === color.value;
+                const isActive = filters.colors.includes(color.value);
                 
                 return (
                   <Button
@@ -367,7 +337,7 @@ const EnhancedWardrobeFilters: React.FC<EnhancedWardrobeFiltersProps> = ({
                       "h-full py-2 flex flex-col items-center justify-center border-slate-700/50",
                       isActive && "bg-slate-800/80 border-purple-500/50"
                     )}
-                    onClick={() => handleToggleFilter('color', color.value)}
+                    onClick={() => handleToggleFilter('colors', color.value)}
                   >
                     <span 
                       className={`h-5 w-5 rounded-full mb-1.5 ${color.bgClass} border border-white/20`}
@@ -383,7 +353,7 @@ const EnhancedWardrobeFilters: React.FC<EnhancedWardrobeFiltersProps> = ({
           {activeTab === "occasion" && (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 pt-2">
               {occasions.map((occasion) => {
-                const isActive = filters.occasion === occasion.value;
+                const isActive = filters.occasions.includes(occasion.value);
                 const Icon = occasion.icon;
                 
                 return (
@@ -396,7 +366,7 @@ const EnhancedWardrobeFilters: React.FC<EnhancedWardrobeFiltersProps> = ({
                         ? "bg-gradient-to-r from-indigo-600/80 to-purple-600/80 border-0" 
                         : "hover:bg-slate-800/60 hover:border-purple-500/40"
                     )}
-                    onClick={() => handleToggleFilter('occasion', occasion.value)}
+                    onClick={() => handleToggleFilter('occasions', occasion.value)}
                   >
                     <Icon className={cn("h-5 w-5 mb-1", isActive ? "text-white" : "text-purple-300")} />
                     <span className="text-xs font-medium">{occasion.label}</span>
@@ -410,14 +380,18 @@ const EnhancedWardrobeFilters: React.FC<EnhancedWardrobeFiltersProps> = ({
                 <div className="flex flex-wrap gap-2">
                   {seasons.map((season) => {
                     const Icon = season.icon;
-                    // Note: season filtering would need to be added to your filter state
+                    const isActive = filters.seasons.includes(season.value);
                     
                     return (
                       <Button
                         key={season.value}
                         variant="outline"
                         size="sm"
-                        className="text-xs border-slate-700/50 hover:bg-slate-800/60 hover:border-purple-500/40"
+                        className={cn(
+                          "text-xs border-slate-700/50 hover:bg-slate-800/60 hover:border-purple-500/40",
+                          isActive && "bg-slate-800/80 border-purple-500/50 text-purple-300"
+                        )}
+                        onClick={() => handleToggleFilter('seasons', season.value)}
                       >
                         <Icon className="h-3.5 w-3.5 mr-1.5" />
                         {season.label}
