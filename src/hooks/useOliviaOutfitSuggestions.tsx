@@ -192,7 +192,9 @@ export const useOliviaOutfitSuggestions = () => {
           occasion: mostCommonOccasion,
           colors: colors,
           personality_tags: ['trendy', 'casual'],
-          dateAdded: new Date()
+          dateAdded: new Date(),
+          favorite: false,
+          timesWorn: 0
         });
       }
       
